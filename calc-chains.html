@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadenas — Laboratorio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+  </head>
+  <body class="lab-body">
+    <header class="lab-header">
+      <a class="lab-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="transmission-lab.html">Laboratorio</a>
+        <a href="transmission-canvas.html">Lienzo técnico Pro</a>
+      </nav>
+    </header>
+    <main class="lab-main">
+      <section class="lab-panel lab-panel--accent">
+        <h2>Cadena de rodillos · dos piñones</h2>
+        <p class="lab-lead">
+          Cadena de rodillos según <strong>DIN 8187 / ISO 606</strong> (paso métrico) y referencias <strong>ANSI B29.1</strong> en el catálogo demo. Longitud en <strong>pasos</strong> con centro fijo; cinemática en primitivos
+          <code>D = p / sin(π/z)</code>.
+        </p>
+        <div class="lab-calc-layout lab-calc-layout--with-diag">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title">Vista esquemática · piñones y tramos rectos</p>
+              <svg id="cDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de cadena y piñones"></svg>
+              <p class="lab-diagram-caption">Primitivos <strong>D = p/sin(π/z)</strong>; rodillos solo en tangentes. z₁ a la derecha en el dibujo (motor).</p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__inputs">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field lab-field--wide">
+                <label for="cChainRef" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Norma y paso de catálogo">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <ellipse cx="8" cy="12" rx="3" ry="4" />
+                      <ellipse cx="16" cy="12" rx="3" ry="4" />
+                      <path d="M11 12h2" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Referencia cadena (norma)</span>
+                </label>
+                <select id="cChainRef"></select>
+                <span class="hint">ISO 606 serie B y referencias ANSI habituales — <em>p</em> según catálogo</span>
+                <p class="lab-field-help">Elige el <strong>paso p</strong> y la designación de cadena; el valor de <em>p</em> fija el primitivo y la longitud en pasos.</p>
+              </div>
+              <div class="lab-field lab-field--wide lab-field--check">
+                <label class="lab-check">
+                  <input id="cManualPitch" type="checkbox" />
+                  <span>Usar paso <em>p</em> manual (ignora el desplegable)</span>
+                </label>
+                <p class="lab-field-help">Útil si su paso no está en el catálogo demo o quiere probar una hipótesis sin cambiar el desplegable.</p>
+              </div>
+              <div class="lab-field">
+                <label for="cPitch" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Paso de cadena">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M5 12h14" />
+                      <path d="M8 9v6M16 9v6" />
+                      <path d="M6 12h2M16 12h2" stroke-dasharray="1 2" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Paso p (mm)</span>
+                </label>
+                <input id="cPitch" type="number" step="0.001" min="4" value="19.05" disabled />
+                <span class="hint">Solo activo con la casilla anterior</span>
+                <p class="lab-field-help"><strong>Paso p</strong> (mm): distancia entre ejes de pasadores consecutivos; con <strong>z</strong> define <strong>D = p/sin(π/z)</strong>.</p>
+              </div>
+              <div class="lab-field">
+                <label for="cZ1" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Dientes piñón motor">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="3.2" />
+                      <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">z₁ (motor)</span>
+                </label>
+                <input id="cZ1" type="number" min="6" value="17" />
+                <p class="lab-field-help">Dientes del piñón motor. Valores bajos aumentan el <strong>efecto poligonal</strong> (irregularidad de velocidad); normas suelen recomendar mínimos según paso.</p>
+              </div>
+              <div class="lab-field">
+                <label for="cZ2" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Dientes piñón conducido">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="6" />
+                      <circle cx="12" cy="12" r="2.5" />
+                      <path d="M12 1.5v3M12 19.5v3" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">z₂</span>
+                </label>
+                <input id="cZ2" type="number" min="6" value="25" />
+                <p class="lab-field-help">Piñón conducido. Relación aproximada de rpm: <strong>n₂/n₁ ≈ z₁/z₂</strong> en el primitivo.</p>
+              </div>
+              <div class="lab-field">
+                <label for="cCenter" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Distancia entre centros">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="7" cy="12" r="3" />
+                      <circle cx="17" cy="12" r="3" />
+                      <path d="M10 12h4" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Centro C (mm)</span>
+                </label>
+                <input id="cCenter" type="number" min="50" value="450" />
+                <span class="hint">Se muestra también en m (SI)</span>
+                <p class="lab-field-help">Distancia entre centros de los piñones; con <strong>p</strong> y <strong>z</strong> determina la longitud de cadena en pasos (modelo de montaje centrado).</p>
+              </div>
+              <div class="lab-field">
+                <label for="cN1" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="RPM entrada">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="8" />
+                      <path d="M16 8l2-4M18 4l4 2" />
+                      <path d="M12 8v4l3 2" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Giro motor n₁ (RPM)</span>
+                </label>
+                <input id="cN1" type="number" min="0" value="1455" />
+                <span class="hint">v lineal, articulaciones/s y lubricación</span>
+                <p class="lab-field-help">RPM del eje motriz. La <strong>frecuencia de articulación</strong> en el piñón 1 es del orden de <strong>z₁·n₁/60</strong> Hz (cada paso articula).</p>
+              </div>
+            </div>
+          </div>
+          <div class="lab-calc-layout__out">
+            <div class="lab-units-bar" role="group" aria-label="Unidades de los resultados">
+              <span class="lab-units-bar__title">Cómo ver los resultados</span>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl">Distancias</span>
+                <select id="labUnitLength" class="lab-units-bar__select">
+                  <option value="mm">mm (taller)</option>
+                  <option value="cm">cm</option>
+                  <option value="m">m (SI)</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl">Giro</span>
+                <select id="labUnitRotation" class="lab-units-bar__select">
+                  <option value="rpm">RPM</option>
+                  <option value="rad_s">rad/s</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl">Velocidad lineal</span>
+                <select id="labUnitLinear" class="lab-units-bar__select">
+                  <option value="m_s">m/s</option>
+                  <option value="mm_s">mm/s</option>
+                  <option value="km_h">km/h</option>
+                </select>
+              </label>
+            </div>
+            <div id="cHero"></div>
+            <div class="lab-results-wrap" id="cResultsWrap">
+              <div class="lab-results-computing" aria-hidden="true">
+                <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
+                  <path
+                    fill="#0f766e"
+                    d="M32 8l2.2 4.4 4.9-1.3 1.3 4.9 4.4 2.2-2.2 4.4 1.3 4.9-4.9 1.3-2.2 4.4-4.4-2.2-4.9 1.3-1.3-4.9-4.4-2.2 2.2-4.4-1.3-4.9 4.9-1.3 4.4-2.2zm0 10a14 14 0 100 28 14 14 0 000-28z"
+                  />
+                </svg>
+                <span class="lab-results-computing__label">Recalculando</span>
+              </div>
+              <div class="lab-results" id="cResults"></div>
+            </div>
+            <div id="cAlerts" class="lab-alerts"></div>
+            <div id="cSubstitution"></div>
+            <div class="lab-results lab-results--note" id="cAssembly"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="js/ui/calcChainsPage.js"></script>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eje — Laboratorio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+  </head>
+  <body class="lab-body">
+    <header class="lab-header">
+      <a class="lab-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="transmission-lab.html">Laboratorio</a>
+        <a href="transmission-canvas.html">Lienzo técnico Pro</a>
+      </nav>
+    </header>
+    <main class="lab-main">
+      <section class="lab-panel">
+        <h2>Eje macizo · torsión pura</h2>
+        <p class="lab-lead">τ = 16T/(πd³). Elija τ<sub>adm</sub> según material y criterio (ductilidad, fatiga, norma). Resultado orientativo.</p>
+        <div class="lab-calc-layout lab-calc-layout--with-diag">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title">Vista esquemática · torsión</p>
+              <svg id="shDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de eje sometido a par"></svg>
+              <p class="lab-diagram-caption">Par <strong>T</strong> aplicado; diámetro calculado es orientativo (sin muescas ni fatiga detallada).</p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__inputs">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field">
+                <label for="shT" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Par torsor">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 12h10" />
+                      <path d="M14 12c2 0 4-1.5 4-4" />
+                      <path d="M17 5l2 3" />
+                      <circle cx="4" cy="12" r="2" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Par T (N·m)</span>
+                </label>
+                <input id="shT" type="number" min="0" step="any" value="480" />
+                <p class="lab-field-help">Par torsor de diseño que debe transmitir el eje (N·m). Entra en <strong>τ = 16T/(πd³)</strong> para sección circular maciza.</p>
+              </div>
+              <div class="lab-field">
+                <label for="shTau" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Tensión tangencial admisible">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M6 18L18 6" />
+                      <path d="M8 6h4v4" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">τ adm (MPa)</span>
+                </label>
+                <input id="shTau" type="number" min="1" value="40" />
+                <p class="lab-field-help">Tensión tangencial <strong>admisible</strong> (MPa) según material, coeficientes de seguridad y criterio (ductilidad, fatiga). Típicamente tabulada en normas o manuales.</p>
+              </div>
+            </div>
+          </div>
+          <div class="lab-calc-layout__out">
+            <div class="lab-units-bar" role="group" aria-label="Unidades de los resultados">
+              <span class="lab-units-bar__title">Cómo ver los resultados</span>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl">Distancias</span>
+                <select id="labUnitLength" class="lab-units-bar__select">
+                  <option value="mm">mm (taller)</option>
+                  <option value="cm">cm</option>
+                  <option value="m">m (SI)</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl">Giro</span>
+                <select id="labUnitRotation" class="lab-units-bar__select">
+                  <option value="rpm">RPM</option>
+                  <option value="rad_s">rad/s</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl">Velocidad lineal</span>
+                <select id="labUnitLinear" class="lab-units-bar__select">
+                  <option value="m_s">m/s</option>
+                  <option value="mm_s">mm/s</option>
+                  <option value="km_h">km/h</option>
+                </select>
+              </label>
+            </div>
+            <div id="shHero"></div>
+            <div class="lab-results-wrap" id="shResultsWrap">
+              <div class="lab-results-computing" aria-hidden="true">
+                <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
+                  <path
+                    fill="#0f766e"
+                    d="M32 8l2.2 4.4 4.9-1.3 1.3 4.9 4.4 2.2-2.2 4.4 1.3 4.9-4.9 1.3-2.2 4.4-4.4-2.2-4.9 1.3-1.3-4.9-4.4-2.2 2.2-4.4-1.3-4.9 4.9-1.3 4.4-2.2zm0 10a14 14 0 100 28 14 14 0 000-28z"
+                  />
+                </svg>
+                <span class="lab-results-computing__label">Recalculando</span>
+              </div>
+              <div class="lab-results" id="shResults"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="js/ui/calcShaftPage.js"></script>
+  </body>
+</html>

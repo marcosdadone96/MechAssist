@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Motorreductor · Inercia — Laboratorio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+  </head>
+  <body class="lab-body">
+    <header class="lab-header">
+      <a class="lab-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="transmission-lab.html">Laboratorio</a>
+        <a href="transmission-canvas.html">Lienzo técnico Pro</a>
+      </nav>
+    </header>
+    <main class="lab-main">
+      <section class="lab-panel lab-panel--accent">
+        <h2>Inercia de carga vs motor · catálogo SEW/Siemens (demo)</h2>
+        <p class="lab-lead">
+          <strong>J<sub>ext</sub></strong> reflejada al eje motor (kg·m²). Se valida <strong>J<sub>ext</sub>/J<sub>mot</sub></strong> frente al límite típico del fabricante y el
+          <strong>par motor</strong> frente al par resistente a régimen.
+        </p>
+        <div class="lab-calc-layout lab-calc-layout--with-diag">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated" style="margin-bottom: 0.85rem">
+              <p class="lab-diagram-wrap__title">Línea cinemática · J<sub>mot</sub> y J<sub>ext</sub> en el eje</p>
+              <svg id="gmLineDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Cadena motor acople carga"></svg>
+              <p class="lab-diagram-caption">Referencia para el criterio <strong>J<sub>ext</sub>/J<sub>mot</sub></strong>; el límite numérico depende del motor seleccionado.</p>
+            </div>
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title">Curva de par del catálogo vs par resistente</p>
+              <div class="lab-chart-wrap" style="margin: 0; border: none; padding: 0.25rem 0 0">
+                <svg id="gmChart" xmlns="http://www.w3.org/2000/svg" aria-label="Par motor vs par resistente"></svg>
+              </div>
+              <p class="lab-diagram-caption">
+                Línea <strong>verde</strong>: par disponible <strong>T<sub>m</sub>(n)</strong> del modelo; punto <strong>ámbar</strong>: su par de carga; línea vertical: régimen
+                de operación.
+              </p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__inputs">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field lab-field--wide">
+                <label for="gmMotor">Motor / tamaño (catálogo demo)</label>
+                <select id="gmMotor"></select>
+              </div>
+              <div class="lab-field">
+                <label for="gmJext">J carga reflejada (kg·m²)</label>
+                <input id="gmJext" type="number" min="0" step="any" value="0.008" />
+              </div>
+              <div class="lab-field">
+                <label for="gmN">Velocidad operación (min⁻¹)</label>
+                <input id="gmN" type="number" min="1" step="1" value="1455" />
+              </div>
+              <div class="lab-field lab-field--wide">
+                <label for="gmTload">Par resistente de carga (N·m)</label>
+                <input id="gmTload" type="number" min="0" step="any" value="12" />
+              </div>
+            </div>
+          </div>
+          <div class="lab-calc-layout__out">
+            <div id="gmOut"></div>
+            <div id="gmTable"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="js/ui/gearmotorInertiaPage.js"></script>
+  </body>
+</html>

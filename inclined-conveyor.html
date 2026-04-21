@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es" data-conveyor-tool="inclined">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cinta inclinada — DriveLab</title>
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body>
+    <div id="fileProtoWarn" class="runtime-error" hidden role="alert"></div>
+    <div id="runtimeError" class="runtime-error runtime-error--js" hidden role="alert"></div>
+    <script>
+      (function () {
+        if (location.protocol === 'file:') {
+          var el = document.getElementById('fileProtoWarn');
+          if (el) {
+            el.hidden = false;
+            el.textContent =
+              'Abra esta carpeta con un servidor local (p. ej. npx --yes serve .). Con file:// el navegador no ejecuta los módulos JS: no habrá diagramas ni resultados.';
+          }
+        }
+      })();
+    </script>
+    <header class="app-header">
+      <a class="app-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="flat-conveyor.html">Cinta plana</a>
+        <a href="inclined-conveyor.html">Cinta inclinada</a>
+        <a href="centrifugal-pump.html">Bomba</a>
+        <a href="screw-conveyor.html">Tornillo</a>
+      </nav>
+    </header>
+
+    <main class="app-main">
+      <section class="panel">
+        <h2><span class="panel-icon">⚙</span> Datos de entrada</h2>
+
+        <p class="form-lead">
+          Con <strong>L, desnivel (o ángulo), masa, v, D, μ, η y factor de servicio</strong> ya puede dimensionar de forma orientativa el motorreductor.
+          El resto (banda, repartos, arranque fino) es <strong>opcional</strong>: si no lo sabe, deje valores por defecto o <strong>0</strong> en masa de banda para ignorarla.
+        </p>
+
+        <details class="help-details">
+          <summary>Geometría y fuerzas (resumen)</summary>
+          <div class="help-details__body">
+            <ul>
+              <li><strong>L</strong>: longitud siguiendo la pendiente; <strong>H</strong>: desnivel. Si deja θ vacío, θ = arcsin(H/L).</li>
+              <li>Si rellena <strong>θ</strong>, tiene prioridad sobre H para el cálculo.</li>
+              <li>La resistencia combina peso en pendiente y rozamiento; de ahí salen P y T en el tambor.</li>
+              <li><strong>Norma</strong>: ISO/DIN o CEMA (+6 % solo sobre la tracción de régimen, no sobre el término de aceleración).</li>
+              <li><strong>Factor de servicio</strong>: lo fija el tipo de carga (uniforme / choque); use “Personalizado” si su norma da otro valor.</li>
+            </ul>
+          </div>
+        </details>
+
+        <h3 class="field-section-title">Norma y carga</h3>
+        <div class="field-grid field-grid--essential">
+          <div class="field">
+            <label for="incDesignStandard">Norma de referencia del cálculo</label>
+            <select id="incDesignStandard" name="incDesignStandard">
+              <option value="ISO5048" selected>ISO 5048 / DIN 22101 — enfoque analítico</option>
+              <option value="CEMA">CEMA — margen +6 % sobre tracción de régimen</option>
+            </select>
+            <span class="field-hint">Declaración de marco para informes; el simulador aplica la diferencia como factor documentado.</span>
+          </div>
+          <div class="field">
+            <label for="incLoadDuty">Tipo de carga → factor de servicio (AGMA / ISO orientativo)</label>
+            <select id="incLoadDuty" name="incLoadDuty">
+              <option value="uniform">Carga uniforme — SF ≈ 1,15</option>
+              <option value="moderate" selected>Choque moderado — SF ≈ 1,35</option>
+              <option value="heavy">Choque pesado — SF ≈ 1,75</option>
+              <option value="custom">Personalizado</option>
+            </select>
+            <p class="field-hint" id="incLoadDutyHint"></p>
+          </div>
+        </div>
+
+        <div id="incDesignAlerts" class="design-alerts" aria-live="polite"></div>
+
+        <h3 class="field-section-title">Datos esenciales</h3>
+        <div class="field-grid field-grid--essential">
+          <div class="field">
+            <label for="incLength">Longitud L (siguiendo pendiente)</label>
+            <input id="incLength" type="number" step="0.1" min="0.1" value="24" />
+            <span class="field-hint">m</span>
+          </div>
+          <div class="field">
+            <label for="incHeight">Desnivel H</label>
+            <input id="incHeight" type="number" step="0.01" min="0" value="4.5" />
+            <span class="field-hint">m — si θ está vacío → θ = arcsin(H/L)</span>
+          </div>
+          <div class="field">
+            <label for="incAngle">Ángulo θ (opcional)</label>
+            <input id="incAngle" type="number" step="0.1" min="0" max="89" value="" placeholder="auto" />
+            <span class="field-hint">° — si lo rellena, sustituye a H</span>
+          </div>
+          <div class="field">
+            <label for="incLoadMass">Masa m</label>
+            <input id="incLoadMass" type="number" step="1" min="0.1" value="900" />
+            <span class="field-hint">kg</span>
+          </div>
+          <div class="field">
+            <label for="incSpeed">Velocidad v</label>
+            <input id="incSpeed" type="number" step="0.01" min="0" value="1.0" />
+            <span class="field-hint">m/s</span>
+          </div>
+          <div class="field">
+            <label for="incRollerD">Diámetro tambor motriz D</label>
+            <input id="incRollerD" type="number" step="1" min="50" value="500" />
+            <span class="field-hint">mm</span>
+          </div>
+          <div class="field">
+            <label for="incFriction">Coeficiente μ</label>
+            <input id="incFriction" type="number" step="0.01" min="0" value="0.4" />
+            <span class="field-hint">equiv. banda–apoyo (subidas suelen ir algo más altas)</span>
+            <details class="friction-guide">
+              <summary>¿Qué μ poner? (inclinada)</summary>
+              <div class="friction-guide__body">
+                <p>
+                  En pendiente, un μ mal estimado cambia mucho el término <strong>μ·N</strong>. Si no tiene ensayo, use la parte alta del rango que crea razonable y
+                  revise con <strong>factor de servicio</strong>.
+                </p>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Situación</th>
+                      <th>μ orientativo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Banda y rodillos secos, buen alineado</td>
+                      <td>0,25 – 0,35</td>
+                    </tr>
+                    <tr>
+                      <td>Industrial habitual, algo de polvo</td>
+                      <td>0,35 – 0,45</td>
+                    </tr>
+                    <tr>
+                      <td>Húmedo, carga que tiende a patinar o acumular</td>
+                      <td>0,45 – 0,60</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="friction-presets" data-friction-preset-for="incFriction">
+                  <span class="friction-presets__label">Aplicar a μ:</span>
+                  <button type="button" class="friction-preset-btn" data-mu="0.30">0,30</button>
+                  <button type="button" class="friction-preset-btn" data-mu="0.35">0,35</button>
+                  <button type="button" class="friction-preset-btn" data-mu="0.40">0,40</button>
+                  <button type="button" class="friction-preset-btn" data-mu="0.45">0,45</button>
+                  <button type="button" class="friction-preset-btn" data-mu="0.55">0,55</button>
+                </div>
+              </div>
+            </details>
+          </div>
+          <div class="field">
+            <label for="incEfficiency">Rendimiento η (hasta el tambor)</label>
+            <input id="incEfficiency" type="number" step="1" min="1" max="150" value="86" />
+            <span class="field-hint">% — &gt;100 % es inválido; cálculo limita a 99 %</span>
+          </div>
+          <div class="field">
+            <label for="incServiceFactor">Factor de servicio aplicado</label>
+            <input id="incServiceFactor" type="number" step="0.05" min="1" max="4" value="1.35" readonly class="input-synced" />
+            <span class="field-hint">Ligado al tipo de carga; en “Personalizado” puede editar.</span>
+          </div>
+        </div>
+
+        <details class="adv-details">
+          <summary>Opciones avanzadas — banda, reparto de cargas, arranque, extras</summary>
+          <div class="adv-details__body">
+            <p class="adv-details__note">
+              Campos de refinamiento. Masa de banda 0 = no se considera el peso propio de la banda en el modelo.
+            </p>
+            <div class="field-grid">
+              <div class="field">
+                <label for="incBeltWidth">Ancho de banda B</label>
+                <input id="incBeltWidth" type="number" step="0.01" min="0.1" value="0.8" />
+                <span class="field-hint">m</span>
+              </div>
+              <div class="field">
+                <label for="incBeltMass">Masa de banda m_b</label>
+                <input id="incBeltMass" type="number" step="1" min="0" value="0" />
+                <span class="field-hint">kg — 0 si no la conoce</span>
+              </div>
+              <div class="field">
+                <label for="incLoadDistribution">Fracción carga f_dist</label>
+                <input id="incLoadDistribution" type="number" step="0.05" min="0.05" max="1" value="1" />
+                <span class="field-hint">1 = toda la masa activa</span>
+              </div>
+              <div class="field">
+                <label for="incBeltSlopePart">Banda en pendiente f_p</label>
+                <input id="incBeltSlopePart" type="number" step="0.05" min="0.3" max="1" value="0.9" />
+                <span class="field-hint">fracción de m_b en subida</span>
+              </div>
+              <div class="field">
+                <label for="incAdditionalResistance">Resistencia adicional</label>
+                <input id="incAdditionalResistance" type="number" step="1" min="0" value="0" />
+                <span class="field-hint">N</span>
+              </div>
+              <div class="field">
+                <label for="incAccelTime">Tiempo aceleración</label>
+                <input id="incAccelTime" type="number" step="0.1" min="0.05" value="3" />
+                <span class="field-hint">s</span>
+              </div>
+              <div class="field">
+                <label for="incInertiaFactor">Factor inercia k_in</label>
+                <input id="incInertiaFactor" type="number" step="0.05" min="1" max="2" value="1.2" />
+                <span class="field-hint">tambores / acoplamiento</span>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <div id="mountingConfigHost" class="mounting-config-host"></div>
+
+        <button type="button" class="btn-calc" id="btnCalcularInc" title="Actualiza diagrama, resultados y motorreductores">
+          Calcular y mostrar motorreductor
+        </button>
+        <p class="calc-hint">
+          Actualización automática al editar campos. Para módulos ES6 necesita un servidor HTTP en esta carpeta.
+        </p>
+      </section>
+
+      <div class="layout-right">
+        <section class="diagram-duo" aria-label="Esquema y referencia fotográfica">
+          <div class="diagram-duo__schematic">
+            <svg id="diagramInclined" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+          <figure class="diagram-duo__real">
+            <img
+              src="assets/conveyor-belt-reference.jpg"
+              alt="Cinta transportadora en instalación real"
+              width="1024"
+              height="768"
+              loading="lazy"
+              decoding="async"
+              onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/e/e8/Conveyor_belt_%282%29.jpg'"
+            />
+            <figcaption>
+              Referencia visual (ejemplo).
+              <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>
+              — o copie su foto como <code>assets/conveyor-belt-reference.jpg</code>.
+            </figcaption>
+          </figure>
+        </section>
+
+        <section class="panel">
+          <h2><span class="panel-icon">∑</span> Resultados finales</h2>
+          <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
+            Fuerzas en régimen y arranque; par de diseño con factor de servicio.
+          </p>
+          <div class="results-grid" id="incResultsGrid"></div>
+        </section>
+
+        <section class="panel">
+          <h2><span class="panel-icon">⌗</span> Desglose de ingeniería</h2>
+          <div id="incEngineeringReport" class="eng-report"></div>
+        </section>
+
+        <section class="panel" id="section-motores">
+          <details id="motoresRecommendations" class="motors-details">
+            <summary class="motors-details__summary">
+              <span class="motors-details__summary-main">
+                <span class="panel-icon">◎</span>
+                <span class="motors-details__text">
+                  <span class="motors-details__title">Motorreductores (SEW-Eurodrive, Siemens Simogear, Nord, Bonfiglioli, Motovario)</span>
+                  <span class="motors-details__hint">Plegado por defecto — pulse para ver recomendaciones, exportación y comprobador</span>
+                </span>
+              </span>
+            </summary>
+            <div class="motors-details__body">
+              <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
+              <div id="incMotorBlock"></div>
+
+              <div class="verify-panel motors-details__verify" id="incVerifyPanel">
+                <h2><span class="panel-icon">✓</span> Comprobar un motorreductor que ya tengo</h2>
+                <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
+                  Misma lógica que en cinta plana: comparación con el punto de trabajo calculado para <strong>esta</strong> inclinación.
+                </p>
+                <div class="verify-grid">
+                  <div class="field">
+                    <label for="incVerifyBrand">Marca</label>
+                    <select id="incVerifyBrand" data-verify-brand>
+                      <option value="sew">SEW-Eurodrive</option>
+                      <option value="siemens">Siemens (Simogear)</option>
+                      <option value="nord">Nord Drivesystems</option>
+                      <option value="bonfiglioli">Bonfiglioli</option>
+                      <option value="motovario">Motovario</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="incVerifySearch">Filtrar modelo</label>
+                    <input id="incVerifySearch" type="search" placeholder="ej. SK 3S…" data-verify-search autocomplete="off" />
+                  </div>
+                  <div class="field" style="grid-column: 1 / -1">
+                    <label for="incVerifyModel">Modelo del catálogo ejemplo</label>
+                    <select id="incVerifyModel" data-verify-model></select>
+                  </div>
+                </div>
+                <button type="button" data-verify-run style="margin-top: 1rem; width: 100%">Comprobar para esta máquina</button>
+                <div data-verify-out></div>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel">
+          <h2><span class="panel-icon">※</span> Hipótesis del modelo</h2>
+          <ul class="assumptions" id="incAssumptionsList"></ul>
+        </section>
+
+        <div id="incPremiumOptBlock"></div>
+      </div>
+    </main>
+
+    <script type="module" src="js/ui/conveyorAppEntry.js"></script>
+  </body>
+</html>

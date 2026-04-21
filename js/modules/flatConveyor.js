@@ -1,0 +1,333 @@
+/**
+ * Cinta plana horizontal — modelo detallado paso a paso.
+ *
+ * - Rozamiento separado: carga (N_load) y banda (rama superior + inferior en rodillos).
+ * - Régimen permanente + arranque: aceleración de masa transportada + banda; factor de inercia adicional.
+ * - Potencia mecánica en tambor y corrección por η hasta el eje de motor.
+ *
+ * Nota: pérdidas por flexión continua de banda, elevación en rodillos y deriva pueden añadirse como término F_adicional.
+ */
+
+import {
+  G,
+  motorPowerWithEfficiency,
+  parsePositive,
+  parseNonNegative,
+  clamp,
+} from '../utils/calculations.js';
+import { steadyForceStandardMultiplier, STANDARD_INFO } from './conveyorStandards.js';
+import { resolveServiceFactor } from './serviceFactorByDuty.js';
+
+/**
+ * @typedef {Object} CalcStep
+ * @property {string} id
+ * @property {string} title
+ * @property {string} formula
+ * @property {string} substitution
+ * @property {number} value
+ * @property {string} unit
+ * @property {string} meaning
+ */
+
+/**
+ * @typedef {Object} FlatConveyorInputs
+ * @property {number} beltLength_m
+ * @property {number} [beltWidth_m]
+ * @property {number} loadMass_kg
+ * @property {number} [beltMass_kg]
+ * @property {number} [loadDistribution] — 0–1 fracción de carga activa sobre rodillos (1 = plena)
+ * @property {number} [beltCarryFraction] — fracción de masa de banda en rama portante (resto en retorno)
+ * @property {number} [additionalResistance_N] — elevadores de rascadores, etc.
+ * @property {number} beltSpeed_m_s
+ * @property {number} [accelTime_s] — tiempo para alcanzar v desde parado
+ * @property {number} [inertiaStartingFactor] — ≥1 cubre inercia de poleas, acoplamiento (no solo M·a)
+ * @property {number} frictionCoeff
+ * @property {number} efficiency_pct — puede venir >100 (solo alerta); el cálculo clamp 1–99 %
+ * @property {number} rollerDiameter_mm
+ * @property {number} [serviceFactor] — si loadDuty es custom
+ * @property {import('./serviceFactorByDuty.js').LoadDutyClass} [loadDuty]
+ * @property {import('./conveyorStandards.js').ConveyorDesignStandard} [designStandard]
+ */
+
+/**
+ * @param {FlatConveyorInputs} raw
+ */
+export function computeFlatConveyor(raw) {
+  const beltLength_m = parsePositive(raw.beltLength_m, 1);
+  const beltWidth_m = parsePositive(raw.beltWidth_m ?? 0.65, 0.65);
+  const loadMass_kg = parsePositive(raw.loadMass_kg, 1);
+  const beltMass_kg = parseNonNegative(raw.beltMass_kg ?? 0, 0);
+  const loadDistribution = clamp(
+    Number.isFinite(raw.loadDistribution) ? raw.loadDistribution : 1,
+    0.05,
+    1,
+  );
+  const beltCarryFraction = clamp(
+    Number.isFinite(raw.beltCarryFraction) ? raw.beltCarryFraction : 0.5,
+    0.1,
+    0.9,
+  );
+  const additionalResistance_N = parseNonNegative(raw.additionalResistance_N ?? 0, 0);
+
+  const beltSpeed_m_s = parseNonNegative(raw.beltSpeed_m_s, 0.5);
+  const accelTime_s = Math.max(0.05, parsePositive(raw.accelTime_s ?? 3, 3));
+  const inertiaStartingFactor = Math.max(
+    1,
+    parsePositive(raw.inertiaStartingFactor ?? 1.15, 1.15),
+  );
+
+  const frictionCoeff = parseNonNegative(raw.frictionCoeff, 0.3);
+  const efficiency_pct_raw = parseEfficiencyRaw(raw.efficiency_pct);
+  const efficiency_pct = clampEfficiency(efficiency_pct_raw);
+  const rollerDiameter_mm = parsePositive(raw.rollerDiameter_mm, 400);
+  const designStandard = raw.designStandard === 'CEMA' ? 'CEMA' : 'ISO5048';
+  const loadDuty =
+    raw.loadDuty === 'uniform' ||
+    raw.loadDuty === 'moderate' ||
+    raw.loadDuty === 'heavy' ||
+    raw.loadDuty === 'custom'
+      ? raw.loadDuty
+      : 'moderate';
+  const serviceFactor = Math.max(
+    1,
+    resolveServiceFactor(loadDuty, raw.serviceFactor ?? 1.25),
+  );
+  const stdMult = steadyForceStandardMultiplier(designStandard);
+
+  const η = efficiency_pct / 100;
+  const drumDiameter_m = rollerDiameter_mm / 1000;
+  const R_m = drumDiameter_m / 2;
+
+  /** --- Paso: normales --- */
+  const N_load_N = loadMass_kg * G * loadDistribution;
+  const N_belt_carry_N = beltMass_kg * G * beltCarryFraction;
+  const N_belt_return_N = beltMass_kg * G * (1 - beltCarryFraction);
+
+  /** Rozamiento en rodillos (Coulomb) por cada aporte normal */
+  const F_friction_load_N = frictionCoeff * N_load_N;
+  const F_friction_belt_carry_N = frictionCoeff * N_belt_carry_N;
+  const F_friction_belt_return_N = frictionCoeff * N_belt_return_N;
+  const F_friction_belt_total_N = F_friction_belt_carry_N + F_friction_belt_return_N;
+
+  const F_steady_base_N =
+    F_friction_load_N + F_friction_belt_carry_N + F_friction_belt_return_N + additionalResistance_N;
+  const F_steady_N = F_steady_base_N * stdMult;
+
+  /** --- Arranque / aceleración --- */
+  const accel_m_s2 = beltSpeed_m_s > 0 ? beltSpeed_m_s / accelTime_s : 0;
+  const massTranslational_kg = loadMass_kg + beltMass_kg;
+  const F_accel_N = inertiaStartingFactor * massTranslational_kg * accel_m_s2;
+  const F_total_start_N = F_steady_N + F_accel_N;
+
+  /** Par en tambor (fuerza tangencial en la polea motriz = tracción de cálculo) */
+  const torqueRun_Nm = F_steady_N * R_m;
+  const torqueStart_Nm = F_total_start_N * R_m;
+  const torqueDesign_Nm = Math.max(torqueRun_Nm, torqueStart_Nm) * serviceFactor;
+
+  /** Potencia mecánica útil en el tambor */
+  const powerDrumRun_W = F_steady_N * beltSpeed_m_s;
+  const powerDrumStart_W = F_total_start_N * beltSpeed_m_s;
+  const powerMotorRun_W = motorPowerWithEfficiency(powerDrumRun_W, η);
+  const powerMotorStart_W = motorPowerWithEfficiency(powerDrumStart_W, η);
+  const powerMotor_kW = Math.max(powerMotorRun_W, powerMotorStart_W) / 1000;
+
+  const linearMassDensity = (loadMass_kg * loadDistribution) / beltLength_m;
+  const massFlow_kg_s = linearMassDensity * beltSpeed_m_s;
+
+  const drumRpm = beltSpeed_m_s > 0 && drumDiameter_m > 0 ? (beltSpeed_m_s / (Math.PI * drumDiameter_m)) * 60 : 0;
+
+  /** Pasos numerados para UI */
+  /** @type {CalcStep[]} */
+  const steps = [
+    {
+      id: 'N_load',
+      title: 'Fuerza normal debida a la carga sobre la banda',
+      formula: 'Normal = masa carga × gravedad × fracción activa',
+      substitution: `${loadMass_kg} kg × ${G.toFixed(5)} N/kg × ${loadDistribution}`,
+      value: N_load_N,
+      unit: 'N',
+      meaning:
+        'Reacción vertical de la carga sobre los rodillos; de ella depende parte del rozamiento.',
+    },
+    {
+      id: 'N_belt',
+      title: 'Normales por el peso propio de la banda (portante y retorno)',
+      formula: 'Suma de normales en rama superior e inferior',
+      substitution: `Masa banda ${beltMass_kg} kg · fracción portante ${beltCarryFraction}`,
+      value: N_belt_carry_N + N_belt_return_N,
+      unit: 'N',
+      meaning:
+        'El peso de la banda se reparte entre las dos ramas; cada una aporta rozamiento en sus rodillos.',
+    },
+    {
+      id: 'F_mu_load',
+      title: 'Rozamiento asociado a la carga',
+      formula: 'Rozamiento carga = μ × normal carga',
+      substitution: `μ = ${frictionCoeff} · normal = ${N_load_N.toFixed(1)} N`,
+      value: F_friction_load_N,
+      unit: 'N',
+      meaning: 'Fuerza tangencial para vencer el roce entre carga, banda y rodillos en zona cargada.',
+    },
+    {
+      id: 'F_mu_belt',
+      title: 'Rozamiento asociado al peso de la banda',
+      formula: 'Rozamiento banda = μ × (normales banda)',
+      substitution: `μ = ${frictionCoeff} · peso banda ≈ ${(beltMass_kg * G).toFixed(1)} N`,
+      value: F_friction_belt_total_N,
+      unit: 'N',
+      meaning:
+        'Contribución del peso propio de la banda; en bandas pesadas no conviene ignorarla.',
+    },
+    {
+      id: 'F_add',
+      title: 'Otras resistencias (rascadores, guías, etc.)',
+      formula: 'Valor introducido por el usuario',
+      substitution: `${additionalResistance_N.toFixed(1)} N`,
+      value: additionalResistance_N,
+      unit: 'N',
+      meaning: 'Suma de efectos que no están en el μ equivalente.',
+    },
+    {
+      id: 'F_steady',
+      title: 'Fuerza total en régimen (velocidad constante)',
+      formula:
+        stdMult > 1
+          ? 'Régimen = (roz. carga + roz. banda + otras) × factor marco normativo'
+          : 'Régimen = roz. carga + roz. banda + otras resistencias',
+      substitution:
+        stdMult > 1
+          ? `${F_steady_base_N.toFixed(1)} N base × ${stdMult.toFixed(2)} (${designStandard})`
+          : `${F_friction_load_N.toFixed(1)} + ${F_friction_belt_total_N.toFixed(1)} + ${additionalResistance_N.toFixed(1)} N`,
+      value: F_steady_N,
+      unit: 'N',
+      meaning: 'Tracción de equilibrio en el tambor sin acelerar la masa.',
+    },
+    {
+      id: 'F_accel',
+      title: 'Fuerza extra para acelerar cinta y carga',
+      formula: 'Aceleración = factor inercia × masa × (velocidad / tiempo de arranque)',
+      substitution: `Factor ${inertiaStartingFactor} · masa ${massTranslational_kg} kg · acel. ${accel_m_s2.toFixed(4)} m/s²`,
+      value: F_accel_N,
+      unit: 'N',
+      meaning:
+        'El factor de inercia incluye de forma simplificada tambores, acoplamientos y masas rotativas.',
+    },
+    {
+      id: 'F_start',
+      title: 'Fuerza de pico en el arranque',
+      formula: 'Arranque = régimen + aceleración',
+      substitution: `${F_steady_N.toFixed(1)} + ${F_accel_N.toFixed(1)} N`,
+      value: F_total_start_N,
+      unit: 'N',
+      meaning: 'Cota máxima de tracción durante la puesta en marcha; gobierna el par pico.',
+    },
+    {
+      id: 'torque',
+      title: 'Par de diseño en el tambor motriz',
+      formula: 'Par = fuerza × radio tambor × factor de servicio (el mayor entre régimen y arranque)',
+      substitution: `Diámetro ${drumDiameter_m.toFixed(3)} m (${rollerDiameter_mm} mm) · servicio ×${serviceFactor}`,
+      value: torqueDesign_Nm,
+      unit: 'N·m',
+      meaning:
+        'Par mecánico en el eje del tambor con márgenes de servicio sobre el peor caso régimen/arranque.',
+    },
+    {
+      id: 'power',
+      title: 'Potencia en el eje del motor (tras rendimiento η)',
+      formula: 'Potencia motor = (fuerza × velocidad) / η',
+      substitution: `η global = ${(η * 100).toFixed(1)} %`,
+      value: powerMotor_kW,
+      unit: 'kW',
+      meaning:
+        'η resume motor, reductor, acoplamiento y transmisión hasta el tambor según lo que haya introducido.',
+    },
+  ];
+
+  const pctLoad = F_steady_N > 0 ? (100 * F_friction_load_N) / F_steady_N : 0;
+  const pctBelt = F_steady_N > 0 ? (100 * F_friction_belt_total_N) / F_steady_N : 0;
+
+  const explanations = [
+    `En régimen, aproximadamente ${pctLoad.toFixed(0)} % del rozamiento viene de la carga y ${pctBelt.toFixed(0)} % de la banda (más resistencias adicionales si las hay).`,
+    torqueStart_Nm > torqueRun_Nm * 1.05
+      ? 'El arranque exige más par que el régimen: revise térmica del motor y tiempo de arranque.'
+      : 'Con estos datos el régimen marca el par antes que el arranque.',
+    beltMass_kg < 1e-6
+      ? 'Sin masa de banda, solo se modela rozamiento de carga; en planta real añada el peso de banda en avanzado.'
+      : `Masa de banda ${beltMass_kg} kg considerada en normales y en la masa a acelerar.`,
+    `Ancho B = ${beltWidth_m.toFixed(2)} m queda registrado; el μ actual no usa B (se puede ampliar el modelo).`,
+  ];
+
+  const assumptions = [
+    `${STANDARD_INFO[designStandard].shortLabel}: ${STANDARD_INFO[designStandard].description}`,
+    stdMult > 1
+      ? `Margen normativo aplicado sobre tracción de régimen: ×${stdMult.toFixed(2)} (solo tracción de equilibrio; la parte de aceleración no se escala).`
+      : 'Sin factor empírico global adicional sobre la tracción de régimen (μ y resistencias según datos introducidos).',
+    'Transporte horizontal: no hay componente de peso a lo largo de la cinta.',
+    'Rozamiento tipo Coulomb: proporcional a la normal en cada rama; no sustituye un cálculo DIN 22101 o CEMA completo.',
+    'La tracción se aplica en el tambor motriz; no se calcula la adherencia por Euler entre ramas.',
+    `Caudal másico ≈ (masa carga × fracción activa / longitud L) × velocidad, con L = ${beltLength_m.toFixed(2)} m.`,
+    `Factor de servicio aplicado: ${serviceFactor.toFixed(2)} (${loadDuty === 'custom' ? 'valor manual' : 'según tipo de carga seleccionado'}).`,
+  ];
+
+  return {
+    designStandard,
+    loadDuty,
+    efficiency_pct_raw,
+    efficiency_pct_effective: efficiency_pct,
+    steadyStandardMultiplier: stdMult,
+    beltLength_m,
+    beltWidth_m,
+    loadMass_kg,
+    beltMass_kg,
+    loadDistribution,
+    beltCarryFraction,
+    drumDiameter_m,
+    drumRpm,
+    massFlow_kg_s,
+    /** Legacy / diagrama: fuerza de régimen y normal “equivalente” carga */
+    normalForce_N: N_load_N,
+    frictionForce_N: F_steady_N,
+    effectiveTension_N: F_steady_N,
+    powerAtDrum_W: powerDrumRun_W,
+    requiredMotorPower_W: Math.max(powerMotorRun_W, powerMotorStart_W),
+    requiredMotorPower_kW: powerMotor_kW,
+    torqueAtDrum_Nm: torqueRun_Nm,
+    torqueStart_Nm,
+    torqueWithService_Nm: torqueDesign_Nm,
+    serviceFactorUsed: serviceFactor,
+    assumptions,
+    steps,
+    explanations,
+    detail: {
+      N_load_N,
+      N_belt_carry_N,
+      N_belt_return_N,
+      F_friction_load_N,
+      F_friction_belt_carry_N,
+      F_friction_belt_return_N,
+      F_friction_belt_total_N,
+      additionalResistance_N,
+      F_steady_N,
+      accel_m_s2,
+      F_accel_N,
+      F_total_start_N,
+      powerDrumRun_W,
+      powerDrumStart_W,
+      powerMotorRun_W,
+      powerMotorStart_W,
+      accelTime_s,
+      inertiaStartingFactor,
+    },
+  };
+}
+
+function clampEfficiency(pct) {
+  const p = parsePositive(pct, 85);
+  return Math.min(99, Math.max(1, p));
+}
+
+function parseEfficiencyRaw(v) {
+  const n = typeof v === 'number' ? v : parseFloat(String(v ?? '').replace(',', '.'));
+  if (!Number.isFinite(n)) return 88;
+  return n;
+}

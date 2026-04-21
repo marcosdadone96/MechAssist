@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acoplamientos — Catálogo — Laboratorio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+  </head>
+  <body class="lab-body">
+    <header class="lab-header">
+      <a class="lab-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="transmission-lab.html">Laboratorio</a>
+        <a href="transmission-canvas.html">Lienzo técnico Pro</a>
+      </nav>
+    </header>
+    <main class="lab-main">
+      <section class="lab-panel lab-panel--accent">
+        <h2>Acoplamientos industriales · selección por catálogo</h2>
+        <p class="lab-lead">
+          Introduzca <strong>potencia</strong> y <strong>rpm</strong>; el par de diseño es <code>T = P/ω</code> con factor de servicio <strong>K</strong>. El sistema contrasta
+          <strong>T<sub>nom</sub></strong> del modelo elegido (datos demostrativos tipo Lovejoy / KTR / Flender).
+        </p>
+        <div class="lab-calc-layout lab-calc-layout--with-diag">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title">Conjunto · bridas, elemento elástico y transmisión de par</p>
+              <svg id="cpDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de acoplamiento flexible"></svg>
+              <p class="lab-diagram-caption">
+                Esquema didáctico <strong>tipo mandíbula</strong>: el par <strong>T</strong> se transmite a través del elastómero; en catálogo compare siempre
+                <strong>T<sub>diseño</sub> ≤ T<sub>nom</sub></strong>.
+              </p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__inputs">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field">
+                <label for="cpPower">Potencia (kW)</label>
+                <input id="cpPower" type="number" min="0" step="any" value="7.5" />
+              </div>
+              <div class="lab-field">
+                <label for="cpRpm">Velocidad (min⁻¹)</label>
+                <input id="cpRpm" type="number" min="1" step="any" value="1455" />
+              </div>
+              <div class="lab-field">
+                <label for="cpK">Factor de servicio K</label>
+                <input id="cpK" type="number" min="1" step="0.05" value="1.5" />
+              </div>
+              <div class="lab-field">
+                <label for="cpBrand">Fabricante / familia</label>
+                <select id="cpBrand"></select>
+              </div>
+              <div class="lab-field lab-field--wide">
+                <label for="cpSeries">Modelo (serie)</label>
+                <select id="cpSeries"></select>
+              </div>
+            </div>
+          </div>
+          <div class="lab-calc-layout__out">
+            <div id="cpOut"></div>
+            <div id="cpTable"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="js/ui/couplingsPage.js"></script>
+  </body>
+</html>

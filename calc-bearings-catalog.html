@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rodamientos SKF/FAG · Catálogo — Laboratorio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+  </head>
+  <body class="lab-body">
+    <header class="lab-header">
+      <a class="lab-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="transmission-lab.html">Laboratorio</a>
+        <a href="calc-bearings.html">L10 genérico</a>
+      </nav>
+    </header>
+    <main class="lab-main">
+      <section class="lab-panel lab-panel--accent">
+        <h2>Rodamientos rígidos de bolas · series 6000 / 6200 / 6300 (catálogo demo)</h2>
+        <p class="lab-lead">
+          Elija <strong>serie</strong> y <strong>designación</strong>; introduzca carga equivalente <strong>P</strong> y velocidad <strong>n</strong>. Se calcula
+          <strong>L<sub>10h</sub></strong> con <code>L = (C/P)³</code> (bolas). Compare con las horas objetivo.
+        </p>
+        <div class="lab-calc-layout lab-calc-layout--with-diag">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title">Sección · aros, bolas y surco (proporcional a d, D, B)</p>
+              <svg id="bcDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama rodamiento rígido de bolas"></svg>
+              <p class="lab-diagram-caption">
+                Geometría <strong>esquemática</strong> al tamaño nominal del renglón elegido; <strong>C</strong> y vida <strong>L<sub>10h</sub></strong> provienen del
+                formulario y de ISO 281 simplificada.
+              </p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__inputs">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field">
+                <label for="bcSeries">Serie</label>
+                <select id="bcSeries"></select>
+              </div>
+              <div class="lab-field lab-field--wide">
+                <label for="bcBearing">Designación (C de catálogo demo)</label>
+                <select id="bcBearing"></select>
+              </div>
+              <div class="lab-field">
+                <label for="bcP">P equivalente (N)</label>
+                <input id="bcP" type="number" min="1" step="1" value="3200" />
+              </div>
+              <div class="lab-field">
+                <label for="bcN">n trabajo (min⁻¹)</label>
+                <input id="bcN" type="number" min="1" step="1" value="1455" />
+              </div>
+              <div class="lab-field lab-field--wide">
+                <label for="bcLreq">Horas L₁₀ requeridas (h)</label>
+                <input id="bcLreq" type="number" min="100" step="100" value="20000" />
+              </div>
+            </div>
+          </div>
+          <div class="lab-calc-layout__out">
+            <div id="bcOut"></div>
+            <div id="bcTable"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="js/ui/bearingCatalogPage.js"></script>
+  </body>
+</html>

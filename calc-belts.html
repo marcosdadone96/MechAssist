@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Correas — Laboratorio · DriveLab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+  </head>
+  <body class="lab-body">
+    <header class="lab-header">
+      <a class="lab-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="transmission-lab.html">Laboratorio</a>
+        <a href="transmission-canvas.html">Lienzo técnico Pro</a>
+      </nav>
+    </header>
+    <main class="lab-main">
+      <section class="lab-panel lab-panel--accent">
+        <h2>Transmisión por correa · cinemática y régimen de velocidad</h2>
+        <p class="lab-lead">
+          Seleccione el <strong>tipo de correa</strong>; la interfaz adapta entradas y modelos: <strong>V</strong> (perfil ISO 4184 + deslizamiento 1–3&nbsp;%),
+          <strong>síncrona</strong> (dientes Z y paso p, sin patín cinemático), <strong>plana</strong> y <strong>Poly-V</strong> (énfasis en <strong>v</strong> y arco de abrazamiento).
+          Longitud primitiva en <strong>tramo abierto</strong> y veredicto de seguridad por <strong>velocidad lineal</strong> en el primitivo motriz.
+        </p>
+        <div class="lab-calc-layout lab-calc-layout--with-diag">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title">Esquema dinámico · escala según primitivos</p>
+              <svg id="bDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de poleas y correa"></svg>
+              <p class="lab-diagram-caption">
+                En el diagrama: <strong>izquierda = polea 1 motriz (d₁, n₁)</strong>, <strong>derecha = polea 2 conducida (d₂)</strong>. Círculo teal discontinuo = <strong>primitivo</strong>. Correa síncrona: dientes esquemáticos.
+              </p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__inputs">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field lab-field--wide">
+                <label for="bBeltType" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Familia de correa">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <ellipse cx="12" cy="12" rx="9" ry="4" />
+                      <path d="M3 12h18" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Tipo de correa</span>
+                </label>
+                <select id="bBeltType">
+                  <option value="v_trapezoidal">Trapezoidal (V) · ISO 4184</option>
+                  <option value="synchronous">Síncrona (dentada)</option>
+                  <option value="flat">Plana</option>
+                  <option value="poly_v">Estriada (Poly-V) · ISO 9982</option>
+                </select>
+                <p class="lab-field-help">
+                  Cada tipo condiciona entradas (diámetro vs dientes), deslizamiento y criterios de <strong>v</strong> y abrazamiento. La selección de sección definitiva sigue en catálogo.
+                </p>
+              </div>
+
+              <div class="lab-field" data-belt-show="v_trapezoidal">
+                <label for="bVProfile" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Perfil V">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M8 18l4-12 4 12M9 14h6" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Perfil trapezoidal</span>
+                </label>
+                <select id="bVProfile"></select>
+                <p class="lab-field-help">Referencia documental; el cálculo usa primitivos y deslizamiento. Número de correas y longitud de cotas en norma / fabricante.</p>
+              </div>
+
+              <div class="lab-field" data-belt-show="poly_v">
+                <label for="bPolyProfile" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Sección Poly-V">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 16h16M6 16l2-8h8l2 8" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Perfil Poly-V</span>
+                </label>
+                <select id="bPolyProfile"></select>
+                <p class="lab-field-help">Identificación de sección; primitivos siguen siendo los de referencia en ranura (introducidos como diámetros).</p>
+              </div>
+
+              <div class="lab-field" data-belt-show="synchronous">
+                <label for="bSyncPitch" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Paso de correa dentada">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 12h2l1-3 2 6 2-6 1 3h8" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Paso p (perfil / catálogo)</span>
+                </label>
+                <select id="bSyncPitch"></select>
+                <p class="lab-field-help">Paso lineal <strong>p</strong> en mm entre dientes homólogos. Diámetro primitivo: <strong>D = p·Z / π</strong>.</p>
+              </div>
+
+              <div class="lab-field" data-belt-show="synchronous">
+                <label for="bZ1" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Dientes polea motriz">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="7" />
+                      <path d="M12 5v3M12 16v3M5 12h3M16 12h3" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Z₁ · dientes (motriz)</span>
+                </label>
+                <input id="bZ1" type="number" min="6" value="20" />
+                <p class="lab-field-help">Número de dientes en la polea motriz; sin deslizamiento: <strong>n₂ = n₁ · Z₁ / Z₂</strong>.</p>
+              </div>
+
+              <div class="lab-field" data-belt-show="synchronous">
+                <label for="bZ2" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Dientes polea conducida">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M12 3v4M12 17v4M3 12h4M17 12h4" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Z₂ · dientes (conducida)</span>
+                </label>
+                <input id="bZ2" type="number" min="6" value="40" />
+                <p class="lab-field-help">Dientes polea conducida. Relación de transmisión cinemática <strong>i ≈ Z₂ / Z₁</strong> (reductor si Z₂ &gt; Z₁).</p>
+              </div>
+
+              <div class="lab-field" data-belt-show="v_trapezoidal,flat,poly_v">
+                <label for="bD1" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Primitivo motriz">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="7" />
+                      <path d="M5 12h14" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">d₁ primitivo (mm) · motriz</span>
+                </label>
+                <input id="bD1" type="number" min="10" value="125" />
+                <p class="lab-field-help">Diámetro <strong>primitivo</strong> en la polea motriz. Velocidad de correa: <strong>v = π d₁ n₁ / 60&nbsp;000</strong> m/s (d₁ en mm).</p>
+              </div>
+
+              <div class="lab-field" data-belt-show="v_trapezoidal,flat,poly_v">
+                <label for="bD2" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Primitivo conducida">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M3 12h18" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">d₂ primitivo (mm) · conducida</span>
+                </label>
+                <input id="bD2" type="number" min="10" value="280" />
+                <p class="lab-field-help">Primitivo polea conducida. Relación teórica de giro <strong>n₂,teo = n₁ · d₁ / d₂</strong> antes de deslizamiento (si aplica).</p>
+              </div>
+
+              <div class="lab-field">
+                <label for="bC" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Distancia entre centros">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="7" cy="12" r="3" />
+                      <circle cx="17" cy="12" r="3" />
+                      <path d="M10 12h4" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Centro C (mm)</span>
+                </label>
+                <input id="bC" type="number" min="50" value="520" />
+                <p class="lab-field-help">Distancia entre ejes. Define longitud primitiva <strong>L</strong> y ángulos de abrazamiento β₁, β₂ (planas y Poly-V: capacidad y fatiga).</p>
+              </div>
+
+              <div class="lab-field">
+                <label for="bN1" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="RPM motor">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="8" />
+                      <path d="M16 8l2-4M18 4l4 2" />
+                      <path d="M12 8v4l3 2" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">n₁ · RPM (motriz)</span>
+                </label>
+                <input id="bN1" type="number" min="0" value="1455" />
+                <span class="hint">0 = omitir n₂ y v</span>
+                <p class="lab-field-help">Velocidad angular polea 1: <strong>ω₁ = 2π n₁ / 60</strong> rad/s.</p>
+              </div>
+
+              <div class="lab-field">
+                <label for="bPowerKw" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Potencia (Advisor)">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Potencia transmitida (kW) — opcional</span>
+                </label>
+                <input id="bPowerKw" type="number" min="0" step="any" placeholder="p. ej. 5,5" />
+                <p class="lab-field-help">Solo para el <strong>IA Advisor</strong>: estima pérdidas orientativas al comparar tipos de correa. No afecta a la cinemática mostrada.</p>
+              </div>
+
+              <div class="lab-field lab-field--wide" data-belt-show="v_trapezoidal,flat,poly_v">
+                <label for="bSlip" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Deslizamiento">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 16h6l2-8h8" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Deslizamiento s (%)</span>
+                </label>
+                <input id="bSlip" type="number" step="0.1" min="0" max="15" value="2" />
+                <span class="hint">V: típ. 1–3 · plana/Poly-V: menor</span>
+                <p class="lab-field-help">Modelo simplificado en conducida: <strong>n₂,real ≈ n₂,teo · (1 − s)</strong>. Correa síncrona: sin deslizamiento cinemático (no editar).</p>
+              </div>
+            </div>
+          </div>
+          <div class="lab-calc-layout__out">
+            <div class="lab-units-bar" role="group" aria-label="Unidades de los resultados">
+              <span class="lab-units-bar__title">Cómo ver los resultados</span>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl">Distancias</span>
+                <select id="labUnitLength" class="lab-units-bar__select">
+                  <option value="mm">mm (taller)</option>
+                  <option value="cm">cm</option>
+                  <option value="m">m (SI)</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl">Giro</span>
+                <select id="labUnitRotation" class="lab-units-bar__select">
+                  <option value="rpm">RPM</option>
+                  <option value="rad_s">rad/s</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl">Velocidad lineal</span>
+                <select id="labUnitLinear" class="lab-units-bar__select">
+                  <option value="m_s">m/s</option>
+                  <option value="mm_s">mm/s</option>
+                  <option value="km_h">km/h</option>
+                </select>
+              </label>
+            </div>
+            <div id="bHero"></div>
+            <div id="bSpeedVerdict" class="lab-belt-speed-verdict-wrap" aria-live="polite"></div>
+            <div class="lab-results-wrap" id="bResultsWrap">
+              <div class="lab-results-computing" aria-hidden="true">
+                <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
+                  <path
+                    fill="#0f766e"
+                    d="M32 8l2.2 4.4 4.9-1.3 1.3 4.9 4.4 2.2-2.2 4.4 1.3 4.9-4.9 1.3-2.2 4.4-4.4-2.2-4.9 1.3-1.3-4.9-4.4-2.2 2.2-4.4-1.3-4.9 4.9-1.3 4.4-2.2zm0 10a14 14 0 100 28 14 14 0 000-28z"
+                  />
+                </svg>
+                <span class="lab-results-computing__label">Recalculando</span>
+              </div>
+              <div class="lab-results" id="bResults"></div>
+            </div>
+            <div id="bAlerts" class="lab-alerts"></div>
+            <div id="bSubstitution"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="js/ui/calcBeltsPage.js"></script>
+  </body>
+</html>

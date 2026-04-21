@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tornillería ISO 898-1 — Laboratorio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+  </head>
+  <body class="lab-body">
+    <header class="lab-header">
+      <a class="lab-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="transmission-lab.html">Laboratorio</a>
+        <a href="transmission-canvas.html">Lienzo técnico Pro</a>
+      </nav>
+    </header>
+    <main class="lab-main">
+      <section class="lab-panel lab-panel--accent">
+        <h2>Tornillería · ISO 898-1 (M6–M36)</h2>
+        <p class="lab-lead">
+          Grados <strong>8.8 · 10.9 · 12.9</strong>. Precarga y par de apriete <strong>orientativos</strong> (estilo datos de montaje). La fuerza introducida es la
+          <strong>tracción de cálculo</strong> que debe soportar el tornillo (simplificado).
+        </p>
+        <div class="lab-calc-layout lab-calc-layout--with-diag">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title">Unión pretensada · platinas, tornillo y fuerza axial F</p>
+              <svg id="blDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama unión atornillada"></svg>
+              <p class="lab-diagram-caption">
+                El <strong>diámetro nominal</strong> del menú escala el vástago en el dibujo. Compare <strong>F</strong> con la resistencia de cálculo y el
+                <strong>par de apriete</strong> recomendado.
+              </p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__inputs">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field">
+                <label for="blD">Diámetro</label>
+                <select id="blD"></select>
+              </div>
+              <div class="lab-field">
+                <label for="blGrade">Grado</label>
+                <select id="blGrade"></select>
+              </div>
+              <div class="lab-field lab-field--wide">
+                <label for="blF">Fuerza tracción de cálculo (kN)</label>
+                <input id="blF" type="number" min="0" step="any" value="42" />
+              </div>
+            </div>
+          </div>
+          <div class="lab-calc-layout__out">
+            <div id="blOut"></div>
+            <div id="blTable"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="js/ui/boltsIsoPage.js"></script>
+  </body>
+</html>

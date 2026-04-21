@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es" data-conveyor-tool="flat">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cinta plana — DriveLab</title>
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body>
+    <div id="fileProtoWarn" class="runtime-error" hidden role="alert"></div>
+    <div id="runtimeError" class="runtime-error runtime-error--js" hidden role="alert"></div>
+    <script>
+      (function () {
+        if (location.protocol === 'file:') {
+          var el = document.getElementById('fileProtoWarn');
+          if (el) {
+            el.hidden = false;
+            el.textContent =
+              'Esta página debe abrirse con un servidor HTTP (no con doble clic). En la carpeta del proyecto ejecute: npx --yes serve . y use la URL que muestre (p. ej. http://localhost:3000). Sin eso, el navegador bloquea el JavaScript y no verá diagramas ni resultados.';
+          }
+        }
+      })();
+    </script>
+    <header class="app-header">
+      <a class="app-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="flat-conveyor.html">Cinta plana</a>
+        <a href="inclined-conveyor.html">Cinta inclinada</a>
+        <a href="centrifugal-pump.html">Bomba</a>
+        <a href="screw-conveyor.html">Tornillo</a>
+      </nav>
+    </header>
+
+    <main class="app-main">
+      <section class="panel">
+        <h2><span class="panel-icon">⚙</span> Datos de entrada</h2>
+
+        <p class="form-lead">
+          Para orientar un <strong>motorreductor</strong> bastan los datos del recuadro principal: obtendrá par, potencia y velocidad de giro del tambor.
+          <strong>No es obligatorio</strong> rellenar banda, distribuciones ni arranque: si no los conoce, déjelos en los valores por defecto o en
+          <strong>0</strong> (p. ej. masa de banda 0 = se ignora el peso propio). Abra <em>Opciones avanzadas</em> solo para afinar el modelo.
+        </p>
+
+        <details class="help-details">
+          <summary>Guía rápida de cada magnitud</summary>
+          <div class="help-details__body">
+            <ul>
+              <li><strong>L</strong>: longitud de tramo con carga (sirve para documentar caudal másico = (m/L)·v).</li>
+              <li><strong>m</strong>: masa apoyada en la banda en condición nominal.</li>
+              <li><strong>v, D, μ, η</strong>: velocidad, diámetro del tambor motriz, rozamiento equivalente y rendimiento motor→tambor.</li>
+              <li><strong>Norma</strong>: ISO/DIN (analítico) o CEMA (+6 % sobre tracción de régimen, documentado).</li>
+              <li><strong>Tipo de carga</strong>: fija el factor de servicio (AGMA/ISO orientativo); “Personalizado” abre el número.</li>
+              <li><strong>η</strong>: si supera 100 %, el programa avisa y limita el cálculo a 99 %.</li>
+            </ul>
+          </div>
+        </details>
+
+        <h3 class="field-section-title">Norma y carga (afectan al modelo)</h3>
+        <div class="field-grid field-grid--essential">
+          <div class="field">
+            <label for="designStandard">Norma de referencia del cálculo</label>
+            <select id="designStandard" name="designStandard">
+              <option value="ISO5048" selected>ISO 5048 / DIN 22101 — enfoque analítico (predeterminado)</option>
+              <option value="CEMA">CEMA — margen práctico +6 % sobre tracción de régimen</option>
+            </select>
+            <span class="field-hint">Elige el marco declarado en informes; CEMA aplica un factor empírico documentado, no el manual CEMA completo.</span>
+          </div>
+          <div class="field">
+            <label for="loadDuty">Tipo de carga → factor de servicio (orientación AGMA / ISO)</label>
+            <select id="loadDuty" name="loadDuty">
+              <option value="uniform">Carga uniforme — SF ≈ 1,15</option>
+              <option value="moderate" selected>Choque moderado — SF ≈ 1,35</option>
+              <option value="heavy">Choque pesado — SF ≈ 1,75</option>
+              <option value="custom">Personalizado (editar número abajo)</option>
+            </select>
+            <p class="field-hint" id="loadDutyHint"></p>
+          </div>
+        </div>
+
+        <div id="designAlerts" class="design-alerts" aria-live="polite"></div>
+
+        <h3 class="field-section-title">Datos esenciales</h3>
+        <div class="field-grid field-grid--essential">
+          <div class="field">
+            <label for="beltLength"
+              >Longitud L <span class="info-chip" title="Tramo con carga; documenta caudal másico">i</span></label
+            >
+            <input id="beltLength" type="number" step="0.1" min="0.1" value="30" />
+            <span class="field-hint">m</span>
+          </div>
+          <div class="field">
+            <label for="loadMass">Masa de carga m</label>
+            <input id="loadMass" type="number" step="1" min="0.1" value="800" />
+            <span class="field-hint">kg</span>
+          </div>
+          <div class="field">
+            <label for="beltSpeed">Velocidad v</label>
+            <input id="beltSpeed" type="number" step="0.01" min="0" value="1.25" />
+            <span class="field-hint">m/s</span>
+          </div>
+          <div class="field">
+            <label for="rollerD">Diámetro tambor motriz D</label>
+            <input id="rollerD" type="number" step="1" min="50" value="500" />
+            <span class="field-hint">mm → par T = F·D/2</span>
+          </div>
+          <div class="field">
+            <label for="friction">Coeficiente μ</label>
+            <input id="friction" type="number" step="0.01" min="0" value="0.35" />
+            <span class="field-hint">rozamiento equivalente banda–rodillos / apoyo</span>
+            <details class="friction-guide">
+              <summary>¿Qué μ poner? (orientación)</summary>
+              <div class="friction-guide__body">
+                <p>
+                  μ aquí es un <strong>coeficiente global orientativo</strong>: resume roce en rodillos, flexión de banda y material. Si duda, elija un valor
+                  <strong>algo más alto</strong> que su mejor estimación (dimensiona más conservador = más potencia).
+                </p>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Situación típica</th>
+                      <th>μ orientativo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Rodillos libres, banda goma seca, buen mantenimiento</td>
+                      <td>0,22 – 0,30</td>
+                    </tr>
+                    <tr>
+                      <td>Uso general industrial (polvo ligero, rodillos estándar)</td>
+                      <td>0,30 – 0,40</td>
+                    </tr>
+                    <tr>
+                      <td>Húmedo, barro, o mantenimiento irregular</td>
+                      <td>0,40 – 0,55</td>
+                    </tr>
+                    <tr>
+                      <td>Material muy pegajoso o arrastre elevado (prudencia)</td>
+                      <td>≥ 0,50 (validar en planta)</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="friction-presets" data-friction-preset-for="friction">
+                  <span class="friction-presets__label">Aplicar a μ:</span>
+                  <button type="button" class="friction-preset-btn" data-mu="0.25">0,25</button>
+                  <button type="button" class="friction-preset-btn" data-mu="0.30">0,30</button>
+                  <button type="button" class="friction-preset-btn" data-mu="0.35">0,35</button>
+                  <button type="button" class="friction-preset-btn" data-mu="0.40">0,40</button>
+                  <button type="button" class="friction-preset-btn" data-mu="0.50">0,50</button>
+                </div>
+              </div>
+            </details>
+          </div>
+          <div class="field">
+            <label for="efficiency">Rendimiento η (transmisión hasta el tambor)</label>
+            <input id="efficiency" type="number" step="1" min="1" max="150" value="88" />
+            <span class="field-hint">% — valores &gt;100 % son inválidos (se mostrará alerta); el cálculo usa máx. 99 %</span>
+          </div>
+          <div class="field">
+            <label for="serviceFactor">Factor de servicio aplicado</label>
+            <input id="serviceFactor" type="number" step="0.05" min="1" max="4" value="1.35" readonly class="input-synced" />
+            <span class="field-hint">Se ajusta según “tipo de carga”; en “Personalizado” puede editarlo.</span>
+          </div>
+        </div>
+
+        <details class="adv-details">
+          <summary>Opciones avanzadas — banda, reparto de cargas, arranque, extras</summary>
+          <div class="adv-details__body">
+            <p class="adv-details__note">
+              Si no dispone de estos datos, no pasa nada: el programa usa lo que ve en cada campo (p. ej. masa de banda 0 omite su peso).
+            </p>
+            <div class="field-grid">
+              <div class="field">
+                <label for="beltWidth">Ancho de banda B</label>
+                <input id="beltWidth" type="number" step="0.01" min="0.1" value="0.8" />
+                <span class="field-hint">m — referencia de proyecto</span>
+              </div>
+              <div class="field">
+                <label for="beltMass">Masa de banda m_b</label>
+                <input id="beltMass" type="number" step="1" min="0" value="0" />
+                <span class="field-hint">kg — 0 si no la conoce (se ignora)</span>
+              </div>
+              <div class="field">
+                <label for="loadDistribution">Fracción carga activa f_dist</label>
+                <input id="loadDistribution" type="number" step="0.05" min="0.05" max="1" value="1" />
+                <span class="field-hint">1 = toda la masa sobre rodillos</span>
+              </div>
+              <div class="field">
+                <label for="beltCarryFraction">Banda en rama portante</label>
+                <input id="beltCarryFraction" type="number" step="0.05" min="0.1" max="0.9" value="0.5" />
+                <span class="field-hint">resto en retorno</span>
+              </div>
+              <div class="field">
+                <label for="additionalResistance">Resistencia adicional F_ad</label>
+                <input id="additionalResistance" type="number" step="1" min="0" value="0" />
+                <span class="field-hint">N — rascadores, guías…</span>
+              </div>
+              <div class="field">
+                <label for="accelTime">Tiempo de aceleración t_ac</label>
+                <input id="accelTime" type="number" step="0.1" min="0.05" value="3" />
+                <span class="field-hint">s — de 0 a v</span>
+              </div>
+              <div class="field">
+                <label for="inertiaFactor">Factor inercia k_in</label>
+                <input id="inertiaFactor" type="number" step="0.05" min="1" max="2" value="1.15" />
+                <span class="field-hint">tambores, acoplamiento…</span>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <div id="mountingConfigHost" class="mounting-config-host"></div>
+
+        <button type="button" class="btn-calc" id="btnCalcular" title="Actualiza diagrama, resultados y motorreductores">
+          Calcular y mostrar motorreductor
+        </button>
+        <p class="calc-hint">
+          Los valores también se actualizan al cambiar cualquier campo. Si no ve recomendaciones, use esta carpeta con un
+          <strong>servidor local</strong> (no abra el HTML directamente con doble clic).
+        </p>
+      </section>
+
+      <div class="layout-right">
+        <section class="diagram-duo" aria-label="Esquema y referencia fotográfica">
+          <div class="diagram-duo__schematic">
+            <svg id="diagramFlat" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+          <figure class="diagram-duo__real">
+            <img
+              src="assets/conveyor-belt-reference.jpg"
+              alt="Instalación real de cinta transportadora con banda y estructura"
+              width="1024"
+              height="768"
+              loading="lazy"
+              decoding="async"
+              onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/e/e8/Conveyor_belt_%282%29.jpg'"
+            />
+            <figcaption>
+              Referencia: cinta en obra / planta (ejemplo).
+              <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>
+              — sustituya por su propia foto en <code>assets/conveyor-belt-reference.jpg</code> si lo desea.
+            </figcaption>
+          </figure>
+        </section>
+
+        <section class="panel">
+          <h2><span class="panel-icon">∑</span> Resultados finales (tambor y motor)</h2>
+          <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
+            Régimen y arranque; par de diseño incluye el mayor de ambos y factor de servicio.
+          </p>
+          <div class="results-grid" id="resultsGrid"></div>
+        </section>
+
+        <section class="panel">
+          <h2><span class="panel-icon">⌗</span> Desglose de ingeniería</h2>
+          <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
+            Cálculos intermedios, reductor, tres estrategias de motor y razonamiento.
+          </p>
+          <div id="engineeringReport" class="eng-report"></div>
+        </section>
+
+        <section class="panel" id="section-motores">
+          <details id="motoresRecommendations" class="motors-details">
+            <summary class="motors-details__summary">
+              <span class="motors-details__summary-main">
+                <span class="panel-icon">◎</span>
+                <span class="motors-details__text">
+                  <span class="motors-details__title">Motorreductores (SEW-Eurodrive, Siemens Simogear, Nord, Bonfiglioli, Motovario)</span>
+                  <span class="motors-details__hint">Plegado por defecto — pulse para ver recomendaciones, exportación y comprobador</span>
+                </span>
+              </span>
+            </summary>
+            <div class="motors-details__body">
+              <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
+              <div id="motorBlock"></div>
+
+              <div class="verify-panel motors-details__verify" id="verifyPanel">
+                <h2><span class="panel-icon">✓</span> Comprobar un motorreductor que ya tengo</h2>
+                <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
+                  Elija marca y modelo del <strong>catálogo de ejemplo</strong> (ampliable en código o por API). El programa compara potencia de motor, par de salida y velocidad de giro (min⁻¹) con lo que exige su máquina.
+                </p>
+                <div class="verify-grid">
+                  <div class="field">
+                    <label for="verifyBrand">Marca</label>
+                    <select id="verifyBrand" data-verify-brand>
+                      <option value="sew">SEW-Eurodrive</option>
+                      <option value="siemens">Siemens (Simogear)</option>
+                      <option value="nord">Nord Drivesystems</option>
+                      <option value="bonfiglioli">Bonfiglioli</option>
+                      <option value="motovario">Motovario</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="verifySearch">Filtrar modelo (texto)</label>
+                    <input id="verifySearch" type="search" placeholder="ej. R47, H 083…" data-verify-search autocomplete="off" />
+                  </div>
+                  <div class="field" style="grid-column: 1 / -1">
+                    <label for="verifyModel">Modelo del catálogo ejemplo</label>
+                    <select id="verifyModel" data-verify-model size="1"></select>
+                  </div>
+                </div>
+                <button type="button" data-verify-run style="margin-top: 1rem; width: 100%">Comprobar para esta máquina</button>
+                <div data-verify-out></div>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel">
+          <h2><span class="panel-icon">※</span> Hipótesis del modelo</h2>
+          <ul class="assumptions" id="assumptionsList"></ul>
+        </section>
+
+        <div id="premiumOptBlock"></div>
+      </div>
+    </main>
+
+    <script type="module" src="js/ui/conveyorAppEntry.js"></script>
+  </body>
+</html>

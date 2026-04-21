@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chavetas DIN 6885 — Laboratorio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+  </head>
+  <body class="lab-body">
+    <header class="lab-header">
+      <a class="lab-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="transmission-lab.html">Laboratorio</a>
+        <a href="transmission-canvas.html">Lienzo técnico Pro</a>
+      </nav>
+    </header>
+    <main class="lab-main">
+      <section class="lab-panel lab-panel--accent">
+        <h2>Chavetas paralelas · normalización DIN 6885-1 (extracto)</h2>
+        <p class="lab-lead">
+          Según el <strong>diámetro de eje</strong> se muestran <strong>b</strong> y <strong>h</strong> comerciales. Compruebe <strong>aplastamiento</strong> con el par y la longitud
+          <strong>L</strong> (mm); material C45 o inox con tensión admisible orientativa.
+        </p>
+        <div class="lab-calc-layout lab-calc-layout--with-diag">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title">Corte del eje · ranura t₁ · chaveta b × h · longitud L</p>
+              <svg id="kyDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama chaveta y eje"></svg>
+              <p class="lab-diagram-caption">
+                Las cotas del dibujo se <strong>escalan con su entrada</strong>; la ranura y la chaveta siguen las proporciones <strong>b, h, t₁</strong> de la fila DIN del
+                diámetro elegido.
+              </p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__inputs">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field">
+                <label for="kyD">Diámetro eje d (mm)</label>
+                <input id="kyD" type="number" min="6" step="0.1" value="32" />
+              </div>
+              <div class="lab-field">
+                <label for="kyT">Par |T| (N·m)</label>
+                <input id="kyT" type="number" min="0" step="any" value="180" />
+              </div>
+              <div class="lab-field">
+                <label for="kyL">Longitud chaveta L (mm)</label>
+                <input id="kyL" type="number" min="1" step="1" value="50" placeholder="vacío = sugerido" />
+              </div>
+              <div class="lab-field">
+                <label for="kyMat">Material (σ adm. orientativa)</label>
+                <select id="kyMat">
+                  <option value="c45">Acero C45</option>
+                  <option value="inox">Inox (AISI 304 aprox.)</option>
+                </select>
+              </div>
+            </div>
+            <div class="lab-panel" style="margin-top: 1rem; padding: 0.85rem 1rem; background: #f8fafc">
+              <p style="margin: 0; font-size: 0.82rem">
+                <strong>Dimensiones norma (tabla):</strong> b = <span id="kyB">—</span> mm · h = <span id="kyH">—</span> mm · t₁ (eje) =
+                <span id="kyT1">—</span> mm · t₂ (cubo) = <span id="kyT2">—</span> mm
+              </p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__out">
+            <div id="kyOut"></div>
+            <div id="kyTable"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="js/ui/keysDinPage.js"></script>
+  </body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Elevador de coches (husillo) — DriveLab</title>
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body>
+    <div id="fileProtoWarn" class="runtime-error" hidden role="alert"></div>
+    <div id="runtimeError" class="runtime-error runtime-error--js" hidden role="alert"></div>
+    <script>
+      (function () {
+        if (location.protocol === 'file:') {
+          var el = document.getElementById('fileProtoWarn');
+          if (el) {
+            el.hidden = false;
+            el.textContent =
+              'Abra con servidor HTTP (npx --yes serve .) para ver el módulo completo sin bloqueos del navegador.';
+          }
+        }
+      })();
+    </script>
+
+    <header class="app-header">
+      <a class="app-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="flat-conveyor.html">Cinta plana</a>
+        <a href="inclined-conveyor.html">Cinta inclinada</a>
+        <a href="bucket-elevator.html">Elevador cangilones</a>
+        <a href="traction-elevator.html">Ascensor tracción</a>
+        <a href="car-lift-screw.html" aria-current="page">Elevador coches</a>
+        <a href="screw-conveyor.html">Tornillo</a>
+        <a href="centrifugal-pump.html">Bomba</a>
+      </nav>
+    </header>
+
+    <main class="app-main">
+      <section class="panel">
+        <h2><span class="panel-icon">⛭</span> Elevador de coches mecánico (2 columnas · husillo)</h2>
+        <p class="form-lead">
+          Cálculo orientativo de <strong>par de elevación</strong> y <strong>potencia</strong> según geometría del husillo (paso y Ø),
+          verificación de <strong>presión de contacto</strong> en tuerca de bronce y condición de <strong>autofrenado</strong> (λ &lt; φ).
+          Incluye <strong>recomendaciones de motorreductor</strong> igual que en el resto de máquinas.
+        </p>
+
+        <h3 class="field-section-title">Datos esenciales</h3>
+        <div class="field-grid field-grid--essential">
+          <div class="field">
+            <label for="clCapacity">Capacidad de carga</label>
+            <input id="clCapacity" type="number" step="50" min="0" value="3500" />
+            <span class="field-hint">kg (total vehículo)</span>
+          </div>
+          <div class="field">
+            <label for="clH">Altura de elevación</label>
+            <input id="clH" type="number" step="0.05" min="0.2" value="1.8" />
+            <span class="field-hint">m</span>
+          </div>
+          <div class="field">
+            <label for="clT">Tiempo de elevación deseado</label>
+            <input id="clT" type="number" step="1" min="5" value="45" />
+            <span class="field-hint">s</span>
+          </div>
+          <div class="field">
+            <label for="clPitch">Paso del tornillo (lead)</label>
+            <input id="clPitch" type="number" step="0.5" min="1" value="8" />
+            <span class="field-hint">mm (1 entrada por defecto)</span>
+          </div>
+          <div class="field">
+            <label for="clD">Diámetro del husillo</label>
+            <input id="clD" type="number" step="1" min="10" value="45" />
+            <span class="field-hint">mm</span>
+          </div>
+          <div class="field">
+            <label for="clMotorPos">Motor</label>
+            <select id="clMotorPos">
+              <option value="top" selected>En la parte superior</option>
+              <option value="base">En la base</option>
+            </select>
+          </div>
+        </div>
+
+        <h3 class="field-section-title">Tuerca y rozamiento</h3>
+        <div class="field-grid field-grid--essential">
+          <div class="field">
+            <label for="clNutL">Longitud efectiva de tuerca (bronce)</label>
+            <input id="clNutL" type="number" step="5" min="10" value="90" />
+            <span class="field-hint">mm (zona portante aprox.)</span>
+          </div>
+          <div class="field">
+            <label for="clMu">Rozamiento rosca μ (acero–bronce)</label>
+            <input id="clMu" type="number" step="0.01" min="0.03" max="0.25" value="0.12" />
+            <span class="field-hint">depende de lubricación/estado</span>
+          </div>
+          <div class="field">
+            <label for="clPallow">Presión admisible (bronce, orient.)</label>
+            <input id="clPallow" type="number" step="0.5" min="4" max="25" value="10" />
+            <span class="field-hint">MPa</span>
+          </div>
+          <div class="field">
+            <label for="clSF">Factor de servicio para motorreductor</label>
+            <input id="clSF" type="number" step="0.05" min="1" max="2.2" value="1.35" />
+            <span class="field-hint">margen dinámico</span>
+          </div>
+        </div>
+
+        <div id="mountingConfigHost" class="mounting-config-host"></div>
+
+        <button type="button" class="btn-calc" id="btnCarLiftCalc">Calcular y mostrar motorreductor</button>
+        <p class="calc-hint">Actualización en vivo al cambiar campos. Servidor HTTP recomendado.</p>
+      </section>
+
+      <div class="layout-right">
+        <section class="panel be-diag-panel">
+          <h2><span class="panel-icon">◇</span> Esquema de columna</h2>
+          <div class="be-diag-wrap">
+            <svg id="clDiagram" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama elevador por husillo"></svg>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2><span class="panel-icon">∑</span> Resultados</h2>
+          <div class="results-grid" id="clResults"></div>
+          <div id="clVerdicts" class="design-alerts" style="margin-top: 1rem"></div>
+          <p id="clDisclaimer" class="muted" style="margin-top: 0.75rem; font-size: 0.82rem"></p>
+        </section>
+
+        <section class="panel" id="section-car-motores">
+          <details id="motoresRecommendations" class="motors-details">
+            <summary class="motors-details__summary">
+              <span class="motors-details__summary-main">
+                <span class="panel-icon">◎</span>
+                <span class="motors-details__text">
+                  <span class="motors-details__title">Motorreductores (catálogo ejemplo)</span>
+                  <span class="motors-details__hint">Plegado por defecto — pulse para ver recomendaciones y comprobador</span>
+                </span>
+              </span>
+            </summary>
+            <div class="motors-details__body">
+              <div id="carLiftMotorBlock"></div>
+              <div class="verify-panel motors-details__verify" id="carLiftVerifyPanel">
+                <h2><span class="panel-icon">✓</span> Comprobar motorreductor</h2>
+                <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
+                  Compare potencia, par y rpm con el punto calculado en el husillo (salida del reductor).
+                </p>
+                <div class="verify-grid">
+                  <div class="field">
+                    <label for="carLiftVerifyBrand">Marca</label>
+                    <select id="carLiftVerifyBrand" data-verify-brand>
+                      <option value="sew">SEW-Eurodrive</option>
+                      <option value="siemens">Siemens (Simogear)</option>
+                      <option value="nord">Nord Drivesystems</option>
+                      <option value="bonfiglioli">Bonfiglioli</option>
+                      <option value="motovario">Motovario</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="carLiftVerifySearch">Filtrar modelo</label>
+                    <input id="carLiftVerifySearch" type="search" data-verify-search autocomplete="off" />
+                  </div>
+                  <div class="field" style="grid-column: 1 / -1">
+                    <label for="carLiftVerifyModel">Modelo</label>
+                    <select id="carLiftVerifyModel" data-verify-model size="1"></select>
+                  </div>
+                </div>
+                <button type="button" data-verify-run style="margin-top: 1rem; width: 100%">Comprobar para este elevador</button>
+                <div data-verify-out></div>
+              </div>
+            </div>
+          </details>
+        </section>
+      </div>
+    </main>
+
+    <script type="module" src="js/ui/carLiftScrewAppEntry.js"></script>
+  </body>
+</html>
+

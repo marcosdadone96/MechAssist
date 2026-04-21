@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Engranajes — Laboratorio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+  </head>
+  <body class="lab-body">
+    <header class="lab-header">
+      <a class="lab-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="transmission-lab.html">Laboratorio</a>
+        <a href="transmission-canvas.html">Lienzo técnico Pro</a>
+      </nav>
+    </header>
+    <main class="lab-main">
+      <section class="lab-panel lab-panel--accent">
+        <h2>Engranajes cilíndricos rectos · diseño y cinemática</h2>
+        <p class="lab-lead">
+          Geometría estándar exterior: <strong>a = m(z₁+z₂)/2</strong>, ha = m, hf = 1,25m. Cinemática en el <strong>primitivo</strong>.
+          La comprobación de resistencia sigue un <strong>modelo simplificado inspirado en AGMA 2001</strong> (Lewis + contacto aproximado) — no sustituye el método completo ni datos certificados del material.
+        </p>
+        <div class="lab-calc-layout lab-calc-layout--with-diag">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title">Vista esquemática · se actualiza al cambiar los datos</p>
+              <svg id="gDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de engranajes"></svg>
+              <p class="lab-diagram-caption">Círculo discontinuo: primitivo. Cotas <strong>a</strong>, <strong>z</strong> y módulo orientativos; no sustituye plano de taller.</p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__inputs">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field">
+                <label for="gZ1" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Número de dientes piñón">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="3.2" />
+                      <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">z₁ (motor) · dientes</span>
+                </label>
+                <input id="gZ1" type="number" min="6" value="20" />
+                <p class="lab-field-help">Número de dientes del piñón motor. Con el módulo define el primitivo <strong>d₁ = m·z₁</strong> (mm): más dientes implican mayor diámetro a igual m.</p>
+              </div>
+              <div class="lab-field">
+                <label for="gZ2" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Dientes rueda">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="6" />
+                      <circle cx="12" cy="12" r="2.5" />
+                      <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">z₂ · dientes</span>
+                </label>
+                <input id="gZ2" type="number" min="6" value="45" />
+                <p class="lab-field-help">Dientes del engranaje conducido. La relación de reducción en el primitivo es aproximadamente <strong>z₂/z₁</strong> (salida más lenta si z₂ &gt; z₁).</p>
+              </div>
+              <div class="lab-field">
+                <label for="gM" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Módulo normal">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 18h16M7 18V9M12 18V6M17 18v-5" />
+                      <path d="M5 9l2-2M10 6l2-2M15 11l2-2" stroke-dasharray="1.5 2" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Módulo m (mm)</span>
+                </label>
+                <input id="gM" type="number" step="0.01" min="0.2" value="2.5" />
+                <p class="lab-field-help"><strong>Módulo m</strong> (mm): tamaño del diente; paso circular en primitivo p = πm. Mayor m → dientes más altos y engranajes más robustos (a igual z).</p>
+              </div>
+              <div class="lab-field">
+                <label for="gFace" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Ancho de cara">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="5" y="8" width="14" height="8" rx="1" />
+                      <path d="M8 8V6M16 8V6M8 16v2M16 16v2" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Ancho de cara b (mm)</span>
+                </label>
+                <input id="gFace" type="number" step="0.1" min="1" value="28" />
+                <p class="lab-field-help"><strong>Ancho de cara b</strong>: longitud axial de contacto entre flancos; entra en la resistencia a flexión (área que reparte la carga).</p>
+              </div>
+              <div class="lab-field">
+                <label for="gAlpha" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Ángulo de presión">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M5 18h12" />
+                      <path d="M5 18L15 8" />
+                      <path d="M9 18a8 8 0 0110-8" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Presión α (°)</span>
+                </label>
+                <input id="gAlpha" type="number" step="0.1" value="20" />
+                <p class="lab-field-help"><strong>Ángulo de presión α</strong>: ángulo entre la línea de acción y la tangente al primitivo; en engranajes estándar suele ser <strong>20°</strong>. Define la forma del diente y el reparto de fuerzas.</p>
+              </div>
+              <div class="lab-field">
+                <label for="gN1" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Velocidad de giro entrada">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="8" />
+                      <path d="M16 8l2-4M18 4l4 2" />
+                      <path d="M12 8v4l3 2" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Giro entrada n₁ (RPM)</span>
+                </label>
+                <input id="gN1" type="number" min="0" value="1455" />
+                <span class="hint">0 = omitir n₂, ω y v_p</span>
+                <p class="lab-field-help">Revoluciones por minuto del piñón. Cinemática: <strong>n₂ = n₁·z₁/z₂</strong>. La velocidad periférica usa <strong>v = π d n / 60 000</strong> (d en mm → m/s).</p>
+              </div>
+              <div class="lab-field">
+                <label for="gLube" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Tipo de lubricación">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 3c-3 4-6 7-6 11a6 6 0 1012 0c0-4-3-7-6-11z" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Lubricación (límite v_p)</span>
+                </label>
+                <select id="gLube">
+                  <option value="grease">Grasa</option>
+                  <option value="oil" selected>Aceite (baño / salpicadura)</option>
+                </select>
+                <p class="lab-field-help">La app compara <strong>v en el primitivo</strong> con límites orientativos según grasa (más bajo) u aceite; confirme con fabricante y servicio.</p>
+              </div>
+              <div class="lab-field">
+                <label for="gPower" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Potencia en el piñón">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Potencia en piñón P (kW) — opcional</span>
+                </label>
+                <input id="gPower" type="number" step="0.01" min="0" placeholder="p.ej. 4.5" />
+                <span class="hint">Con P y n₁ se estima T para AGMA simplificado</span>
+                <p class="lab-field-help">Potencia transmitida en el eje del <strong>piñón</strong>. Si rellena <strong>T</strong>, ese valor tiene prioridad; P sirve para tensión tangencial y comparativa de motor.</p>
+              </div>
+              <div class="lab-field">
+                <label for="gTorque" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Par torsor en el piñón">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 12h10" />
+                      <path d="M14 12c2 0 4-1.5 4-4" />
+                      <path d="M17 5l2 3" />
+                      <circle cx="4" cy="12" r="2" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Par en piñón T (N·m) — opcional</span>
+                </label>
+                <input id="gTorque" type="number" step="0.1" min="0" placeholder="prioridad sobre P" />
+                <p class="lab-field-help">Par en el piñón (N·m). Con n₁ permite obtener P = T·ω; con d₁ da la carga tangencial <strong>Fₜ ≈ T/(d₁/2)</strong> para el chequeo simplificado.</p>
+              </div>
+            </div>
+          </div>
+          <div class="lab-calc-layout__out">
+            <div class="lab-units-bar" role="group" aria-label="Unidades de los resultados">
+              <span class="lab-units-bar__title">Cómo ver los resultados</span>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl">Distancias</span>
+                <select id="labUnitLength" class="lab-units-bar__select">
+                  <option value="mm">mm (taller)</option>
+                  <option value="cm">cm</option>
+                  <option value="m">m (SI)</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl">Giro</span>
+                <select id="labUnitRotation" class="lab-units-bar__select">
+                  <option value="rpm">RPM</option>
+                  <option value="rad_s">rad/s</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl">Velocidad lineal</span>
+                <select id="labUnitLinear" class="lab-units-bar__select">
+                  <option value="m_s">m/s</option>
+                  <option value="mm_s">mm/s</option>
+                  <option value="km_h">km/h</option>
+                </select>
+              </label>
+            </div>
+            <div id="gHero"></div>
+            <div id="gMotorCompare"></div>
+            <div class="lab-results-wrap" id="gResultsWrap">
+              <div class="lab-results-computing" aria-hidden="true">
+                <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
+                  <path
+                    fill="#0f766e"
+                    d="M32 8l2.2 4.4 4.9-1.3 1.3 4.9 4.4 2.2-2.2 4.4 1.3 4.9-4.9 1.3-2.2 4.4-4.4-2.2-4.9 1.3-1.3-4.9-4.4-2.2 2.2-4.4-1.3-4.9 4.9-1.3 4.4-2.2zm0 10a14 14 0 100 28 14 14 0 000-28z"
+                  />
+                </svg>
+                <span class="lab-results-computing__label">Recalculando</span>
+              </div>
+              <div class="lab-results" id="gResults"></div>
+            </div>
+            <div id="gAlerts" class="lab-alerts"></div>
+            <div id="gSubstitution"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="js/ui/calcGearsPage.js"></script>
+  </body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es" data-tool="pump">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bomba centrífuga — DriveLab</title>
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body>
+    <div id="fileProtoWarn" class="runtime-error" hidden role="alert"></div>
+    <div id="runtimeError" class="runtime-error runtime-error--js" hidden role="alert"></div>
+    <script>
+      (function () {
+        if (location.protocol === 'file:') {
+          var el = document.getElementById('fileProtoWarn');
+          if (el) {
+            el.hidden = false;
+            el.textContent =
+              'Esta página debe abrirse con un servidor HTTP (no con doble clic). En la carpeta del proyecto ejecute: npx --yes serve .';
+          }
+        }
+      })();
+    </script>
+    <header class="app-header">
+      <a class="app-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="flat-conveyor.html">Cinta plana</a>
+        <a href="inclined-conveyor.html">Cinta inclinada</a>
+        <a href="centrifugal-pump.html" aria-current="page">Bomba</a>
+        <a href="screw-conveyor.html">Tornillo</a>
+      </nav>
+    </header>
+
+    <main class="app-main">
+      <section class="panel">
+        <h2><span class="panel-icon">◉</span> Bomba centrífuga — punto de trabajo</h2>
+        <p class="form-lead">
+          Introduzca el <strong>punto (Q, H)</strong> y el <strong>rendimiento η</strong> de la bomba en ese punto (catálogo o ensayo). El programa obtiene la
+          <strong>potencia hidráulica</strong>, la <strong>potencia en el eje</strong> y el <strong>par</strong> para orientar un motor o motorreductor (misma lógica que en cintas: SEW, Nord, etc.).
+        </p>
+
+        <h3 class="field-section-title">1. Parámetros de operación</h3>
+        <div class="field-grid field-grid--essential">
+          <div class="field">
+            <label for="pumpFlow">Caudal Q</label>
+            <input id="pumpFlow" type="number" step="any" min="0.001" value="48" />
+          </div>
+          <div class="field">
+            <label for="pumpFlowUnit">Unidad de caudal</label>
+            <select id="pumpFlowUnit" name="pumpFlowUnit">
+              <option value="m3h" selected>m³/h</option>
+              <option value="lmin">L/min</option>
+            </select>
+            <span class="field-hint">Se convierte a m³/s en el cálculo.</span>
+          </div>
+          <div class="field">
+            <label for="pumpHead">Altura manométrica total H</label>
+            <input id="pumpHead" type="number" step="0.1" min="0.1" value="38" />
+            <span class="field-hint">m de columna de fluido (geodésica + pérdidas ya integradas en su criterio).</span>
+          </div>
+          <div class="field">
+            <label for="pumpEta">Eficiencia de la bomba η</label>
+            <input id="pumpEta" type="number" step="0.1" min="1" max="99" value="74" />
+            <span class="field-hint">% en el punto (Q, H); típ. ~60–85 según máquina.</span>
+          </div>
+        </div>
+
+        <h3 class="field-section-title">2. Propiedades del fluido</h3>
+        <div class="field-grid field-grid--essential">
+          <div class="field">
+            <label for="fluidType">Tipo de fluido</label>
+            <select id="fluidType" name="fluidType">
+              <option value="water" selected>Agua</option>
+              <option value="oil">Aceite</option>
+              <option value="brine">Salmuera</option>
+              <option value="slurry">Lodos / pulpa</option>
+            </select>
+            <span class="field-hint">Ajusta densidad y viscosidad por defecto; puede editarlas abajo.</span>
+          </div>
+          <div class="field">
+            <label for="rho">Densidad ρ</label>
+            <input id="rho" type="number" step="1" min="400" value="1000" />
+            <span class="field-hint">kg/m³</span>
+          </div>
+          <div class="field">
+            <label for="viscosity">Viscosidad cinemática</label>
+            <input id="viscosity" type="number" step="0.1" min="0.1" value="1" />
+            <span class="field-hint">mm²/s (cSt). Influye en corrección orientativa de potencia.</span>
+          </div>
+          <div class="field">
+            <label for="tempC">Temperatura de trabajo</label>
+            <input id="tempC" type="number" step="0.5" value="25" />
+            <span class="field-hint">°C — documentación y riesgo NPSH (avisos con datos Pro en succión).</span>
+          </div>
+        </div>
+
+        <h3 class="field-section-title">
+          <span class="premium-flag">Pro</span>3. Configuración de la instalación
+        </h3>
+        <div id="proInstallWrap" class="pro-install-wrap pro-install-wrap--locked">
+          <p id="proInstallTeaser" class="pro-install-teaser">
+            Active el plan <strong>Pro</strong> para introducir succión, tubería y horario; así obtendrá <strong>avisos de instalación</strong> y un
+            <strong>factor de servicio</strong> más realista en servicio continuo.
+            <a href="?pro=1">Probar Pro (?pro=1)</a>
+          </p>
+          <div id="proInstallFields" class="field-grid field-grid--essential">
+            <div class="field">
+              <label for="suctionKpa">Presión manométrica en succión</label>
+              <input id="suctionKpa" type="number" step="0.5" value="0" />
+              <span class="field-hint">kPa — negativo = depresión (aspiración).</span>
+            </div>
+            <div class="field">
+              <label for="pipeDiamMm">Diámetro interior tubería (impulsión)</label>
+              <input id="pipeDiamMm" type="number" step="1" min="10" value="100" />
+              <span class="field-hint">mm — para estimar velocidad y avisar si es baja/alta.</span>
+            </div>
+            <div class="field">
+              <label for="dailyHours">Horas de uso al día</label>
+              <input id="dailyHours" type="number" step="0.5" min="0.5" max="24" value="16" />
+              <span class="field-hint">Servicio 24/7 endurece el factor de servicio (orientativo).</span>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="field-section-title">4. Carga del accionamiento y datos eléctricos</h3>
+        <div class="field-grid field-grid--essential">
+          <div class="field">
+            <label for="pumpLoadDuty">Tipo de carga → factor de servicio</label>
+            <select id="pumpLoadDuty" name="pumpLoadDuty">
+              <option value="uniform">Carga uniforme — SF ≈ 1,15</option>
+              <option value="moderate" selected>Choque moderado — SF ≈ 1,35</option>
+              <option value="heavy">Choque pesado — SF ≈ 1,75</option>
+              <option value="custom">Personalizado</option>
+            </select>
+            <p class="field-hint" id="pumpLoadDutyHint"></p>
+          </div>
+          <div class="field">
+            <label for="pumpServiceFactor">Factor de servicio SF</label>
+            <input id="pumpServiceFactor" type="number" step="0.05" min="1" max="3" value="1.35" />
+          </div>
+          <div class="field">
+            <label for="pumpSpeedRpm">Régimen nominal eje bomba</label>
+            <input id="pumpSpeedRpm" type="number" step="1" min="100" value="1455" />
+            <span class="field-hint">min⁻¹ — acople directo o salida de reductor.</span>
+          </div>
+          <div class="field">
+            <label for="couplingType">Tipo de acoplamiento</label>
+            <select id="couplingType" name="couplingType">
+              <option value="direct">Motor–bomba directo (mismo eje / casi 1:1)</option>
+              <option value="gearmotor" selected>Motorreductor (reductor entre motor y bomba)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="pumpVoltage">Tensión nominal</label>
+            <input id="pumpVoltage" type="number" step="1" value="400" />
+            <span class="field-hint">V — documentación; el catálogo ejemplo no filtra por red.</span>
+          </div>
+          <div class="field">
+            <label for="pumpFreq">Frecuencia</label>
+            <input id="pumpFreq" type="number" step="1" value="50" />
+            <span class="field-hint">Hz</span>
+          </div>
+        </div>
+
+        <div id="pumpDesignAlerts" class="design-alerts" aria-live="polite"></div>
+
+        <div id="mountingConfigHost" class="mounting-config-host"></div>
+
+        <button type="button" class="btn-calc" id="btnPumpCalc" title="Actualiza resultados y motorreductores">
+          Calcular y mostrar motorreductor
+        </button>
+        <p class="calc-hint">Los valores se actualizan al cambiar los campos habilitados. Use servidor HTTP, no <code>file://</code>.</p>
+      </section>
+
+      <div class="layout-right">
+        <section class="diagram-duo" aria-label="Esquema de bomba centrífuga">
+          <div class="diagram-duo__schematic">
+            <svg id="diagramPump" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+          <figure class="diagram-duo__real">
+            <img
+              src="assets/centrifugal-pump-reference.jpg"
+              alt="Esquema típico de bomba centrífuga (referencia)"
+              width="800"
+              height="520"
+              loading="lazy"
+              decoding="async"
+              onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Centrifugal_Pump.svg/640px-Centrifugal_Pump.svg.png'"
+            />
+            <figcaption>
+              Referencia visual: rodete y voluta (ejemplo).
+              <a href="https://commons.wikimedia.org/wiki/File:Centrifugal_Pump.svg" target="_blank" rel="noopener">Wikimedia Commons</a>
+              — puede sustituir por foto propia en <code>assets/centrifugal-pump-reference.jpg</code>.
+            </figcaption>
+          </figure>
+        </section>
+
+        <section class="panel">
+          <h2><span class="panel-icon">∑</span> Resultados (hidráulica y eje)</h2>
+          <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
+            Potencia útil al fluido, potencia mecánica en el eje de la bomba y magnitudes de diseño con factor de servicio.
+          </p>
+          <div class="results-grid" id="pumpResultsGrid"></div>
+        </section>
+
+        <section class="panel">
+          <h2><span class="panel-icon">⌗</span> Desglose de ingeniería</h2>
+          <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">Reductor orientativo, estrategias de motor y pasos del modelo.</p>
+          <div id="pumpEngineeringReport" class="eng-report"></div>
+        </section>
+
+        <section class="panel" id="section-pump-motores">
+          <details id="motoresRecommendations" class="motors-details">
+            <summary class="motors-details__summary">
+              <span class="motors-details__summary-main">
+                <span class="panel-icon">◎</span>
+                <span class="motors-details__text">
+                  <span class="motors-details__title">Motorreductores (catálogo ejemplo)</span>
+                  <span class="motors-details__hint">Plegado por defecto — pulse para ver recomendaciones, exportación y comprobador</span>
+                </span>
+              </span>
+            </summary>
+            <div class="motors-details__body">
+              <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
+              <div id="pumpMotorBlock"></div>
+
+              <div class="verify-panel motors-details__verify" id="pumpVerifyPanel">
+                <h2><span class="panel-icon">✓</span> Comprobar un motorreductor que ya tengo</h2>
+                <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
+                  Misma verificación que en cintas: potencia, par de salida y velocidad vs. punto de la bomba.
+                </p>
+                <div class="verify-grid">
+                  <div class="field">
+                    <label for="pumpVerifyBrand">Marca</label>
+                    <select id="pumpVerifyBrand" data-verify-brand>
+                      <option value="sew">SEW-Eurodrive</option>
+                      <option value="siemens">Siemens (Simogear)</option>
+                      <option value="nord">Nord Drivesystems</option>
+                      <option value="bonfiglioli">Bonfiglioli</option>
+                      <option value="motovario">Motovario</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="pumpVerifySearch">Filtrar modelo</label>
+                    <input id="pumpVerifySearch" type="search" placeholder="ej. R47…" data-verify-search autocomplete="off" />
+                  </div>
+                  <div class="field" style="grid-column: 1 / -1">
+                    <label for="pumpVerifyModel">Modelo</label>
+                    <select id="pumpVerifyModel" data-verify-model size="1"></select>
+                  </div>
+                </div>
+                <button type="button" data-verify-run style="margin-top: 1rem; width: 100%">Comprobar para esta bomba</button>
+                <div data-verify-out></div>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel">
+          <h2><span class="panel-icon">※</span> Hipótesis del modelo</h2>
+          <ul class="assumptions" id="pumpAssumptionsList"></ul>
+        </section>
+
+        <div id="pumpPremiumOptBlock"></div>
+      </div>
+    </main>
+
+    <script type="module" src="js/ui/pumpAppEntry.js"></script>
+  </body>
+</html>
