@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#111827"/>
+  <rect x="300" y="120" width="600" height="560" rx="18" fill="#1f2937"/>
+  <rect x="360" y="180" width="200" height="420" rx="10" fill="#334155"/>
+  <rect x="640" y="180" width="200" height="420" rx="10" fill="#334155"/>
+  <rect x="395" y="360" width="130" height="170" rx="8" fill="#9ca3af"/>
+  <rect x="675" y="280" width="130" height="210" rx="8" fill="#6b7280"/>
+  <circle cx="600" cy="160" r="42" fill="#64748b"/>
+  <text x="70" y="100" fill="#e5e7eb" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700">
+    Referencia local · Ascensor de tracción
+  </text>
+  <text x="70" y="145" fill="#93c5fd" font-family="Segoe UI, Arial, sans-serif" font-size="28">
+    Sustituya este SVG por su foto real en assets/traction-elevator-reference.svg
+  </text>
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect x="120" y="430" width="960" height="80" rx="18" fill="#334155"/>
+  <rect x="140" y="448" width="920" height="44" rx="16" fill="#64748b"/>
+  <circle cx="180" cy="470" r="42" fill="#94a3b8"/>
+  <circle cx="1020" cy="470" r="42" fill="#94a3b8"/>
+  <rect x="200" y="500" width="12" height="120" fill="#475569"/>
+  <rect x="988" y="500" width="12" height="120" fill="#475569"/>
+  <text x="70" y="100" fill="#e2e8f0" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700">
+    Referencia local · Cinta transportadora
+  </text>
+  <text x="70" y="145" fill="#93c5fd" font-family="Segoe UI, Arial, sans-serif" font-size="28">
+    Sustituya este SVG por su foto real en assets/conveyor-belt-reference.svg
+  </text>
+</svg>

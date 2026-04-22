@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#0b1220"/>
+  <circle cx="470" cy="430" r="170" fill="#1f2937" stroke="#60a5fa" stroke-width="20"/>
+  <circle cx="470" cy="430" r="72" fill="#111827" stroke="#93c5fd" stroke-width="10"/>
+  <rect x="620" y="380" width="260" height="100" rx="16" fill="#374151"/>
+  <rect x="850" y="350" width="210" height="42" rx="8" fill="#64748b"/>
+  <text x="70" y="100" fill="#e5e7eb" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700">
+    Referencia local · Bomba centrífuga
+  </text>
+  <text x="70" y="145" fill="#93c5fd" font-family="Segoe UI, Arial, sans-serif" font-size="28">
+    Sustituya este SVG por su foto real en assets/centrifugal-pump-reference.svg
+  </text>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#111827"/>
+  <rect x="260" y="180" width="60" height="430" fill="#475569"/>
+  <rect x="880" y="180" width="60" height="430" fill="#475569"/>
+  <rect x="320" y="430" width="560" height="42" rx="12" fill="#64748b"/>
+  <rect x="440" y="350" width="320" height="90" rx="28" fill="#9ca3af"/>
+  <circle cx="500" cy="450" r="24" fill="#1f2937"/>
+  <circle cx="700" cy="450" r="24" fill="#1f2937"/>
+  <text x="70" y="100" fill="#e5e7eb" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700">
+    Referencia local · Elevador de coches
+  </text>
+  <text x="70" y="145" fill="#93c5fd" font-family="Segoe UI, Arial, sans-serif" font-size="28">
+    Sustituya este SVG por su foto real en assets/car-lift-reference.svg
+  </text>
+</svg>

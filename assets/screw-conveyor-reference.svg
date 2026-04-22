@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#111827"/>
+  <rect x="120" y="420" width="960" height="100" rx="24" fill="#374151"/>
+  <path d="M170 470 C260 360, 340 580, 430 470 S600 360, 690 470 S860 580, 950 470" fill="none" stroke="#9ca3af" stroke-width="26" stroke-linecap="round"/>
+  <text x="70" y="100" fill="#e5e7eb" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700">
+    Referencia local · Tornillo transportador
+  </text>
+  <text x="70" y="145" fill="#93c5fd" font-family="Segoe UI, Arial, sans-serif" font-size="28">
+    Sustituya este SVG por su foto real en assets/screw-conveyor-reference.svg
+  </text>
+</svg>

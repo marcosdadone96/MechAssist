@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#0f172a"/>
+  <rect x="470" y="130" width="260" height="520" rx="16" fill="#334155"/>
+  <rect x="515" y="180" width="170" height="420" rx="8" fill="#1e293b"/>
+  <rect x="530" y="220" width="140" height="35" rx="6" fill="#94a3b8"/>
+  <rect x="530" y="290" width="140" height="35" rx="6" fill="#94a3b8"/>
+  <rect x="530" y="360" width="140" height="35" rx="6" fill="#94a3b8"/>
+  <rect x="530" y="430" width="140" height="35" rx="6" fill="#94a3b8"/>
+  <text x="70" y="100" fill="#e5e7eb" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700">
+    Referencia local · Elevador de cangilones
+  </text>
+  <text x="70" y="145" fill="#93c5fd" font-family="Segoe UI, Arial, sans-serif" font-size="28">
+    Sustituya este SVG por su foto real en assets/bucket-elevator-reference.svg
+  </text>
+</svg>
