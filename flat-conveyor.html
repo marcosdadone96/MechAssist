@@ -256,11 +256,23 @@
         </section>
 
         <section class="panel">
-          <h2><span class="panel-icon">⌗</span> Desglose de ingeniería</h2>
-          <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
-            Cálculos intermedios, reductor, tres estrategias de motor y razonamiento.
-          </p>
-          <div id="engineeringReport" class="eng-report"></div>
+          <details class="motors-details">
+            <summary class="motors-details__summary">
+              <span class="motors-details__summary-main">
+                <span class="panel-icon">⌗</span>
+                <span class="motors-details__text">
+                  <span class="motors-details__title">Desglose de ingeniería</span>
+                  <span class="motors-details__hint">Plegado por defecto — pulse para ver cálculos intermedios y razonamiento</span>
+                </span>
+              </span>
+            </summary>
+            <div class="motors-details__body">
+              <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
+                Cálculos intermedios, reductor, tres estrategias de motor y razonamiento.
+              </p>
+              <div id="engineeringReport" class="eng-report"></div>
+            </div>
+          </details>
         </section>
 
         <section class="panel" id="section-motores">

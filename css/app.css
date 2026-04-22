@@ -778,6 +778,36 @@ body {
   color: var(--info);
 }
 
+.machine-real-photo {
+  margin: 0.9rem 0 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.machine-real-photo img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  max-height: 280px;
+}
+
+.machine-real-photo figcaption {
+  margin: 0;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--muted);
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+}
+
+.machine-real-photo figcaption a {
+  color: var(--info);
+}
+
 .friction-guide {
   margin: 0.35rem 0 0;
   border: 1px solid var(--border);

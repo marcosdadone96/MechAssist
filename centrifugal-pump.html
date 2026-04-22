@@ -184,16 +184,16 @@
           <figure class="diagram-duo__real">
             <img
               src="assets/centrifugal-pump-reference.jpg"
-              alt="Esquema típico de bomba centrífuga (referencia)"
+              alt="Bomba centrífuga real instalada en planta"
               width="800"
               height="520"
               loading="lazy"
               decoding="async"
-              onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Centrifugal_Pump.svg/640px-Centrifugal_Pump.svg.png'"
+              onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Pump_station.jpg/640px-Pump_station.jpg'"
             />
             <figcaption>
-              Referencia visual: rodete y voluta (ejemplo).
-              <a href="https://commons.wikimedia.org/wiki/File:Centrifugal_Pump.svg" target="_blank" rel="noopener">Wikimedia Commons</a>
+              Foto real de aplicación en estación de bombeo (ejemplo).
+              <a href="https://commons.wikimedia.org/wiki/File:Pump_station.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>
               — puede sustituir por foto propia en <code>assets/centrifugal-pump-reference.jpg</code>.
             </figcaption>
           </figure>
@@ -208,9 +208,21 @@
         </section>
 
         <section class="panel">
-          <h2><span class="panel-icon">⌗</span> Desglose de ingeniería</h2>
-          <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">Reductor orientativo, estrategias de motor y pasos del modelo.</p>
-          <div id="pumpEngineeringReport" class="eng-report"></div>
+          <details class="motors-details">
+            <summary class="motors-details__summary">
+              <span class="motors-details__summary-main">
+                <span class="panel-icon">⌗</span>
+                <span class="motors-details__text">
+                  <span class="motors-details__title">Desglose de ingeniería</span>
+                  <span class="motors-details__hint">Plegado por defecto — pulse para ver reductor, estrategias y pasos</span>
+                </span>
+              </span>
+            </summary>
+            <div class="motors-details__body">
+              <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">Reductor orientativo, estrategias de motor y pasos del modelo.</p>
+              <div id="pumpEngineeringReport" class="eng-report"></div>
+            </div>
+          </details>
         </section>
 
         <section class="panel" id="section-pump-motores">
