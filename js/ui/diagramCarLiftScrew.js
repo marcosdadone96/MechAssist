@@ -18,72 +18,103 @@ export function renderCarLiftScrewDiagram(svg, p) {
   const d = Math.max(12, Number(p.screwDiameter_mm) || 45);
   const motorPos = p.motorPosition === 'base' ? 'base' : 'top';
 
-  const vbW = 340;
+  const vbW = 420;
   const vbH = 360;
   svg.setAttribute('viewBox', `0 0 ${vbW} ${vbH}`);
 
-  const colX = 70;
-  const colW = 200;
-  const colTop = 55;
-  const colH = 260;
-  const screwX = colX + colW / 2;
-  const screwTop = colTop + 18;
-  const screwBot = colTop + colH - 22;
-  const nutY = colTop + 150;
+  const floorY = 308;
+  const postLeftX = 82;
+  const postRightX = 306;
+  const postW = 28;
+  const postTop = 58;
+  const postH = 238;
+  const screwX = postLeftX + postW / 2;
+  const screwTop = postTop + 16;
+  const screwBot = postTop + postH - 18;
+  const nutY = postTop + 128;
   const nutH = 26;
   const safeNutY = nutY + 40;
   const screwR = Math.max(6, Math.min(14, d * 0.14));
+  const armY = nutY + 2;
+  const deckY = 198;
 
   const pitchLabel = pitch >= 10 ? `${pitch.toFixed(0)} mm` : `${pitch.toFixed(1)} mm`;
 
   svg.innerHTML = `
-    <rect width="100%" height="100%" fill="#f8fafc"/>
+    <defs>
+      <linearGradient id="bgLift" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#f8fafc"/>
+        <stop offset="100%" stop-color="#eef2f7"/>
+      </linearGradient>
+      <linearGradient id="steelPost" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#94a3b8"/>
+        <stop offset="50%" stop-color="#cbd5e1"/>
+        <stop offset="100%" stop-color="#64748b"/>
+      </linearGradient>
+      <marker id="liftArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+        <path d="M0,0 L8,4 L0,8 Z" fill="#0f766e" />
+      </marker>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#bgLift)"/>
     <text x="14" y="22" font-size="11" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">
-      Columna · sección (esquema)
+      Elevador 2 columnas · vista frontal simplificada
     </text>
     <text x="14" y="35" font-size="8" fill="#64748b" font-family="Inter,system-ui,sans-serif">
-      H ≈ ${H.toFixed(2)} m · Husillo Ø${d.toFixed(0)} · paso ${pitchLabel}
+      H ≈ ${H.toFixed(2)} m · Husillo Ø${d.toFixed(0)} mm · paso ${pitchLabel}
     </text>
 
-    <!-- Columna / guía -->
-    <rect x="${colX}" y="${colTop}" width="${colW}" height="${colH}" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
-    <rect x="${colX + 10}" y="${colTop + 10}" width="${colW - 20}" height="${colH - 20}" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1.5"/>
+    <!-- Suelo -->
+    <rect x="36" y="${floorY}" width="348" height="18" rx="6" fill="#cbd5e1" stroke="#94a3b8" />
+    <line x1="36" y1="${floorY + 3}" x2="384" y2="${floorY + 3}" stroke="#e2e8f0" />
 
-    <!-- Husillo -->
+    <!-- Columnas -->
+    <rect x="${postLeftX}" y="${postTop}" width="${postW}" height="${postH}" rx="6" fill="url(#steelPost)" stroke="#475569" stroke-width="1.6"/>
+    <rect x="${postRightX}" y="${postTop}" width="${postW}" height="${postH}" rx="6" fill="url(#steelPost)" stroke="#475569" stroke-width="1.6"/>
+    <rect x="${postLeftX + 8}" y="${postTop + 16}" width="${postW - 16}" height="${postH - 36}" rx="3" fill="#1e293b" opacity="0.25"/>
+    <rect x="${postRightX + 8}" y="${postTop + 16}" width="${postW - 16}" height="${postH - 36}" rx="3" fill="#1e293b" opacity="0.25"/>
+
+    <!-- Brazos -->
+    <rect x="${postLeftX + postW}" y="${armY}" width="112" height="9" rx="4" fill="#64748b"/>
+    <rect x="${postRightX - 112}" y="${armY}" width="112" height="9" rx="4" fill="#64748b"/>
+    <line x1="${postLeftX + postW + 108}" y1="${armY + 4}" x2="${postRightX - 108}" y2="${armY + 4}" stroke="#94a3b8" stroke-dasharray="4 3"/>
+
+    <!-- Plataforma/coche -->
+    <rect x="146" y="${deckY}" width="128" height="44" rx="10" fill="#334155" stroke="#0f172a"/>
+    <rect x="154" y="${deckY + 6}" width="112" height="18" rx="6" fill="#0f172a" opacity="0.35"/>
+    <circle cx="166" cy="${deckY + 42}" r="7.5" fill="#111827"/>
+    <circle cx="254" cy="${deckY + 42}" r="7.5" fill="#111827"/>
+
+    <!-- Husillo en columna izquierda -->
     <line x1="${screwX}" y1="${screwTop}" x2="${screwX}" y2="${screwBot}" stroke="#0f172a" stroke-width="${screwR * 2}" stroke-linecap="round"/>
     <line x1="${screwX}" y1="${screwTop}" x2="${screwX}" y2="${screwBot}" stroke="#94a3b8" stroke-width="${Math.max(2, screwR * 0.55)}" stroke-dasharray="4 4" stroke-linecap="round"/>
 
-    <!-- Tuerca de bronce (carga) -->
-    <rect x="${screwX - 55}" y="${nutY}" width="110" height="${nutH}" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
-    <text x="${screwX}" y="${nutY + 17}" text-anchor="middle" font-size="8" font-weight="800" fill="#78350f"
-      font-family="Inter,system-ui,sans-serif">Tuerca bronce (carga)</text>
+    <!-- Tuerca principal -->
+    <rect x="${screwX - 28}" y="${nutY}" width="56" height="${nutH}" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
+    <text x="${screwX + 40}" y="${nutY + 11}" font-size="7.4" font-weight="800" fill="#78350f" font-family="Inter,system-ui,sans-serif">Tuerca de carga</text>
 
     <!-- Tuerca de seguridad -->
-    <rect x="${screwX - 50}" y="${safeNutY}" width="100" height="22" rx="6" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/>
-    <text x="${screwX}" y="${safeNutY + 15}" text-anchor="middle" font-size="8" font-weight="800" fill="#0c4a6e"
-      font-family="Inter,system-ui,sans-serif">Tuerca seguridad</text>
+    <rect x="${screwX - 24}" y="${safeNutY}" width="48" height="20" rx="6" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/>
+    <text x="${screwX + 40}" y="${safeNutY + 12}" font-size="7.2" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">Seguridad</text>
 
-    <!-- Carro / patín -->
-    <rect x="${colX + 26}" y="${nutY - 18}" width="${colW - 52}" height="16" rx="4" fill="#ccfbf1" stroke="#0f766e" stroke-width="2"/>
-    <text x="${colX + colW - 10}" y="${nutY - 6}" text-anchor="end" font-size="7" fill="#134e4a"
-      font-family="Inter,system-ui,sans-serif">Carro</text>
+    <!-- Flecha elevación -->
+    <line x1="${postRightX + postW + 18}" y1="${nutY + 30}" x2="${postRightX + postW + 18}" y2="${postTop + 78}" stroke="#0f766e" stroke-width="2.3" marker-end="url(#liftArrow)"/>
+    <text x="${postRightX + postW + 26}" y="${postTop + 90}" font-size="7.2" fill="#0f766e" font-family="Inter,system-ui,sans-serif">Movimiento elevación</text>
 
     <!-- Motor -->
     ${
       motorPos === 'top'
-        ? `<rect x="${screwX - 40}" y="${colTop - 24}" width="80" height="18" rx="6" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
-           <text x="${screwX}" y="${colTop - 11}" text-anchor="middle" font-size="8" font-weight="800" fill="#334155"
+        ? `<rect x="${screwX - 42}" y="${postTop - 24}" width="84" height="18" rx="6" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+           <text x="${screwX}" y="${postTop - 11}" text-anchor="middle" font-size="8" font-weight="800" fill="#334155"
             font-family="Inter,system-ui,sans-serif">Motor</text>
-           <line x1="${screwX}" y1="${colTop - 6}" x2="${screwX}" y2="${screwTop}" stroke="#475569" stroke-width="2"/>`
-        : `<rect x="${screwX - 40}" y="${colTop + colH + 6}" width="80" height="18" rx="6" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
-           <text x="${screwX}" y="${colTop + colH + 19}" text-anchor="middle" font-size="8" font-weight="800" fill="#334155"
+           <line x1="${screwX}" y1="${postTop - 6}" x2="${screwX}" y2="${screwTop}" stroke="#475569" stroke-width="2"/>`
+        : `<rect x="${screwX - 42}" y="${postTop + postH + 6}" width="84" height="18" rx="6" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+           <text x="${screwX}" y="${postTop + postH + 19}" text-anchor="middle" font-size="8" font-weight="800" fill="#334155"
             font-family="Inter,system-ui,sans-serif">Motor</text>
-           <line x1="${screwX}" y1="${screwBot}" x2="${screwX}" y2="${colTop + colH + 6}" stroke="#475569" stroke-width="2"/>`
+           <line x1="${screwX}" y1="${screwBot}" x2="${screwX}" y2="${postTop + postH + 6}" stroke="#475569" stroke-width="2"/>`
     }
 
-    <!-- Etiquetas -->
-    <text x="${colX + 12}" y="${colTop + colH - 12}" font-size="7" fill="#64748b" font-family="Inter,system-ui,sans-serif">
-      Husillo vertical + tuerca de trabajo + seguridad (esquema)
+    <text x="${postLeftX}" y="${postTop + postH + 18}" font-size="7.2" fill="#64748b" font-family="Inter,system-ui,sans-serif">
+      Columna izquierda: husillo con tuerca principal + seguridad
     </text>
   `;
 }
