@@ -23,8 +23,12 @@ export function renderRollerConveyorDiagram(svg, p) {
   const lenPx = Math.min(720, L * 48);
   const depth = 84;
   const x1 = x0 + lenPx;
-  const rollers = Math.max(10, Math.min(32, Math.round(L * 2.9)));
-  const pitch = lenPx / rollers;
+  const rollerR = clamp(D * 0.1, 8, 12);
+  const gap = rollerR * 0.7;
+  const pitch = rollerR * 2 + gap;
+  const rollers = Math.max(8, Math.floor((lenPx - rollerR * 2) / pitch));
+  const trainWidth = rollers * pitch;
+  const rollerStartX = x0 + (lenPx - trainWidth) / 2 + rollerR;
 
   svg.setAttribute('viewBox', `0 0 ${vbW} ${vbH}`);
   svg.innerHTML = `
@@ -55,10 +59,10 @@ export function renderRollerConveyorDiagram(svg, p) {
     <rect x="${x0 - 18}" y="${y0 + 58}" width="${lenPx + 36}" height="20" rx="8" fill="url(#blueBeam)"/>
 
     ${Array.from({ length: rollers + 1 }, (_, i) => {
-      const x = x0 + i * pitch;
+      const x = rollerStartX + i * pitch;
       return `
-        <circle cx="${x.toFixed(1)}" cy="${(y0 + 14).toFixed(1)}" r="12.5" fill="url(#steel)" stroke="#64748b" stroke-width="1.3"/>
-        <circle cx="${x.toFixed(1)}" cy="${(y0 + 14).toFixed(1)}" r="4.1" fill="#94a3b8" stroke="#64748b" stroke-width="0.8"/>
+        <circle cx="${x.toFixed(1)}" cy="${(y0 + 14).toFixed(1)}" r="${rollerR.toFixed(1)}" fill="url(#steel)" stroke="#64748b" stroke-width="1.2"/>
+        <circle cx="${x.toFixed(1)}" cy="${(y0 + 14).toFixed(1)}" r="${(rollerR * 0.32).toFixed(1)}" fill="#94a3b8" stroke="#64748b" stroke-width="0.7"/>
       `;
     }).join('')}
 
