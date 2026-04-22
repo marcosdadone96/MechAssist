@@ -1,5 +1,5 @@
-/**
- * Página transportador de rodillos.
+ï»¿/**
+ * Pagina transportador de rodillos.
  */
 
 import { FEATURES } from '../config/features.js';
@@ -14,18 +14,7 @@ import { readMountingPreferences } from '../modules/mountingPreferences.js';
 import { injectMountingConfigSection, MOUNTING_INPUT_IDS } from './mountingConfigSection.js';
 import { openMotorsRecommendationsAndScroll } from './motorsCollapsible.js';
 
-const inputIds = [
-  'length',
-  'loadMass',
-  'speed',
-  'rollerD',
-  'rollingResistance',
-  'efficiency',
-  'additionalResistance',
-  'accelTime',
-  'inertiaFactor',
-  'serviceFactor',
-];
+const inputIds = ['length', 'loadMass', 'speed', 'rollerD', 'rollingResistance', 'efficiency', 'additionalResistance', 'accelTime', 'inertiaFactor', 'serviceFactor'];
 const selectIds = ['designStandard', 'loadDuty'];
 
 function readNum(id, fallback) {
@@ -60,12 +49,12 @@ function readInputs() {
 }
 
 function formatNum(v, d = 2) {
-  return Number.isFinite(v) ? v.toFixed(d) : '—';
+  return Number.isFinite(v) ? v.toFixed(d) : '--';
 }
 
 function formatMounting(pref) {
   const typeMap = { B3: 'B3 patas', B5: 'B5 brida', B14: 'B14 brida', hollowShaft: 'Eje hueco' };
-  return `${typeMap[pref.mountingType] || pref.mountingType} · ${pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal'}`;
+  return `${typeMap[pref.mountingType] || pref.mountingType} - ${pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal'}`;
 }
 
 function syncLoadDutyUi() {
@@ -114,52 +103,49 @@ function refresh() {
   const d = r.detail || {};
   const mount = readMountingPreferences();
   const mechanicalSummary = [
-    `Ø rodillo ${formatNum(raw.rollerDiameter_mm, 0)} mm`,
+    `Diam. rodillo ${formatNum(raw.rollerDiameter_mm, 0)} mm`,
     mount.machineShaftDiameter_mm != null ? `eje ${formatNum(mount.machineShaftDiameter_mm, 0)} mm` : null,
   ]
     .filter(Boolean)
-    .join(' · ');
+    .join(' - ');
 
   if (els.diagram) {
-    renderRollerConveyorDiagram(els.diagram, {
-      ...raw,
-      drumRpm: r.drumRpm,
-    });
+    renderRollerConveyorDiagram(els.diagram, { ...raw, drumRpm: r.drumRpm });
   }
 
   if (els.results) {
     const normRow =
       r.steadyStandardMultiplier > 1
-        ? `<div class="metric"><div class="label">Margen normativo</div><div class="value">×${formatNum(r.steadyStandardMultiplier, 2)} (${r.designStandard})</div></div>`
+        ? `<div class="metric"><div class="label">Margen normativo</div><div class="value">x${formatNum(r.steadyStandardMultiplier, 2)} (${r.designStandard})</div></div>`
         : '';
     els.results.innerHTML = `
       <div class="result-focus-grid">
-        <div class="metric"><div class="label">Par requerido</div><div class="value">${formatNum(r.torqueWithService_Nm, 2)} N·m</div></div>
+        <div class="metric"><div class="label">Par requerido</div><div class="value">${formatNum(r.torqueWithService_Nm, 2)} N*m</div></div>
         <div class="metric"><div class="label">Factor de servicio</div><div class="value">${formatNum(r.serviceFactorUsed, 2)}</div></div>
         <div class="metric metric--text"><div class="label">Tipo de montaje</div><div class="value">${formatMounting(mount)}</div></div>
-        <div class="metric"><div class="label">Velocidad</div><div class="value">${formatNum(r.drumRpm, 2)} min?¹</div></div>
+        <div class="metric"><div class="label">Velocidad</div><div class="value">${formatNum(r.drumRpm, 2)} min^-1</div></div>
         <div class="metric"><div class="label">Motor (kW)</div><div class="value">${formatNum(r.requiredMotorPower_kW, 3)} kW</div></div>
-        <div class="metric metric--text"><div class="label">Detalles mecánicos</div><div class="value">${mechanicalSummary || 'Configuración estándar'}</div></div>
+        <div class="metric metric--text"><div class="label">Detalles mecanicos</div><div class="value">${mechanicalSummary || 'Configuracion estandar'}</div></div>
       </div>
       <details class="motors-details result-focus-extra">
         <summary class="motors-details__summary">
           <span class="motors-details__summary-main">
-            <span class="panel-icon">?</span>
+            <span class="panel-icon">=</span>
             <span class="motors-details__text">
               <span class="motors-details__title">Resultado completo</span>
-              <span class="motors-details__hint">Fuerzas, potencia y métricas extendidas</span>
+              <span class="motors-details__hint">Fuerzas, potencia y metricas extendidas</span>
             </span>
           </span>
         </summary>
         <div class="motors-details__body">
           <div class="results-grid">
             ${normRow}
-            <div class="metric"><div class="label">Fuerza régimen</div><div class="value">${formatNum(d.F_steady_N, 1)} N</div></div>
+            <div class="metric"><div class="label">Fuerza regimen</div><div class="value">${formatNum(d.F_steady_N, 1)} N</div></div>
             <div class="metric"><div class="label">Fuerza arranque</div><div class="value">${formatNum(d.F_total_start_N, 1)} N</div></div>
-            <div class="metric"><div class="label">Fuerza de aceleración</div><div class="value">${formatNum(d.F_accel_N, 1)} N</div></div>
-            <div class="metric"><div class="label">Par régimen / arranque</div><div class="value">${formatNum(r.torqueAtDrum_Nm, 2)} / ${formatNum(r.torqueStart_Nm, 2)} N·m</div></div>
-            <div class="metric"><div class="label">Potencia motor régimen / pico</div><div class="value">${formatNum((d.powerMotorRun_W ?? 0) / 1000, 3)} / ${formatNum((d.powerMotorStart_W ?? 0) / 1000, 3)} kW</div></div>
-            <div class="metric"><div class="label">Caudal másico</div><div class="value">${formatNum(r.massFlow_kg_s, 3)} kg/s</div></div>
+            <div class="metric"><div class="label">Fuerza aceleracion</div><div class="value">${formatNum(d.F_accel_N, 1)} N</div></div>
+            <div class="metric"><div class="label">Par regimen / arranque</div><div class="value">${formatNum(r.torqueAtDrum_Nm, 2)} / ${formatNum(r.torqueStart_Nm, 2)} N*m</div></div>
+            <div class="metric"><div class="label">Potencia motor regimen / pico</div><div class="value">${formatNum((d.powerMotorRun_W ?? 0) / 1000, 3)} / ${formatNum((d.powerMotorStart_W ?? 0) / 1000, 3)} kW</div></div>
+            <div class="metric"><div class="label">Caudal masico</div><div class="value">${formatNum(r.massFlow_kg_s, 3)} kg/s</div></div>
           </div>
         </div>
       </details>
@@ -170,7 +156,7 @@ function refresh() {
     els.engineeringReport.innerHTML = renderFullEngineeringAside(r, {
       shaftLabel: 'rodillo motriz',
       shaftOutLabel: 'Salida reductor / rodillo',
-      motorSubtitle: 'Referencia con motor asíncrono industrial para línea de rodillos.',
+      motorSubtitle: 'Referencia con motor asincrono industrial para linea de rodillos.',
     });
   }
 
@@ -185,7 +171,7 @@ function refresh() {
   if (els.premiumOpt) {
     els.premiumOpt.innerHTML =
       isPremiumEffective() && FEATURES.safetyOptimization
-        ? `<section class="panel"><h2><span class="panel-icon">?</span> Optimización (premium)</h2><p class="muted" style="margin:0">Espacio reservado para validaciones avanzadas.</p></section>`
+        ? `<section class="panel"><h2><span class="panel-icon">*</span> Optimizacion (premium)</h2><p class="muted" style="margin:0">Espacio reservado para validaciones avanzadas.</p></section>`
         : '';
   }
 

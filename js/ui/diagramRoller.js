@@ -1,5 +1,5 @@
 /**
- * Transportador de rodillos motorizado — esquema visual.
+ * Transportador de rodillos motorizado - esquema visual.
  */
 
 import { clamp } from '../utils/calculations.js';
@@ -18,93 +18,70 @@ export function renderRollerConveyorDiagram(svg, p) {
 
   const vbW = 980;
   const vbH = 420;
-  const x0 = 115;
-  const yTop = 150;
-  const lenPx = Math.min(690, L * 45);
-  const deckH = 96;
-  const skew = 88;
+  const x0 = 120;
+  const y0 = 138;
+  const lenPx = Math.min(680, L * 44);
+  const depth = 78;
+  const skew = 86;
   const x1 = x0 + lenPx;
-  const rollers = Math.max(10, Math.min(32, Math.round(L * 3)));
+  const rollers = Math.max(11, Math.min(28, Math.round(L * 2.8)));
   const pitch = lenPx / rollers;
-  const rr = clamp(D * 0.1, 6, 12);
 
   svg.setAttribute('viewBox', `0 0 ${vbW} ${vbH}`);
   svg.innerHTML = `
     <defs>
-      <linearGradient id="rollerBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#f8fafc"/>
         <stop offset="100%" stop-color="#eef2f7"/>
       </linearGradient>
-      <linearGradient id="frameBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#0ea5e9"/>
-        <stop offset="100%" stop-color="#1d4ed8"/>
-      </linearGradient>
-      <linearGradient id="metal" x1="0%" y1="0%" x2="0%" y2="100%">
+      <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0%" stop-color="#f1f5f9"/>
-        <stop offset="45%" stop-color="#cbd5e1"/>
         <stop offset="100%" stop-color="#94a3b8"/>
       </linearGradient>
-      <linearGradient id="legMetal" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#94a3b8"/>
-        <stop offset="100%" stop-color="#64748b"/>
+      <linearGradient id="blueBeam" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0ea5e9"/>
+        <stop offset="100%" stop-color="#2563eb"/>
       </linearGradient>
-      <marker id="flowArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-        <path d="M0,0 L8,4 L0,8 Z" fill="#0f766e" />
+      <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+        <path d="M0,0 L8,4 L0,8 Z" fill="#0f766e"/>
       </marker>
-      <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
-        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#64748b" flood-opacity="0.28"/>
-      </filter>
     </defs>
-    <rect width="${vbW}" height="${vbH}" fill="url(#rollerBg)" />
-    <rect x="20" y="16" width="${vbW - 40}" height="48" rx="12" fill="#0f766e" fill-opacity="0.08" stroke="#0d9488" />
-    <text x="34" y="38" font-size="16" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">Transportador de rodillos motorizado</text>
-    <text x="34" y="54" font-size="11" fill="#475569" font-family="Inter, system-ui, sans-serif">Esquema 3/4 inspirado en el bastidor de referencia</text>
 
-    <polygon
-      points="${x0},${yTop} ${x1},${yTop} ${x1 + skew},${yTop + deckH} ${x0 + skew},${yTop + deckH}"
-      fill="#e2e8f0"
-      stroke="#64748b"
-      stroke-width="2"
-      filter="url(#softShadow)"
-    />
+    <rect width="${vbW}" height="${vbH}" fill="url(#bg)"/>
+    <rect x="20" y="16" width="${vbW - 40}" height="48" rx="12" fill="#0f766e" fill-opacity="0.08" stroke="#0d9488"/>
+    <text x="34" y="39" font-size="16" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">Transportador de rodillos motorizado</text>
+    <text x="34" y="55" font-size="11" fill="#475569" font-family="Inter, system-ui, sans-serif">Vista 3/4 simplificada para lectura rapida</text>
 
-    <polygon
-      points="${x0 - 8},${yTop + 14} ${x1 + 8},${yTop + 14} ${x1 + skew + 8},${yTop + deckH + 14} ${x0 + skew - 8},${yTop + deckH + 14}"
-      fill="url(#frameBlue)"
-      opacity="0.95"
-    />
+    <polygon points="${x0},${y0} ${x1},${y0} ${x1 + skew},${y0 + depth} ${x0 + skew},${y0 + depth}" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
+    <polygon points="${x0},${y0 + 16} ${x1},${y0 + 16} ${x1 + skew},${y0 + depth + 16} ${x0 + skew},${y0 + depth + 16}" fill="url(#blueBeam)"/>
 
     ${Array.from({ length: rollers + 1 }, (_, i) => {
       const x = x0 + i * pitch;
-      const y = yTop + 8 + (i / rollers) * (deckH - 10);
-      return `
-        <ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${(rr * 1.55).toFixed(1)}" ry="${rr.toFixed(1)}" fill="url(#metal)" stroke="#64748b" stroke-width="1.2"/>
-        <ellipse cx="${(x + 5).toFixed(1)}" cy="${(y - 1).toFixed(1)}" rx="${(rr * 0.85).toFixed(1)}" ry="${(rr * 0.48).toFixed(1)}" fill="#f8fafc" opacity="0.58"/>
-      `;
+      const y = y0 + 8 + (i / rollers) * (depth - 8);
+      return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="14" ry="7.3" fill="url(#steel)" stroke="#64748b" stroke-width="1.1"/>`;
     }).join('')}
 
-    <polygon points="${x0 - 28},${yTop + 8} ${x0 - 6},${yTop + 24} ${x0 - 6},${yTop + deckH + 28} ${x0 - 28},${yTop + deckH + 12}" fill="#334155"/>
-    <polygon points="${x1 + 4},${yTop + 8} ${x1 + 26},${yTop + 24} ${x1 + 26},${yTop + deckH + 28} ${x1 + 4},${yTop + deckH + 12}" fill="#334155"/>
+    <polygon points="${x0 - 30},${y0 + 10} ${x0 - 10},${y0 + 24} ${x0 - 10},${y0 + depth + 26} ${x0 - 30},${y0 + depth + 12}" fill="#334155"/>
+    <polygon points="${x1 + 8},${y0 + 10} ${x1 + 28},${y0 + 24} ${x1 + 28},${y0 + depth + 26} ${x1 + 8},${y0 + depth + 12}" fill="#334155"/>
 
-    <polygon points="${x0 + 72},${yTop + deckH + 15} ${x0 + 96},${yTop + deckH + 32} ${x0 + 80},${yTop + deckH + 120} ${x0 + 56},${yTop + deckH + 102}" fill="url(#legMetal)"/>
-    <polygon points="${x1 - 96},${yTop + deckH + 15} ${x1 - 72},${yTop + deckH + 32} ${x1 - 88},${yTop + deckH + 120} ${x1 - 112},${yTop + deckH + 102}" fill="url(#legMetal)"/>
-    <polygon points="${x0 + skew + 124},${yTop + deckH + 12} ${x0 + skew + 149},${yTop + deckH + 28} ${x0 + skew + 129},${yTop + deckH + 113} ${x0 + skew + 104},${yTop + deckH + 95}" fill="url(#legMetal)"/>
-    <polygon points="${x1 + skew - 72},${yTop + deckH + 12} ${x1 + skew - 47},${yTop + deckH + 28} ${x1 + skew - 67},${yTop + deckH + 113} ${x1 + skew - 92},${yTop + deckH + 95}" fill="url(#legMetal)"/>
+    <polygon points="${x0 + 70},${y0 + depth + 14} ${x0 + 96},${y0 + depth + 30} ${x0 + 78},${y0 + depth + 118} ${x0 + 52},${y0 + depth + 100}" fill="#94a3b8"/>
+    <polygon points="${x1 - 116},${y0 + depth + 14} ${x1 - 90},${y0 + depth + 30} ${x1 - 108},${y0 + depth + 118} ${x1 - 134},${y0 + depth + 100}" fill="#94a3b8"/>
+    <polygon points="${x0 + skew + 100},${y0 + depth + 10} ${x0 + skew + 126},${y0 + depth + 27} ${x0 + skew + 107},${y0 + depth + 112} ${x0 + skew + 81},${y0 + depth + 94}" fill="#94a3b8"/>
+    <polygon points="${x1 + skew - 68},${y0 + depth + 10} ${x1 + skew - 42},${y0 + depth + 27} ${x1 + skew - 61},${y0 + depth + 112} ${x1 + skew - 87},${y0 + depth + 94}" fill="#94a3b8"/>
 
-    <rect x="${x0 + 10}" y="${yTop + deckH + 122}" width="${lenPx + skew - 22}" height="8" rx="3" fill="#64748b" opacity="0.55"/>
-    <rect x="${x0 + 52}" y="${yTop + deckH + 56}" width="82" height="28" rx="5" fill="url(#frameBlue)"/>
+    <rect x="${x0 + 54}" y="${y0 + depth + 58}" width="84" height="28" rx="5" fill="url(#blueBeam)"/>
+    <rect x="${x0 + 40}" y="${y0 + depth + 122}" width="${lenPx + skew - 12}" height="7" rx="3" fill="#94a3b8"/>
 
-    <line x1="${x0 + 18}" y1="${yTop - 26}" x2="${x1 + skew - 26}" y2="${yTop + deckH - 26}" stroke="#0f766e" stroke-width="2.6" marker-end="url(#flowArrow)" />
-    <text x="${x0 + 22}" y="${yTop - 34}" font-size="10.5" font-weight="700" fill="#0f766e" font-family="Inter, system-ui, sans-serif">Sentido de avance</text>
-    <text x="${x0 + 210}" y="${yTop + deckH + 8}" font-size="11" font-weight="700" fill="#334155" font-family="Inter, system-ui, sans-serif">L ~= ${L.toFixed(1)} m</text>
+    <line x1="${x0 + 18}" y1="${y0 - 24}" x2="${x1 + skew - 18}" y2="${y0 + depth - 24}" stroke="#0f766e" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <text x="${x0 + 20}" y="${y0 - 32}" font-size="10.5" font-weight="700" fill="#0f766e" font-family="Inter, system-ui, sans-serif">Sentido de avance</text>
 
-    <rect x="606" y="86" width="280" height="134" rx="12" fill="#ffffff" stroke="#cbd5e1"/>
-    <text x="622" y="110" font-size="10" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">Datos clave</text>
-    <text x="622" y="129" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">Carga nominal: ${m.toFixed(0)} kg</text>
-    <text x="622" y="146" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">Ø rodillo motriz: ${D.toFixed(0)} mm</text>
-    <text x="622" y="163" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">Velocidad lineal: ${v.toFixed(2)} m/s</text>
-    <text x="622" y="180" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">Velocidad de giro: ${Number.isFinite(n) ? n.toFixed(1) : '—'} min^-1</text>
-    <text x="622" y="197" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">Rodillos instalados: ${rollers + 1}</text>
+    <rect x="620" y="86" width="250" height="132" rx="12" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="635" y="110" font-size="10" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">Datos clave</text>
+    <text x="635" y="128" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">Carga nominal: ${m.toFixed(0)} kg</text>
+    <text x="635" y="145" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">Diam. rodillo: ${D.toFixed(0)} mm</text>
+    <text x="635" y="162" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">Velocidad lineal: ${v.toFixed(2)} m/s</text>
+    <text x="635" y="179" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">Velocidad de giro: ${Number.isFinite(n) ? n.toFixed(1) : '--'} min^-1</text>
+    <text x="635" y="196" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">Rodillos: ${rollers + 1}</text>
   `;
 }
 

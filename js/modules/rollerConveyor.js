@@ -70,8 +70,8 @@ export function computeRollerConveyor(raw) {
     {
       id: 'normal',
       title: 'Normal total sobre rodillos',
-      formula: 'N = m · g',
-      substitution: `${loadMass_kg} kg · ${G.toFixed(3)} m/s²`,
+      formula: 'N = m * g',
+      substitution: `${loadMass_kg} kg * ${G.toFixed(3)} m/s^2`,
       value: normalForce_N,
       unit: 'N',
       meaning: 'Carga vertical sobre el tren de rodillos.',
@@ -83,43 +83,43 @@ export function computeRollerConveyor(raw) {
       substitution: `Crr = ${crr.toFixed(4)}`,
       value: F_roll_base_N,
       unit: 'N',
-      meaning: 'Pérdidas por rodillos, rodamientos y contacto de rodadura.',
+      meaning: 'Perdidas por rodillos, rodamientos y contacto de rodadura.',
     },
     {
       id: 'steady',
       title: 'Fuerza de régimen',
-      formula: stdMult > 1 ? 'F_reg = (F_roll + F_add) · factor norma' : 'F_reg = F_roll + F_add',
+      formula: stdMult > 1 ? 'F_reg = (F_roll + F_add) * factor norma' : 'F_reg = F_roll + F_add',
       substitution:
         stdMult > 1
-          ? `(${F_roll_base_N.toFixed(1)} + ${additionalResistance_N.toFixed(1)}) · ${stdMult.toFixed(2)}`
+          ? `(${F_roll_base_N.toFixed(1)} + ${additionalResistance_N.toFixed(1)}) * ${stdMult.toFixed(2)}`
           : `${F_roll_base_N.toFixed(1)} + ${additionalResistance_N.toFixed(1)}`,
       value: F_steady_N,
       unit: 'N',
-      meaning: 'Esfuerzo estable para mover la línea a velocidad constante.',
+      meaning: 'Esfuerzo estable para mover la linea a velocidad constante.',
     },
     {
       id: 'accel',
       title: 'Fuerza de aceleración',
-      formula: 'F_acc = k_in · m · (v / t_acc)',
-      substitution: `k_in ${inertiaStartingFactor.toFixed(2)} · m ${loadMass_kg} kg · v ${speed_m_s} m/s · t ${accelTime_s}s`,
+      formula: 'F_acc = k_in * m * (v / t_acc)',
+      substitution: `k_in ${inertiaStartingFactor.toFixed(2)} * m ${loadMass_kg} kg * v ${speed_m_s} m/s * t ${accelTime_s}s`,
       value: F_accel_N,
       unit: 'N',
-      meaning: 'Pico de tracción en arranque.',
+      meaning: 'Pico de traccion en arranque.',
     },
     {
       id: 'torque',
       title: 'Par de diseño',
-      formula: 'T = max(F_reg, F_arr) · R · SF',
-      substitution: `R = ${R_m.toFixed(4)} m · SF ${serviceFactor.toFixed(2)}`,
+      formula: 'T = max(F_reg, F_arr) * R * SF',
+      substitution: `R = ${R_m.toFixed(4)} m * SF ${serviceFactor.toFixed(2)}`,
       value: torqueWithService_Nm,
-      unit: 'N·m',
+      unit: 'N*m',
       meaning: 'Par requerido para selección de motorreductor.',
     },
     {
       id: 'power',
       title: 'Potencia de motor',
-      formula: 'P_motor = max(F_reg·v, F_arr·v) / ?',
-      substitution: `? = ${efficiency_pct_effective.toFixed(1)} %`,
+      formula: 'P_motor = max(F_reg*v, F_arr*v) / eta',
+      substitution: `eta = ${efficiency_pct_effective.toFixed(1)} %`,
       value: requiredMotorPower_kW,
       unit: 'kW',
       meaning: 'Potencia mecánica en eje motor para catálogo.',
@@ -127,8 +127,8 @@ export function computeRollerConveyor(raw) {
   ];
 
   const assumptions = [
-    'Modelo horizontal con rodadura equivalente (sin elevación).',
-    'Crr representa pérdidas agregadas de rodillos + cojinetes + contacto de carga.',
+    'Modelo horizontal con rodadura equivalente (sin elevacion).',
+    'Crr representa perdidas agregadas de rodillos + cojinetes + contacto de carga.',
     `Factor de servicio aplicado: ${serviceFactor.toFixed(2)} (${loadDuty === 'custom' ? 'manual' : 'tipo de carga'}).`,
     stdMult > 1
       ? `Margen normativo sobre régimen: ×${stdMult.toFixed(2)} (${designStandard}).`
@@ -136,8 +136,8 @@ export function computeRollerConveyor(raw) {
   ];
 
   const explanations = [
-    `La resistencia de rodadura domina en horizontal (F_roll ? ${F_roll_base_N.toFixed(1)} N).`,
-    'Si hay acumulación de producto o transferencia con golpe, suba F_adicional y/o SF.',
+    `La resistencia de rodadura domina en horizontal (F_roll ~= ${F_roll_base_N.toFixed(1)} N).`,
+    'Si hay acumulacion de producto o transferencia con golpe, suba F_adicional y/o SF.',
   ];
 
   return {

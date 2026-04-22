@@ -25,6 +25,17 @@
           Modelo orientativo para <strong>transportador de rodillos motorizado horizontal</strong>. El calculo entrega par,
           velocidad y potencia para seleccionar motorreductor.
         </p>
+        <details class="help-details">
+          <summary>Ayuda para introducir datos</summary>
+          <div class="help-details__body">
+            <ul>
+              <li><strong>Crr:</strong> 0.02-0.05 para lineas en buen estado; suba valor si hay suciedad o rodamientos gastados.</li>
+              <li><strong>Resistencia adicional:</strong> use este campo para topes, guias laterales, transferencias o acumulacion.</li>
+              <li><strong>Tiempo de aceleracion:</strong> tiempos muy cortos aumentan el pico de par.</li>
+              <li><strong>Factor de servicio:</strong> se autocompleta por tipo de carga, o puede usar personalizado.</li>
+            </ul>
+          </div>
+        </details>
 
         <h3 class="field-section-title">Norma y carga</h3>
         <div class="field-grid field-grid--essential">
@@ -136,10 +147,22 @@
         </section>
 
         <section id="section-motores" class="panel">
-          <h2><span class="panel-icon">M</span> Recomendaciones de motorreductor</h2>
-          <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
-          <div id="motorBlock"></div>
-          <div id="verifyPanel" class="verify-panel"></div>
+          <details id="motoresRecommendations" class="motors-details">
+            <summary class="motors-details__summary">
+              <span class="motors-details__summary-main">
+                <span class="panel-icon">M</span>
+                <span class="motors-details__text">
+                  <span class="motors-details__title">Recomendaciones de motorreductor</span>
+                  <span class="motors-details__hint">Pulse para ver propuestas, comprobador y exportacion</span>
+                </span>
+              </span>
+            </summary>
+            <div class="motors-details__body">
+              <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
+              <div id="motorBlock"></div>
+              <div id="verifyPanel" class="verify-panel"></div>
+            </div>
+          </details>
         </section>
 
         <section class="panel">
