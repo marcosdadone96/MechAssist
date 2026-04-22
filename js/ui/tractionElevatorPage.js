@@ -38,6 +38,11 @@ function esc(s) {
     .replace(/"/g, '&quot;');
 }
 
+function formatMounting(pref) {
+  const typeMap = { B3: 'B3 patas', B5: 'B5 brida', B14: 'B14 brida', hollowShaft: 'Eje hueco' };
+  return `${typeMap[pref.mountingType] || pref.mountingType} · ${pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal'}`;
+}
+
 function buildParams() {
   const useOptimal = !document.getElementById('teCwManual')?.checked;
   const manualCw = readNum('teMcpManual', 0);
@@ -107,17 +112,46 @@ function computeAndRender() {
   if (res) {
     const eu = r.euler;
     const rope = r.rope;
+    const drive = getDriveRequirements();
+    const mount = readMountingPreferences();
+    const mechanicalSummary = [
+      `Polea Ø${p.sheaveDiameter_m.toFixed(2)} m`,
+      `cables ${rope.n}xØ${rope.d_mm}`,
+      mount.machineShaftDiameter_mm != null ? `eje ${mount.machineShaftDiameter_mm.toFixed(0)} mm` : null,
+    ]
+      .filter(Boolean)
+      .join(' · ');
     res.innerHTML = `
-      <div class="metric"><div class="label">Contrapeso (modelo)</div><div class="value">${r.inputs.Mcp.toFixed(0)} kg</div></div>
-      <div class="metric"><div class="label">Contrapeso ópt. (cabina + ${(r.inputs.counterweightFraction * 100).toFixed(0)}% Q)</div><div class="value">${r.inputs.Mcp_optimal.toFixed(0)} kg</div></div>
-      <div class="metric"><div class="label"><em>T</em>₁/<em>T</em>₂ peor · límite e<sup>μα</sup></div><div class="value">${eu.tensionRatioWorst.toFixed(2)} · ${eu.limit.toFixed(2)}</div></div>
-      <div class="metric"><div class="label">Adherencia</div><div class="value">${eu.adhesionOk ? 'OK' : 'revisar'} · margen ×${eu.adhesionMargin.toFixed(2)}</div></div>
-      <div class="metric"><div class="label">Cables (SF ${r.inputs.SF})</div><div class="value">${rope.n} × Ø${rope.d_mm} mm</div></div>
-      <div class="metric"><div class="label">Uso resist. nominal (demo)</div><div class="value">${(rope.utilFactor * 100).toFixed(1)} %</div></div>
-      <div class="metric"><div class="label">Par freno emerg. (orient.)</div><div class="value">${r.brake.torque_Nm.toFixed(0)} N·m</div></div>
-      <div class="metric"><div class="label">Potencia tracción (desequilibrio)</div><div class="value">${r.drive.power_kW_orientative.toFixed(3)} kW</div></div>
-      <div class="metric"><div class="label">RPM polea</div><div class="value">${r.drive.sheave_rpm.toFixed(1)}</div></div>
-      <div class="metric"><div class="label">Ahorro energía vs sin CP (demo)</div><div class="value">${r.energy.savingVsNoCounterweight_pct.toFixed(0)} %</div></div>
+      <div class="result-focus-grid">
+        <div class="metric"><div class="label">Par requerido</div><div class="value">${drive.torque_Nm.toFixed(0)} N·m</div></div>
+        <div class="metric"><div class="label">Factor de servicio</div><div class="value">${r.inputs.SF.toFixed(0)}</div></div>
+        <div class="metric metric--text"><div class="label">Tipo de montaje</div><div class="value">${formatMounting(mount)}</div></div>
+        <div class="metric"><div class="label">Velocidad</div><div class="value">${r.drive.sheave_rpm.toFixed(1)} min⁻¹</div></div>
+        <div class="metric"><div class="label">Motor (kW)</div><div class="value">${drive.power_kW.toFixed(3)} kW</div></div>
+        <div class="metric metric--text"><div class="label">Detalles mecánicos</div><div class="value">${mechanicalSummary}</div></div>
+      </div>
+      <details class="motors-details result-focus-extra">
+        <summary class="motors-details__summary">
+          <span class="motors-details__summary-main">
+            <span class="panel-icon">≡</span>
+            <span class="motors-details__text">
+              <span class="motors-details__title">Resultado completo</span>
+              <span class="motors-details__hint">Adherencia, contrapeso, cables y energía</span>
+            </span>
+          </span>
+        </summary>
+        <div class="motors-details__body">
+          <div class="results-grid">
+            <div class="metric"><div class="label">Contrapeso (modelo)</div><div class="value">${r.inputs.Mcp.toFixed(0)} kg</div></div>
+            <div class="metric"><div class="label">Contrapeso óptimo</div><div class="value">${r.inputs.Mcp_optimal.toFixed(0)} kg</div></div>
+            <div class="metric"><div class="label"><em>T</em>₁/<em>T</em>₂ · e<sup>μα</sup></div><div class="value">${eu.tensionRatioWorst.toFixed(2)} · ${eu.limit.toFixed(2)}</div></div>
+            <div class="metric"><div class="label">Adherencia</div><div class="value">${eu.adhesionOk ? 'OK' : 'revisar'} · margen ×${eu.adhesionMargin.toFixed(2)}</div></div>
+            <div class="metric"><div class="label">Uso resist. nominal</div><div class="value">${(rope.utilFactor * 100).toFixed(1)} %</div></div>
+            <div class="metric"><div class="label">Par freno emerg.</div><div class="value">${r.brake.torque_Nm.toFixed(0)} N·m</div></div>
+            <div class="metric"><div class="label">Ahorro energía vs sin CP</div><div class="value">${r.energy.savingVsNoCounterweight_pct.toFixed(0)} %</div></div>
+          </div>
+        </div>
+      </details>
     `;
   }
 

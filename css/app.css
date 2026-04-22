@@ -931,6 +931,26 @@ body {
   gap: 0.75rem;
 }
 
+.result-focus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.75rem;
+}
+
+.result-focus-extra {
+  margin-top: 0.9rem;
+}
+
+.result-focus-extra .motors-details__summary {
+  padding-top: 0.15rem;
+  padding-bottom: 0.15rem;
+}
+
+.metric--text .value {
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
 .metric {
   background: linear-gradient(145deg, #ecfdf5 0%, #d1fae5 100%);
   border: 1px solid rgba(13, 148, 136, 0.25);

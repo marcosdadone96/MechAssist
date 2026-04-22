@@ -158,6 +158,11 @@ function formatNum(x, d = 2) {
   return x.toFixed(d);
 }
 
+function formatMounting(pref) {
+  const typeMap = { B3: 'B3 patas', B5: 'B5 brida', B14: 'B14 brida', hollowShaft: 'Eje hueco' };
+  return `${typeMap[pref.mountingType] || pref.mountingType} · ${pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal'}`;
+}
+
 function showRuntimeError(msg) {
   const box = document.getElementById('runtimeError');
   if (!box) return;
@@ -250,20 +255,47 @@ function refresh() {
     }
 
     if (els.results) {
+      const mount = readMountingPreferences();
+      const mechanicalSummary = [
+        `Acople ${raw.couplingType === 'direct' ? 'directo' : 'motorreductor'}`,
+        raw.pipeDiameter_mm ? `tubería ${formatNum(raw.pipeDiameter_mm, 0)} mm` : null,
+        mount.machineShaftDiameter_mm != null ? `eje ${formatNum(mount.machineShaftDiameter_mm, 0)} mm` : null,
+      ]
+        .filter(Boolean)
+        .join(' · ');
       const instNote = raw.installationProActive
         ? ''
         : `<div class="metric"><div class="label">Instalación (Pro)</div><div class="value muted">Actíve Pro para succión, tubería y horario</div></div>`;
       els.results.innerHTML = `
-    <div class="metric"><div class="label">Potencia hidráulica P_h</div><div class="value">${formatNum(r.hydraulicPower_kW, 3)} kW</div></div>
-    <div class="metric"><div class="label">Potencia en eje bomba (sin SF)</div><div class="value">${formatNum(r.shaftPower_kW, 3)} kW</div></div>
-    <div class="metric"><div class="label">Factor corrección ν / fluido</div><div class="value">${formatNum(r.viscosityFactor ?? 1, 3)}</div></div>
-    <div class="metric"><div class="label">Caudal másico</div><div class="value">${formatNum(r.massFlow_kg_s, 3)} kg/s</div></div>
-    <div class="metric"><div class="label">Par en eje (régimen)</div><div class="value">${formatNum(r.torqueAtDrum_Nm, 2)} N·m</div></div>
-    <div class="metric"><div class="label">Par diseño (× SF)</div><div class="value">${formatNum(r.torqueWithService_Nm, 2)} N·m</div></div>
-    <div class="metric"><div class="label">Potencia motor orientativa</div><div class="value">${formatNum(r.requiredMotorPower_kW, 3)} kW</div></div>
-    <div class="metric"><div class="label">Velocidad eje bomba</div><div class="value">${formatNum(r.drumRpm, 2)} min⁻¹</div></div>
-    <div class="metric"><div class="label">Factor servicio</div><div class="value">${formatNum(r.serviceFactorUsed ?? 1, 3)}</div></div>
-    ${instNote}
+    <div class="result-focus-grid">
+      <div class="metric"><div class="label">Par requerido</div><div class="value">${formatNum(r.torqueWithService_Nm, 2)} N·m</div></div>
+      <div class="metric"><div class="label">Factor de servicio</div><div class="value">${formatNum(r.serviceFactorUsed ?? 1, 3)}</div></div>
+      <div class="metric metric--text"><div class="label">Tipo de montaje</div><div class="value">${formatMounting(mount)}</div></div>
+      <div class="metric"><div class="label">Velocidad</div><div class="value">${formatNum(r.drumRpm, 2)} min⁻¹</div></div>
+      <div class="metric"><div class="label">Motor (kW)</div><div class="value">${formatNum(r.requiredMotorPower_kW, 3)} kW</div></div>
+      <div class="metric metric--text"><div class="label">Detalles mecánicos</div><div class="value">${mechanicalSummary}</div></div>
+    </div>
+    <details class="motors-details result-focus-extra">
+      <summary class="motors-details__summary">
+        <span class="motors-details__summary-main">
+          <span class="panel-icon">≡</span>
+          <span class="motors-details__text">
+            <span class="motors-details__title">Resultado completo</span>
+            <span class="motors-details__hint">Hidráulica, correcciones y datos de proceso</span>
+          </span>
+        </span>
+      </summary>
+      <div class="motors-details__body">
+        <div class="results-grid">
+          <div class="metric"><div class="label">Potencia hidráulica P_h</div><div class="value">${formatNum(r.hydraulicPower_kW, 3)} kW</div></div>
+          <div class="metric"><div class="label">Potencia eje bomba (sin SF)</div><div class="value">${formatNum(r.shaftPower_kW, 3)} kW</div></div>
+          <div class="metric"><div class="label">Factor corrección ν / fluido</div><div class="value">${formatNum(r.viscosityFactor ?? 1, 3)}</div></div>
+          <div class="metric"><div class="label">Caudal másico</div><div class="value">${formatNum(r.massFlow_kg_s, 3)} kg/s</div></div>
+          <div class="metric"><div class="label">Par en eje (régimen)</div><div class="value">${formatNum(r.torqueAtDrum_Nm, 2)} N·m</div></div>
+          ${instNote}
+        </div>
+      </div>
+    </details>
   `;
     }
 

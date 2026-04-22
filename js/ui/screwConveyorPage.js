@@ -128,6 +128,11 @@ function formatNum(x, d = 2) {
   return x.toFixed(d);
 }
 
+function formatMounting(pref) {
+  const typeMap = { B3: 'B3 patas', B5: 'B5 brida', B14: 'B14 brida', hollowShaft: 'Eje hueco' };
+  return `${typeMap[pref.mountingType] || pref.mountingType} · ${pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal'}`;
+}
+
 function showRuntimeError(msg) {
   const box = document.getElementById('runtimeError');
   if (!box) return;
@@ -221,17 +226,44 @@ function refresh() {
 
     const hp = r.requiredMotorPower_kW * 1.34102;
     if (els.results) {
+      const mount = readMountingPreferences();
+      const mechanicalSummary = [
+        `Ø ${formatNum(Dmm, 0)} mm`,
+        `paso ${formatNum(pitchMm, 0)} mm`,
+        mount.machineShaftDiameter_mm != null ? `eje ${formatNum(mount.machineShaftDiameter_mm, 0)} mm` : null,
+      ]
+        .filter(Boolean)
+        .join(' · ');
       els.results.innerHTML = `
-    <div class="metric"><div class="label">Potencia accionamiento (diseño)</div><div class="value">${formatNum(r.requiredMotorPower_kW, 3)} kW</div></div>
-    <div class="metric"><div class="label">Potencia (HP, diseño)</div><div class="value">${formatNum(hp, 3)} HP</div></div>
-    <div class="metric"><div class="label">Potencia eje (sin margen SF servicio)</div><div class="value">${formatNum(r.shaftPower_kW, 3)} kW</div></div>
-    <div class="metric"><div class="label">Par en eje tornillo (régimen)</div><div class="value">${formatNum(r.torqueAtDrum_Nm, 1)} N·m</div></div>
-    <div class="metric"><div class="label">Par diseño (motorreductor)</div><div class="value">${formatNum(r.torqueWithService_Nm, 1)} N·m</div></div>
-    <div class="metric"><div class="label">RPM tornillo</div><div class="value">${formatNum(r.screwRpm, 1)} min⁻¹</div></div>
-    <div class="metric"><div class="label">Velocidad axial bulk (orient.)</div><div class="value">${formatNum((r.axialSpeed_m_s ?? 0) * 1000, 1)} mm/s</div></div>
-    <div class="metric"><div class="label">Caudal másico</div><div class="value">${formatNum(r.massFlow_kg_s, 3)} kg/s</div></div>
-    <div class="metric"><div class="label">Capacidad (m³/h)</div><div class="value">${formatNum(r.cap_m3h, 2)} m³/h</div></div>
-    <div class="metric"><div class="label">Factor servicio combinado</div><div class="value">${formatNum(r.serviceFactorUsed ?? 1, 3)}</div></div>
+    <div class="result-focus-grid">
+      <div class="metric"><div class="label">Par requerido</div><div class="value">${formatNum(r.torqueWithService_Nm, 1)} N·m</div></div>
+      <div class="metric"><div class="label">Factor de servicio</div><div class="value">${formatNum(r.serviceFactorUsed ?? 1, 3)}</div></div>
+      <div class="metric metric--text"><div class="label">Tipo de montaje</div><div class="value">${formatMounting(mount)}</div></div>
+      <div class="metric"><div class="label">Velocidad</div><div class="value">${formatNum(r.screwRpm, 1)} min⁻¹</div></div>
+      <div class="metric"><div class="label">Motor (kW)</div><div class="value">${formatNum(r.requiredMotorPower_kW, 3)} kW</div></div>
+      <div class="metric metric--text"><div class="label">Detalles mecánicos</div><div class="value">${mechanicalSummary}</div></div>
+    </div>
+    <details class="motors-details result-focus-extra">
+      <summary class="motors-details__summary">
+        <span class="motors-details__summary-main">
+          <span class="panel-icon">≡</span>
+          <span class="motors-details__text">
+            <span class="motors-details__title">Resultado completo</span>
+            <span class="motors-details__hint">Potencias auxiliares, caudales y unidades extendidas</span>
+          </span>
+        </span>
+      </summary>
+      <div class="motors-details__body">
+        <div class="results-grid">
+          <div class="metric"><div class="label">Potencia (HP, diseño)</div><div class="value">${formatNum(hp, 3)} HP</div></div>
+          <div class="metric"><div class="label">Potencia eje (sin margen SF)</div><div class="value">${formatNum(r.shaftPower_kW, 3)} kW</div></div>
+          <div class="metric"><div class="label">Par en eje tornillo (régimen)</div><div class="value">${formatNum(r.torqueAtDrum_Nm, 1)} N·m</div></div>
+          <div class="metric"><div class="label">Velocidad axial bulk</div><div class="value">${formatNum((r.axialSpeed_m_s ?? 0) * 1000, 1)} mm/s</div></div>
+          <div class="metric"><div class="label">Caudal másico</div><div class="value">${formatNum(r.massFlow_kg_s, 3)} kg/s</div></div>
+          <div class="metric"><div class="label">Capacidad (m³/h)</div><div class="value">${formatNum(r.cap_m3h, 2)} m³/h</div></div>
+        </div>
+      </div>
+    </details>
   `;
     }
 

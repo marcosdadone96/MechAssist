@@ -98,6 +98,11 @@ function esc(s) {
     .replace(/"/g, '&quot;');
 }
 
+function formatMounting(pref) {
+  const typeMap = { B3: 'B3 patas', B5: 'B5 brida', B14: 'B14 brida', hollowShaft: 'Eje hueco' };
+  return `${typeMap[pref.mountingType] || pref.mountingType} · ${pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal'}`;
+}
+
 function drawDiagramOnly() {
   const svg = document.getElementById('beDiagram');
   if (!lastP || !lastR) return;
@@ -151,14 +156,46 @@ function computeAndRender() {
   const res = document.getElementById('beResults');
   if (res) {
     const pw = r.power;
+    const drive = getDriveRequirements();
+    const mount = readMountingPreferences();
+    const mechanicalSummary = [
+      `Tambor cabeza Ø${p.headDrumDiameter_m.toFixed(2)} m`,
+      `banda ${p.beltWidth_mm.toFixed(0)} mm`,
+      mount.machineShaftDiameter_mm != null ? `eje ${mount.machineShaftDiameter_mm.toFixed(0)} mm` : null,
+    ]
+      .filter(Boolean)
+      .join(' · ');
     res.innerHTML = `
-      <div class="metric"><div class="label">Potencia elevación pura <em>P</em>ₑ</div><div class="value">${pw.pureLift_kW.toFixed(3)} kW</div></div>
-      <div class="metric"><div class="label">Potencia arrastre bota</div><div class="value">${pw.dragBoot_kW.toFixed(3)} kW</div></div>
-      <div class="metric"><div class="label">Potencia eje (reductor)</div><div class="value">${pw.shaft_kW.toFixed(3)} kW · ${pw.shaft_HP.toFixed(2)} HP</div></div>
-      <div class="metric"><div class="label">Tensión trabajo / admisible</div><div class="value">${r.tension.working_N.toFixed(0)} / ${r.tension.admissible_N.toFixed(0)} N</div></div>
-      <div class="metric"><div class="label">Uso tensión τ/τ<sub>adm</sub> (demo)</div><div class="value">${(r.tension.ratio * 100).toFixed(1)} % · ${r.tension.ok ? 'OK' : 'revisar'}</div></div>
-      <div class="metric"><div class="label"><em>K</em> = v²/(gR) cabeza</div><div class="value">${r.centrifugal.K.toFixed(2)}</div></div>
-      <div class="metric"><div class="label">Paso cangilones (calc.)</div><div class="value">${r.pitch_mm.toFixed(0)} mm</div></div>
+      <div class="result-focus-grid">
+        <div class="metric"><div class="label">Par requerido</div><div class="value">${drive.torque_Nm.toFixed(0)} N·m</div></div>
+        <div class="metric"><div class="label">Factor de servicio</div><div class="value">1.00</div></div>
+        <div class="metric metric--text"><div class="label">Tipo de montaje</div><div class="value">${formatMounting(mount)}</div></div>
+        <div class="metric"><div class="label">Velocidad</div><div class="value">${drive.drum_rpm.toFixed(1)} min⁻¹</div></div>
+        <div class="metric"><div class="label">Motor (kW)</div><div class="value">${drive.power_kW.toFixed(3)} kW</div></div>
+        <div class="metric metric--text"><div class="label">Detalles mecánicos</div><div class="value">${mechanicalSummary}</div></div>
+      </div>
+      <details class="motors-details result-focus-extra">
+        <summary class="motors-details__summary">
+          <span class="motors-details__summary-main">
+            <span class="panel-icon">≡</span>
+            <span class="motors-details__text">
+              <span class="motors-details__title">Resultado completo</span>
+              <span class="motors-details__hint">Potencias internas, tensión y chequeo centrífugo</span>
+            </span>
+          </span>
+        </summary>
+        <div class="motors-details__body">
+          <div class="results-grid">
+            <div class="metric"><div class="label">Potencia elevación pura <em>P</em>ₑ</div><div class="value">${pw.pureLift_kW.toFixed(3)} kW</div></div>
+            <div class="metric"><div class="label">Potencia arrastre bota</div><div class="value">${pw.dragBoot_kW.toFixed(3)} kW</div></div>
+            <div class="metric"><div class="label">Potencia eje (reductor)</div><div class="value">${pw.shaft_kW.toFixed(3)} kW · ${pw.shaft_HP.toFixed(2)} HP</div></div>
+            <div class="metric"><div class="label">Tensión trabajo / admisible</div><div class="value">${r.tension.working_N.toFixed(0)} / ${r.tension.admissible_N.toFixed(0)} N</div></div>
+            <div class="metric"><div class="label">Uso tensión τ/τ<sub>adm</sub></div><div class="value">${(r.tension.ratio * 100).toFixed(1)} % · ${r.tension.ok ? 'OK' : 'revisar'}</div></div>
+            <div class="metric"><div class="label"><em>K</em> = v²/(gR) cabeza</div><div class="value">${r.centrifugal.K.toFixed(2)}</div></div>
+            <div class="metric"><div class="label">Paso cangilones (calc.)</div><div class="value">${r.pitch_mm.toFixed(0)} mm</div></div>
+          </div>
+        </div>
+      </details>
     `;
   }
 

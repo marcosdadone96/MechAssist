@@ -130,6 +130,11 @@ function formatNum(x, d = 2) {
   return x.toFixed(d);
 }
 
+function formatMounting(pref) {
+  const typeMap = { B3: 'B3 patas', B5: 'B5 brida', B14: 'B14 brida', hollowShaft: 'Eje hueco' };
+  return `${typeMap[pref.mountingType] || pref.mountingType} · ${pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal'}`;
+}
+
 function showRuntimeError(msg) {
   const box = document.getElementById('runtimeError');
   if (!box) return;
@@ -205,23 +210,49 @@ function refresh() {
     }
 
     if (els.results) {
+      const mount = readMountingPreferences();
+      const mechanicalSummary = [
+        `Tambor ${formatNum(raw.rollerDiameter_mm, 0)} mm`,
+        mount.machineShaftDiameter_mm != null ? `eje ${formatNum(mount.machineShaftDiameter_mm, 0)} mm` : null,
+      ]
+        .filter(Boolean)
+        .join(' · ');
       const normaRow =
         r.steadyStandardMultiplier > 1
           ? `<div class="metric"><div class="label">Margen normativo (régimen)</div><div class="value">×${formatNum(r.steadyStandardMultiplier, 2)} (${r.designStandard})</div></div>`
           : '';
       els.results.innerHTML = `
-    ${normaRow}
-    <div class="metric"><div class="label">Fuerza régimen (tambor)</div><div class="value">${formatNum(d.F_steady_N, 0)} N</div></div>
-    <div class="metric"><div class="label">Fuerza arranque (pico)</div><div class="value">${formatNum(d.F_total_start_N, 0)} N</div></div>
-    <div class="metric"><div class="label">Roz. carga / roz. banda</div><div class="value">${formatNum(d.F_friction_load_N, 0)} / ${formatNum(d.F_friction_belt_total_N, 0)} N</div></div>
-    <div class="metric"><div class="label">Fuerza por aceleración</div><div class="value">${formatNum(d.F_accel_N, 0)} N</div></div>
-    <div class="metric"><div class="label">Caudal másico</div><div class="value">${formatNum(r.massFlow_kg_s, 3)} kg/s</div></div>
-    <div class="metric"><div class="label">Par régimen (tambor)</div><div class="value">${formatNum(r.torqueAtDrum_Nm, 2)} N·m</div></div>
-    <div class="metric"><div class="label">Par arranque (tambor)</div><div class="value">${formatNum(r.torqueStart_Nm, 2)} N·m</div></div>
-    <div class="metric"><div class="label">Par diseño (con servicio)</div><div class="value">${formatNum(r.torqueWithService_Nm, 2)} N·m</div></div>
-    <div class="metric"><div class="label">Potencia motor (eje)</div><div class="value">${formatNum(r.requiredMotorPower_kW, 3)} kW</div></div>
-    <div class="metric"><div class="label">Velocidad giro tambor</div><div class="value">${formatNum(r.drumRpm, 2)} min⁻¹</div></div>
-    <div class="metric"><div class="label">Potencia motor régimen / pico</div><div class="value">${formatNum((d.powerMotorRun_W ?? 0) / 1000, 3)} / ${formatNum((d.powerMotorStart_W ?? 0) / 1000, 3)} kW</div></div>
+    <div class="result-focus-grid">
+      <div class="metric"><div class="label">Par requerido</div><div class="value">${formatNum(r.torqueWithService_Nm, 2)} N·m</div></div>
+      <div class="metric"><div class="label">Factor de servicio</div><div class="value">${formatNum(r.serviceFactorUsed ?? raw.serviceFactor, 2)}</div></div>
+      <div class="metric metric--text"><div class="label">Tipo de montaje</div><div class="value">${formatMounting(mount)}</div></div>
+      <div class="metric"><div class="label">Velocidad</div><div class="value">${formatNum(r.drumRpm, 2)} min⁻¹</div></div>
+      <div class="metric"><div class="label">Motor (kW)</div><div class="value">${formatNum(r.requiredMotorPower_kW, 3)} kW</div></div>
+      <div class="metric metric--text"><div class="label">Detalles mecánicos</div><div class="value">${mechanicalSummary || 'Configuración estándar'}</div></div>
+    </div>
+    <details class="motors-details result-focus-extra">
+      <summary class="motors-details__summary">
+        <span class="motors-details__summary-main">
+          <span class="panel-icon">≡</span>
+          <span class="motors-details__text">
+            <span class="motors-details__title">Resultado completo</span>
+            <span class="motors-details__hint">Fuerzas, potencias parciales y métricas extendidas</span>
+          </span>
+        </span>
+      </summary>
+      <div class="motors-details__body">
+        <div class="results-grid">
+          ${normaRow}
+          <div class="metric"><div class="label">Fuerza régimen (tambor)</div><div class="value">${formatNum(d.F_steady_N, 0)} N</div></div>
+          <div class="metric"><div class="label">Fuerza arranque (pico)</div><div class="value">${formatNum(d.F_total_start_N, 0)} N</div></div>
+          <div class="metric"><div class="label">Roz. carga / roz. banda</div><div class="value">${formatNum(d.F_friction_load_N, 0)} / ${formatNum(d.F_friction_belt_total_N, 0)} N</div></div>
+          <div class="metric"><div class="label">Fuerza por aceleración</div><div class="value">${formatNum(d.F_accel_N, 0)} N</div></div>
+          <div class="metric"><div class="label">Caudal másico</div><div class="value">${formatNum(r.massFlow_kg_s, 3)} kg/s</div></div>
+          <div class="metric"><div class="label">Par régimen / arranque</div><div class="value">${formatNum(r.torqueAtDrum_Nm, 2)} / ${formatNum(r.torqueStart_Nm, 2)} N·m</div></div>
+          <div class="metric"><div class="label">Potencia motor régimen / pico</div><div class="value">${formatNum((d.powerMotorRun_W ?? 0) / 1000, 3)} / ${formatNum((d.powerMotorStart_W ?? 0) / 1000, 3)} kW</div></div>
+        </div>
+      </div>
+    </details>
   `;
     }
 
