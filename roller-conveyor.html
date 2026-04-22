@@ -3,106 +3,152 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DriveLab - Transportador de Rodillos</title>
+    <title>Transportador de rodillos - DriveLab</title>
     <link rel="stylesheet" href="css/app.css" />
   </head>
   <body>
     <header class="app-header">
-      <a href="index.html" class="logo">DriveLab</a>
-      <nav class="top-nav">
+      <a class="app-header__brand" href="index.html">Drive<span>Lab</span></a>
+      <nav>
+        <a href="index.html">Inicio</a>
         <a href="flat-conveyor.html">Cinta plana</a>
         <a href="inclined-conveyor.html">Cinta inclinada</a>
-        <a href="roller-conveyor.html" aria-current="page">Rodillos</a>
+        <a href="roller-conveyor.html">Rodillos</a>
         <a href="screw-conveyor.html">Tornillo</a>
-        <a href="centrifugal-pump.html">Bomba</a>
       </nav>
     </header>
 
-    <main class="container">
-      <section class="panel panel--hero">
-        <h1><span class="panel-icon">?</span> Transportador de rodillos</h1>
-        <p class="muted">Dimensionado orientativo del motorreductor para lùnea de rodillos motorizada horizontal.</p>
+    <main class="app-main">
+      <section class="panel">
+        <h2><span class="panel-icon">R</span> Datos de entrada</h2>
+        <p class="form-lead">
+          Modelo orientativo para <strong>transportador de rodillos motorizado horizontal</strong>. El calculo entrega par,
+          velocidad y potencia para seleccionar motorreductor.
+        </p>
+
+        <h3 class="field-section-title">Norma y carga</h3>
+        <div class="field-grid field-grid--essential">
+          <div class="field">
+            <label for="designStandard">Norma</label>
+            <select id="designStandard">
+              <option value="ISO5048">ISO 5048</option>
+              <option value="CEMA">CEMA</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="loadDuty">Tipo de carga</label>
+            <select id="loadDuty">
+              <option value="uniform">Uniforme</option>
+              <option value="moderate" selected>Moderada</option>
+              <option value="heavy">Pesada</option>
+              <option value="custom">Personalizada</option>
+            </select>
+            <span id="loadDutyHint" class="field-hint">Cargas moderadas: SF recomendado tipico.</span>
+          </div>
+          <div class="field">
+            <label for="serviceFactor">Factor de servicio</label>
+            <input id="serviceFactor" type="number" min="1.0" step="0.05" value="1.25" readonly class="input-synced" />
+          </div>
+        </div>
+
+        <h3 class="field-section-title">Datos esenciales</h3>
+        <div class="field-grid field-grid--essential">
+          <div class="field">
+            <label for="length">Longitud util</label>
+            <input id="length" type="number" min="0.5" step="0.1" value="5.0" />
+            <span class="field-hint">m</span>
+          </div>
+          <div class="field">
+            <label for="loadMass">Carga total</label>
+            <input id="loadMass" type="number" min="1" step="1" value="350" />
+            <span class="field-hint">kg</span>
+          </div>
+          <div class="field">
+            <label for="speed">Velocidad lineal</label>
+            <input id="speed" type="number" min="0.01" step="0.01" value="0.35" />
+            <span class="field-hint">m/s</span>
+          </div>
+          <div class="field">
+            <label for="rollerD">Diametro rodillo motriz</label>
+            <input id="rollerD" type="number" min="40" step="1" value="89" />
+            <span class="field-hint">mm</span>
+          </div>
+          <div class="field">
+            <label for="rollingResistance">Coef. rodadura Crr</label>
+            <input id="rollingResistance" type="number" min="0.002" step="0.001" value="0.030" />
+          </div>
+          <div class="field">
+            <label for="efficiency">Rendimiento eta</label>
+            <input id="efficiency" type="number" min="1" max="100" step="0.5" value="90" />
+            <span class="field-hint">%</span>
+          </div>
+          <div class="field">
+            <label for="additionalResistance">Resistencia adicional</label>
+            <input id="additionalResistance" type="number" min="0" step="10" value="0" />
+            <span class="field-hint">N</span>
+          </div>
+          <div class="field">
+            <label for="accelTime">Tiempo aceleracion</label>
+            <input id="accelTime" type="number" min="0.2" step="0.1" value="2.5" />
+            <span class="field-hint">s</span>
+          </div>
+          <div class="field">
+            <label for="inertiaFactor">Factor de inercia arranque</label>
+            <input id="inertiaFactor" type="number" min="1" step="0.05" value="1.10" />
+          </div>
+        </div>
+
+        <div id="mountingConfigHost" class="mounting-config-host"></div>
+
+        <button type="button" class="btn-calc" id="btnCalcular">Calcular y mostrar motorreductor</button>
       </section>
 
-      <section class="grid">
-        <section class="panel">
-          <h2><span class="panel-icon">?</span> Entradas</h2>
-          <div class="form-grid">
-            <label>Longitud ùtil [m]<input id="length" type="number" min="0.5" step="0.1" value="5.0" /></label>
-            <label>Carga total [kg]<input id="loadMass" type="number" min="1" step="1" value="350" /></label>
-            <label>Velocidad lineal [m/s]<input id="speed" type="number" min="0.01" step="0.01" value="0.35" /></label>
-            <label>Diùmetro rodillo motriz [mm]<input id="rollerD" type="number" min="40" step="1" value="89" /></label>
-            <label>Coef. rodadura Crr<input id="rollingResistance" type="number" min="0.002" step="0.001" value="0.030" /></label>
-            <label>Rendimiento ? [%]<input id="efficiency" type="number" min="1" max="100" step="0.5" value="90" /></label>
-            <label>Resistencia adicional [N]<input id="additionalResistance" type="number" min="0" step="10" value="0" /></label>
-            <label>Tiempo aceleraciùn [s]<input id="accelTime" type="number" min="0.2" step="0.1" value="2.5" /></label>
-            <label>Factor de inercia arranque<input id="inertiaFactor" type="number" min="1" step="0.05" value="1.10" /></label>
-            <label>Norma
-              <select id="designStandard">
-                <option value="ISO5048">ISO 5048</option>
-                <option value="CEMA">CEMA</option>
-              </select>
-            </label>
-            <label>Tipo de carga
-              <select id="loadDuty">
-                <option value="uniform">Uniforme</option>
-                <option value="moderate" selected>Moderada</option>
-                <option value="heavy">Pesada</option>
-                <option value="custom">Personalizada</option>
-              </select>
-            </label>
-            <label>Factor de servicio<input id="serviceFactor" type="number" min="1.0" step="0.05" value="1.25" readonly /></label>
+      <div class="layout-right">
+        <section class="diagram-duo" aria-label="Esquema y referencia fotografica">
+          <div class="diagram-duo__schematic">
+            <svg id="diagramRoller" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama de transportador de rodillos"></svg>
           </div>
-          <p id="loadDutyHint" class="muted">Cargas moderadas: SF recomendado tùpico.</p>
-          <div id="mountingConfigMount"></div>
-          <button id="btnCalcular" class="btn-primary">Calcular</button>
+          <figure class="diagram-duo__real">
+            <img src="assets/roller-conveyor-reference.png" alt="Foto de referencia transportador de rodillos" loading="lazy" decoding="async" />
+          </figure>
         </section>
 
         <section class="panel">
-          <h2><span class="panel-icon">?</span> Diagrama + foto</h2>
-          <div class="machine-visual-duo">
-            <div class="diagram-frame">
-              <svg id="diagramRoller" class="diagram-svg" role="img" aria-label="Diagrama transportador de rodillos"></svg>
-            </div>
-            <div class="diagram-duo__real">
-              <img class="machine-real-photo" src="assets/roller-conveyor-reference.png" alt="Foto de referencia transportador de rodillos" />
-            </div>
-          </div>
-          <p class="muted">Si cambias la foto, conserva la misma proporciùn para mantener el layout.</p>
+          <h2><span class="panel-icon">S</span> Resultado</h2>
+          <div id="resultsGrid"></div>
         </section>
-      </section>
 
-      <section class="panel">
-        <h2><span class="panel-icon">?</span> Resultado</h2>
-        <div id="resultsGrid"></div>
-      </section>
-
-      <section class="panel">
-        <details class="motors-details">
-          <summary class="motors-details__summary">
-            <span class="motors-details__summary-main">
-              <span class="panel-icon">?</span>
-              <span class="motors-details__text">
-                <span class="motors-details__title">Desglose de ingenierùa</span>
-                <span class="motors-details__hint">Pasos de cùlculo, hipùtesis y criterios</span>
+        <section class="panel">
+          <details class="motors-details">
+            <summary class="motors-details__summary">
+              <span class="motors-details__summary-main">
+                <span class="panel-icon">D</span>
+                <span class="motors-details__text">
+                  <span class="motors-details__title">Desglose de ingenieria</span>
+                  <span class="motors-details__hint">Pasos de calculo, hipotesis y criterios</span>
+                </span>
               </span>
-            </span>
-          </summary>
-          <div class="motors-details__body">
-            <div id="engineeringReport"></div>
-            <ul id="assumptionsList" class="muted"></ul>
-          </div>
-        </details>
-      </section>
+            </summary>
+            <div class="motors-details__body">
+              <div id="engineeringReport"></div>
+            </div>
+          </details>
+        </section>
 
-      <section id="section-motores" class="panel">
-        <h2><span class="panel-icon">?</span> Recomendaciones de motorreductor</h2>
-        <div id="verifyPanel"></div>
-        <div id="motorBlock"></div>
-      </section>
+        <section id="section-motores" class="panel">
+          <h2><span class="panel-icon">M</span> Recomendaciones de motorreductor</h2>
+          <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
+          <div id="motorBlock"></div>
+          <div id="verifyPanel" class="verify-panel"></div>
+        </section>
 
-      <section id="premiumPdfExportMount"></section>
-      <section id="premiumOptBlock"></section>
+        <section class="panel">
+          <h2><span class="panel-icon">H</span> Hipotesis del modelo</h2>
+          <ul class="assumptions" id="assumptionsList"></ul>
+        </section>
+
+        <div id="premiumOptBlock"></div>
+      </div>
     </main>
 
     <script type="module" src="js/ui/rollerConveyorPage.js"></script>
