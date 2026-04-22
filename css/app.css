@@ -755,14 +755,17 @@ body {
   box-shadow: var(--shadow);
   position: sticky;
   top: 0.5rem;
+  justify-self: end;
+  width: min(100%, 320px);
 }
 
 .diagram-duo__real img {
   width: 100%;
-  height: auto;
+  height: 240px;
   display: block;
-  object-fit: cover;
-  max-height: 420px;
+  object-fit: contain;
+  object-position: center;
+  background: #f8fafc;
 }
 
 .diagram-duo__real figcaption {
@@ -784,14 +787,17 @@ body {
   border-radius: 12px;
   overflow: hidden;
   background: var(--surface);
+  margin-left: auto;
+  width: min(100%, 340px);
 }
 
 .machine-real-photo img {
   width: 100%;
-  height: auto;
+  height: 220px;
   display: block;
-  object-fit: cover;
-  max-height: 280px;
+  object-fit: contain;
+  object-position: center;
+  background: #f8fafc;
 }
 
 .machine-real-photo figcaption {
