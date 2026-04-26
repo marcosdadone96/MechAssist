@@ -4,8 +4,9 @@
 
 import { readMountingPreferences } from '../modules/mountingPreferences.js';
 import { computeTractionElevator } from '../modules/tractionElevator.js';
-import { renderBrandRecommendationCards, initMotorVerification } from './driveSelection.js';
-import { injectMountingConfigSection, MOUNTING_INPUT_IDS } from './mountingConfigSection.js';
+import { renderBrandRecommendationCards, initMotorVerification, refreshMotorVerificationManual } from './driveSelection.js';
+import { injectMountingConfigSection } from './mountingConfigSection.js';
+import { TRACTION_LANG_EVENT } from './tractionElevatorStaticI18n.js';
 import { openMotorsRecommendationsAndScroll } from './motorsCollapsible.js';
 import { renderTractionElevatorDiagram } from './diagramTractionElevator.js';
 import { applyMachinePremiumGates } from './machinePremiumGates.js';
@@ -14,7 +15,8 @@ import { isPremiumEffective } from '../services/accessTier.js';
 import { mountPremiumPdfExportBar, buildTractionPdfPayload } from '../services/reportPdfExport.js';
 import { renderFullEngineeringAside } from './engineeringReport.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
-import { getI18nLabels, getCurrentLang } from '../config/i18nLabels.js';
+import { getI18nLabels } from '../config/i18nLabels.js';
+import { getCurrentLang } from '../config/locales.js';
 
 function recoCopyTraction(en) {
   return en
@@ -54,18 +56,19 @@ function esc(s) {
     .replace(/"/g, '&quot;');
 }
 
-function formatMounting(pref) {
-  const en = getCurrentLang() === 'en';
+function formatMounting(pref, lang = getCurrentLang()) {
+  const en = lang === 'en';
   const typeMap = en
-    ? { B3: 'B3 foot', B5: 'B5 flange', B14: 'B14 flange', hollowShaft: 'Hollow shaft' }
+    ? { B3: 'B3 foot mount', B5: 'B5 flange', B14: 'B14 flange', hollowShaft: 'Hollow shaft' }
     : { B3: 'B3 patas', B5: 'B5 brida', B14: 'B14 brida', hollowShaft: 'Eje hueco' };
-  return `${typeMap[pref.mountingType] || pref.mountingType} · ${pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal'}`;
+  return `${typeMap[pref.mountingType] || pref.mountingType} \u00b7 ${pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal'}`;
 }
 
 function buildParams() {
   const useOptimal = !document.getElementById('teCwManual')?.checked;
   const manualCw = readNum('teMcpManual', 0);
   return {
+    lang: getCurrentLang(),
     usefulLoad_kg: readNum('teQ', 2000),
     emptyCar_kg: readNum('teMc', 1200),
     counterweight_kg: useOptimal ? null : manualCw,
@@ -107,11 +110,12 @@ function getDriveRequirements() {
   };
 }
 
-function drawDiagram(H, reeving) {
+function drawDiagram(H, reeving, lang) {
   const svg = document.getElementById('teDiagram');
   renderTractionElevatorDiagram(svg instanceof SVGSVGElement ? svg : null, {
     travelHeight_m: H,
     reeving,
+    lang: lang ?? getCurrentLang(),
   });
 }
 
@@ -163,7 +167,7 @@ function computeAndRender() {
     return;
   }
 
-  drawDiagram(p.travelHeight_m, p.reeving);
+  drawDiagram(p.travelHeight_m, p.reeving, lang);
 
   const res = document.getElementById('teResults');
   if (res) {
@@ -290,72 +294,6 @@ function computeAndRender() {
   foldAllMachineDetailsOncePerPageLoad();
 }
 
-function localizeTractionStaticContent() {
-  const lang = getCurrentLang();
-  if (lang !== 'en') return;
-  document.documentElement.lang = 'en';
-  document.title = 'Traction elevator — MechAssist';
-  const setText = (sel, t) => {
-    const el = document.querySelector(sel);
-    if (el) el.textContent = t;
-  };
-  const setHtml = (sel, h) => {
-    const el = document.querySelector(sel);
-    if (el) el.innerHTML = h;
-  };
-  setText('.app-header nav a[href="index.html"]', 'Home');
-  setText('.app-header nav a[href="flat-conveyor.html"]', 'Flat conveyor');
-  setText('.app-header nav a[href="inclined-conveyor.html"]', 'Inclined conveyor');
-  setText('.app-header nav a[href="bucket-elevator.html"]', 'Bucket elevator');
-  setText('.app-header nav a[href="traction-elevator.html"]', 'Traction elevator');
-  setText('.app-header nav a[href="screw-conveyor.html"]', 'Screw conveyor');
-  setText('.app-header nav a[href="centrifugal-pump.html"]', 'Pump');
-  setHtml(
-    '.app-main > .panel > h2',
-    '<span class="panel-icon">⇅</span> Traction elevator (freight / passenger)',
-  );
-  setText('#btnTeCalc', 'View suggested gearmotors');
-  setHtml(
-    '.flat-calc-hint',
-    'Results and the diagram <strong>update when inputs change</strong>. This button expands the gearmotor block.',
-  );
-  setHtml(
-    '.app-main > .panel > .form-lead',
-    'Indicative <strong>ropes and counterweight</strong> model: tension ratio vs <strong>Euler–Eytelwein</strong>, counterweight mass (car + 40–50% useful load), <strong>diameter and rope count</strong> with safety factor (≈10 freight / 12 passenger), and <strong>braking torque</strong> at the sheave. The <strong>shaft diagram</strong> is on the right. Does not replace EN 81 or a full installation study.',
-  );
-  setText('.help-details.flat-help > summary', 'Quick guide');
-  setText('#teAccLoads .flat-accordion__label', 'Loads and travel');
-  setText('#teAccCw .flat-accordion__label', 'Counterweight');
-  setText('#teAccSheave .flat-accordion__label', 'Sheave and traction (Euler–Eytelwein)');
-  setHtml(
-    '.layout-right > .panel:first-child h2',
-    '<span class="panel-icon">∑</span> Results and verdicts',
-  );
-  setHtml(
-    '.be-diag-panel h2',
-    '<span class="panel-icon">◇</span> Shaft · side view',
-  );
-  setHtml(
-    '#teVerifyPanel h2',
-    '<span class="panel-icon">✓</span> Check a gearmotor I already have',
-  );
-  setText('#section-te-motores .motors-details__title', 'Gearmotors (sample catalog)');
-  setText('#section-te-motores .motors-details__hint', 'Collapsed by default — open for brand cards and verifier');
-  const engDet = document.querySelector('#teEngineeringReport')?.closest('.motors-details');
-  if (engDet) {
-    const t = engDet.querySelector('.motors-details__title');
-    const h = engDet.querySelector('.motors-details__hint');
-    if (t) t.textContent = 'Engineering breakdown';
-    if (h) h.textContent = 'Collapsed by default — ratio, strategies and model steps';
-  }
-  const asu = document.querySelector('#traction-assumptions .motors-details__title');
-  const asuh = document.querySelector('#traction-assumptions .motors-details__hint');
-  if (asu) asu.textContent = 'Model assumptions';
-  if (asuh) asuh.textContent = 'Indicative limits (not a certified lift calculation)';
-  const pdfH2 = document.querySelector('#premiumPdfExportMount')?.closest('section.panel')?.querySelector('h2');
-  if (pdfH2) pdfH2.innerHTML = '<span class="panel-icon">PDF</span> Export report';
-}
-
 function syncCwManualUi() {
   const cb = document.getElementById('teCwManual');
   const row = document.getElementById('teMcpManualRow');
@@ -392,17 +330,20 @@ document.getElementById('teCwManual')?.addEventListener('change', () => {
   document.getElementById(id)?.addEventListener('change', computeAndRender);
 });
 
-MOUNTING_INPUT_IDS.forEach((id) => {
-  document.getElementById(id)?.addEventListener('input', computeAndRender);
-  document.getElementById(id)?.addEventListener('change', computeAndRender);
-});
+document.getElementById('mountingConfigHost')?.addEventListener('input', computeAndRender);
+document.getElementById('mountingConfigHost')?.addEventListener('change', computeAndRender);
 
-localizeTractionStaticContent();
 try {
   initMotorVerification(document.getElementById('teVerifyPanel'), getDriveRequirements);
 } catch (e) {
   console.error(e);
 }
+
+window.addEventListener(TRACTION_LANG_EVENT, () => {
+  refreshMotorVerificationManual(document.getElementById('teVerifyPanel'), getDriveRequirements);
+  document.getElementById('teVerifyBrand')?.dispatchEvent(new Event('change'));
+  computeAndRender();
+});
 
 syncCwManualUi();
 computeAndRender();

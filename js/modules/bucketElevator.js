@@ -267,20 +267,26 @@ export function computeBucketElevator(p, lang = 'es') {
     verdicts.push({
       level: 'warn',
       code: 'belt_narrow',
-      text: `El ancho de banda adoptado (${B} mm) es inferior al mínimo orientativo del cangilón seleccionado (${minBeltCat} mm).`,
+      text: en
+        ? `Belt width used (${B} mm) is below the indicative minimum for the selected bucket (${minBeltCat} mm).`
+        : `El ancho de banda adoptado (${B} mm) es inferior al mínimo orientativo del cangilón seleccionado (${minBeltCat} mm).`,
     });
   }
   if (tensionRatio > 1) {
     verdicts.push({
       level: 'err',
       code: 'tension',
-      text: `Tensión de trabajo estimada frente a admisible (≈ ${(tensionRatio * 100).toFixed(0)} % del límite). Aumente ancho, clase de banda o reduzca capacidad/altura.`,
+      text: en
+        ? `Estimated working vs. allowable tension (~${(tensionRatio * 100).toFixed(0)} % of limit). Increase width or belt class, or reduce capacity/height.`
+        : `Tensión de trabajo estimada frente a admisible (≈ ${(tensionRatio * 100).toFixed(0)} % del límite). Aumente ancho, clase de banda o reduzca capacidad/altura.`,
     });
   } else if (tensionRatio > 0.82) {
     verdicts.push({
       level: 'warn',
       code: 'tension_moderate',
-      text: 'Uso elevado de la tensión admisible de la banda — conviene margen para arranques y fatiga.',
+      text: en
+        ? 'High use of allowable belt tension — allow margin for starts and fatigue.'
+        : 'Uso elevado de la tensión admisible de la banda — conviene margen para arranques y fatiga.',
     });
   }
 
@@ -288,13 +294,17 @@ export function computeBucketElevator(p, lang = 'es') {
     verdicts.push({
       level: 'err',
       code: 'centrifugal',
-      text: 'Riesgo de derrame / eyección en descarga: velocidad periférica alta respecto al tambor de cabeza. Reduzca v o aumente Ø de tambor; valide con catálogo CEMA/fabricante.',
+      text: en
+        ? 'Spill / centrifugal discharge risk: belt speed high vs. head drum diameter. Reduce v or increase drum Ø; validate with CEMA/vendor data.'
+        : 'Riesgo de derrame / eyección en descarga: velocidad periférica alta respecto al tambor de cabeza. Reduzca v o aumente Ø de tambor; valide con catálogo CEMA/fabricante.',
     });
   } else if (K_cent > K_warn) {
     verdicts.push({
       level: 'warn',
       code: 'centrifugal_soft',
-      text: 'Parámetro de eyección (v²/gR) elevado: vigilar calidad de descarga y abrasión en tapa.',
+      text: en
+        ? 'Elevated discharge parameter (v²/gR): watch discharge quality and head housing wear.'
+        : 'Parámetro de eyección (v²/gR) elevado: vigilar calidad de descarga y abrasión en tapa.',
     });
   }
 
@@ -302,7 +312,9 @@ export function computeBucketElevator(p, lang = 'es') {
     verdicts.push({
       level: 'warn',
       code: 'speed_class',
-      text: `Velocidad fuera de la banda recomendada para este material (${speedRec.vMin.toFixed(1)}–${speedRec.vMax.toFixed(1)} m/s).`,
+      text: en
+        ? `Belt speed outside the recommended band for this material (${speedRec.vMin.toFixed(1)}–${speedRec.vMax.toFixed(1)} m/s).`
+        : `Velocidad fuera de la banda recomendada para este material (${speedRec.vMin.toFixed(1)}–${speedRec.vMax.toFixed(1)} m/s).`,
     });
   }
 
@@ -310,89 +322,171 @@ export function computeBucketElevator(p, lang = 'es') {
     verdicts.push({
       level: 'ok',
       code: 'ok',
-      text: 'Parámetros coherentes con el modelo orientativo — confirme siempre con norma y fabricante.',
+      text: en
+        ? 'Inputs are consistent with this indicative model — always confirm with standards and the manufacturer.'
+        : 'Parámetros coherentes con el modelo orientativo — confirme siempre con norma y fabricante.',
     });
   }
 
-  const assumptions = [
-    'Modelo orientativo de elevador vertical de cangilones (2 tambores, descarga en cabeza).',
-    'Capacidad calculada con phi de llenado orientativo segun fluidez/naturaleza del producto.',
-    'Potencia util de elevacion segun expresion habitual P ~ Q*H/(367*eta).',
-    'Arrastre en bota representado como fraccion k sobre potencia util (no sustituye ensayo real).',
-    'Tension de banda y parametro centrifugo son chequeos de orden de magnitud; validar con CEMA y fabricante.',
-  ];
+  const assumptions = en
+    ? [
+        'Indicative vertical bucket elevator model (two drums, head discharge).',
+        'Capacity uses an indicative fill factor \u03c6 from material fluidity/nature.',
+        'Useful lift power from the common form P \u2248 Q\u00b7H/(367\u00b7\u03b7) with Q in t/h and H in m.',
+        'Boot drag modeled as fraction k on useful lift power (not a substitute for test data).',
+        'Belt tension and centrifugal parameter are order-of-magnitude checks; validate with CEMA and the belt vendor.',
+      ]
+    : [
+        'Modelo orientativo de elevador vertical de cangilones (2 tambores, descarga en cabeza).',
+        'Capacidad calculada con phi de llenado orientativo segun fluidez/naturaleza del producto.',
+        'Potencia util de elevacion segun expresion habitual P ~ Q*H/(367*eta).',
+        'Arrastre en bota representado como fraccion k sobre potencia util (no sustituye ensayo real).',
+        'Tension de banda y parametro centrifugo son chequeos de orden de magnitud; validar con CEMA y fabricante.',
+      ];
 
-  const explanations = [
-    `Velocidad recomendada para este material: ${speedRec.vMin.toFixed(1)}-${speedRec.vMax.toFixed(1)} m/s (nominal ${speedRec.vNominal.toFixed(1)} m/s).`,
-    `Uso de tension estimado: ${(tensionRatio * 100).toFixed(1)} % del limite admisible de banda.`,
-    `Parametro de eyeccion K = v^2/(gR): ${K_cent.toFixed(2)} (umbral orientativo ${K_warn.toFixed(2)}).`,
-  ];
+  const explanations = en
+    ? [
+        `Recommended speed band for this material: ${speedRec.vMin.toFixed(1)}\u2013${speedRec.vMax.toFixed(1)} m/s (nominal ${speedRec.vNominal.toFixed(1)} m/s).`,
+        `Estimated tension use: ${(tensionRatio * 100).toFixed(1)} % of allowable belt limit.`,
+        `Discharge parameter K = v\u00b2/(gR): ${K_cent.toFixed(2)} (indicative threshold ${K_warn.toFixed(2)}).`,
+      ]
+    : [
+        `Velocidad recomendada para este material: ${speedRec.vMin.toFixed(1)}-${speedRec.vMax.toFixed(1)} m/s (nominal ${speedRec.vNominal.toFixed(1)} m/s).`,
+        `Uso de tension estimado: ${(tensionRatio * 100).toFixed(1)} % del limite admisible de banda.`,
+        `Parametro de eyeccion K = v^2/(gR): ${K_cent.toFixed(2)} (umbral orientativo ${K_warn.toFixed(2)}).`,
+      ];
 
-  const steps = [
-    {
-      id: 'fill',
-      title: 'Factor de llenado',
-      formula: 'phi = f(fluidez, naturaleza, granulometria)',
-      substitution: `${fluidity} / ${nature} / d50=${(Number(p.particle_mm) || 0).toFixed(1)} mm`,
-      value: phi,
-      unit: '%',
-      meaning: 'Coeficiente volumetrico de carga efectiva del cangilon.',
-    },
-    {
-      id: 'pitch',
-      title: 'Paso minimo cangilones',
-      formula: 'Q = 3.6*(v/p)*rho*(V/1000)*phi',
-      substitution: `Q=${Q.toFixed(2)} tph; v=${v.toFixed(2)} m/s; rho=${rho.toFixed(0)}; V=${V_L.toFixed(2)} L`,
-      value: pitch_mm,
-      unit: 'mm',
-      meaning: 'Distancia teorica entre cangilones para la capacidad solicitada.',
-    },
-    {
-      id: 'pe',
-      title: 'Potencia elevacion pura',
-      formula: 'P_e ~ Q*H/(367*eta)',
-      substitution: `Q=${Q.toFixed(2)}; H=${H.toFixed(2)}; eta=${etaElev.toFixed(2)}`,
-      value: P_e,
-      unit: 'kW',
-      meaning: 'Potencia util para elevar material sin extras.',
-    },
-    {
-      id: 'drag',
-      title: 'Potencia arrastre bota',
-      formula: 'P_drag = k_boot * P_e',
-      substitution: `k_boot=${kBoot.toFixed(2)}`,
-      value: P_drag,
-      unit: 'kW',
-      meaning: 'Incremento por dragado y resistencias en pie.',
-    },
-    {
-      id: 'shaft',
-      title: 'Potencia eje reductor',
-      formula: 'P_shaft = (P_e + P_drag)/eta_trans',
-      substitution: `eta_trans=${etaTrans.toFixed(2)}`,
-      value: P_shaft_kW,
-      unit: 'kW',
-      meaning: 'Potencia mecanica de dimensionamiento en eje.',
-    },
-    {
-      id: 'kcent',
-      title: 'Parametro centrifugo',
-      formula: 'K = v^2/(g*R)',
-      substitution: `v=${v.toFixed(2)}; R=${(D_head / 2).toFixed(3)} m`,
-      value: K_cent,
-      unit: 's',
-      meaning: 'Indicador orientativo de eyeccion en tambor de cabeza.',
-    },
-    {
-      id: 'tension',
-      title: 'Tension de trabajo',
-      formula: 'T_work ~ k*mdot*g*H/v',
-      substitution: `mdot=${((Q * 1000) / 3600).toFixed(2)} kg/s; k=1.28`,
-      value: T_work,
-      unit: 'N',
-      meaning: 'Chequeo simplificado de orden de magnitud de tension en rama cargada.',
-    },
-  ];
+  const steps = en
+    ? [
+        {
+          id: 'fill',
+          title: 'Fill factor',
+          formula: '\u03c6 = f(fluidity, nature, particle size)',
+          substitution: `${fluidity} / ${nature} / d50=${(Number(p.particle_mm) || 0).toFixed(1)} mm`,
+          value: phi,
+          unit: '%',
+          meaning: 'Indicative volumetric loading coefficient for the bucket.',
+        },
+        {
+          id: 'pitch',
+          title: 'Minimum bucket spacing',
+          formula: 'Q = 3.6*(v/p)*\u03c1*(V/1000)*\u03c6',
+          substitution: `Q=${Q.toFixed(2)} t/h; v=${v.toFixed(2)} m/s; \u03c1=${rho.toFixed(0)}; V=${V_L.toFixed(2)} L`,
+          value: pitch_mm,
+          unit: 'mm',
+          meaning: 'Theoretical centre distance for the requested capacity.',
+        },
+        {
+          id: 'pe',
+          title: 'Pure lift power',
+          formula: 'P_e \u2248 Q\u00b7H/(367\u00b7\u03b7)',
+          substitution: `Q=${Q.toFixed(2)}; H=${H.toFixed(2)}; \u03b7=${etaElev.toFixed(2)}`,
+          value: P_e,
+          unit: 'kW',
+          meaning: 'Useful power to lift the bulk without extras.',
+        },
+        {
+          id: 'drag',
+          title: 'Boot drag power',
+          formula: 'P_drag = k_boot \u00b7 P_e',
+          substitution: `k_boot=${kBoot.toFixed(2)}`,
+          value: P_drag,
+          unit: 'kW',
+          meaning: 'Increment from boot drag and resistances.',
+        },
+        {
+          id: 'shaft',
+          title: 'Gearbox shaft power',
+          formula: 'P_shaft = (P_e + P_drag)/\u03b7_trans',
+          substitution: `\u03b7_trans=${etaTrans.toFixed(2)}`,
+          value: P_shaft_kW,
+          unit: 'kW',
+          meaning: 'Mechanical sizing power at the drive shaft.',
+        },
+        {
+          id: 'kcent',
+          title: 'Centrifugal discharge parameter',
+          formula: 'K = v\u00b2/(g\u00b7R)',
+          substitution: `v=${v.toFixed(2)}; R=${(D_head / 2).toFixed(3)} m`,
+          value: K_cent,
+          unit: '\u2014',
+          meaning: 'Indicative centrifugal discharge indicator at the head drum.',
+        },
+        {
+          id: 'tension',
+          title: 'Working tension',
+          formula: 'T_work \u2248 k\u00b7mdot\u00b7g\u00b7H/v',
+          substitution: `mdot=${((Q * 1000) / 3600).toFixed(2)} kg/s; k=1.28`,
+          value: T_work,
+          unit: 'N',
+          meaning: 'Simplified order-of-magnitude tension on the loaded strand.',
+        },
+      ]
+    : [
+        {
+          id: 'fill',
+          title: 'Factor de llenado',
+          formula: 'phi = f(fluidez, naturaleza, granulometria)',
+          substitution: `${fluidity} / ${nature} / d50=${(Number(p.particle_mm) || 0).toFixed(1)} mm`,
+          value: phi,
+          unit: '%',
+          meaning: 'Coeficiente volumetrico de carga efectiva del cangilon.',
+        },
+        {
+          id: 'pitch',
+          title: 'Paso minimo cangilones',
+          formula: 'Q = 3.6*(v/p)*rho*(V/1000)*phi',
+          substitution: `Q=${Q.toFixed(2)} tph; v=${v.toFixed(2)} m/s; rho=${rho.toFixed(0)}; V=${V_L.toFixed(2)} L`,
+          value: pitch_mm,
+          unit: 'mm',
+          meaning: 'Distancia teorica entre cangilones para la capacidad solicitada.',
+        },
+        {
+          id: 'pe',
+          title: 'Potencia elevacion pura',
+          formula: 'P_e ~ Q*H/(367*eta)',
+          substitution: `Q=${Q.toFixed(2)}; H=${H.toFixed(2)}; eta=${etaElev.toFixed(2)}`,
+          value: P_e,
+          unit: 'kW',
+          meaning: 'Potencia util para elevar material sin extras.',
+        },
+        {
+          id: 'drag',
+          title: 'Potencia arrastre bota',
+          formula: 'P_drag = k_boot * P_e',
+          substitution: `k_boot=${kBoot.toFixed(2)}`,
+          value: P_drag,
+          unit: 'kW',
+          meaning: 'Incremento por dragado y resistencias en pie.',
+        },
+        {
+          id: 'shaft',
+          title: 'Potencia eje reductor',
+          formula: 'P_shaft = (P_e + P_drag)/eta_trans',
+          substitution: `eta_trans=${etaTrans.toFixed(2)}`,
+          value: P_shaft_kW,
+          unit: 'kW',
+          meaning: 'Potencia mecanica de dimensionamiento en eje.',
+        },
+        {
+          id: 'kcent',
+          title: 'Parametro centrifugo',
+          formula: 'K = v^2/(g*R)',
+          substitution: `v=${v.toFixed(2)}; R=${(D_head / 2).toFixed(3)} m`,
+          value: K_cent,
+          unit: 's',
+          meaning: 'Indicador orientativo de eyeccion en tambor de cabeza.',
+        },
+        {
+          id: 'tension',
+          title: 'Tension de trabajo',
+          formula: 'T_work ~ k*mdot*g*H/v',
+          substitution: `mdot=${((Q * 1000) / 3600).toFixed(2)} kg/s; k=1.28`,
+          value: T_work,
+          unit: 'N',
+          meaning: 'Chequeo simplificado de orden de magnitud de tension en rama cargada.',
+        },
+      ];
 
   return {
     inputs: {

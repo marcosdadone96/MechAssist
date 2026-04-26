@@ -18,7 +18,7 @@ import { openMotorsRecommendationsAndScroll } from './motorsCollapsible.js';
 import { applyMachinePremiumGates } from './machinePremiumGates.js';
 import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
-import { getCurrentLang } from '../config/locales.js';
+import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
 
 const inputIds = [
   'beltLength',
@@ -881,6 +881,10 @@ window.addEventListener('hashchange', () => {
   const assumptionsSection = document.getElementById('flat-conveyor-assumptions');
   const details = assumptionsSection?.querySelector('details');
   if (details) details.open = true;
+});
+
+window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
+  location.reload();
 });
 
 

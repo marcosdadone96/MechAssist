@@ -23,9 +23,11 @@ import {
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { metricsFromGears } from '../services/iaAdvisor.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
+import { LAB_LANG_EVENT, getLabLang } from '../lab/i18n/labLang.js';
+import { gearsRuntimeStrings } from '../lab/i18n/runtime/gearsRuntime.js';
 
 mountTierStatusBar();
-bootSmartDashboardIfEnabled('Engranajes · laboratorio');
+bootSmartDashboardIfEnabled(gearsRuntimeStrings(getLabLang()).dashboardBoot);
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
 mountCompactLabFieldHelp();
@@ -70,6 +72,7 @@ function powerKwFromInputs(n1_rpm, Topt, Popt) {
 }
 
 function refreshCore() {
+  const t = gearsRuntimeStrings(getLabLang());
   const u = getLabUnitPrefs();
   const lubeEl = document.getElementById('gLube');
   const lube = lubeEl instanceof HTMLSelectElement && lubeEl.value === 'grease' ? 'grease' : 'oil';
@@ -137,19 +140,19 @@ function refreshCore() {
   const elementBox = document.getElementById('gElementResults');
   if (elementBox) {
     elementBox.innerHTML = [
-      elementCardHtml('Rueda 1 · Piñón (motriz)', [
-        ['Dientes (z)', String(r.z1)],
-        ['Diam. primitivo (d)', formatLength(r.d1, u.length)],
-        ['Diam. cabeza (da)', formatLength(r.da1, u.length)],
-        ['Diam. pie (db)', formatLength(r.db1, u.length)],
-        ['Velocidad (n)', formatRotation(r.n1, u.rotation)],
+      elementCardHtml(t.card1, [
+        [t.kvZ, String(r.z1)],
+        [t.kvDp, formatLength(r.d1, u.length)],
+        [t.kvDa, formatLength(r.da1, u.length)],
+        [t.kvDf, formatLength(r.db1, u.length)],
+        [t.kvN, formatRotation(r.n1, u.rotation)],
       ]),
-      elementCardHtml('Rueda 2 · Conducida', [
-        ['Dientes (z)', String(r.z2)],
-        ['Diam. primitivo (d)', formatLength(r.d2, u.length)],
-        ['Diam. cabeza (da)', formatLength(r.da2, u.length)],
-        ['Diam. pie (db)', formatLength(r.db2, u.length)],
-        ['Velocidad (n)', formatRotation(r.n2, u.rotation)],
+      elementCardHtml(t.card2, [
+        [t.kvZ, String(r.z2)],
+        [t.kvDp, formatLength(r.d2, u.length)],
+        [t.kvDa, formatLength(r.da2, u.length)],
+        [t.kvDf, formatLength(r.db2, u.length)],
+        [t.kvN, formatRotation(r.n2, u.rotation)],
       ]),
     ].join('');
   }
@@ -157,95 +160,27 @@ function refreshCore() {
   const box = document.getElementById('gResults');
   if (box) {
     box.innerHTML = [
-      metricHtml(
-        'Relación de dientes (z₂/z₁)',
-        i.toFixed(2),
-        `Reductor típico: la rueda 2 gira más lento; por cada vuelta de la rueda 2 el piñón (rueda 1) da ${(1 / i).toFixed(2)} vueltas.`,
-      ),
-      metricHtml(
-        'Velocidad lineal en primitivo · rueda 1 (piñón)',
-        formatLinearSpeed(r.v_pitch_m_s, u.linear),
-        'Donde ruedan los dientes del piñón; condiciona lubricación.',
-      ),
-      metricHtml(
-        'Distancia entre ejes',
-        formatLength(r.centerDistance_mm, u.length),
-        'Mitad de la suma de primitivos en exterior estándar.',
-      ),
-      metricHtml(
-        'd₁ — diámetro primitivo · rueda 1 (piñón)',
-        formatLength(r.d1, u.length),
-        'd₁ = m × z₁ en rectos sin corrección.',
-      ),
-      metricHtml(
-        'd₂ — diámetro primitivo · rueda 2 (conducida)',
-        formatLength(r.d2, u.length),
-        'd₂ = m × z₂.',
-      ),
-      metricHtml(
-        'Ancho de cara',
-        formatLength(r.faceWidth_mm ?? 0, u.length),
-        'Longitud axial útil de engrane.',
-      ),
-      metricHtml(
-        'dₐ₁ — diámetro de cabeza · rueda 1 (piñón)',
-        formatLength(r.da1, u.length),
-        'Addendum típico ha = m.',
-      ),
-      metricHtml(
-        'dₐ₂ — diámetro de cabeza · rueda 2 (conducida)',
-        formatLength(r.da2, u.length),
-        'Addendum típico ha = m.',
-      ),
-      metricHtml(
-        'dᵦ₁ — diámetro de pie · rueda 1 (piñón)',
-        formatLength(r.db1, u.length),
-        'Dedendum orientativo ~1,25m.',
-      ),
-      metricHtml(
-        'dᵦ₂ — diámetro de pie · rueda 2 (conducida)',
-        formatLength(r.db2, u.length),
-        'Dedendum orientativo ~1,25m.',
-      ),
-      metricHtml(
-        'ω₁ — velocidad angular · rueda 1 (piñón, entrada)',
-        formatRotation(r.n1, u.rotation),
-        'Mismo dato que en el formulario, en las unidades elegidas arriba.',
-      ),
-      metricHtml(
-        'ω₂ — velocidad angular · rueda 2 (conducida, salida)',
-        formatRotation(r.n2, u.rotation),
-        'Salida cinemática en el primitivo.',
-      ),
+      metricHtml(t.mRatio, i.toFixed(2), t.mRatioHint(1 / i)),
+      metricHtml(t.mVp1, formatLinearSpeed(r.v_pitch_m_s, u.linear), t.mVp1Hint),
+      metricHtml(t.mCenter, formatLength(r.centerDistance_mm, u.length), t.mCenterHint),
+      metricHtml(t.mD1, formatLength(r.d1, u.length), t.mD1Hint),
+      metricHtml(t.mD2, formatLength(r.d2, u.length), t.mD2Hint),
+      metricHtml(t.mFace, formatLength(r.faceWidth_mm ?? 0, u.length), t.mFaceHint),
+      metricHtml(t.mDa1, formatLength(r.da1, u.length), t.mDa1Hint),
+      metricHtml(t.mDa2, formatLength(r.da2, u.length), t.mDa2Hint),
+      metricHtml(t.mDb1, formatLength(r.db1, u.length), t.mDb1Hint),
+      metricHtml(t.mDb2, formatLength(r.db2, u.length), t.mDb2Hint),
+      metricHtml(t.mW1, formatRotation(r.n1, u.rotation), t.mW1Hint),
+      metricHtml(t.mW2, formatRotation(r.n2, u.rotation), t.mW2Hint),
     ].join('');
 
     if (agma.hasLoad) {
       box.innerHTML += [
-        metricHtml(
-          'Carga tangencial (piñón · rueda 1)',
-          `${agma.tangentialLoad_N.toFixed(2)} N`,
-          `Fₜ ≈ T/(d₁/2). Con par o potencia en piñón. Y forma Lewis ≈ ${agma.lewisY.toFixed(2)}.`,
-        ),
-        metricHtml(
-          'Tensión de flexión (Lewis, orient.)',
-          `${agma.bendingStress_MPa.toFixed(2)} MPa`,
-          'Modelo educativo; no sustituye AGMA completo.',
-        ),
-        metricHtml(
-          'Tensión de contacto (orient.)',
-          `${agma.contactStress_MPa.toFixed(2)} MPa`,
-          'Aproximación acero–acero; valide con norma y material.',
-        ),
-        metricHtml(
-          'Margen a flexión (SF)',
-          agma.bendingSafety_SF.toFixed(2),
-          `Referencia admisible demo ≈ ${Number(agma.allowableBending_MPa).toFixed(2)} MPa. Valores &gt;1 suelen buscarse en diseño.`,
-        ),
-        metricHtml(
-          'Margen a contacto (SH)',
-          agma.contactSafety_SH.toFixed(2),
-          `Referencia admisible demo ≈ ${Number(agma.allowableContact_MPa).toFixed(2)} MPa.`,
-        ),
+        metricHtml(t.mFt, `${agma.tangentialLoad_N.toFixed(2)} N`, t.mFtHint(agma.lewisY)),
+        metricHtml(t.mSigF, `${agma.bendingStress_MPa.toFixed(2)} MPa`, t.mSigFHint),
+        metricHtml(t.mSigH, `${agma.contactStress_MPa.toFixed(2)} MPa`, t.mSigHHint),
+        metricHtml(t.mSF, agma.bendingSafety_SF.toFixed(2), t.mSFHint(agma.allowableBending_MPa)),
+        metricHtml(t.mSH, agma.contactSafety_SH.toFixed(2), t.mSHHint(agma.allowableContact_MPa)),
       ].join('');
     }
   }
@@ -258,37 +193,20 @@ function refreshCore() {
     });
     if (agma.hasLoad) {
       if (agma.bendingSafety_SF < 1.05) {
-        parts.push(
-          labAlert(
-            'danger',
-            'SF ≤ 1,05: flexión aparentemente insuficiente con el modelo simplificado — revise carga, b, m y material.',
-          ),
-        );
+        parts.push(labAlert('danger', t.alertSfLow));
       } else if (agma.bendingSafety_SF < 1.4) {
-        parts.push(labAlert('warn', 'SF moderado: margen de flexión bajo para servicio industrial típico.'));
+        parts.push(labAlert('warn', t.alertSfMod));
       }
       if (agma.contactSafety_SH < 1.05) {
-        parts.push(
-          labAlert('danger', 'SH ≤ 1,05: riesgo de fatiga de pitting aparente (modelo simplificado).'),
-        );
+        parts.push(labAlert('danger', t.alertShLow));
       } else if (agma.contactSafety_SH < 1.2) {
-        parts.push(labAlert('warn', 'SH moderado: confirme durezas y acabado de flancos.'));
+        parts.push(labAlert('warn', t.alertShMod));
       }
       if (agma.bendingSafety_SF >= 1.4 && agma.contactSafety_SH >= 1.2) {
-        parts.push(
-          labAlert(
-            'ok',
-            'Márgenes SF/SH aparentemente holgados con el modelo simplificado — valide siempre con norma y datos de material.',
-          ),
-        );
+        parts.push(labAlert('ok', t.alertOk));
       }
     } else {
-      parts.push(
-        labAlert(
-          'info',
-          `${esc(agma.disclaimer)} Introduzca <strong>P</strong> o <strong>T</strong> en el piñón para estimar σ_F, σ_H y factores SF/SH.`,
-        ),
-      );
+      parts.push(labAlert('info', t.alertNeedLoad(esc(agma.disclaimer))));
     }
     alerts.innerHTML = parts.join('');
   }
@@ -333,12 +251,12 @@ function refreshCore() {
   ];
   emitEngineeringSnapshot({
     page: 'calc-gears',
-    moduleLabel: 'Engranajes cilíndricos',
+    moduleLabel: t.moduleLabel,
     advisorContext: {
       safetyMargins: agma.hasLoad
         ? [
-            { label: 'SF flexión (modelo demo)', value: agma.bendingSafety_SF },
-            { label: 'SH contacto (modelo demo)', value: agma.contactSafety_SH },
+            { label: t.snapSf, value: agma.bendingSafety_SF },
+            { label: t.snapSh, value: agma.contactSafety_SH },
           ]
         : [],
     },
@@ -347,8 +265,8 @@ function refreshCore() {
   });
   setLabPurchaseFromShoppingLines(document.getElementById('labPurchaseSuggestions'), shoppingLines, [
     {
-      label: 'Herramientas modulo / engrane',
-      searchQuery: `modulo engranaje ${r.module_mm} mm herramienta`,
+      label: t.shopLabel,
+      searchQuery: t.shopQ(r.module_mm),
     },
   ]);
 }
@@ -361,5 +279,9 @@ bindLabUnitSelectors(debounced);
 ['gZ1', 'gZ2', 'gM', 'gFace', 'gAlpha', 'gN1', 'gPower', 'gTorque', 'gLube'].forEach((id) => {
   document.getElementById(id)?.addEventListener('input', debounced);
   document.getElementById(id)?.addEventListener('change', debounced);
+});
+window.addEventListener(LAB_LANG_EVENT, () => {
+  bootSmartDashboardIfEnabled(gearsRuntimeStrings(getLabLang()).dashboardBoot);
+  debounced();
 });
 runCalcWithIndustrialFeedback(resultsWrap, refreshCore);

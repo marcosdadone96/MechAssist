@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ascensor de tracción — MechAssist</title>
     <link rel="stylesheet" href="css/app.css" />
-      <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E5C8TB38"></script>
-    <script src="js/gtag.js"></script>
+    <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
   <body>
     <div id="fileProtoWarn" class="runtime-error" hidden role="alert"></div>
@@ -37,6 +35,7 @@
           <a href="centrifugal-pump.html">Bomba</a>
         </div>
         <div class="app-header__nav-end">
+          <span id="teLangHost" class="app-header__lang-host"></span>
           <a href="transmission-lab.html" class="lab-header__nav-cta">Laboratorio</a>
           <a href="transmission-canvas.html" title="Lienzo técnico multieje (Pro)">Lienzo Pro</a>
         </div>
@@ -66,38 +65,38 @@
         <details class="flat-accordion" id="teAccLoads">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label">Cargas y recorrido</span>
+            <span class="flat-accordion__label" data-te-for="accLoads"></span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
-            <label for="teQ">Carga útil <em>Q</em> <span class="info-chip" title="Carga útil nominal en kg. Determina SF y carga total sobre el sistema de tracción." aria-label="Ayuda carga útil.">?</span></label>
+            <label for="teQ"><span data-te-for="lblQ"></span> <em>Q</em> <span class="info-chip" data-te-chip="q">?</span></label>
             <input id="teQ" type="number" step="50" min="0" value="2000" />
             <span class="field-hint">kg</span>
           </div>
           <div class="field">
-            <label for="teMc">Peso cabina vacía <span class="info-chip" title="Masa propia de cabina sin carga. Junto con Q fija masas en cada rama." aria-label="Ayuda peso cabina.">?</span></label>
+            <label for="teMc"><span data-te-for="lblMc"></span> <span class="info-chip" data-te-chip="mc">?</span></label>
             <input id="teMc" type="number" step="50" min="1" value="1200" />
             <span class="field-hint">kg</span>
           </div>
           <div class="field">
-            <label for="teH">Altura de viaje <span class="info-chip" title="Recorrido vertical útil. Entra en energía de ciclo y representación del hueco." aria-label="Ayuda altura de viaje.">?</span></label>
+            <label for="teH"><span data-te-for="lblH"></span> <span class="info-chip" data-te-chip="h">?</span></label>
             <input id="teH" type="number" step="0.5" min="0.5" value="12" />
             <span class="field-hint">m</span>
           </div>
           <div class="field">
-            <label for="teV">Velocidad nominal <span class="info-chip" title="Velocidad lineal cabina. Condiciona rpm de polea y potencia de tracción." aria-label="Ayuda velocidad nominal.">?</span></label>
+            <label for="teV"><span data-te-for="lblV"></span> <span class="info-chip" data-te-chip="v">?</span></label>
             <input id="teV" type="number" step="0.05" min="0.1" value="1" />
             <span class="field-hint">m/s</span>
           </div>
           <div class="field">
-            <label for="teDuty">Servicio <span class="info-chip" title="Define factor de seguridad de selección demo: carga ~10, personas ~12." aria-label="Ayuda tipo de servicio.">?</span></label>
+            <label for="teDuty"><span data-te-for="lblDuty"></span> <span class="info-chip" data-te-chip="duty">?</span></label>
             <select id="teDuty">
               <option value="freight" selected>Montacargas / carga (SF ≈ 10)</option>
               <option value="persons">Personas (SF ≈ 12)</option>
             </select>
           </div>
           <div class="field">
-            <label for="teReeving">Arrollamiento <span class="info-chip" title="1:1 o 2:1. Cambia relación de movimiento, esfuerzos y rpm en polea." aria-label="Ayuda arrollamiento.">?</span></label>
+            <label for="teReeving"><span data-te-for="lblReeving"></span> <span class="info-chip" data-te-chip="reeving">?</span></label>
             <select id="teReeving">
               <option value="1_1" selected>1:1</option>
               <option value="2_1">2:1</option>
@@ -109,22 +108,22 @@
         <details class="flat-accordion" id="teAccCw">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label">Contrapeso</span>
+            <span class="flat-accordion__label" data-te-for="accCw"></span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
-            <label for="teKcw">Fracción de <em>Q</em> en contrapeso óptimo <span class="info-chip" title="Rango típico 0,40–0,50 para Mcp≈Mc+k*Q." aria-label="Ayuda fracción de contrapeso.">?</span></label>
+            <label for="teKcw"><span data-te-for="lblKcw"></span> <span class="info-chip" data-te-chip="kcw">?</span></label>
             <input id="teKcw" type="number" step="0.05" min="0.35" max="0.55" value="0.45" />
-            <span class="field-hint">típ. 0,40–0,50 → <em>M</em><sub>cp</sub> ≈ <em>M</em><sub>c</sub> + <em>k</em>·<em>Q</em></span>
+            <span id="teHintKcw" class="field-hint">típ. 0,40–0,50 → <em>M</em><sub>cp</sub> ≈ <em>M</em><sub>c</sub> + <em>k</em>·<em>Q</em></span>
           </div>
           <div class="field field--checkbox">
             <label>
               <input id="teCwManual" type="checkbox" />
-              Fijar contrapeso manualmente (kg)
+              <span data-te-for="lblCwManual"></span>
             </label>
           </div>
           <div class="field" id="teMcpManualRow" hidden>
-            <label for="teMcpManual">Masa contrapeso <span class="info-chip" title="Use valor manual si ya existe diseño de contrapeso; si no, mantenga el óptimo automático." aria-label="Ayuda masa contrapeso manual.">?</span></label>
+            <label for="teMcpManual"><span data-te-for="lblMcpManual"></span> <span class="info-chip" data-te-chip="mcpManual">?</span></label>
             <input id="teMcpManual" type="number" step="50" min="1" value="2100" />
             <span class="field-hint">kg</span>
           </div>
@@ -134,28 +133,28 @@
         <details class="flat-accordion" id="teAccSheave">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label">Polea y adherencia (Euler-Eytelwein)</span>
+            <span class="flat-accordion__label" data-te-for="accSheave"></span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
-            <label for="teD">Ø primitivo polea tractora <span class="info-chip" title="Diámetro primitivo de polea (m). Influye en rpm, par y curvatura del cable." aria-label="Ayuda diámetro polea tractora.">?</span></label>
+            <label for="teD"><span data-te-for="lblD"></span> <span class="info-chip" data-te-chip="d">?</span></label>
             <input id="teD" type="number" step="0.05" min="0.2" value="0.55" />
             <span class="field-hint">m</span>
           </div>
           <div class="field">
-            <label for="teAlpha">Ángulo de abrazamiento <span class="info-chip" title="Ángulo de contacto cable-polea. Mayor α mejora límite e^(mu*alpha)." aria-label="Ayuda ángulo de abrazamiento.">?</span></label>
+            <label for="teAlpha"><span data-te-for="lblAlpha"></span> <span class="info-chip" data-te-chip="alpha">?</span></label>
             <input id="teAlpha" type="number" step="5" min="90" max="360" value="180" />
             <span class="field-hint">°</span>
           </div>
           <div class="field">
-            <label for="teMu">Coef. fricción cable–canal μ <span class="info-chip" title="Coeficiente efectivo de tracción. Orientativo 0,08–0,15 según canal/estado." aria-label="Ayuda coeficiente de fricción cable canal.">?</span></label>
+            <label for="teMu"><span data-te-for="lblMu"></span> <span class="info-chip" data-te-chip="mu">?</span></label>
             <input id="teMu" type="number" step="0.01" min="0.05" max="0.25" value="0.1" />
             <span class="field-hint">orientativo</span>
           </div>
           <div class="field">
-            <label for="teMaxN">Máx. cables / tiras <span class="info-chip" title="Tope de diseño para selección demo de cables. Si se supera, revise diámetro/cargas." aria-label="Ayuda máximo de cables.">?</span></label>
+            <label for="teMaxN"><span data-te-for="lblMaxN"></span> <span class="info-chip" data-te-chip="maxN">?</span></label>
             <input id="teMaxN" type="number" step="1" min="2" max="16" value="8" />
-            <span class="field-hint">límite diseño</span>
+            <span id="teHintMaxn" class="field-hint">límite diseño</span>
           </div>
           </div>
         </details>
@@ -178,7 +177,7 @@
 
         <section class="panel be-diag-panel">
           <h2><span class="panel-icon">◇</span> Hueco · vista lateral</h2>
-          <p class="muted" style="margin: -0.5rem 0 0.75rem; font-size: 0.84rem">
+          <p class="muted te-diag-lead" style="margin: -0.5rem 0 0.75rem; font-size: 0.84rem">
             Polea tractora, cabina, contrapeso, guías y arrollamiento <strong>1:1</strong> o <strong>2:1</strong>. La escala vertical sigue la altura de viaje <em>H</em>.
           </p>
           <div class="machine-visual-duo">
@@ -206,12 +205,12 @@
         <section class="panel">
           <div class="verify-panel" id="teVerifyPanel">
             <h2><span class="panel-icon">✓</span> Comprobar un motorreductor que ya tengo</h2>
-            <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
+            <p class="muted te-verify-lead" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
               Compare potencia de motor, par de salida y rpm con el punto de <strong>polea tractora</strong> calculado arriba.
             </p>
             <div class="verify-grid">
               <div class="field">
-                <label for="teVerifyBrand">Marca <span class="info-chip" title="Fabricante del catálogo demo para comprobación rápida." aria-label="Ayuda marca comprobador.">?</span></label>
+                <label for="teVerifyBrand"><span data-te-for="lblVBrand"></span> <span class="info-chip" data-te-chip="vBrand">?</span></label>
                 <select id="teVerifyBrand" data-verify-brand>
                   <option value="sew">SEW-Eurodrive</option>
                   <option value="siemens">Siemens (Simogear)</option>
@@ -221,11 +220,11 @@
                 </select>
               </div>
               <div class="field">
-                <label for="teVerifySearch">Filtrar modelo (texto) <span class="info-chip" title="Búsqueda por código o texto para acotar modelos disponibles." aria-label="Ayuda filtro de modelo.">?</span></label>
+                <label for="teVerifySearch"><span data-te-for="lblVSearch"></span> <span class="info-chip" data-te-chip="vSearch">?</span></label>
                 <input id="teVerifySearch" type="search" placeholder="ej. R47, SK…" data-verify-search autocomplete="off" />
               </div>
               <div class="field" style="grid-column: 1 / -1">
-                <label for="teVerifyModel">Modelo del catálogo ejemplo <span class="info-chip" title="Se compara contra potencia, par y rpm de polea calculados." aria-label="Ayuda modelo catálogo.">?</span></label>
+                <label for="teVerifyModel"><span data-te-for="lblVModel"></span> <span class="info-chip" data-te-chip="vModel">?</span></label>
                 <select id="teVerifyModel" data-verify-model size="1"></select>
               </div>
             </div>

@@ -5,14 +5,16 @@
 import { FEATURES } from '../config/features.js';
 import {
   getFreemiumStrategy,
-  setPremiumPersistent,
   clearPremiumPersistent,
   consumeFreeProUseIfNeeded,
   getFreeProRemainingUses,
   getFreeProUsageCount,
   getFreeProUsageLimit,
+  hasPersistentProEnabled,
+  isPremiumEffective,
 } from '../services/accessTier.js';
-import { getCurrentUser, registerLocalUser, clearLocalUser } from '../services/localAuth.js';
+import { getCurrentUser, clearLocalUser } from '../services/localAuth.js';
+import { startProCheckoutFlow } from '../services/proCheckoutFlow.js';
 
 function getLang() {
   try {
@@ -23,18 +25,25 @@ function getLang() {
 }
 
 function getPaywallTx(lang, freeLabel, lockedLabel, freeHref) {
+  const tryProEn = FEATURES.allowPremiumViaQueryPro
+    ? 'Add <span class="paywall-screen__code">?pro=1</span> to the URL for Pro in this tab only (not saved).'
+    : 'Pro access is available after purchase through the checkout flow.';
+  const tryProEs = FEATURES.allowPremiumViaQueryPro
+    ? 'A\u00f1ada <span class="paywall-screen__code">?pro=1</span> a la URL para Pro solo en esta pesta\u00f1a (no se guarda).'
+    : 'El acceso Pro est\u00e1 disponible tras la compra en el flujo de pago.';
   if (lang === 'en') {
     return {
       title: 'Pro Module',
       lead: `The <strong>${lockedLabel}</strong> simulator is part of the <strong>paid plan</strong>. In the free version you can use the <strong>${freeLabel}</strong> model with the same level of detail (results, report, and gearmotors).`,
       freeCalc: `Access free calculator: <a href="${freeHref}">${freeHref}</a>`,
       backHome: 'Back to <a href="index.html">home</a> to view all systems',
-      tryPro: 'Use <span class="paywall-screen__code">?pro=1</span> in the URL to simulate a Pro user only in this browser session',
+      tryPro: tryProEn,
       goFree: `Go to free calculator (${freeLabel})`,
       home: 'Home',
-      demoTitle: 'Local demo (no real payment)',
-      demoText: 'Use this to test the Pro experience before integrating Stripe or another payment provider.',
-      activate: 'Activate Pro (persistent demo)',
+      demoTitle: 'Unlock Pro',
+      demoText:
+        'You need a free account, then you are taken to the payment page (Stripe or your provider in production). This demo uses a simulated checkout after sign-in.',
+      activate: 'Continue to Pro',
       backToFree: 'Back to free plan',
       lockedFlat: 'flat conveyor',
       lockedInclined: 'inclined conveyor',
@@ -45,12 +54,13 @@ function getPaywallTx(lang, freeLabel, lockedLabel, freeHref) {
     lead: `El simulador de <strong>${lockedLabel}</strong> forma parte del <strong>plan de pago</strong>. En la versi\u00f3n gratuita puede usar el modelo de <strong>${freeLabel}</strong> con el mismo nivel de detalle (resultados, informe y motorreductores).`,
     freeCalc: `Acceda al calculador gratuito: <a href="${freeHref}">${freeHref}</a>`,
     backHome: 'Vuelva al <a href="index.html">inicio</a> para ver todos los sistemas',
-    tryPro: 'Pruebe con <span class="paywall-screen__code">?pro=1</span> en la URL para simular un usuario Pro solo en esta sesi\u00f3n del navegador',
+    tryPro: tryProEs,
     goFree: `Ir al calculador gratuito (${freeLabel})`,
     home: 'Inicio',
-    demoTitle: 'Demostraci\u00f3n local (sin pago real)',
-    demoText: 'Use esto para probar la experiencia Pro antes de integrar Stripe u otro cobro.',
-    activate: 'Activar Pro (demo persistente)',
+    demoTitle: 'Desbloquear Pro',
+    demoText:
+      'Necesita una cuenta gratuita; despu\u00e9s ir\u00e1 a la p\u00e1gina de pago (Stripe u otro en producci\u00f3n). En esta demo el cobro es simulado tras iniciar sesi\u00f3n.',
+    activate: 'Continuar con Pro',
     backToFree: 'Volver a plan gratuito',
     lockedFlat: 'cinta plana',
     lockedInclined: 'cinta inclinada',
@@ -82,7 +92,7 @@ export function mountPaywall(lockedTool) {
       <ul class="paywall-screen__list">
         <li>${tx.freeCalc}</li>
         <li>${tx.backHome}</li>
-        <li>${tx.tryPro}</li>
+        ${tx.tryPro ? `<li>${tx.tryPro}</li>` : ''}
       </ul>
       <div class="paywall-screen__actions">
         <a class="button button--primary" href="${freeHref}">${tx.goFree}</a>
@@ -113,8 +123,7 @@ export function mountPaywall(lockedTool) {
   }
 
   wrap.querySelector('[data-paywall-activate]')?.addEventListener('click', () => {
-    setPremiumPersistent();
-    window.location.reload();
+    startProCheckoutFlow();
   });
   wrap.querySelector('[data-paywall-clear]')?.addEventListener('click', () => {
     clearPremiumPersistent();
@@ -137,67 +146,76 @@ export function mountTierStatusBar() {
   const remaining = getFreeProRemainingUses();
   const used = getFreeProUsageCount();
   const limit = getFreeProUsageLimit();
+  const premium = isPremiumEffective();
+  let canClearPro = false;
+  try {
+    if (
+      FEATURES.allowPremiumViaQueryPro &&
+      new URLSearchParams(window.location.search).get('pro') === '1'
+    ) {
+      canClearPro = true;
+    }
+  } catch (_) {
+    /* ignore */
+  }
+  if (hasPersistentProEnabled()) canClearPro = true;
+
   const TX = lang === 'en'
     ? {
-        activatePro: 'Activate Pro',
+        activatePro: !premium
+          ? 'Activate Pro'
+          : canClearPro
+            ? 'Pro on · Back to free'
+            : 'Pro (trial)',
         register: user ? `Account: ${user.name}` : 'Register',
         freeUses: remaining > 0 ? `Pro uses: ${remaining}/${limit}` : `Pro uses exhausted (${used}/${limit})`,
         logoutAsk: 'Log out this local account?',
-        fullName: 'Full name',
-        email: 'Email',
-        password: 'Password (min. 6 chars)',
-        registerOk: 'Local registration completed (demo).',
       }
     : {
-        activatePro: 'Activar versión Pro',
+        activatePro: !premium
+          ? 'Activar versi\u00f3n Pro'
+          : canClearPro
+            ? 'Pro activo \u00b7 Volver gratis'
+            : 'Pro (prueba)',
         register: user ? `Cuenta: ${user.name}` : 'Registrarse',
         freeUses: remaining > 0 ? `Usos Pro: ${remaining}/${limit}` : `Usos Pro agotados (${used}/${limit})`,
-        logoutAsk: '¿Cerrar sesión local de esta cuenta?',
-        fullName: 'Nombre completo',
-        email: 'Email',
-        password: 'Contraseña (mín. 6 caracteres)',
-        registerOk: 'Registro completado en modo local (demo).',
+        logoutAsk: '\u00bfCerrar sesi\u00f3n local de esta cuenta?',
       };
+
+  const proLinkHref = FEATURES.allowPremiumViaQueryPro ? '?pro=1' : '#';
+  const freeUsesBlock = FEATURES.allowFreeProTrialUses
+    ? `<span aria-hidden="true">·</span><span title="${lang === 'en' ? 'Free Pro uses' : 'Usos Pro gratis'}">${TX.freeUses}</span>`
+    : '';
 
   const bar = document.createElement('div');
   bar.className = 'tier-status-bar';
   bar.innerHTML = `
     <span class="tier-status-bar__links">
-      <a href="?pro=1" data-tier-activate-pro>${TX.activatePro}</a>
+      <a href="${proLinkHref}" data-tier-activate-pro>${TX.activatePro}</a>
       <span aria-hidden="true">·</span>
-      <a href="#" data-tier-register>${TX.register}</a>
+      <a href="register.html" data-tier-register>${TX.register}</a>
       <span aria-hidden="true">·</span>
       <a href="#" data-tier-lang="es">ES</a>
       <span aria-hidden="true">/</span>
       <a href="#" data-tier-lang="en">EN</a>
-      <span aria-hidden="true">·</span>
-      <span title="${lang === 'en' ? 'Free Pro uses' : 'Usos Pro gratis'}">${TX.freeUses}</span>
+      ${freeUsesBlock}
     </span>
   `;
-  bar.querySelector('[data-tier-activate-pro]')?.addEventListener('click', () => {
-    setPremiumPersistent();
+  bar.querySelector('[data-tier-activate-pro]')?.addEventListener('click', (ev) => {
+    ev.preventDefault();
+    if (isPremiumEffective() && canClearPro) {
+      clearPremiumPersistent();
+      return;
+    }
+    if (!isPremiumEffective()) startProCheckoutFlow();
   });
   bar.querySelector('[data-tier-register]')?.addEventListener('click', (ev) => {
-    ev.preventDefault();
     if (getCurrentUser()) {
+      ev.preventDefault();
       if (window.confirm(TX.logoutAsk)) {
         clearLocalUser();
         window.location.reload();
       }
-      return;
-    }
-    const name = window.prompt(TX.fullName);
-    if (!name) return;
-    const email = window.prompt(TX.email);
-    if (!email) return;
-    const password = window.prompt(TX.password);
-    if (!password) return;
-    try {
-      registerLocalUser({ name, email, password });
-      window.alert(TX.registerOk);
-      window.location.reload();
-    } catch (e) {
-      window.alert(String(e?.message || e));
     }
   });
   bar.querySelectorAll('[data-tier-lang]').forEach((a) => {

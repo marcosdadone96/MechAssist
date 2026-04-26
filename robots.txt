@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Internal flow pages use noindex in HTML: register.html, checkout.html
+#
+# After setting FEATURES.publicSiteBaseUrl and running: node scripts/generate-sitemap.mjs
+# uncomment and set your domain:
+# Sitemap: https://your-domain.com/sitemap.xml
+
+Sitemap: https://REPLACE-WITH-YOUR-DOMAIN/sitemap.xml

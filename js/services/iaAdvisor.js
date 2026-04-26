@@ -19,8 +19,10 @@ import { typicalBeltEfficiency } from '../data/commerceCatalog.js';
  * @param {{ beltType?: string, powerKw?: number | null }} [ctx.belt]
  * @param {{ L10_hours?: number | null, speed_rpm?: number }} [ctx.bearing]
  * @param {{ dutyHoursPerDay?: number | null }} [ctx.machineDuty]
+ * @param {{ lang?: 'es'|'en' }} [opts]
  */
-export function buildAdvisorInsights(ctx) {
+export function buildAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' ? 'en' : 'es';
   /** @type {AdvisorInsight[]} */
   const out = [];
 
@@ -121,12 +123,21 @@ export function buildAdvisorInsights(ctx) {
   }
 
   if (out.length === 0) {
-    out.push({
-      tone: 'info',
-      title: 'Sin alertas Advisor',
-      body: 'No se detectaron ineficiencias marcadas con las reglas actuales. Mantenga validación normativa completa.',
-      normRef: 'ISO / AGMA según módulo.',
-    });
+    out.push(
+      lang === 'en'
+        ? {
+            tone: 'info',
+            title: 'No Advisor alerts',
+            body: 'No strong inefficiencies matched the current rules. Keep full code and supplier validation.',
+            normRef: 'ISO / AGMA per module.',
+          }
+        : {
+            tone: 'info',
+            title: 'Sin alertas Advisor',
+            body: 'No se detectaron ineficiencias marcadas con las reglas actuales. Mantenga validación normativa completa.',
+            normRef: 'ISO / AGMA según módulo.',
+          },
+    );
   }
 
   return out;

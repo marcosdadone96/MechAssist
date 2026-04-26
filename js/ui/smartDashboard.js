@@ -133,7 +133,7 @@ export function mountSmartDashboard(opts = {}) {
     }
 
     const ctx = d.advisorContext || {};
-    const insights = buildAdvisorInsights(ctx);
+    const insights = buildAdvisorInsights(ctx, { lang: d.advisorLang === 'en' ? 'en' : 'es' });
     if (insEl) {
       insEl.innerHTML = insights
         .map((it) => {

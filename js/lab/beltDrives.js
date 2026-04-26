@@ -8,30 +8,30 @@ import { rpmToRadPerSec } from './siUnits.js';
 /** @typedef {'v_trapezoidal'|'synchronous'|'flat'|'poly_v'} BeltDriveType */
 
 export const V_BELT_PROFILES = [
-  { id: 'SPZ', label: 'SPZ (estrecha)', norm: 'ISO 4184' },
+  { id: 'SPZ', label: 'SPZ (narrow)', norm: 'ISO 4184' },
   { id: 'SPA', label: 'SPA', norm: 'ISO 4184' },
   { id: 'SPB', label: 'SPB', norm: 'ISO 4184' },
   { id: 'SPC', label: 'SPC', norm: 'ISO 4184' },
-  { id: 'XPZ', label: 'XPZ (estrecha alta)', norm: 'ISO 4184' },
+  { id: 'XPZ', label: 'XPZ (narrow high capacity)', norm: 'ISO 4184' },
   { id: 'XPA', label: 'XPA', norm: 'ISO 4184' },
   { id: 'XPB', label: 'XPB', norm: 'ISO 4184' },
 ];
 
-/** Paso p (mm) en primitivo de correa dentada — valores orientativos para cinemática. */
+/** Pitch p (mm) on synchronous primitive — indicative values for kinematics. */
 export const SYNC_PITCH_PRESETS = [
-  { id: '2.032', label: 'XL · 2,032 mm (≈1/5")', pitch_mm: 2.032 },
-  { id: '3', label: 'HTD / perfil 3M · 3 mm', pitch_mm: 3 },
+  { id: '2.032', label: 'XL · 2.032 mm (≈ 1/5")', pitch_mm: 2.032 },
+  { id: '3', label: 'HTD / 3M profile · 3 mm', pitch_mm: 3 },
   { id: '5', label: 'HTD / T5 / 5M · 5 mm', pitch_mm: 5 },
-  { id: '8', label: 'HTD / AT5 base · 8 mm', pitch_mm: 8 },
-  { id: '8_at', label: 'AT10 (paso 10 mm)', pitch_mm: 10 },
+  { id: '8', label: 'HTD / AT5 family · 8 mm', pitch_mm: 8 },
+  { id: '8_at', label: 'AT10 (10 mm pitch)', pitch_mm: 10 },
   { id: '14', label: 'HTD 14M · 14 mm', pitch_mm: 14 },
 ];
 
 export const POLY_V_PROFILES = [
-  { id: 'PJ', label: 'PJ (4,7 mm)', norm: 'ISO 9982' },
-  { id: 'PK', label: 'PK (9,7 mm)', norm: 'ISO 9982' },
-  { id: 'PL', label: 'PL (14,8 mm)', norm: 'ISO 9982' },
-  { id: 'PM', label: 'PM (22,4 mm)', norm: 'ISO 9982' },
+  { id: 'PJ', label: 'PJ (4.7 mm)', norm: 'ISO 9982' },
+  { id: 'PK', label: 'PK (9.7 mm)', norm: 'ISO 9982' },
+  { id: 'PL', label: 'PL (14.8 mm)', norm: 'ISO 9982' },
+  { id: 'PM', label: 'PM (22.4 mm)', norm: 'ISO 9982' },
 ];
 
 /**
@@ -74,7 +74,7 @@ function openBeltPrimitiveGeometry(d1_mm, d2_mm, center_mm) {
     wrapAngle_deg_small: geometryValid ? (wrap1 * 180) / Math.PI : NaN,
     wrapAngle_deg_large: geometryValid ? (wrap2 * 180) / Math.PI : NaN,
     geometryValid,
-    geometryNote: geometryValid ? '' : 'Geometria no fisica: C debe ser mayor que |d2-d1|/2.',
+    geometryNote: geometryValid ? '' : 'Non-physical geometry: C must be greater than |d₂−d₁|/2.',
   };
 }
 
@@ -87,33 +87,33 @@ export function beltLinearSpeedVerdict(v_m_s) {
     return {
       level: 'unknown',
       key: 'unknown',
-      title: 'Sin dato',
-      detail: 'Indique n₁ &gt; 0 y diámetros para estimar v.',
+      title: 'No data',
+      detail: 'Enter n₁ &gt; 0 and diameters to estimate v.',
     };
   }
   if (v_m_s < 5) {
     return {
       level: 'warn',
       key: 'low',
-      title: 'Velocidad baja',
+      title: 'Low speed',
       detail:
-        'v &lt; 5 m/s: posible falta de par útil en el ramal, enfriamiento limitado e inestabilidad del ramal — revise pretensado, abrazamiento y número de correas.',
+        'v &lt; 5 m/s: limited cooling, possible strand instability, and reduced useful torque in the span — check tension, wrap, and number of belts.',
     };
   }
   if (v_m_s > 30) {
     return {
       level: 'danger',
       key: 'critical',
-      title: 'Velocidad crítica',
+      title: 'Critical speed',
       detail:
-        'v &gt; 30 m/s: riesgo elevado por fuerza centrífuga, calor y estabilidad — poleas balanceadas, perfiles especiales y validación de fabricante.',
+        'v &gt; 30 m/s: high centrifugal loading, heat, and stability risk — balanced pulleys, special profiles, and supplier validation.',
     };
   }
   return {
     level: 'ok',
     key: 'optimal',
-    title: 'Rango óptimo',
-    detail: '5 m/s ≤ v ≤ 30 m/s: régimen habitual de diseño para muchas correas industriales (sujeto a catálogo).',
+    title: 'Typical design band',
+    detail: '5 m/s ≤ v ≤ 30 m/s: common industrial belt-speed band (always confirm in catalogue).',
   };
 }
 
@@ -200,7 +200,7 @@ export function computeBeltDriveTransmission(p) {
       const pr = POLY_V_PROFILES.find((x) => x.id === p.polyVProfileId) || POLY_V_PROFILES[1];
       return `${pr.label} · ${pr.norm}`;
     }
-    return 'Correa plana — pretensado y coeficiente de fricción según revestimiento';
+    return 'Flat belt — pretension and friction per lining (supplier data)';
   })();
 
   return {

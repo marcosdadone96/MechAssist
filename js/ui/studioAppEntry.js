@@ -3,7 +3,8 @@
  */
 
 import { mountTierStatusBar } from './paywallMount.js';
-import { isPremiumEffective, activateProDemoInBrowser } from '../services/accessTier.js';
+import { isPremiumEffective } from '../services/accessTier.js';
+import { startProCheckoutFlow } from '../services/proCheckoutFlow.js';
 
 mountTierStatusBar();
 
@@ -11,7 +12,7 @@ const app = document.getElementById('studioApp');
 const pay = document.getElementById('studioPaywall');
 
 document.getElementById('studioActivateDemo')?.addEventListener('click', () => {
-  activateProDemoInBrowser();
+  startProCheckoutFlow();
 });
 
 if (isPremiumEffective()) {

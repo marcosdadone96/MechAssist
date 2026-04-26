@@ -120,6 +120,9 @@ export const LOCALES = Object.freeze({
 /** @type {string} */
 export const HOME_LANG_STORAGE_KEY = 'mdr-home-lang';
 
+/** Hub / machine language toggle dispatches this (detail: `{ lang: 'es'|'en' }`). */
+export const HOME_LANG_CHANGED_EVENT = 'mdr-home-lang-changed';
+
 export function getCurrentLang() {
   try {
     return localStorage.getItem(HOME_LANG_STORAGE_KEY) === 'en' ? 'en' : 'es';

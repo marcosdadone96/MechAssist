@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MechAssist</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="css/app.css" />
+    <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
+  </head>
+  <body>
+    <div id="fileProtoWarn" class="runtime-error" hidden role="alert"></div>
+    <div id="runtimeError" class="runtime-error runtime-error--js" hidden role="alert"></div>
+    <script>
+      (function () {
+        if (location.protocol === 'file:') {
+          var el = document.getElementById('fileProtoWarn');
+          if (el) {
+            el.hidden = false;
+            el.textContent =
+              'Abra esta pagina con un servidor HTTP (no con doble clic). Ejemplo: npx --yes serve .';
+          }
+        }
+      })();
+    </script>
+
+    <header class="app-header">
+      <a class="app-header__brand" href="index.html">Mech<span>Assist</span></a>
+      <nav aria-label="Main">
+        <div class="app-header__nav-start">
+          <a href="index.html" data-reg-tx="navHome">Inicio</a>
+        </div>
+        <div class="app-header__nav-end">
+          <a href="transmission-lab.html" class="lab-header__nav-cta" data-reg-tx="navLab">Laboratorio</a>
+          <div class="hub-lang" role="group" aria-label="Language" id="registerLang">
+            <button type="button" class="hub-lang__btn" data-register-lang="es">ES</button>
+            <button type="button" class="hub-lang__btn" data-register-lang="en">EN</button>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="app-main register-page">
+      <div class="register-card">
+        <p class="register-card__eyebrow">MechAssist</p>
+
+        <div id="registerSignedIn" class="register-panel" hidden>
+          <h1 class="register-card__title" data-reg-tx="signedInTitle">Sesion activa</h1>
+          <p class="register-card__lead" data-reg-tx="signedInLead"></p>
+          <div class="register-card__actions">
+            <button type="button" class="button button--primary" id="btnLogoutSignedIn" data-reg-tx="logout">
+              Cerrar sesion
+            </button>
+            <a class="button button--accent" id="registerToCheckout" href="checkout.html" hidden data-reg-tx="continueCheckout"
+              >Continuar al pago</a
+            >
+            <a class="button button--ghost" href="index.html" data-reg-tx="linkHome">Inicio</a>
+          </div>
+        </div>
+
+        <div id="registerSuccess" class="register-panel register-panel--success" hidden>
+          <h1 class="register-card__title" data-reg-tx="successTitle">Listo</h1>
+          <p class="register-card__lead" data-reg-tx="successLead"></p>
+          <div class="register-card__actions">
+            <a class="button button--primary" href="index.html" data-reg-tx="successBtn">Inicio</a>
+          </div>
+        </div>
+
+        <form id="registerForm" class="register-form" novalidate>
+          <h1 class="register-card__title" data-reg-tx="heading">Crear cuenta</h1>
+          <p class="register-card__lead" data-reg-tx="lead"></p>
+
+          <div id="registerError" class="register-error" role="alert" aria-live="polite" hidden></div>
+
+          <div class="field-grid field-grid--essential register-form__fields">
+            <div class="field">
+              <label for="regName">
+                <span data-reg-part="nameLabel">Nombre</span>
+                <span class="info-chip" data-reg-tip="nameChip" title="" aria-label="">?</span>
+              </label>
+              <input id="regName" name="name" type="text" autocomplete="name" required maxlength="120" />
+            </div>
+            <div class="field">
+              <label for="regEmail">
+                <span data-reg-part="emailLabel">Email</span>
+                <span class="info-chip" data-reg-tip="emailChip" title="" aria-label="">?</span>
+              </label>
+              <input id="regEmail" name="email" type="email" autocomplete="email" required maxlength="120" />
+            </div>
+            <div class="field">
+              <label for="regPassword">
+                <span data-reg-part="pwLabel">Password</span>
+                <span class="info-chip" data-reg-tip="pwChip" title="" aria-label="">?</span>
+              </label>
+              <input
+                id="regPassword"
+                name="password"
+                type="password"
+                autocomplete="new-password"
+                required
+                minlength="6"
+                maxlength="128"
+              />
+            </div>
+            <div class="field">
+              <label for="regPassword2">
+                <span data-reg-part="pw2Label">Confirmar</span>
+                <span class="info-chip" data-reg-tip="pw2Chip" title="" aria-label="">?</span>
+              </label>
+              <input
+                id="regPassword2"
+                name="password2"
+                type="password"
+                autocomplete="new-password"
+                required
+                minlength="6"
+                maxlength="128"
+              />
+            </div>
+          </div>
+
+          <div class="field field--checkbox">
+            <label class="register-checkbox" for="regAcceptLegal">
+              <input type="checkbox" id="regAcceptLegal" name="acceptLegal" required />
+              <span data-reg-part="acceptLegal"></span>
+            </label>
+          </div>
+
+          <p class="register-card__terms" data-reg-tx="terms"></p>
+
+          <div class="register-card__actions register-card__actions--submit">
+            <button type="submit" class="button button--primary" data-reg-tx="submit">Enviar</button>
+            <a class="button button--ghost" href="index.html" data-reg-tx="linkHome">Inicio</a>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <footer class="app-legal-foot">
+      <nav class="app-legal-foot__links" aria-label="Legal" data-reg-foot="nav">
+        <a href="privacy.html" data-reg-foot="privacy">Privacidad</a>
+        <a href="terms.html" data-reg-foot="terms">Tùrminos</a>
+        <a href="cookies.html" data-reg-foot="cookies">Cookies</a>
+        <a href="cookie-preferences.html" data-reg-foot="cookiePrefs">Preferencias cookies</a>
+      </nav>
+    </footer>
+
+    <script type="module" src="js/ui/registerPageEntry.js"></script>
+  </body>
+</html>

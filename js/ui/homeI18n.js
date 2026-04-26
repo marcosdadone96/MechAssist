@@ -2,6 +2,8 @@
  * Home hub i18n. Spanish non-ASCII uses \\uXXXX escapes so the file is ASCII-safe
  * valid UTF-8 even if the server omits charset on *.js (avoids mojibake).
  */
+import { HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
+
 const LS_LANG = 'mdr-home-lang';
 
 const dict = {
@@ -47,6 +49,10 @@ const dict = {
     'aria.fluidCalcs': 'Calculadoras de hidr\u00e1ulica y neum\u00e1tica',
     footnote: 'Verde = activo \u00b7 Cintas: Gratis o Pro seg\u00fan el m\u00f3dulo',
     badgePro: 'ACCESO PRO',
+    'footer.privacy': 'Privacidad',
+    'footer.terms': 'T\u00e9rminos',
+    'footer.cookies': 'Cookies',
+    'footer.cookiePrefs': 'Preferencias cookies',
   },
   en: {
     'header.tag': 'Power Transmission',
@@ -90,6 +96,10 @@ const dict = {
     'aria.fluidCalcs': 'Hydraulic and pneumatic calculators',
     footnote: 'Green = active \u00b7 Conveyors: free or Pro by module',
     badgePro: 'PRO ACCESS',
+    'footer.privacy': 'Privacy',
+    'footer.terms': 'Terms',
+    'footer.cookies': 'Cookies',
+    'footer.cookiePrefs': 'Cookie settings',
   },
 };
 
@@ -132,6 +142,7 @@ function setLang(lang) {
   window.__homeLang = l;
   window.__t = (k) => dict[l][k] || k;
   window.dispatchEvent(new CustomEvent('home-language-changed', { detail: { lang: l } }));
+  window.dispatchEvent(new CustomEvent(HOME_LANG_CHANGED_EVENT, { detail: { lang: l } }));
 }
 
 document.querySelectorAll('.hub-lang__btn[data-lang]').forEach((btn) => {

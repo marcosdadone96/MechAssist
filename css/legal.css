@@ -1,0 +1,262 @@
+/* Cookie banner + legal / preferences pages */
+
+.mdr-cookie-banner {
+  position: fixed;
+  z-index: 99999;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+  background: rgba(15, 23, 42, 0.92);
+  color: #e2e8f0;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.mdr-cookie-banner__inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+
+.mdr-cookie-banner__text {
+  margin: 0;
+  flex: 1 1 220px;
+}
+
+.mdr-cookie-banner__text a {
+  color: #6ee7b7;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.mdr-cookie-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.mdr-cookie-banner__btn {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid transparent;
+}
+
+.mdr-cookie-banner__btn--primary {
+  background: #22c55e;
+  color: #052e16;
+  font-weight: 600;
+}
+
+.mdr-cookie-banner__btn--ghost {
+  background: transparent;
+  color: #e2e8f0;
+  border-color: rgba(226, 232, 240, 0.35);
+}
+
+.legal-body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  line-height: 1.55;
+}
+
+.legal-doc {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+.legal-doc__meta {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 1.25rem;
+}
+
+.legal-doc h1 {
+  font-size: 1.65rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.legal-doc h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 1.75rem 0 0.5rem;
+  color: #1e293b;
+}
+
+.legal-doc p,
+.legal-doc li {
+  font-size: 0.95rem;
+  margin: 0 0 0.75rem;
+  color: #334155;
+}
+
+.legal-doc ul {
+  padding-left: 1.25rem;
+  margin: 0 0 0.75rem;
+}
+
+.legal-doc a {
+  color: #0d9488;
+  font-weight: 600;
+}
+
+.legal-doc .legal-disclaimer {
+  padding: 0.85rem 1rem;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: #9a3412;
+  margin-bottom: 1.5rem;
+}
+
+.legal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.legal-header a {
+  font-weight: 700;
+  color: #0f172a;
+  text-decoration: none;
+}
+
+.legal-header a span {
+  color: #0d9488;
+}
+
+.legal-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.legal-header__nav a {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+.register-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: #475569;
+  cursor: pointer;
+}
+
+.register-checkbox input {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+.register-checkbox a {
+  color: #0d9488;
+  font-weight: 600;
+}
+
+.hub-lang {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.14rem;
+}
+
+.hub-lang__btn {
+  border: 0;
+  background: transparent;
+  color: #475569;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  border-radius: 999px;
+  padding: 0.28rem 0.56rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.hub-lang__btn--active {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.mdr-cookie-banner__prefs {
+  font-weight: 700;
+  color: #fde68a;
+  margin-left: 0.15rem;
+}
+
+.cookie-prefs__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.cookie-prefs__btn {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  border: 1px solid #cbd5e1;
+}
+
+.cookie-prefs__btn--primary {
+  background: #0d9488;
+  color: #fff;
+  font-weight: 600;
+  border-color: #0f766e;
+}
+
+.cookie-prefs__btn--ghost {
+  background: #fff;
+  color: #334155;
+}
+
+.cookie-prefs__btn--link {
+  background: none;
+  border: none;
+  color: #64748b;
+  text-decoration: underline;
+  padding: 0;
+  font-size: 0.88rem;
+}
+
+.cookie-prefs__note {
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.cookie-prefs__reset {
+  margin-top: 1.5rem;
+}
+
+.cookie-prefs__saved {
+  color: #0d9488;
+  font-weight: 600;
+}

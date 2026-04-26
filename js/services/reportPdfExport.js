@@ -5,6 +5,8 @@
 import { BRANDS } from '../data/gearmotorCatalog.js';
 import { getBestCatalogPick } from '../ui/driveSelection.js';
 import { getCurrentLang, t, formatNumberLocale, formatDateTimeLocale } from '../config/locales.js';
+import { FEATURES } from '../config/features.js';
+import { buildRegisterUrlWithNextCheckout } from './proCheckoutFlow.js';
 import { LOAD_DUTY_OPTIONS, LOAD_DUTY_OPTIONS_EN } from '../modules/serviceFactorByDuty.js';
 
 const JSPDF_CDN = 'https://esm.sh/jspdf@2.5.2';
@@ -1014,37 +1016,84 @@ export function buildBucketPdfPayload(raw, r, driveReq) {
 }
 
 export function buildTractionPdfPayload(raw, r, driveReq) {
+  const lang = getCurrentLang();
+  const en = lang === 'en';
+  const dutyLabel =
+    raw.duty === 'persons'
+      ? en
+        ? 'Passenger (SF ~12)'
+        : 'Personas (SF ~12)'
+      : en
+        ? 'Freight (SF ~10)'
+        : 'Montacargas (SF ~10)';
+  const cwNote =
+    raw.counterweight_kg != null
+      ? `${raw.counterweight_kg} kg (${en ? 'fixed' : 'fijado'})`
+      : en
+        ? `optimal k=${raw.counterweightFraction} on Q`
+        : `\u00f3ptimo k=${raw.counterweightFraction} sobre Q`;
   return {
-    title: 'Informe — Ascensor de tracción',
-    fileBase: `informe-ascensor-traccion-${new Date().toISOString().slice(0, 10)}`,
-    timestamp: formatDateTimeLocale(new Date(), getCurrentLang()),
+    title: en ? 'Report \u2014 Traction elevator' : 'Informe \u2014 Ascensor de tracci\u00f3n',
+    fileBase: en
+      ? `traction-elevator-report-${new Date().toISOString().slice(0, 10)}`
+      : `informe-ascensor-traccion-${new Date().toISOString().slice(0, 10)}`,
+    timestamp: formatDateTimeLocale(new Date(), lang),
     requirements: {
       power_kW: driveReq.power_kW,
       torque_Nm: driveReq.torque_Nm,
       drum_rpm: driveReq.drum_rpm,
     },
-    inputRows: [
-      { label: 'Carga util', value: `${raw.usefulLoad_kg} kg` },
-      { label: 'Masa cabina vacia', value: `${raw.emptyCar_kg} kg` },
-      { label: 'Altura viaje', value: `${raw.travelHeight_m} m` },
-      { label: 'Velocidad nominal', value: `${raw.speed_m_s} m/s` },
-      { label: 'Arrollamiento', value: raw.reeving === '2_1' ? '2:1' : '1:1' },
-      { label: 'Diametro polea', value: `${raw.sheaveDiameter_m} m` },
-      { label: 'Angulo abrazamiento', value: `${raw.wrapAngle_deg} deg` },
-      { label: 'Rozamiento mu', value: String(raw.friction_mu) },
-    ],
-    resultRows: [
-      { label: 'Masa contrapeso', value: `${r.inputs.Mcp.toFixed(0)} kg` },
-      { label: 'Par polea diseño', value: `${driveReq.torque_Nm.toFixed(1)} N·m` },
-      { label: 'Potencia motor orientativa', value: `${driveReq.power_kW.toFixed(3)} kW` },
-      { label: 'RPM polea', value: `${r.drive.sheave_rpm.toFixed(2)} rpm` },
-      { label: 'Relacion T1/T2', value: `${r.euler.tensionRatioWorst.toFixed(2)}` },
-      { label: 'Margen adherencia', value: `x${r.euler.adhesionMargin.toFixed(2)}` },
-      { label: 'Par freno emergencia', value: `${r.brake.torque_Nm.toFixed(1)} N·m` },
-    ],
+    inputRows: en
+      ? [
+          { label: 'Useful load', value: `${raw.usefulLoad_kg} kg` },
+          { label: 'Empty car mass', value: `${raw.emptyCar_kg} kg` },
+          { label: 'Travel height', value: `${raw.travelHeight_m} m` },
+          { label: 'Rated speed', value: `${raw.speed_m_s} m/s` },
+          { label: 'Duty', value: dutyLabel },
+          { label: 'Reeving', value: raw.reeving === '2_1' ? '2:1' : '1:1' },
+          { label: 'Sheave diameter', value: `${raw.sheaveDiameter_m} m` },
+          { label: 'Wrap angle', value: `${raw.wrapAngle_deg} deg` },
+          { label: 'Friction mu', value: String(raw.friction_mu) },
+          { label: 'Max strands (design cap)', value: String(raw.maxStrands ?? '\u2014') },
+          { label: 'Counterweight', value: cwNote },
+        ]
+      : [
+          { label: 'Carga \u00fatil', value: `${raw.usefulLoad_kg} kg` },
+          { label: 'Masa cabina vac\u00eda', value: `${raw.emptyCar_kg} kg` },
+          { label: 'Altura viaje', value: `${raw.travelHeight_m} m` },
+          { label: 'Velocidad nominal', value: `${raw.speed_m_s} m/s` },
+          { label: 'Servicio', value: dutyLabel },
+          { label: 'Arrollamiento', value: raw.reeving === '2_1' ? '2:1' : '1:1' },
+          { label: 'Di\u00e1metro polea', value: `${raw.sheaveDiameter_m} m` },
+          { label: '\u00c1ngulo abrazamiento', value: `${raw.wrapAngle_deg}\u00b0` },
+          { label: 'Rozamiento \u03bc', value: String(raw.friction_mu) },
+          { label: 'M\u00e1x. cables (tope)', value: String(raw.maxStrands ?? '\u2014') },
+          { label: 'Contrapeso', value: cwNote },
+        ],
+    resultRows: en
+      ? [
+          { label: 'Counterweight mass', value: `${r.inputs.Mcp.toFixed(0)} kg` },
+          { label: 'Design sheave torque', value: `${driveReq.torque_Nm.toFixed(1)} N\u00b7m` },
+          { label: 'Indicative motor power', value: `${driveReq.power_kW.toFixed(3)} kW` },
+          { label: 'Sheave rpm', value: `${r.drive.sheave_rpm.toFixed(2)} rpm` },
+          { label: 'T1/T2 ratio', value: `${r.euler.tensionRatioWorst.toFixed(2)}` },
+          { label: 'Traction margin', value: `x${r.euler.adhesionMargin.toFixed(2)}` },
+          { label: 'Emergency brake torque', value: `${r.brake.torque_Nm.toFixed(1)} N\u00b7m` },
+        ]
+      : [
+          { label: 'Masa contrapeso', value: `${r.inputs.Mcp.toFixed(0)} kg` },
+          { label: 'Par polea dise\u00f1o', value: `${driveReq.torque_Nm.toFixed(1)} N\u00b7m` },
+          { label: 'Potencia motor orientativa', value: `${driveReq.power_kW.toFixed(3)} kW` },
+          { label: 'RPM polea', value: `${r.drive.sheave_rpm.toFixed(2)} rpm` },
+          { label: 'Relaci\u00f3n T1/T2', value: `${r.euler.tensionRatioWorst.toFixed(2)}` },
+          { label: 'Margen adherencia', value: `x${r.euler.adhesionMargin.toFixed(2)}` },
+          { label: 'Par freno emergencia', value: `${r.brake.torque_Nm.toFixed(1)} N\u00b7m` },
+        ],
     assumptions: [],
     stepsSummary: [],
-    topMotor: 'Ver bloque de recomendaciones de motorreductor en la página.',
+    topMotor: en
+      ? 'See the gearmotor recommendation block on the page.'
+      : 'Ver bloque de recomendaciones de motorreductor en la p\u00e1gina.',
     explanationsBlock: '',
     dynamicAnalysis: {
       torqueRunNm: driveReq.torque_Nm * 0.75,
@@ -1052,8 +1101,10 @@ export function buildTractionPdfPayload(raw, r, driveReq) {
       forcePeakN: driveReq.torque_Nm,
       massFlowKgS: 0,
     },
-    verdict: r.euler.adhesionOk ? 'APTO' : 'REVISAR',
-    disclaimer: r.disclaimer || 'Validar conforme EN 81 y normativa local aplicable.',
+    verdict: r.euler.adhesionOk ? (en ? 'OK' : 'APTO') : en ? 'REVIEW' : 'REVISAR',
+    disclaimer: en
+      ? 'Not a regulatory installation memo. Validate EN 81, rope standards (e.g. EN 12385) and a signed engineering package.'
+      : r.disclaimer || 'Validar conforme EN 81 y normativa local aplicable.',
   };
 }
 
@@ -1184,18 +1235,21 @@ export function mountPremiumPdfExportBar(el, opts) {
     });
   } else {
     el.hidden = false;
+    const proHref = FEATURES.allowPremiumViaQueryPro ? '?pro=1' : buildRegisterUrlWithNextCheckout();
+    const proLabelEn = FEATURES.allowPremiumViaQueryPro ? 'Try Pro access' : 'Get Pro';
+    const proLabelEs = FEATURES.allowPremiumViaQueryPro ? 'Probar acceso Pro' : 'Obtener Pro';
     el.innerHTML = en
       ? `
       <div class="premium-export premium-export--teaser">
         <span class="premium-export__badge premium-export__badge--muted">Pro</span>
         <p class="premium-export__teaser-text">Full <strong>PDF</strong> report export is available on the Pro plan.</p>
-        <a class="premium-export__link" href="?pro=1">Try Pro access</a>
+        <a class="premium-export__link" href="${proHref}">${proLabelEn}</a>
       </div>`
       : `
       <div class="premium-export premium-export--teaser">
         <span class="premium-export__badge premium-export__badge--muted">Pro</span>
         <p class="premium-export__teaser-text">La exportaci\u00f3n completa del informe en <strong>PDF</strong> est\u00e1 disponible con el plan Pro.</p>
-        <a class="premium-export__link" href="?pro=1">Probar acceso Pro</a>
+        <a class="premium-export__link" href="${proHref}">${proLabelEs}</a>
       </div>`;
   }
 }

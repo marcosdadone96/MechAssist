@@ -17,6 +17,10 @@ function buildFieldTooltipContent(hintEl, helpP) {
  * @param {ParentNode} [root]
  */
 export function mountCompactLabFieldHelp(root = document) {
+  const helpAria = document.documentElement.lang?.toLowerCase().startsWith('en')
+    ? 'Help for this field'
+    : 'Ayuda sobre este campo';
+
   root.querySelectorAll('.lab-calc-layout__inputs .lab-field').forEach((field) => {
     if (!(field instanceof HTMLElement)) return;
     if (field.dataset.helpCompact === '1') return;
@@ -36,7 +40,7 @@ export function mountCompactLabFieldHelp(root = document) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'lab-help-hover__btn';
-    btn.setAttribute('aria-label', 'Ayuda sobre este campo');
+    btn.setAttribute('aria-label', helpAria);
     btn.textContent = '?';
 
     const tip = document.createElement('span');

@@ -1,11 +1,12 @@
-import { activateProDemoInBrowser, isPremiumEffective } from '../services/accessTier.js';
+import { isPremiumEffective } from '../services/accessTier.js';
+import { startProCheckoutFlow } from '../services/proCheckoutFlow.js';
 
 const LOCK_HTML = `
   <div class="premium-gate-note">
     <p class="premium-gate-note__title">Contenido Pro</p>
     <p class="premium-gate-note__text">En plan gratuito solo se muestran los datos clave para elegir motorreductor.</p>
     <button type="button" class="button button--primary premium-gate-note__btn" data-premium-upgrade>
-      Activar Pro (demo)
+      Continuar con Pro
     </button>
   </div>
 `;
@@ -40,7 +41,7 @@ function lockOneDetails(detailsEl) {
   detailsEl.insertAdjacentHTML('beforeend', LOCK_HTML);
 
   detailsEl.querySelector('[data-premium-upgrade]')?.addEventListener('click', () => {
-    activateProDemoInBrowser();
+    startProCheckoutFlow();
   });
 }
 

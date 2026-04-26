@@ -2,7 +2,7 @@
  * Hub de maquinas: etiqueta de acceso Pro en cada modulo.
  */
 
-import { getCurrentUser, registerLocalUser, clearLocalUser } from '../services/localAuth.js';
+import { getCurrentUser, clearLocalUser } from '../services/localAuth.js';
 
 function getLang() {
   try {
@@ -19,10 +19,6 @@ function getTx(lang) {
       hello: (name) => `Hi, ${name}`,
       logout: 'Log out',
       register: 'Register',
-      fullName: 'Full name',
-      email: 'Email',
-      password: 'Password (min. 6 chars)',
-      registerOk: 'Local registration completed.',
     };
   }
   return {
@@ -30,10 +26,6 @@ function getTx(lang) {
     hello: (name) => `Hola, ${name}`,
     logout: 'Cerrar sesi\u00f3n',
     register: 'Registrarse',
-    fullName: 'Nombre completo',
-    email: 'Email',
-    password: 'Contrase\u00f1a (m\u00edn. 6 caracteres)',
-    registerOk: 'Registro local completado.',
   };
 }
 
@@ -69,23 +61,7 @@ function mountHomeAccountControls() {
   wrap.className = 'hub-account';
   wrap.innerHTML = user
     ? `<span class="hub-account__user">${tx.hello(user.name)}</span><button type="button" class="hub-account__btn" data-logout>${tx.logout}</button>`
-    : `<button type="button" class="hub-account__btn" data-register>${tx.register}</button>`;
-
-  wrap.querySelector('[data-register]')?.addEventListener('click', () => {
-    const name = window.prompt(tx.fullName);
-    if (!name) return;
-    const email = window.prompt(tx.email);
-    if (!email) return;
-    const password = window.prompt(tx.password);
-    if (!password) return;
-    try {
-      registerLocalUser({ name, email, password });
-      window.alert(tx.registerOk);
-      window.location.reload();
-    } catch (e) {
-      window.alert(String(e?.message || e));
-    }
-  });
+    : `<a href="register.html" class="hub-account__btn hub-account__btn--link">${tx.register}</a>`;
 
   wrap.querySelector('[data-logout]')?.addEventListener('click', () => {
     clearLocalUser();

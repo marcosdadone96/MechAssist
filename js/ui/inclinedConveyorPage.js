@@ -18,7 +18,7 @@ import { applyMachinePremiumGates } from './machinePremiumGates.js';
 import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
-import { getCurrentLang } from '../config/locales.js';
+import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
 
 const inputIds = [
   'incLength',
@@ -813,5 +813,7 @@ bindIncRangeSlider('incFrictionR', 'incFriction', 0.15, 0.65, 0.01);
 
 refresh();
 
-
+window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
+  location.reload();
+});
 

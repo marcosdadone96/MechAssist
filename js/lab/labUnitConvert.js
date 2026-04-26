@@ -66,6 +66,17 @@ const CAT_LABELS = /** @type {Record<LabConvertCategory, string>} */ ({
   torque: 'Par / momento',
 });
 
+const CAT_LABELS_EN = /** @type {Record<LabConvertCategory, string>} */ ({
+  length: 'Length / distance',
+  rotation: 'Angular speed',
+  linear: 'Linear speed',
+  life: 'L10 life (hours, Mrev, rev)',
+  force: 'Force',
+  stiffness: 'Spring stiffness',
+  pressure: 'Stress / pressure',
+  torque: 'Torque',
+});
+
 const OPTS_BY_CAT = /** @type {Record<LabConvertCategory, { id: string, label: string }[]>} */ ({
   length: LENGTH_OPTS,
   rotation: ROT_OPTS,
@@ -329,68 +340,73 @@ export function convertLabUnits(cat, value, fromId, toId, rpm) {
  * @param {string} unitId
  * @param {number | null} n
  */
-function formatOut(cat, unitId, n) {
+function formatOut(cat, unitId, n, uiLang = 'es') {
   if (n == null || !Number.isFinite(n)) return '—';
   if (cat === 'life' && unitId === 'rev' && (Math.abs(n) >= 1e7 || (Math.abs(n) > 0 && Math.abs(n) < 1e-2))) {
-    return `${n.toExponential(2)} vueltas`;
+    return `${n.toExponential(2)} ${uiLang === 'en' ? 'rev' : 'vueltas'}`;
   }
   const suf = OUT_SUFFIX[unitId] ?? '';
   return `${n.toFixed(2)} ${suf}`.trim();
 }
 
 /**
- * @param {{ categories: LabConvertCategory[], title?: string, tip?: string }} opts
+ * @param {{ categories: LabConvertCategory[], title?: string, tip?: string, uiLang?: 'es'|'en' }} opts
  */
 export function buildLabUnitConverterHtml(opts) {
   const categories = opts.categories.length ? opts.categories : ['length', 'rotation', 'linear'];
-  const title = opts.title || 'Conversor de unidades';
+  const uiLang = opts.uiLang === 'en' ? 'en' : 'es';
+  const catLabelMap = uiLang === 'en' ? CAT_LABELS_EN : CAT_LABELS;
+  const title = opts.title || (uiLang === 'en' ? 'Unit converter' : 'Conversor de unidades');
   const tip =
     opts.tip ||
-    'No modifica el calculo principal; solo traduce valores entre las unidades de esta calculadora.';
+    (uiLang === 'en'
+      ? 'Does not change the main calculation; only converts values between units for this calculator.'
+      : 'No modifica el calculo principal; solo traduce valores entre las unidades de esta calculadora.');
+  const L = (es, en) => (uiLang === 'en' ? en : es);
 
   const magOptions = categories
-    .map((c) => `<option value="${c}">${escapeHtml(CAT_LABELS[c])}</option>`)
+    .map((c) => `<option value="${c}">${escapeHtml(catLabelMap[c])}</option>`)
     .join('');
 
   return `
-<div class="lab-unit-converter" aria-label="Conversor de unidades del laboratorio" data-lab-convert-cats="${categories.join(',')}">
+<div class="lab-unit-converter" aria-label="${escapeHtml(L('Conversor de unidades del laboratorio', 'Lab unit converter'))}" data-lab-convert-ui-lang="${uiLang}" data-lab-convert-cats="${categories.join(',')}">
   <div class="lab-unit-converter__head">
     <span class="lab-unit-converter__title">${escapeHtml(title)}</span>
     <span class="lab-help-hover lab-help-hover--field">
-      <button type="button" class="lab-help-hover__btn" aria-label="Informacion del conversor">?</button>
+      <button type="button" class="lab-help-hover__btn" aria-label="${escapeHtml(L('Informacion del conversor', 'About this converter'))}">?</button>
       <span class="lab-help-hover__tip">${escapeHtml(tip)}</span>
     </span>
   </div>
   <div class="lab-unit-converter__grid">
     <label class="lab-unit-converter__field lab-unit-converter__field--mag">
-      <span class="lab-unit-converter__lbl">Magnitud</span>
+      <span class="lab-unit-converter__lbl">${escapeHtml(L('Magnitud', 'Dimension'))}</span>
       <select class="lab-unit-converter__mag">${magOptions}</select>
     </label>
     <label class="lab-unit-converter__field">
-      <span class="lab-unit-converter__lbl">Valor</span>
-      <input class="lab-unit-converter__val" type="text" inputmode="decimal" autocomplete="off" placeholder="p. ej. 1455" />
+      <span class="lab-unit-converter__lbl">${escapeHtml(L('Valor', 'Value'))}</span>
+      <input class="lab-unit-converter__val" type="text" inputmode="decimal" autocomplete="off" placeholder="${escapeHtml(L('p. ej. 1455', 'e.g. 1455'))}" />
     </label>
     <label class="lab-unit-converter__field">
-      <span class="lab-unit-converter__lbl">Desde</span>
+      <span class="lab-unit-converter__lbl">${escapeHtml(L('Desde', 'From'))}</span>
       <select class="lab-unit-converter__from"></select>
     </label>
     <div class="lab-unit-converter__swap-wrap">
-      <button type="button" class="lab-unit-converter__swap" title="Intercambiar unidades">⇄</button>
+      <button type="button" class="lab-unit-converter__swap" title="${escapeHtml(L('Intercambiar unidades', 'Swap units'))}">⇄</button>
     </div>
     <label class="lab-unit-converter__field">
-      <span class="lab-unit-converter__lbl">Hasta</span>
+      <span class="lab-unit-converter__lbl">${escapeHtml(L('Hasta', 'To'))}</span>
       <select class="lab-unit-converter__to"></select>
     </label>
   </div>
   <label class="lab-unit-converter__field lab-unit-converter__rpm-row is-hidden">
     <span class="lab-unit-converter__lbl-row">
-      <span class="lab-unit-converter__lbl">RPM del eje</span>
+      <span class="lab-unit-converter__lbl">${escapeHtml(L('RPM del eje', 'Shaft RPM'))}</span>
       <span class="lab-help-hover lab-help-hover--field">
-        <button type="button" class="lab-help-hover__btn" aria-label="Ayuda RPM">?</button>
-        <span class="lab-help-hover__tip">Necesario si en <strong>vida L10</strong> interviene la unidad <strong>horas</strong> (horas ↔ vueltas).</span>
+        <button type="button" class="lab-help-hover__btn" aria-label="${escapeHtml(L('Ayuda RPM', 'RPM help'))}">?</button>
+        <span class="lab-help-hover__tip">${uiLang === 'en' ? 'Required when <strong>L10 life</strong> uses <strong>hours</strong> (hours ↔ revolutions).' : 'Necesario si en <strong>vida L10</strong> interviene la unidad <strong>horas</strong> (horas ↔ vueltas).'}</span>
       </span>
     </span>
-    <input class="lab-unit-converter__rpm" type="text" inputmode="decimal" autocomplete="off" placeholder="p. ej. 1455" />
+    <input class="lab-unit-converter__rpm" type="text" inputmode="decimal" autocomplete="off" placeholder="${escapeHtml(L('p. ej. 1455', 'e.g. 1455'))}" />
   </label>
   <div class="lab-unit-converter__result" aria-live="polite">
     <span class="lab-unit-converter__eq">=</span>
@@ -465,6 +481,7 @@ export function mountLabUnitConverter() {
       return;
     }
 
+    const uiLang = root.getAttribute('data-lab-convert-ui-lang') === 'en' ? 'en' : 'es';
     const rpmInput = rpmIn instanceof HTMLInputElement ? rpmIn : null;
 
     function fillUnitSelects(cat) {
@@ -507,7 +524,7 @@ export function mountLabUnitConverter() {
       if (cat === 'life') {
         const needsRpm = fromId === 'hours' || toId === 'hours';
         if (needsRpm && !(rpm != null && rpm > 0)) {
-          outEl.textContent = 'Indique RPM > 0';
+          outEl.textContent = uiLang === 'en' ? 'Enter RPM > 0' : 'Indique RPM > 0';
           return;
         }
       }
@@ -517,7 +534,7 @@ export function mountLabUnitConverter() {
         outEl.textContent = '—';
         return;
       }
-      outEl.textContent = formatOut(cat, toId, result);
+      outEl.textContent = formatOut(cat, toId, result, uiLang);
     }
 
     mag.addEventListener('change', () => {

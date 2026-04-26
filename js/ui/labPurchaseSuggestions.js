@@ -38,10 +38,13 @@ export function setLabPurchaseSuggestions(mountEl, opts = {}) {
   mountEl.hidden = false;
 
   const title = opts.title || 'Opciones de compra (orientativas)';
+  const linkLabel = opts.linkLabel || 'Buscar en Amazon';
   const hasTag = Boolean(LAB_AFFILIATE.amazonAssociateTag?.trim());
-  const disclosure = hasTag
-    ? 'MechAssist participa en el Programa de Afiliados de Amazon EU: enlaces que pueden generar una comision para el sitio sin coste adicional para usted. Verifique siempre referencia y vendedor.'
-    : 'Enlaces de busqueda a Amazon a titulo informativo. Puede configurar un ID de afiliado en la configuracion del sitio.';
+  const disclosure =
+    opts.disclosure ||
+    (hasTag
+      ? 'MechAssist participa en el Programa de Afiliados de Amazon EU: enlaces que pueden generar una comision para el sitio sin coste adicional para usted. Verifique siempre referencia y vendedor.'
+      : 'Enlaces de busqueda a Amazon a titulo informativo. Puede configurar un ID de afiliado en la configuracion del sitio.');
 
   const list = rows
     .map((r) => {
@@ -49,7 +52,7 @@ export function setLabPurchaseSuggestions(mountEl, opts = {}) {
       const rel = amazonAffiliateLinkRel();
       return `<li class="lab-purchase-suggestions__item">
         <span class="lab-purchase-suggestions__label">${esc(r.label)}</span>
-        <a class="lab-purchase-suggestions__link" href="${esc(href)}" target="_blank" rel="${esc(rel)}">Buscar en Amazon</a>
+        <a class="lab-purchase-suggestions__link" href="${esc(href)}" target="_blank" rel="${esc(rel)}">${esc(linkLabel)}</a>
       </li>`;
     })
     .join('');
@@ -69,7 +72,7 @@ export function setLabPurchaseSuggestions(mountEl, opts = {}) {
  * @param {Array<{ commerceId: string, qty?: number, note?: string }>} shoppingLines
  * @param {Array<{ label: string, searchQuery: string }>} [extraRows]
  */
-export function setLabPurchaseFromShoppingLines(mountEl, shoppingLines, extraRows = []) {
+export function setLabPurchaseFromShoppingLines(mountEl, shoppingLines, extraRows = [], purchaseOpts = {}) {
   const base = purchaseSuggestionRowsFromShoppingLines(shoppingLines);
-  setLabPurchaseSuggestions(mountEl, { rows: [...base, ...(extraRows || [])] });
+  setLabPurchaseSuggestions(mountEl, { rows: [...base, ...(extraRows || [])], ...purchaseOpts });
 }

@@ -3,7 +3,8 @@
  */
 
 import { mountTierStatusBar } from './paywallMount.js';
-import { isPremiumEffective, activateProDemoInBrowser } from '../services/accessTier.js';
+import { isPremiumEffective } from '../services/accessTier.js';
+import { startProCheckoutFlow } from '../services/proCheckoutFlow.js';
 
 mountTierStatusBar();
 
@@ -11,7 +12,7 @@ const app = document.getElementById('txApp');
 const pay = document.getElementById('txPaywall');
 
 document.getElementById('txActivateDemo')?.addEventListener('click', () => {
-  activateProDemoInBrowser();
+  startProCheckoutFlow();
 });
 
 if (isPremiumEffective()) {

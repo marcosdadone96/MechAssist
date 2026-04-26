@@ -2,13 +2,32 @@
  * Plan de acceso — gratuito vs Pro (sin backend; listo para enlazar a pagos más adelante).
  *
  * Estrategia (qué módulo es la puerta gratis): `FEATURES.whichCalculatorIsFree` o `?freeTool=flat|inclined`.
- * Pro efectivo: `FEATURES.devSimulatePremium`, `?pro=1`, o acceso Pro limitado (free trial por usos).
+ * Pro efectivo (por orden):
+ * - `FEATURES.devSimulatePremium`
+ * - `?pro=1` en la URL si `FEATURES.allowPremiumViaQueryPro`
+ * - `mdr-pro-persistent-v1` en localStorage (pago o demo)
+ * - Usos de prueba gratuitos si `FEATURES.allowFreeProTrialUses` (`mdr-free-pro-uses`, tope 5)
  */
 
 import { FEATURES } from '../config/features.js';
+
 const LS_FREE_PRO_USES = 'mdr-free-pro-uses';
+const LS_PRO_PERSISTENT = 'mdr-pro-persistent-v1';
 const SS_FREE_PRO_PAGE_MARK = 'mdr-free-pro-page-mark';
 const MAX_FREE_PRO_USES = 5;
+
+export function getProPersistentStorageKey() {
+  return LS_PRO_PERSISTENT;
+}
+
+/** Pro demo / licencia guardada en este navegador (sin depender de la URL). */
+export function hasPersistentProEnabled() {
+  try {
+    return localStorage.getItem(LS_PRO_PERSISTENT) === '1';
+  } catch (_) {
+    return false;
+  }
+}
 
 /** @returns {'flat'|'inclined'} */
 export function getFreemiumStrategy() {
@@ -33,6 +52,7 @@ export function getEffectiveTier() {
   } catch (_) {
     /* ignore */
   }
+  if (hasPersistentProEnabled()) return 'premium';
   if (getFreeProRemainingUses() > 0) return 'premium';
   return 'free';
 }
@@ -40,20 +60,42 @@ export function getEffectiveTier() {
 /** @param {'flat'|'inclined'|'pump'|'screw'} tool */
 export function isToolUnlocked(tool) {
   if (getEffectiveTier() === 'premium') return true;
-  // Cinta inclinada queda abierta como el resto de máquinas generalistas.
   if (tool === 'inclined' || tool === 'pump' || tool === 'screw') return true;
   return getFreemiumStrategy() === tool;
 }
 
-export function setPremiumPersistent() {
-  activateProDemoInBrowser();
+/** Marca licencia Pro persistente sin navegar (p. ej. tras confirmar pago en checkout). */
+export function grantProLicensePersistent() {
+  try {
+    localStorage.setItem(LS_PRO_PERSISTENT, '1');
+  } catch (_) {
+    /* ignore */
+  }
 }
 
 /**
- * Demo Pro: guarda en almacenamiento si el navegador lo permite y redirige con ?pro=1.
- * Así funciona aunque localStorage falle (p. ej. algunos entornos file:// o modo estricto).
+ * Activa Pro en este navegador: marca localStorage y redirige con `?pro=1` para recargar la vista actual.
+ * Tras un pago real, use `grantProLicensePersistent()` y redirija al inicio sin forzar la query.
+ */
+export function setPremiumPersistent() {
+  grantProLicensePersistent();
+  if (FEATURES.allowPremiumViaQueryPro) {
+    activateProDemoInBrowser();
+  } else {
+    try {
+      window.location.assign(window.location.pathname || '/');
+    } catch (_) {
+      window.location.reload();
+    }
+  }
+}
+
+/**
+ * Solo añade `?pro=1` y recarga (p. ej. enlaces rápidos). No marca persistencia.
+ * Preferir `setPremiumPersistent()` para «Activar Pro» en UI.
  */
 export function activateProDemoInBrowser() {
+  if (!FEATURES.allowPremiumViaQueryPro) return;
   try {
     const u = new URL(window.location.href);
     u.searchParams.set('pro', '1');
@@ -65,6 +107,11 @@ export function activateProDemoInBrowser() {
 }
 
 export function clearPremiumPersistent() {
+  try {
+    localStorage.removeItem(LS_PRO_PERSISTENT);
+  } catch (_) {
+    /* ignore */
+  }
   try {
     const u = new URL(window.location.href);
     u.searchParams.delete('pro');
@@ -98,7 +145,7 @@ function setUsageCounterRaw(v) {
 
 /**
  * Marca un uso Pro gratuito (máximo 1 por página/sesión del navegador).
- * Llame a esto al montar una máquina para que el cupo avance.
+ * No aplica si ya es Pro por URL, persistencia o flag de desarrollo.
  */
 export function consumeFreeProUseIfNeeded() {
   if (FEATURES.devSimulatePremium) return;
@@ -108,6 +155,7 @@ export function consumeFreeProUseIfNeeded() {
   } catch (_) {
     /* ignore */
   }
+  if (hasPersistentProEnabled()) return;
 
   const key = `${window.location.pathname}|${window.location.search}`;
   try {
@@ -127,6 +175,7 @@ export function getFreeProUsageCount() {
 }
 
 export function getFreeProRemainingUses() {
+  if (!FEATURES.allowFreeProTrialUses) return 0;
   const left = MAX_FREE_PRO_USES - getUsageCounterRaw();
   return left > 0 ? left : 0;
 }

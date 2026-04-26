@@ -26,9 +26,45 @@ function esc(s) {
  * @param {number} p.etaPump_pct
  * @param {'direct'|'gearmotor'} [p.couplingType]
  * @param {string} [p.fluidShort] — ej. "Agua · 1000 kg/m³"
+ * @param {'es'|'en'} [p.lang]
  */
 export function renderCentrifugalPumpDiagram(svg, p) {
   if (!svg) return;
+
+  const en = (p.lang ?? 'es') === 'en';
+  const C = en
+    ? {
+        title: 'Centrifugal pump',
+        subtitle: 'Tank \u00b7 suction \u00b7 pump \u00b7 discharge \u00b7 total head',
+        floorRef: 'Reference / floor (schematic)',
+        tankLabel: 'Tank / sump',
+        npshNote: 'NPSH available: validate separately',
+        motorGear: 'Motor + gearbox',
+        motorOnly: 'Motor',
+        pumpLabel: 'Pump',
+        workPoint: 'Operating point (model)',
+        phPs: (Ph, Ps) =>
+          `P_h \u2248 ${Number.isFinite(Ph) ? Ph.toFixed(3) : '\u2014'} kW \u00b7 P_shaft \u2248 ${Number.isFinite(Ps) ? Ps.toFixed(3) : '\u2014'} kW`,
+        etaLine: (eta) => `Declared efficiency \u2248 ${eta.toFixed(0)} %`,
+        aria: (flow, h) =>
+          `Centrifugal pump schematic: flow ${flow}, total head ${h} metres`,
+      }
+    : {
+        title: 'Bomba centr\u00edfuga',
+        subtitle: 'Dep\u00f3sito \u00b7 succi\u00f3n \u00b7 bomba \u00b7 impulsi\u00f3n \u00b7 altura manom\u00e9trica total',
+        floorRef: 'Referencia / suelo (esquema)',
+        tankLabel: 'Dep\u00f3sito / pozo',
+        npshNote: 'NPSH disponible: validar por separado',
+        motorGear: 'Motor + reductor',
+        motorOnly: 'Motor',
+        pumpLabel: 'Bomba',
+        workPoint: 'Punto de trabajo (modelo)',
+        phPs: (Ph, Ps) =>
+          `P_h \u2248 ${Number.isFinite(Ph) ? Ph.toFixed(3) : '\u2014'} kW \u00b7 P eje \u2248 ${Number.isFinite(Ps) ? Ps.toFixed(3) : '\u2014'} kW`,
+        etaLine: (eta) => `Eficiencia declarada \u2248 ${eta.toFixed(0)} %`,
+        aria: (flow, h) =>
+          `Esquema bomba centr\u00edfuga: caudal ${flow}, altura manom\u00e9trica ${h} metros`,
+      };
 
   const H = clamp(Number(p.head_m) || 10, 0.5, 250);
   const n = clamp(Number(p.pumpSpeed_rpm) || 1450, 100, 6000);
@@ -63,10 +99,7 @@ export function renderCentrifugalPumpDiagram(svg, p) {
 
   svg.setAttribute('viewBox', `0 0 ${VB_W} ${VB_H}`);
   svg.setAttribute('role', 'img');
-  svg.setAttribute(
-    'aria-label',
-    `Esquema bomba centrífuga: caudal ${p.flowLabel || ''}, altura manométrica ${H} metros`,
-  );
+  svg.setAttribute('aria-label', C.aria(p.flowLabel || '', H));
 
   svg.innerHTML = `
     <defs>
@@ -96,19 +129,19 @@ export function renderCentrifugalPumpDiagram(svg, p) {
 
     <rect width="${VB_W}" height="${VB_H}" fill="url(#bgPump)" />
     <rect x="14" y="14" width="${VB_W - 28}" height="52" rx="12" fill="#0f766e" fill-opacity="0.1" stroke="#0d9488" stroke-width="1.5" />
-    <text x="28" y="38" font-size="17" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, Segoe UI, sans-serif">Bomba centrifuga</text>
-    <text x="28" y="56" font-size="11.5" fill="#475569" font-family="Inter, system-ui, sans-serif">Deposito · succion · bomba · impulsion · altura manometrica total</text>
+    <text x="28" y="38" font-size="17" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, Segoe UI, sans-serif">${esc(C.title)}</text>
+    <text x="28" y="56" font-size="11.5" fill="#475569" font-family="Inter, system-ui, sans-serif">${esc(C.subtitle)}</text>
 
     <!-- Suelo -->
     <line x1="40" y1="${yGround}" x2="${VB_W - 40}" y2="${yGround}" stroke="#64748b" stroke-width="2.5" />
-    <text x="${VB_W - 210}" y="${yGround + 18}" font-size="10" fill="#94a3b8" font-family="Inter, system-ui, sans-serif">Referencia / soleo (esquema)</text>
+    <text x="${VB_W - 210}" y="${yGround + 18}" font-size="10" fill="#94a3b8" font-family="Inter, system-ui, sans-serif">${esc(C.floorRef)}</text>
 
     <!-- Depósito succión -->
     <rect x="${xTankL}" y="${yLiquid - 110}" width="${xTankR - xTankL}" height="122" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="2" />
     <rect x="${xTankL + 4}" y="${yLiquid - 20}" width="${xTankR - xTankL - 8}" height="28" fill="url(#liquidPump)" opacity="0.85" />
     <path d="M ${xTankL + 6} ${yLiquid - 22} Q ${(xTankL + xTankR) / 2} ${yLiquid - 34} ${xTankR - 6} ${yLiquid - 22}" fill="none" stroke="#0ea5e9" stroke-width="2" opacity="0.7" />
-    <text x="${(xTankL + xTankR) / 2 - 42}" y="${yLiquid - 88}" font-size="11" font-weight="700" fill="#334155" font-family="Inter, system-ui, sans-serif">Depósito / pozo</text>
-    <text x="${(xTankL + xTankR) / 2 - 38}" y="${yLiquid + 8}" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">NPSH disponible: validar por separado</text>
+    <text x="${(xTankL + xTankR) / 2 - 42}" y="${yLiquid - 88}" font-size="11" font-weight="700" fill="#334155" font-family="Inter, system-ui, sans-serif">${esc(C.tankLabel)}</text>
+    <text x="${(xTankL + xTankR) / 2 - 38}" y="${yLiquid + 8}" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">${esc(C.npshNote)}</text>
 
     <!-- Tubería succión -->
     <path d="M ${xTankR - 4} ${yLiquid - 6} L ${cxPump - rVolute - 6} ${yLiquid - 6} L ${cxPump - rVolute - 6} ${cyPump + 8}" fill="none" stroke="#334155" stroke-width="14" stroke-linejoin="round" />
@@ -122,7 +155,7 @@ export function renderCentrifugalPumpDiagram(svg, p) {
     <g filter="url(#pumpShadow)">
       <rect x="${xMotor}" y="${yMotor}" width="${motorW}" height="${motorH}" rx="8" fill="#1e293b" stroke="#0f172a" stroke-width="1.5" />
       <text x="${xMotor + motorW / 2}" y="${yMotor + motorH / 2 + 4}" text-anchor="middle" font-size="10" font-weight="800" fill="#f8fafc" font-family="Inter, system-ui, sans-serif">${
-        coupling === 'gearmotor' ? 'Motor + reductor' : 'Motor'
+        coupling === 'gearmotor' ? esc(C.motorGear) : esc(C.motorOnly)
       }</text>
     </g>
     <line x1="${xMotor + motorW}" y1="${cyPump}" x2="${cxPump - rVolute}" y2="${cyPump}" stroke="#334155" stroke-width="6" stroke-linecap="round" />
@@ -133,7 +166,7 @@ export function renderCentrifugalPumpDiagram(svg, p) {
       <ellipse cx="${cxPump}" cy="${cyPump}" rx="${rVolute + 18}" ry="${rVolute}" fill="url(#metalPump)" stroke="#334155" stroke-width="2" />
       <path d="M ${cxPump - 8} ${cyPump - rVolute * 0.2} A ${rVolute * 0.55} ${rVolute * 0.55} 0 1 1 ${cxPump + 10} ${cyPump + rVolute * 0.35}" fill="none" stroke="#1e293b" stroke-width="3" opacity="0.45" />
       <circle cx="${cxPump - 4}" cy="${cyPump}" r="${rVolute * 0.38}" fill="#0ea5e9" fill-opacity="0.25" stroke="#0369a1" stroke-width="2" />
-      <text x="${cxPump - 6}" y="${cyPump + rVolute + 22}" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">Bomba</text>
+      <text x="${cxPump - 6}" y="${cyPump + rVolute + 22}" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">${esc(C.pumpLabel)}</text>
       <text x="${cxPump - 6}" y="${cyPump + rVolute + 38}" text-anchor="middle" font-size="9.5" fill="#64748b" font-family="Inter, system-ui, sans-serif">n = ${n.toFixed(0)} rpm</text>
     </g>
 
@@ -150,9 +183,9 @@ export function renderCentrifugalPumpDiagram(svg, p) {
 
     <!-- Caja datos -->
     <rect x="56" y="${yGround - 168}" width="286" height="108" rx="12" fill="#ffffff" fill-opacity="0.94" stroke="#cbd5e1" stroke-width="1.5" />
-    <text x="72" y="${yGround - 142}" font-size="10" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">Punto de trabajo (modelo)</text>
-    <text x="72" y="${yGround - 122}" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">P_h ≈ ${Number.isFinite(Ph) ? Ph.toFixed(3) : '—'} kW · P eje ≈ ${Number.isFinite(Ps) ? Ps.toFixed(3) : '—'} kW</text>
-    <text x="72" y="${yGround - 104}" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">Eficiencia declarada ≈ ${eta.toFixed(0)} %</text>
+    <text x="72" y="${yGround - 142}" font-size="10" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">${esc(C.workPoint)}</text>
+    <text x="72" y="${yGround - 122}" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">${esc(C.phPs(Ph, Ps))}</text>
+    <text x="72" y="${yGround - 104}" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">${esc(C.etaLine(eta))}</text>
     ${
       fluidShort
         ? `<text x="72" y="${yGround - 86}" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">${fluidShort}</text>`

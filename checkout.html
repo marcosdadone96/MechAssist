@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MechAssist</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="css/app.css" />
+    <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
+  </head>
+  <body>
+    <div id="fileProtoWarn" class="runtime-error" hidden role="alert"></div>
+    <script>
+      (function () {
+        if (location.protocol === 'file:') {
+          var el = document.getElementById('fileProtoWarn');
+          if (el) {
+            el.hidden = false;
+            el.textContent = 'Use un servidor HTTP. Ejemplo: npx --yes serve .';
+          }
+        }
+      })();
+    </script>
+
+    <header class="app-header">
+      <a class="app-header__brand" href="index.html">Mech<span>Assist</span></a>
+      <nav aria-label="Main">
+        <div class="app-header__nav-start">
+          <a href="index.html" id="coNavHome">Inicio</a>
+          <a href="register.html" id="coNavRegister">Registro</a>
+        </div>
+        <div class="app-header__nav-end">
+          <div class="hub-lang" role="group" aria-label="Language">
+            <button type="button" class="hub-lang__btn" data-co-lang="es">ES</button>
+            <button type="button" class="hub-lang__btn" data-co-lang="en">EN</button>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="app-main register-page checkout-page">
+      <div class="register-card checkout-card">
+        <p class="register-card__eyebrow" id="coEyebrow">MechAssist</p>
+        <h1 class="register-card__title" id="coTitle">Plan Pro</h1>
+        <p class="register-card__lead" id="coLead"></p>
+        <p class="checkout-user" id="coUserLine"></p>
+
+        <p id="coCheckoutBlocked" class="register-error" hidden role="alert"></p>
+
+        <div id="coWithdrawalWrap" class="checkout-withdrawal" hidden>
+          <label class="register-checkbox" for="coWithdrawalWaive">
+            <input type="checkbox" id="coWithdrawalWaive" name="withdrawalWaive" />
+            <span id="coWithdrawalLabel"></span>
+          </label>
+          <p class="register-card__terms" id="coWithdrawalHelp"></p>
+        </div>
+        <p id="coWithdrawalError" class="register-error" hidden role="alert"></p>
+
+        <div class="checkout-actions">
+          <button type="button" class="button button--accent" id="coPayStripe" hidden>Pagar</button>
+          <button type="button" class="button button--primary" id="coDemoComplete">Demo</button>
+        </div>
+        <p class="register-card__terms" id="coLegalLinks"></p>
+        <p class="register-card__terms checkout-demo-note" id="coDemoNote"></p>
+        <div class="register-card__actions">
+          <a class="button button--ghost" href="index.html" id="coBackHome">Inicio</a>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-legal-foot">
+      <nav class="app-legal-foot__links" aria-label="Legal">
+        <a href="privacy.html" id="coFootPrivacy">Privacidad</a>
+        <a href="terms.html" id="coFootTerms">Tùrminos</a>
+        <a href="cookies.html" id="coFootCookies">Cookies</a>
+        <a href="cookie-preferences.html" id="coFootCookiePrefs">Preferencias cookies</a>
+      </nav>
+    </footer>
+
+    <script type="module" src="js/ui/checkoutPageEntry.js"></script>
+  </body>
+</html>

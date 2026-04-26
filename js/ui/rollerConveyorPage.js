@@ -18,7 +18,7 @@ import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { mountMachineConfigBar } from './machineConfigMount.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
-import { getCurrentLang } from '../config/locales.js';
+import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
 
 const inputIds = [
   'length',
@@ -641,6 +641,10 @@ bindRollerRangeSlider('rollerPitchR', 'rollerPitch', 50, 250, 1);
 localizeRollerStaticContent();
 refresh();
 mountMachineConfigBar();
+
+window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
+  location.reload();
+});
 
 
 

@@ -23,8 +23,26 @@ gtag('config', 'G-43E5C8TB38');
   }
   if (lang !== 'en') return;
 
-  /* Portada: todo el copy va por js/ui/homeI18n.js; esta capa rompe mezclas (p. ej. "Cinta inclined"). */
-  if (document.body && document.body.classList.contains('hub-body')) return;
+  /** Portada: copy en `js/ui/homeI18n.js`. Si `gtag.js` va en `<head>`, aqui `document.body` aun no existe y el return de abajo no corre: hay que volver a comprobar en `run()` / MutationObserver. */
+  function isHubHomePage() {
+    return !!(document.body && document.body.classList.contains('hub-body'));
+  }
+
+  if (isHubHomePage()) return;
+
+  /**
+   * Calculadoras con i18n propio (ES/EN) y textos dinámicos en español: esta capa reemplaza palabras sueltas
+   * ("de"→"of", "en"→"in", "es"→"is") y produce Spanglish en veredictos, disclaimers, etc.
+   */
+  const rootEl = document.documentElement;
+  if (
+    rootEl.hasAttribute('data-tool') ||
+    rootEl.hasAttribute('data-conveyor-tool') ||
+    rootEl.hasAttribute('data-machine-tool') ||
+    rootEl.hasAttribute('data-skip-global-i18n')
+  ) {
+    return;
+  }
 
   const exactRaw = [
     ['Inicio', 'Home'],
@@ -101,6 +119,15 @@ gtag('config', 'G-43E5C8TB38');
     ['Probar: gratis plana', 'Try: free flat conveyor'],
     ['Probar: gratis inclinada', 'Try: free inclined conveyor'],
     ['Pro activo', 'Pro active'],
+    ['Navegación laboratorio', 'Laboratory navigation'],
+    ['Guía rápida', 'Quick guide'],
+    ['Hipótesis del modelo', 'Model assumptions'],
+    ['Desglose de ingeniería', 'Engineering breakdown'],
+    ['Cómo ver los resultados', 'How to read the results'],
+    ['Tensión tangencial admisible', 'Allowable shear stress'],
+    ['Par torsor de diseño', 'Design torque'],
+    ['Vista esquemática · torsión', 'Schematic view · torsion'],
+    ['Elevador de cangilones en instalación industrial', 'Bucket elevator in industrial installation'],
   ];
 
   const replacements = [
@@ -235,6 +262,177 @@ gtag('config', 'G-43E5C8TB38');
     [/\benfoque analitico\b/g, 'analytical approach'],
     [/\biso\s*5048\b/gi, 'ISO 5048'],
     [/\bdin\s*22101\b/gi, 'DIN 22101'],
+    /* Palabras y frases habituales con tilde (tras stripDiacritics + flag i) */
+    [/\bnavegacion\b/gi, 'navigation'],
+    [/\bingenieria\b/gi, 'engineering'],
+    [/\binstalacion\b/gi, 'installation'],
+    [/\bseleccion\b/gi, 'selection'],
+    [/\beleccion\b/gi, 'choice'],
+    [/\borientativo\b/gi, 'indicative'],
+    [/\borientativa\b/gi, 'indicative'],
+    [/\borientativos\b/gi, 'indicative'],
+    [/\borientativas\b/gi, 'indicative'],
+    [/\boptimo\b/gi, 'optimal'],
+    [/\boptima\b/gi, 'optimal'],
+    [/\btipico\b/gi, 'typical'],
+    [/\btipica\b/gi, 'typical'],
+    [/\blimites\b/gi, 'limits'],
+    [/\blimite\b/gi, 'limit'],
+    [/\bdiseno\b/gi, 'design'],
+    [/\bdisenos\b/gi, 'designs'],
+    [/\bnumero\b/gi, 'number'],
+    [/\bnumeros\b/gi, 'numbers'],
+    [/\besquema\b/gi, 'schematic'],
+    [/\besquematica\b/gi, 'schematic'],
+    [/\besquematico\b/gi, 'schematic'],
+    [/\btraccion\b/gi, 'traction'],
+    [/\bfrenado\b/gi, 'braking'],
+    [/\btensiones\b/gi, 'tensions'],
+    [/\brotura\b/gi, 'breakage'],
+    [/\babrazamiento\b/gi, 'wrap'],
+    [/\badherencia\b/gi, 'traction'],
+    [/\bpretensada\b/gi, 'preloaded'],
+    [/\bplatinas\b/gi, 'plates'],
+    [/\bvastago\b/gi, 'rod'],
+    [/\baplastamiento\b/gi, 'crushing'],
+    [/\bcomerciales\b/gi, 'commercial'],
+    [/\belementos\b/gi, 'elements'],
+    [/\bmaquina\b/gi, 'machine'],
+    [/\bmultieje\b/gi, 'multi-shaft'],
+    [/\btransmisiones\b/gi, 'drives'],
+    [/\btransmision\b/gi, 'transmission'],
+    [/\barticulacion\b/gi, 'articulation'],
+    [/\bequivalente\b/gi, 'equivalent'],
+    [/\bcilindricos\b/gi, 'cylindrical'],
+    [/\bcilindrico\b/gi, 'cylindrical'],
+    [/\bprimitivo\b/gi, 'pitch circle'],
+    [/\bpoligonal\b/gi, 'polygonal'],
+    [/\bholgura\b/gi, 'clearance'],
+    [/\bapriete\b/gi, 'interference'],
+    [/\bcompresion\b/gi, 'compression'],
+    [/\bhelicoidal\b/gi, 'helical'],
+    [/\bcompresor\b/gi, 'compressor'],
+    [/\bhidraulica\b/gi, 'hydraulics'],
+    [/\bhidraulico\b/gi, 'hydraulic'],
+    [/\bneumatica\b/gi, 'pneumatics'],
+    [/\bneumatico\b/gi, 'pneumatic'],
+    [/\bcritico\b/gi, 'critical'],
+    [/\bcritica\b/gi, 'critical'],
+    [/\bsuperando\b/gi, 'exceeding'],
+    [/\bductilidad\b/gi, 'ductility'],
+    [/\bfatiga\b/gi, 'fatigue'],
+    [/\bmuescas\b/gi, 'notches'],
+    [/\bmaterial\b/gi, 'material'],
+    [/\bmateriales\b/gi, 'materials'],
+    [/\bcriterio\b/gi, 'criterion'],
+    [/\btabulada\b/gi, 'tabulated'],
+    [/\bmanuales\b/gi, 'handbooks'],
+    [/\bsugerido\b/gi, 'suggested'],
+    [/\belegido\b/gi, 'selected'],
+    [/\babrasivo\b/gi, 'abrasive'],
+    [/\bestandar\b/gi, 'standard'],
+    [/\bgranel\b/gi, 'bulk'],
+    [/\bfragil\b/gi, 'fragile'],
+    [/\bcarga util\b/gi, 'useful load'],
+    [/\bmemoria de calculo\b/gi, 'calculation report'],
+    [/\bmemoria de instalacion\b/gi, 'installation report'],
+    [/\bmemoria\b/gi, 'report'],
+    [/\breglamentaria\b/gi, 'regulatory'],
+    [/\breglamentario\b/gi, 'regulatory'],
+    [/\bverifique\b/gi, 'verify'],
+    [/\bproyecto\b/gi, 'project'],
+    [/\bfirmado\b/gi, 'signed'],
+    [/\bcatalogo\b/gi, 'catalog'],
+    [/\bcatalogos\b/gi, 'catalogs'],
+    [/\bejemplo\b/gi, 'example'],
+    [/\btecnico\b/gi, 'technical'],
+    [/\btecnicos\b/gi, 'technical'],
+    [/\btecnica\b/gi, 'technical'],
+    [/\btecnicas\b/gi, 'technical'],
+    [/\bdiagramas\b/gi, 'diagrams'],
+    [/\bdiagrama\b/gi, 'diagram'],
+    [/\bdimensionar\b/gi, 'to size'],
+    [/\bverificar\b/gi, 'to verify'],
+    [/\bhabituales\b/gi, 'common'],
+    [/\bhabitual\b/gi, 'typical'],
+    [/\blienzo\b/gi, 'canvas'],
+    [/\bvalidaciones\b/gi, 'checks'],
+    [/\bvalidacion\b/gi, 'validation'],
+    [/\blubricacion\b/gi, 'lubrication'],
+    [/\blineal\b/gi, 'linear'],
+    [/\bdinamica\b/gi, 'dynamic'],
+    [/\bascensor\b/gi, 'elevator'],
+    [/\bedificio\b/gi, 'building'],
+    [/\baplicacion\b/gi, 'application'],
+    [/\breal\b/gi, 'real'],
+    [/\bverticales\b/gi, 'vertical'],
+    [/\bvertical\b/gi, 'vertical'],
+    [/\brecorrido\b/gi, 'travel'],
+    [/\bviaje\b/gi, 'travel'],
+    [/\bfriccion\b/gi, 'friction'],
+    [/\bcoeficiente\b/gi, 'coefficient'],
+    [/\bcoef\b/gi, 'coeff.'],
+    [/\bestado\b/gi, 'condition'],
+    [/\bcanal\b/gi, 'groove'],
+    [/\bcontrapeso\b/gi, 'counterweight'],
+    [/\bascenso\b/gi, 'ascending'],
+    [/\bdescenso\b/gi, 'descending'],
+    [/\bvacio\b/gi, 'empty'],
+    [/\bllenado\b/gi, 'filling'],
+    [/\bunico\b/gi, 'single'],
+    [/\bunica\b/gi, 'single'],
+    [/\bsupere\b/gi, 'exceeds'],
+    [/\bsupera\b/gi, 'exceeds'],
+    [/\baumente\b/gi, 'increase'],
+    [/\bajuste\b/gi, 'adjust'],
+    [/\bmasas\b/gi, 'masses'],
+    [/\brevise\b/gi, 'review'],
+    [/\bmaxima\b/gi, 'maximum'],
+    [/\bmaximo\b/gi, 'maximum'],
+    [/\bminima\b/gi, 'minimum'],
+    [/\bminimo\b/gi, 'minimum'],
+    [/\butilizacion\b/gi, 'utilization'],
+    [/\belevada\b/gi, 'high'],
+    [/\belevado\b/gi, 'high'],
+    [/\bprefiera\b/gi, 'prefer'],
+    [/\bsuperior\b/gi, 'larger'],
+    [/\btiras\b/gi, 'strands'],
+    [/\brecomendable\b/gi, 'recommended'],
+    [/\bconsidere\b/gi, 'consider'],
+    [/\bmenor\b/gi, 'lower'],
+    [/\bmenores\b/gi, 'lower'],
+    [/\bfuera\b/gi, 'outside'],
+    [/\bhabitual\b/gi, 'typical'],
+    [/\bcondiciones\b/gi, 'conditions'],
+    [/\bcorrecto\b/gi, 'OK'],
+    [/\bjusto\b/gi, 'tight'],
+    [/\bobjetivo\b/gi, 'target'],
+    [/\brecomendado\b/gi, 'recommended'],
+    [/\bpreliminar\b/gi, 'preliminary'],
+    [/\bconfirme\b/gi, 'confirm'],
+    [/\bdetallado\b/gi, 'detailed'],
+    [/\bcalculos\b/gi, 'calculations'],
+    [/\brequieren\b/gi, 'require'],
+    [/\bconfiguracion\b/gi, 'configuration'],
+    [/\bnominal\b/gi, 'nominal'],
+    [/\bsugerida\b/gi, 'suggested'],
+    [/\bchequeo\b/gi, 'check'],
+    [/\bahorro\b/gi, 'saving'],
+    [/\benergetico\b/gi, 'energy'],
+    [/\bcomparativa\b/gi, 'comparison'],
+    [/\bsubida\b/gi, 'up travel'],
+    [/\bbajada\b/gi, 'down travel'],
+    [/\bregeneracion\b/gi, 'regeneration'],
+    [/\bevalua\b/gi, 'evaluates'],
+    [/\bangulo\b/gi, 'angle'],
+    [/\bangulos\b/gi, 'angles'],
+    [/\bdeclarados\b/gi, 'declared'],
+    [/\bdeclarado\b/gi, 'declared'],
+    [/\bbasada\b/gi, 'based'],
+    [/\bbasado\b/gi, 'based'],
+    [/\bdesequilibrio\b/gi, 'imbalance'],
+    [/\bterminaciones\b/gi, 'terminations'],
+    [/\bpaquete\b/gi, 'package'],
   ];
 
   function normalizeEs(input) {
@@ -246,12 +444,43 @@ gtag('config', 'G-43E5C8TB38');
       .toLowerCase();
   }
 
+  /** Quita tildes y diacríticos latinos para que \bpresion\b coincida con "presión", "Presión", etc. */
+  function stripDiacritics(s) {
+    return (s || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+
+  const NORM_PLACEHOLDER = '\uE000';
+  /**
+   * Resguarda códigos de norma (EN 81, ISO 5048, DIN 22101…) antes de traducir palabras sueltas
+   * (p. ej. \ben\b → "in" no debe tocar "EN" en "EN 81").
+   */
+  function protectNormReferences(str) {
+    const held = [];
+    const out = str.replace(
+      /\b(?:EN|IEC|ISO|DIN|AGMA|IEEE|ASTM|NFPA|CE|UKCA|ANSI)(?:\s*[-–]?\s*\d[\d\s\-–\/A-Za-z.]*|\s+[IVXLC]+)?\b/gi,
+      (m) => {
+        held.push(m);
+        return `${NORM_PLACEHOLDER}${held.length - 1}\uE001`;
+      },
+    );
+    return { out, held };
+  }
+
+  function restoreNormReferences(str, held) {
+    if (!held.length) return str;
+    return str.replace(/\uE000(\d+)\uE001/g, (_, j) => held[Number(j)] ?? _);
+  }
+
   const exact = new Map(exactRaw.map(([k, v]) => [normalizeEs(k), v]));
 
   function translateText(input) {
     if (!input) return input;
     const trimmed = input.trim();
     if (!trimmed) return input;
+    /* Etiquetas del conmutador ES/EN: /\bes\b/gi traduce "ES" como si fuera la palabra "es" (verb). */
+    if (/^(ES|EN)$/.test(trimmed)) return input;
 
     const normalized = normalizeEs(trimmed);
     let out = exact.get(normalized) || input;
@@ -268,22 +497,14 @@ gtag('config', 'G-43E5C8TB38');
       .replace(/datos de entrada/gi, 'Input data')
       .replace(/cinta transportadora horizontal/gi, 'Horizontal conveyor belt');
 
-    out = out
-      .replace(/á/g, 'a')
-      .replace(/é/g, 'e')
-      .replace(/í/g, 'i')
-      .replace(/ó/g, 'o')
-      .replace(/ú/g, 'u')
-      .replace(/ñ/g, 'n')
-      .replace(/Á/g, 'A')
-      .replace(/É/g, 'E')
-      .replace(/Í/g, 'I')
-      .replace(/Ó/g, 'O')
-      .replace(/Ú/g, 'U')
-      .replace(/Ñ/g, 'N');
+    const { out: prot, held } = protectNormReferences(out);
+    out = stripDiacritics(prot);
 
     for (let i = 0; i < replacements.length; i += 1) {
-      out = out.replace(replacements[i][0], replacements[i][1]);
+      const re = replacements[i][0];
+      const sub = replacements[i][1];
+      const flags = re.flags.includes('i') ? re.flags : re.flags + 'i';
+      out = out.replace(new RegExp(re.source, flags), sub);
     }
 
     out = out
@@ -315,6 +536,8 @@ gtag('config', 'G-43E5C8TB38');
       .replace(/cinta transportadora horizontal/gi, 'horizontal conveyor belt')
       .replace(/cinta transportadora inclinada/gi, 'inclined conveyor belt')
       .replace(/choque moderado/gi, 'moderate shock');
+
+    out = restoreNormReferences(out, held);
     return out;
   }
 
@@ -328,6 +551,7 @@ gtag('config', 'G-43E5C8TB38');
       if (!n || !n.nodeValue) continue;
       const p = n.parentElement;
       if (!p) continue;
+      if (p.closest && p.closest('.hub-lang')) continue;
       const tag = p.tagName;
       if (tag === 'SCRIPT' || tag === 'STYLE') continue;
       const next = translateText(n.nodeValue);
@@ -358,6 +582,7 @@ gtag('config', 'G-43E5C8TB38');
   }
 
   const observer = new MutationObserver((mutations) => {
+    if (isHubHomePage()) return;
     for (let i = 0; i < mutations.length; i += 1) {
       const m = mutations[i];
       if (m.type === 'childList') {
