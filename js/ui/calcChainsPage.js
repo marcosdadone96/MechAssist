@@ -37,6 +37,24 @@ function esc(s) {
     .replace(/>/g, '&gt;');
 }
 
+function markFieldInvalid(id, invalid, msg = '') {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) return;
+  el.classList.toggle('field-input--danger', Boolean(invalid));
+  el.setAttribute('aria-invalid', invalid ? 'true' : 'false');
+  if (invalid && msg) el.title = msg;
+  else el.removeAttribute('title');
+}
+
+function parseNumberInput(id) {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement)) return { value: null, empty: true };
+  const raw = el.value.trim();
+  if (!raw) return { value: null, empty: true };
+  const n = parseFloat(raw.replace(',', '.'));
+  return { value: Number.isFinite(n) ? n : null, empty: false };
+}
+
 function elementCardHtml(title, rows) {
   const body = rows
     .map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`)
@@ -68,6 +86,29 @@ syncPitchDisabled();
 function refreshCore() {
   const u = getLabUnitPrefs();
   const useManual = manualEl instanceof HTMLInputElement && manualEl.checked;
+  const validationMsgs = [];
+  const z1Raw = parseNumberInput('cZ1').value;
+  const z2Raw = parseNumberInput('cZ2').value;
+  const cRaw = parseNumberInput('cCenter').value;
+  const n1Raw = parseNumberInput('cN1').value;
+  const pRaw = parseNumberInput('cPitch').value;
+
+  const z1Invalid = !(z1Raw >= 6);
+  const z2Invalid = !(z2Raw >= 6);
+  const centerInvalid = !(cRaw > 0);
+  const n1Invalid = !(n1Raw != null && n1Raw >= 0);
+  const pitchInvalid = useManual ? !(pRaw > 0) : false;
+  markFieldInvalid('cZ1', z1Invalid, 'Use z1 >= 6 teeth');
+  markFieldInvalid('cZ2', z2Invalid, 'Use z2 >= 6 teeth');
+  markFieldInvalid('cCenter', centerInvalid, 'Center distance must be > 0');
+  markFieldInvalid('cN1', n1Invalid, 'Input speed cannot be negative');
+  markFieldInvalid('cPitch', pitchInvalid, 'Manual pitch must be > 0');
+  if (z1Invalid) validationMsgs.push('Revise z1: use at least 6 teeth.');
+  if (z2Invalid) validationMsgs.push('Revise z2: use at least 6 teeth.');
+  if (centerInvalid) validationMsgs.push('Revise center distance C: it must be greater than 0.');
+  if (n1Invalid) validationMsgs.push('Revise input speed n1: it cannot be negative.');
+  if (pitchInvalid) validationMsgs.push('Revise manual pitch p: it must be greater than 0.');
+
   const chainRefId = sel instanceof HTMLSelectElement ? sel.value : '';
   const n1 = readInput('cN1', 0);
   const p = {
@@ -184,6 +225,7 @@ function refreshCore() {
   const alerts = document.getElementById('cAlerts');
   if (alerts) {
     const parts = [];
+    validationMsgs.forEach((msg) => parts.push(labAlert('danger', esc(msg))));
     if (r.polygonalEffect?.active) {
       parts.push(labAlert('warn', esc(r.polygonalEffect.text)));
     }

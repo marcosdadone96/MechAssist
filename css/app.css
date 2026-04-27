@@ -621,11 +621,23 @@ body {
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
+.field input::placeholder {
+  color: #94a3b8;
+}
+
 .field input:focus,
 .field select:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.field input:disabled,
+.field select:disabled {
+  background: #f8fafc;
+  color: #64748b;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
 }
 
 .field input.input-synced:read-only {

@@ -14,7 +14,7 @@ import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 
 mountTierStatusBar();
-bootSmartDashboardIfEnabled('ISO 286 � ajustes');
+bootSmartDashboardIfEnabled('ISO 286 · ajustes');
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
 mountCompactLabFieldHelp();
@@ -32,6 +32,15 @@ function readNum(id, fallback) {
   if (!el || !(el instanceof HTMLInputElement)) return fallback;
   const n = parseFloat(String(el.value).replace(',', '.'));
   return Number.isFinite(n) ? n : fallback;
+}
+
+function markFieldInvalid(id, invalid, msg = '') {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) return;
+  el.classList.toggle('field-input--danger', Boolean(invalid));
+  el.setAttribute('aria-invalid', invalid ? 'true' : 'false');
+  if (invalid && msg) el.title = msg;
+  else el.removeAttribute('title');
 }
 
 function readSelect(id, fallback) {
@@ -142,6 +151,11 @@ function fitVerdictAlert(kind) {
 
 function refreshCore() {
   const dNom = readNum('isoD', 25);
+  const validationMsgs = [];
+  const dInvalid = !(Number.isFinite(dNom) && dNom >= 1 && dNom <= 500);
+  markFieldInvalid('isoD', dInvalid, 'Nominal diameter must be between 1 and 500 mm');
+  if (dInvalid) validationMsgs.push('Revise nominal diameter d: use a value between 1 and 500 mm.');
+
   const holeLetter = readSelect('isoHoleLetter', 'H');
   const holeIt = readSelect('isoHoleIt', 'IT7');
   const shaftLetter = readSelect('isoShaftLetter', 'g');
@@ -151,6 +165,7 @@ function refreshCore() {
 
   const heroEl = document.getElementById('isoHero');
   const verdictEl = document.getElementById('isoVerdict');
+  const alertsEl = document.getElementById('isoAlerts');
   const box = document.getElementById('isoResults');
 
   syncAppPresetSelect();
@@ -158,6 +173,7 @@ function refreshCore() {
   if (!r.ok) {
     if (heroEl) heroEl.innerHTML = '';
     if (verdictEl) verdictEl.innerHTML = labAlert('danger', r.err || 'Error de calculo');
+    if (alertsEl) alertsEl.innerHTML = validationMsgs.map((msg) => labAlert('danger', escapeHtml(msg))).join('');
     if (box) box.innerHTML = '';
     renderIso286FitDiagram(document.getElementById('isoDiagram'), null);
     return;
@@ -189,6 +205,18 @@ function refreshCore() {
   }
 
   if (verdictEl) verdictEl.innerHTML = fitVerdictAlert(r.fitKind);
+  if (alertsEl) {
+    const parts = [];
+    validationMsgs.forEach((msg) => parts.push(labAlert('danger', escapeHtml(msg))));
+    if (r.fitKind === 'interference') {
+      parts.push(labAlert('warn', 'Interference fit selected: verify assembly method, material pair, and thermal expansion.'));
+    } else if (r.fitKind === 'transition') {
+      parts.push(labAlert('info', 'Transition fit: evaluate both worst-case clearance and worst-case interference.'));
+    } else {
+      parts.push(labAlert('ok', 'Clearance fit: review minimum clearance against lubrication and thermal expansion needs.'));
+    }
+    alertsEl.innerHTML = parts.join('');
+  }
 
   if (box) {
     const iStr = r.i_microns.toFixed(2);
@@ -214,7 +242,7 @@ function refreshCore() {
       {
         commerceId: 'machining-tolerance-quote',
         qty: 1,
-        note: `${r.hole.letter}${r.hole.it} / ${r.shaft.letter}${r.shaft.it} � � ${r.dNom} mm � ${r.fitLabelEs}`,
+        note: `${r.hole.letter}${r.hole.it} / ${r.shaft.letter}${r.shaft.it} · Ø ${r.dNom} mm · ${r.fitLabelEs}`,
       },
     ],
     metrics: { energyEfficiencyPct: null, materialUtilizationPct: null },

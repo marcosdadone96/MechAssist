@@ -16,6 +16,10 @@ const ALERT_ICONS = {
   ok: `<svg class="lab-alert__glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>`,
 };
 
+function isEnglishUi() {
+  return document?.documentElement?.lang?.toLowerCase().startsWith('en') || false;
+}
+
 /**
  * @param {'info'|'warn'|'danger'|'ok'} level
  * @param {string} htmlInner - texto ya escapado o HTML seguro
@@ -54,7 +58,9 @@ export function labHelpTooltipMarkup(html, ariaLabel = 'Ayuda', extraClass = '')
  * @param {string} [help]
  */
 export function metricHtml(k, v, help) {
-  const tip = help ? labHelpTooltipMarkup(help, 'Ayuda sobre esta magnitud') : '';
+  const tip = help
+    ? labHelpTooltipMarkup(help, isEnglishUi() ? 'Help for this metric' : 'Ayuda sobre esta magnitud')
+    : '';
   return `<div class="lab-metric"><div class="lab-metric__head"><span class="k">${k}</span>${tip}</div><div class="v">${v}</div></div>`;
 }
 
@@ -63,13 +69,14 @@ export function metricHtml(k, v, help) {
  */
 export function renderResultHero(items) {
   if (!items.length) return '';
+  const helpLabel = isEnglishUi() ? 'Help' : 'Ayuda';
   const cells = items
     .map(
       (it) => `
     <div class="lab-result-hero__cell">
       <div class="lab-result-hero__head">
         <div class="lab-result-hero__label">${it.label}</div>
-        ${it.hint ? labHelpTooltipMarkup(it.hint, 'Ayuda', 'lab-help-hover--hero') : ''}
+        ${it.hint ? labHelpTooltipMarkup(it.hint, helpLabel, 'lab-help-hover--hero') : ''}
       </div>
       <div class="lab-result-hero__value-line">
         <span class="lab-result-hero__value">${it.display != null ? it.display : `${it.value}${it.unit ? ` ${it.unit}` : ''}`}</span>
@@ -86,6 +93,7 @@ export function renderResultHero(items) {
  */
 export function renderMotorPowerRuler(powerKw) {
   if (!(powerKw > 0) || !Number.isFinite(powerKw)) return '';
+  const en = isEnglishUi();
   const maxScale = Math.max(90, powerKw * 1.35);
   const ticks = IEC_MOTOR_KW_SERIES.filter((p) => p <= maxScale);
   const needlePct = Math.min(100, Math.max(0, (powerKw / maxScale) * 100));
@@ -101,24 +109,31 @@ export function renderMotorPowerRuler(powerKw) {
   const nextUp = IEC_MOTOR_KW_SERIES.find((p) => p >= powerKw);
   const nextLine =
     nextUp != null && nextUp !== powerKw
-      ? ` Próximo nominal IEC hacia arriba: <strong>${nextUp} kW</strong>.`
+      ? en
+        ? ` Next IEC nominal size up: <strong>${nextUp} kW</strong>.`
+        : ` Próximo nominal IEC hacia arriba: <strong>${nextUp} kW</strong>.`
       : '';
 
-  return `<figure class="lab-motor-ruler" aria-label="Comparativa de potencia con motores estándar">
+  return `<figure class="lab-motor-ruler" aria-label="${en ? 'Power comparison against standard motors' : 'Comparativa de potencia con motores estándar'}">
     <div class="lab-motor-ruler__head">
-      <span class="lab-motor-ruler__title">Potencia · referencia comercial</span>
-      <span class="lab-motor-ruler__brands">IEC · SEW · Siemens (orientativo)</span>
+      <span class="lab-motor-ruler__title">${en ? 'Power · commercial reference' : 'Potencia · referencia comercial'}</span>
+      <span class="lab-motor-ruler__brands">${en ? 'IEC · SEW · Siemens (indicative)' : 'IEC · SEW · Siemens (orientativo)'}</span>
     </div>
     <div class="lab-motor-ruler__track" role="presentation">
       <div class="lab-motor-ruler__bar"></div>
       ${tickHtml}
       <span class="lab-motor-ruler__needle" style="left:${needlePct}%">
-        <span class="lab-motor-ruler__needle-cap" title="Su valor">${powerKw.toFixed(2)} kW</span>
+        <span class="lab-motor-ruler__needle-cap" title="${en ? 'Your value' : 'Su valor'}">${powerKw.toFixed(2)} kW</span>
       </span>
     </div>
     <figcaption class="lab-motor-ruler__cap">
-      Escala 0–${maxScale.toFixed(0)} kW. Su cálculo/entrada: <strong>${powerKw.toFixed(2)} kW</strong>.${nextLine}
-      Catálogos reales incluyen variantes de marco, polos y servicio; use esta línea solo como guía rápida.
+      ${
+        en
+          ? `Scale 0–${maxScale.toFixed(0)} kW. Your input/calculation: <strong>${powerKw.toFixed(2)} kW</strong>.${nextLine}
+      Real catalogues include frame, poles, and duty variants; use this ruler only as a quick guide.`
+          : `Escala 0–${maxScale.toFixed(0)} kW. Su cálculo/entrada: <strong>${powerKw.toFixed(2)} kW</strong>.${nextLine}
+      Catálogos reales incluyen variantes de marco, polos y servicio; use esta línea solo como guía rápida.`
+      }
     </figcaption>
   </figure>`;
 }

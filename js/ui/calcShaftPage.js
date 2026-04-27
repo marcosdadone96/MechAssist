@@ -4,7 +4,7 @@ import { renderShaftTorsionDiagram } from '../lab/diagramShaft.js';
 import { bindLabUnitSelectors, formatLength, getLabUnitPrefs } from '../lab/labUnitPrefs.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
-import { debounce, metricHtml, renderResultHero, runCalcWithIndustrialFeedback } from './labCalcUx.js';
+import { debounce, labAlert, metricHtml, renderResultHero, runCalcWithIndustrialFeedback } from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
 import { metricsFromShaft } from '../services/iaAdvisor.js';
@@ -23,8 +23,36 @@ function read(id, fallback) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+function markFieldInvalid(id, invalid, msg = '') {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement)) return;
+  el.classList.toggle('field-input--danger', Boolean(invalid));
+  el.setAttribute('aria-invalid', invalid ? 'true' : 'false');
+  if (invalid && msg) el.title = msg;
+  else el.removeAttribute('title');
+}
+
+function parseNumberInput(id) {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement)) return { value: null, empty: true };
+  const raw = el.value.trim();
+  if (!raw) return { value: null, empty: true };
+  const n = parseFloat(raw.replace(',', '.'));
+  return { value: Number.isFinite(n) ? n : null, empty: false };
+}
+
 function refreshCore() {
   const u = getLabUnitPrefs();
+  const validationMsgs = [];
+  const tRaw = parseNumberInput('shT').value;
+  const tauRaw = parseNumberInput('shTau').value;
+  const torqueInvalid = !(tRaw != null && tRaw >= 0);
+  const tauInvalid = !(tauRaw != null && tauRaw > 0);
+  markFieldInvalid('shT', torqueInvalid, 'Torque must be >= 0');
+  markFieldInvalid('shTau', tauInvalid, 'Allowable stress must be > 0');
+  if (torqueInvalid) validationMsgs.push('Revise torque T: it must be zero or positive.');
+  if (tauInvalid) validationMsgs.push('Revise allowable shear stress tau adm: it must be greater than 0.');
+
   const p = { torque_Nm: read('shT', 480), tauAllow_MPa: read('shTau', 40) };
   const r = computeSolidShaftTorsion(p);
 
@@ -63,6 +91,15 @@ function refreshCore() {
         'Criterio suyo según material y norma.',
       ),
     ].join('');
+  }
+  const alerts = document.getElementById('shAlerts');
+  if (alerts) {
+    const parts = [];
+    validationMsgs.forEach((msg) => parts.push(labAlert('danger', msg)));
+    if (parts.length === 0) {
+      parts.push(labAlert('info', 'Torsion-only sizing. Validate keyways, fatigue, and commercial diameter.'));
+    }
+    alerts.innerHTML = parts.join('');
   }
   renderShaftTorsionDiagram(document.getElementById('shDiagram'), {
     diameter_mm: r.diameter_min_mm,

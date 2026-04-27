@@ -48,6 +48,24 @@ function readOptional(id) {
   return Number.isFinite(n) ? n : null;
 }
 
+function markFieldInvalid(id, invalid, msg = '') {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) return;
+  el.classList.toggle('field-input--danger', Boolean(invalid));
+  el.setAttribute('aria-invalid', invalid ? 'true' : 'false');
+  if (invalid && msg) el.title = msg;
+  else el.removeAttribute('title');
+}
+
+function parseNumberInput(id) {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement)) return { value: null, empty: true };
+  const raw = el.value.trim();
+  if (!raw) return { value: null, empty: true };
+  const n = parseFloat(raw.replace(',', '.'));
+  return { value: Number.isFinite(n) ? n : null, empty: false };
+}
+
 function esc(s) {
   return String(s)
     .replace(/&/g, '&amp;')
@@ -76,6 +94,33 @@ function refreshCore() {
   const u = getLabUnitPrefs();
   const lubeEl = document.getElementById('gLube');
   const lube = lubeEl instanceof HTMLSelectElement && lubeEl.value === 'grease' ? 'grease' : 'oil';
+  const validationMsgs = [];
+
+  const z1Raw = parseNumberInput('gZ1').value;
+  const z2Raw = parseNumberInput('gZ2').value;
+  const mRaw = parseNumberInput('gM').value;
+  const faceRaw = parseNumberInput('gFace').value;
+  const alphaRaw = parseNumberInput('gAlpha').value;
+  const n1Raw = parseNumberInput('gN1').value;
+
+  const z1Invalid = !(z1Raw >= 6);
+  const z2Invalid = !(z2Raw >= 6);
+  const mInvalid = !(mRaw > 0);
+  const faceInvalid = !(faceRaw > 0);
+  const alphaInvalid = !(alphaRaw > 0 && alphaRaw <= 45);
+  const n1Invalid = !(n1Raw != null && n1Raw >= 0);
+  markFieldInvalid('gZ1', z1Invalid, 'Use z1 >= 6 teeth');
+  markFieldInvalid('gZ2', z2Invalid, 'Use z2 >= 6 teeth');
+  markFieldInvalid('gM', mInvalid, 'Module must be > 0');
+  markFieldInvalid('gFace', faceInvalid, 'Face width must be > 0');
+  markFieldInvalid('gAlpha', alphaInvalid, 'Pressure angle must be between 0 and 45 deg');
+  markFieldInvalid('gN1', n1Invalid, 'Input speed cannot be negative');
+  if (z1Invalid) validationMsgs.push('Revise z1: use at least 6 teeth.');
+  if (z2Invalid) validationMsgs.push('Revise z2: use at least 6 teeth.');
+  if (mInvalid) validationMsgs.push('Revise module m: it must be greater than 0.');
+  if (faceInvalid) validationMsgs.push('Revise face width b: it must be greater than 0.');
+  if (alphaInvalid) validationMsgs.push('Revise pressure angle alpha: set a value between 0 and 45 deg.');
+  if (n1Invalid) validationMsgs.push('Revise input speed n1: it cannot be negative.');
 
   const n1In = read('gN1', 1455);
   const p = {
@@ -188,6 +233,7 @@ function refreshCore() {
   const alerts = document.getElementById('gAlerts');
   if (alerts) {
     const parts = [];
+    validationMsgs.forEach((msg) => parts.push(labAlert('danger', esc(msg))));
     agma.velocityAlerts.forEach((a) => {
       parts.push(labAlert(a.level === 'danger' ? 'danger' : 'warn', esc(a.text)));
     });

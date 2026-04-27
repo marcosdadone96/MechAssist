@@ -238,7 +238,7 @@ export function computeRollerConveyor(raw) {
     geometryLineEn = `Uniform spread: ~${supportInfo.rollersAlongFootprint} rollers along L from pitch and length (indicative).`;
   }
   const modelScopeLineEn =
-    'Rolling force stays modeled as F_roll = C_rr�N with N = m�g on the line; support geometry documents the case and validates pitch/orientation, without per-roller load split in this simulator.';
+    'Rolling force stays modeled as F_roll = C_rr·N with N = m·g on the line; support geometry documents the case and validates pitch/orientation, without per-roller load split in this simulator.';
 
   const assumptions = [
     'Modelo horizontal con rodadura equivalente (sin elevaci\u00f3n).',

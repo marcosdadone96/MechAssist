@@ -244,7 +244,7 @@ export async function exportLabFluidReportPdf(payload, opts = {}) {
 
   doc.setFontSize(8);
   doc.setTextColor(...gray);
-  doc.text(`MechAssist � ${ts}`, m, pageH - 10);
+  doc.text(`MechAssist · ${ts}`, m, pageH - 10);
 
   doc.save(`${payload.fileBase || 'informe-fluidos'}.pdf`);
 }

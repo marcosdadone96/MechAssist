@@ -179,7 +179,7 @@ export function mountMachineConfigBar() {
   if (stage instanceof HTMLElement) {
     stage.prepend(host);
   } else if (beMain instanceof HTMLElement) {
-    /* Elevador cangilones: no a�adir un 3.er hijo directo de .app-main--be (rompe el grid 1fr | sidebar). */
+    /* Elevador cangilones: no añadir un 3.er hijo directo de .app-main--be (rompe el grid 1fr | sidebar). */
     beMain.prepend(host);
   } else {
     main.prepend(host);

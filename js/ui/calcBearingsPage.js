@@ -28,6 +28,24 @@ function read(id, fallback) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+function markFieldInvalid(id, invalid, msg = '') {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) return;
+  el.classList.toggle('field-input--danger', Boolean(invalid));
+  el.setAttribute('aria-invalid', invalid ? 'true' : 'false');
+  if (invalid && msg) el.title = msg;
+  else el.removeAttribute('title');
+}
+
+function parseNumberInput(id) {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement)) return { value: null, empty: true };
+  const raw = el.value.trim();
+  if (!raw) return { value: null, empty: true };
+  const n = parseFloat(String(raw).replace(',', '.'));
+  return { value: Number.isFinite(n) ? n : null, empty: false };
+}
+
 function lifeMetricTitle(life) {
   if (life === 'Mrev') return 'Vida L₁₀ (millones de vueltas)';
   if (life === 'rev') return 'Vida L₁₀ (vueltas totales)';
@@ -37,6 +55,25 @@ function lifeMetricTitle(life) {
 function refreshCore() {
   const u = getLabUnitPrefs();
   const lifePref = u.life ?? 'hours';
+  const validationMsgs = [];
+  const cRaw = parseNumberInput('brgC').value;
+  const pRaw = parseNumberInput('brgP').value;
+  const nRaw = parseNumberInput('brgN').value;
+  const dutyParsed = parseNumberInput('brgDuty');
+
+  const cInvalid = !(cRaw != null && cRaw > 0);
+  const pInvalid = !(pRaw != null && pRaw > 0);
+  const nInvalid = !(nRaw != null && nRaw >= 0);
+  const dutyInvalid = !dutyParsed.empty && !(dutyParsed.value != null && dutyParsed.value >= 0 && dutyParsed.value <= 24);
+  markFieldInvalid('brgC', cInvalid, 'Dynamic load C must be greater than 0');
+  markFieldInvalid('brgP', pInvalid, 'Equivalent load P must be greater than 0');
+  markFieldInvalid('brgN', nInvalid, 'Speed cannot be negative');
+  markFieldInvalid('brgDuty', dutyInvalid, 'Duty hours/day must be between 0 and 24');
+  if (cInvalid) validationMsgs.push('Revise C (dynamic load): enter a value greater than 0 N.');
+  if (pInvalid) validationMsgs.push('Revise P (equivalent load): enter a value greater than 0 N.');
+  if (nInvalid) validationMsgs.push('Revise speed n: it cannot be negative.');
+  if (dutyInvalid) validationMsgs.push('Revise duty hours/day: use a value from 0 to 24.');
+
   const typeEl = document.getElementById('brgType');
   const type = typeEl instanceof HTMLSelectElement && typeEl.value === 'roller' ? 'roller' : 'ball';
   const p = {
@@ -106,18 +143,27 @@ function refreshCore() {
       noteEl.className = 'lab-alerts';
       resultsW.after(noteEl);
     }
+    const parts = [];
+    validationMsgs.forEach((msg) => parts.push(labAlert('danger', msg)));
+    if (pRaw != null && cRaw != null && pRaw > cRaw) {
+      parts.push(labAlert('warn', 'Equivalent load P exceeds C. Expect very low L10; check bearing size or loading assumptions.'));
+    }
+
     if (r.nominalLife_hours == null) {
-      noteEl.innerHTML = labAlert(
-        'info',
-        'Indique giro &gt; 0 para estimar la vida en horas (además puede ver millones o vueltas totales en el desplegable).',
+      parts.push(
+        labAlert(
+          'info',
+          'Set speed n > 0 to estimate L10 in hours (you can still review life in revolutions).',
+        ),
       );
     } else if (r.nominalLife_hours < 2000) {
-      noteEl.innerHTML = labAlert('warn', 'L₁₀ bajo en horas: revise P, tipo de rodamiento o elección de C.');
+      parts.push(labAlert('warn', 'L10 is low in hours: consider reducing P, changing bearing type, or selecting a higher C.'));
     } else if (r.nominalLife_hours > 50000) {
-      noteEl.innerHTML = labAlert('ok', 'L₁₀ alto en horas con estos datos — confirme que P y n representan el caso de diseño.');
+      parts.push(labAlert('ok', 'High L10 for these inputs. Confirm that P and n reflect your real duty point.'));
     } else {
-      noteEl.innerHTML = labAlert('info', 'Compare L₁₀ con el objetivo de su aplicación (catálogo / OEM).');
+      parts.push(labAlert('info', 'Compare L10 with your application target and supplier/OEM criteria.'));
     }
+    noteEl.innerHTML = parts.join('');
   }
 
   renderBearingSectionDiagram(document.getElementById('brgDiagram'), { type });

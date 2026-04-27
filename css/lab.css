@@ -340,6 +340,33 @@
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   background: #fff;
+  color: #0f172a;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+
+.lab-field input::placeholder {
+  color: #94a3b8;
+}
+
+.lab-field input:focus,
+.lab-field select:focus {
+  outline: none;
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.14);
+}
+
+.lab-field input:disabled,
+.lab-field select:disabled {
+  background: #f8fafc;
+  color: #64748b;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+}
+
+.lab-field input.field-input--danger,
+.lab-field select.field-input--danger {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.14);
 }
 
 /* .hint y .lab-field-help se integran en "?" vía labHelpCompact.js */
@@ -570,6 +597,12 @@
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.lab-metric:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
 }
 
 .lab-metric__head {
@@ -1993,6 +2026,11 @@
   font-size: 0.9rem;
   font-weight: 500;
   color: #334155;
+}
+
+.lab-calc-layout__inputs .lab-field input:focus,
+.lab-calc-layout__inputs .lab-field select:focus {
+  color: #0f172a;
 }
 
 .lab-result-hero {

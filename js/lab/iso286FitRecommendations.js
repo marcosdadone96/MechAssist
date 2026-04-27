@@ -76,7 +76,7 @@ export const ISO286_FIT_RECOMMENDATIONS = [
     category: 'Juego',
     comment: 'Holgura apreciable para giro o montaje sin prensa.',
     examples:
-      'Pasadores de bielas en prensas exc�ntricas; goznes de compuertas en dep�sitos; ejes de rodillos locos en transportador de rodillos; bisagras de puerta de cabina de maquina.',
+      'Pasadores de bielas en prensas excéntricas; goznes de compuertas en depósitos; ejes de rodillos locos en transportador de rodillos; bisagras de puerta de cabina de máquina.',
   },
   {
     id: 'hydraulic-spool',
@@ -132,7 +132,7 @@ export const ISO286_FIT_RECOMMENDATIONS = [
     category: 'Transicion / apriete',
     comment: 'Suele tender a interferencia en muchos diametros; validar en calculadora.',
     examples:
-      'Rueda dentada de fundicion sobre eje de malacate; buje de guia en bastidor de plegadora; pi�on fijado en eje de transmision sin chaveta (segun carga).',
+      'Rueda dentada de fundición sobre eje de malacate; buje de guía en bastidor de plegadora; piñón fijado en eje de transmisión sin chaveta (según carga).',
   },
   {
     id: 'press-firm',
