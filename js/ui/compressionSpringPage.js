@@ -10,10 +10,12 @@ import { bindLabUnitSelectors, formatLength, getLabUnitPrefs } from '../lab/labU
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   debounce,
+  executiveSummaryAlert,
   labAlert,
   metricHtml,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  uxCopy,
 } from './labCalcUx.js';
 import { setLabPurchaseSuggestions } from './labPurchaseSuggestions.js';
 
@@ -392,7 +394,7 @@ function computeCore() {
     if (advisor) {
       advisor.innerHTML = labAlert(
         'danger',
-        `<strong>Entrada no valida.</strong> ${errors.map((e) => esc(e)).join(' ')}`,
+        `<strong>${uxCopy('Entrada no válida.', 'Invalid input.')}</strong> ${errors.map((e) => esc(e)).join(' ')}`,
       );
     }
     if (formulaBody instanceof HTMLElement) formulaBody.innerHTML = '';
@@ -437,7 +439,7 @@ function computeCore() {
     if (advisor) {
       advisor.innerHTML = labAlert(
         'danger',
-        `<strong>Entrada no valida.</strong> ${errors.map((e) => esc(e)).join(' ')}`,
+        `<strong>${uxCopy('Entrada no válida.', 'Invalid input.')}</strong> ${errors.map((e) => esc(e)).join(' ')}`,
       );
     }
     if (formulaBody instanceof HTMLElement) formulaBody.innerHTML = '';
@@ -579,6 +581,38 @@ function computeCore() {
   }
 
   const alertParts = [];
+  const bucklingBad = bucklingFailBlock || bucklingFailOp;
+  const fatigueFailHard = labTier === 'project' && Number.isFinite(fat.U) && fat.U > 1.05;
+  const level = sMax <= 0 || !Number.isFinite(Fn) || bucklingBad || fatigueFailHard || ratioGovern > 0.85
+    ? 'danger'
+    : ratioGovern > 0.55
+      ? 'warn'
+      : 'ok';
+  alertParts.push(
+    executiveSummaryAlert({
+      level,
+      titleEs:
+        level === 'danger'
+          ? 'Resumen ejecutivo: diseño requiere revisión antes de liberar.'
+          : level === 'warn'
+            ? 'Resumen ejecutivo: diseño usable con margen ajustado.'
+            : 'Resumen ejecutivo: diseño base coherente (modelo simplificado).',
+      titleEn:
+        level === 'danger'
+          ? 'Executive summary: design needs review before release.'
+          : level === 'warn'
+            ? 'Executive summary: workable design with tight margins.'
+            : 'Executive summary: baseline design is consistent (simplified model).',
+      actionsEs:
+        level === 'danger'
+          ? ['Corregir geometría/servicio y recalcular.', 'Validar pandeo y fatiga con datos de fabricante.']
+          : ['Documentar hipótesis de servicio.', 'Cerrar selección con norma y proveedor.'],
+      actionsEn:
+        level === 'danger'
+          ? ['Fix geometry/service inputs and recalculate.', 'Validate buckling/fatigue with supplier data.']
+          : ['Document service assumptions.', 'Close selection with standard and supplier.'],
+    }),
+  );
   alertParts.push(
     labAlert(
       'info',
@@ -622,9 +656,6 @@ function computeCore() {
       labAlert('warn', '<strong>Margen de pandeo reducido:</strong> compruebe con abaco completo y condiciones de apoyo reales.'),
     );
   }
-
-  const bucklingBad = bucklingFailBlock || bucklingFailOp;
-  const fatigueFailHard = labTier === 'project' && Number.isFinite(fat.U) && fat.U > 1.05;
 
   if (sMax <= 0) {
     alertParts.push(

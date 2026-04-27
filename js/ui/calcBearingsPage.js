@@ -9,7 +9,15 @@ import {
 } from '../lab/labUnitPrefs.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
-import { debounce, labAlert, metricHtml, renderResultHero, runCalcWithIndustrialFeedback } from './labCalcUx.js';
+import {
+  debounce,
+  executiveSummaryAlert,
+  labAlert,
+  metricHtml,
+  renderResultHero,
+  runCalcWithIndustrialFeedback,
+  uxCopy,
+} from './labCalcUx.js';
 import { commerceIdForBearingC } from '../data/commerceCatalog.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
@@ -144,8 +152,35 @@ function refreshCore() {
       resultsW.after(noteEl);
     }
     const parts = [];
+    const pOverC = pRaw != null && cRaw != null && pRaw > cRaw;
+    const lowLife = r.nominalLife_hours != null && r.nominalLife_hours < 2000;
+    parts.push(
+      executiveSummaryAlert({
+        level: validationMsgs.length || pOverC ? 'danger' : lowLife ? 'warn' : 'ok',
+        titleEs:
+          validationMsgs.length || pOverC
+            ? 'Resumen ejecutivo: resultado no apto para decisión todavía.'
+            : lowLife
+              ? 'Resumen ejecutivo: vida baja para servicio continuo.'
+              : 'Resumen ejecutivo: vida L10 coherente para seguir selección.',
+        titleEn:
+          validationMsgs.length || pOverC
+            ? 'Executive summary: result not ready for decision.'
+            : lowLife
+              ? 'Executive summary: low life for continuous duty.'
+              : 'Executive summary: L10 is consistent to continue selection.',
+        actionsEs:
+          validationMsgs.length || pOverC
+            ? ['Corregir entradas C/P/n.', 'Asegurar que P no supere C para comparar opciones.']
+            : ['Contrastar con objetivo de vida del proyecto.', 'Validar con catálogo OEM y factor de servicio.'],
+        actionsEn:
+          validationMsgs.length || pOverC
+            ? ['Fix C/P/n inputs.', 'Ensure P does not exceed C before comparing options.']
+            : ['Compare against project life target.', 'Validate with OEM catalogue and service factor.'],
+      }),
+    );
     validationMsgs.forEach((msg) => parts.push(labAlert('danger', msg)));
-    if (pRaw != null && cRaw != null && pRaw > cRaw) {
+    if (pOverC) {
       parts.push(labAlert('warn', 'Equivalent load P exceeds C. Expect very low L10; check bearing size or loading assumptions.'));
     }
 
@@ -163,6 +198,15 @@ function refreshCore() {
     } else {
       parts.push(labAlert('info', 'Compare L10 with your application target and supplier/OEM criteria.'));
     }
+    parts.push(
+      labAlert(
+        'info',
+        uxCopy(
+          'Este módulo usa ISO 281 simplificada; para diseño final, aplicar factores de servicio y temperatura del fabricante.',
+          'This module uses simplified ISO 281; for final design, apply supplier service and temperature factors.',
+        ),
+      ),
+    );
     noteEl.innerHTML = parts.join('');
   }
 

@@ -15,7 +15,15 @@ import {
 } from '../lab/labUnitPrefs.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
-import { debounce, labAlert, metricHtml, renderResultHero, runCalcWithIndustrialFeedback } from './labCalcUx.js';
+import {
+  debounce,
+  executiveSummaryAlert,
+  labAlert,
+  metricHtml,
+  renderResultHero,
+  runCalcWithIndustrialFeedback,
+  uxCopy,
+} from './labCalcUx.js';
 import { commerceIdForBeltSelection } from '../data/commerceCatalog.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
@@ -317,14 +325,70 @@ function refreshCore() {
 
   const alerts = document.getElementById('bAlerts');
   if (alerts) {
+    const parts = [];
+    const speedKey = r.speedVerdict?.key || '';
+    const hasCriticalSpeed = speedKey === 'critical';
+    const hasLowSpeed = speedKey === 'low';
+    parts.push(
+      executiveSummaryAlert({
+        level: r.geometryValid === false ? 'danger' : hasCriticalSpeed ? 'warn' : 'ok',
+        titleEs:
+          r.geometryValid === false
+            ? 'Resumen ejecutivo: geometría inválida para cálculo fiable.'
+            : hasCriticalSpeed
+              ? 'Resumen ejecutivo: geometría válida con velocidad de correa exigente.'
+              : 'Resumen ejecutivo: resultado válido para preselección.',
+        titleEn:
+          r.geometryValid === false
+            ? 'Executive summary: invalid geometry for reliable results.'
+            : hasCriticalSpeed
+              ? 'Executive summary: valid geometry with demanding belt speed.'
+              : 'Executive summary: valid result for preselection.',
+        actionsEs:
+          r.geometryValid === false
+            ? ['Ajustar distancia entre ejes o diámetros.', 'Recalcular antes de seleccionar referencia comercial.']
+            : ['Confirmar tensión/alineación reales.', 'Cerrar selección con catálogo del fabricante.'],
+        actionsEn:
+          r.geometryValid === false
+            ? ['Adjust center distance or pulley diameters.', 'Recalculate before selecting a commercial reference.']
+            : ['Confirm real tension/alignment.', 'Close selection with supplier catalogue data.'],
+      }),
+    );
     if (r.geometryValid === false) {
-      alerts.innerHTML = labAlert('danger', `${esc(r.geometryNote)} Adjust C or diameters before using the result.`);
+      parts.push(labAlert('danger', `${esc(r.geometryNote)} ${uxCopy('Ajuste C o diámetros antes de usar el resultado.', 'Adjust C or diameters before using the result.')}`));
     } else {
-      alerts.innerHTML = labAlert(
-        'info',
-        `${esc(r.profileNote)} · Check tension, alignment, and catalogue data for final sizing.`,
+      if (hasCriticalSpeed) {
+        parts.push(
+          labAlert(
+            'warn',
+            uxCopy(
+              'Velocidad de correa alta: revisar vibración, balanceo y límites del perfil.',
+              'High belt speed: review vibration, balance, and profile limits.',
+            ),
+          ),
+        );
+      } else if (hasLowSpeed) {
+        parts.push(
+          labAlert(
+            'info',
+            uxCopy(
+              'Velocidad de correa baja: verificar enfriamiento y capacidad térmica.',
+              'Low belt speed: verify cooling and thermal capacity.',
+            ),
+          ),
+        );
+      }
+      parts.push(
+        labAlert(
+          'info',
+          `${esc(r.profileNote)} · ${uxCopy(
+            'Compruebe tensión, alineación y datos de catálogo para dimensionado final.',
+            'Check tension, alignment, and catalogue data for final sizing.',
+          )}`,
+        ),
       );
     }
+    alerts.innerHTML = parts.join('');
   }
 
   const sub = document.getElementById('bSubstitution');

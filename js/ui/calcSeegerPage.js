@@ -1,7 +1,14 @@
 import { mountTierStatusBar } from './paywallMount.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
-import { debounce, metricHtml, renderResultHero, runCalcWithIndustrialFeedback } from './labCalcUx.js';
+import {
+  debounce,
+  executiveSummaryAlert,
+  metricHtml,
+  renderResultHero,
+  runCalcWithIndustrialFeedback,
+  uxCopy,
+} from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { lookupSeeger } from '../lab/seegerDinTables.js';
@@ -69,8 +76,19 @@ function refreshCore() {
   if (!hit.row || !Number.isFinite(d)) {
     if (heroEl) heroEl.innerHTML = '';
     if (box) {
-      box.innerHTML =
-        '<div class="lab-metric lab-metric--wide"><div class="lab-metric__text">Introduzca un di\u00e1metro v\u00e1lido (mm) y el tipo de alojamiento.</div></div>';
+      box.innerHTML = [
+        executiveSummaryAlert({
+          level: 'danger',
+          titleEs: 'Resumen ejecutivo: datos insuficientes para seleccionar anillo.',
+          titleEn: 'Executive summary: insufficient data to select retaining ring.',
+          actionsEs: ['Introducir diámetro nominal válido.', 'Elegir eje (DIN 471) o agujero (DIN 472).'],
+          actionsEn: ['Enter a valid nominal diameter.', 'Choose shaft (DIN 471) or bore (DIN 472).'],
+        }),
+        `<div class="lab-metric lab-metric--wide"><div class="lab-metric__text">${uxCopy(
+          'Introduzca un diámetro válido (mm) y el tipo de alojamiento.',
+          'Enter a valid diameter (mm) and housing type.',
+        )}</div></div>`,
+      ].join('');
     }
     if (svg) {
       svg.removeAttribute('viewBox');
@@ -113,6 +131,15 @@ function refreshCore() {
 
   if (box) {
     const parts = [];
+    parts.push(
+      executiveSummaryAlert({
+        level: 'ok',
+        titleEs: 'Resumen ejecutivo: referencia DIN localizada para preselección.',
+        titleEn: 'Executive summary: DIN reference found for preselection.',
+        actionsEs: ['Verificar tolerancias y material final.', 'Confirmar referencia exacta en catálogo de proveedor.'],
+        actionsEn: ['Verify final tolerances and material.', 'Confirm exact reference in supplier catalogue.'],
+      }),
+    );
     if (hit.hint) {
       parts.push(
         `<div class="lab-alert lab-alert--info">${esc(hit.hint).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`,

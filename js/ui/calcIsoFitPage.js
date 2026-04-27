@@ -9,7 +9,15 @@ import { ISO286_FIT_RECOMMENDATIONS } from '../lab/iso286FitRecommendations.js';
 import { renderIso286FitDiagram } from '../lab/diagramIso286Fit.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
-import { debounce, labAlert, metricHtml, renderResultHero, runCalcWithIndustrialFeedback } from './labCalcUx.js';
+import {
+  debounce,
+  executiveSummaryAlert,
+  labAlert,
+  metricHtml,
+  renderResultHero,
+  runCalcWithIndustrialFeedback,
+  uxCopy,
+} from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 
@@ -172,8 +180,20 @@ function refreshCore() {
 
   if (!r.ok) {
     if (heroEl) heroEl.innerHTML = '';
-    if (verdictEl) verdictEl.innerHTML = labAlert('danger', r.err || 'Error de calculo');
-    if (alertsEl) alertsEl.innerHTML = validationMsgs.map((msg) => labAlert('danger', escapeHtml(msg))).join('');
+    if (verdictEl) verdictEl.innerHTML = labAlert('danger', r.err || uxCopy('Error de cálculo', 'Calculation error'));
+    if (alertsEl) {
+      const parts = [
+        executiveSummaryAlert({
+          level: 'danger',
+          titleEs: 'Resumen ejecutivo: no se puede generar el ajuste.',
+          titleEn: 'Executive summary: fit could not be generated.',
+          actionsEs: ['Revisar diámetro nominal y calidad IT.', 'Volver a calcular.'],
+          actionsEn: ['Review nominal diameter and IT grade.', 'Recalculate.'],
+        }),
+      ];
+      validationMsgs.forEach((msg) => parts.push(labAlert('danger', escapeHtml(msg))));
+      alertsEl.innerHTML = parts.join('');
+    }
     if (box) box.innerHTML = '';
     renderIso286FitDiagram(document.getElementById('isoDiagram'), null);
     return;
@@ -207,6 +227,23 @@ function refreshCore() {
   if (verdictEl) verdictEl.innerHTML = fitVerdictAlert(r.fitKind);
   if (alertsEl) {
     const parts = [];
+    parts.push(
+      executiveSummaryAlert({
+        level: validationMsgs.length ? 'danger' : r.fitKind === 'interference' ? 'warn' : 'ok',
+        titleEs: validationMsgs.length
+          ? 'Resumen ejecutivo: corregir entradas antes de cerrar tolerancias.'
+          : `Resumen ejecutivo: ${r.fitLabelEs}.`,
+        titleEn: validationMsgs.length
+          ? 'Executive summary: fix inputs before closing tolerances.'
+          : `Executive summary: ${r.fitLabelEn}.`,
+        actionsEs: validationMsgs.length
+          ? ['Corregir campos en rojo.', 'Recalcular y revisar juego/interferencia.']
+          : ['Verificar método de montaje.', 'Comprobar expansión térmica y par de materiales.'],
+        actionsEn: validationMsgs.length
+          ? ['Fix fields marked in red.', 'Recalculate and review clearance/interference.']
+          : ['Verify assembly method.', 'Check thermal expansion and material pairing.'],
+      }),
+    );
     validationMsgs.forEach((msg) => parts.push(labAlert('danger', escapeHtml(msg))));
     if (r.fitKind === 'interference') {
       parts.push(labAlert('warn', 'Interference fit selected: verify assembly method, material pair, and thermal expansion.'));
@@ -215,6 +252,15 @@ function refreshCore() {
     } else {
       parts.push(labAlert('ok', 'Clearance fit: review minimum clearance against lubrication and thermal expansion needs.'));
     }
+    parts.push(
+      labAlert(
+        'info',
+        uxCopy(
+          'Validación simplificada ISO 286. Confirmar con proceso real de fabricación y metrología.',
+          'Simplified ISO 286 validation. Confirm against real manufacturing and metrology process.',
+        ),
+      ),
+    );
     alertsEl.innerHTML = parts.join('');
   }
 

@@ -14,11 +14,13 @@ import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/la
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
 import {
   debounce,
+  executiveSummaryAlert,
   labAlert,
   metricHtml,
   renderMotorPowerRuler,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  uxCopy,
 } from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { metricsFromGears } from '../services/iaAdvisor.js';
@@ -233,6 +235,35 @@ function refreshCore() {
   const alerts = document.getElementById('gAlerts');
   if (alerts) {
     const parts = [];
+    const hasValidation = validationMsgs.length > 0;
+    const sfCritical = agma.hasLoad && agma.bendingSafety_SF < 1.05;
+    const shCritical = agma.hasLoad && agma.contactSafety_SH < 1.05;
+    const hasCritical = hasValidation || sfCritical || shCritical;
+    const hasWarn =
+      !hasCritical &&
+      (agma.velocityAlerts.some((a) => a.level !== 'danger') ||
+        (agma.hasLoad && (agma.bendingSafety_SF < 1.4 || agma.contactSafety_SH < 1.2)));
+    parts.push(
+      executiveSummaryAlert({
+        level: hasCritical ? 'danger' : hasWarn ? 'warn' : 'ok',
+        titleEs: hasCritical
+          ? 'Resumen ejecutivo: revisar el diseño antes de liberar.'
+          : hasWarn
+            ? 'Resumen ejecutivo: diseño usable con revisiones recomendadas.'
+            : 'Resumen ejecutivo: diseño base consistente para iterar.',
+        titleEn: hasCritical
+          ? 'Executive summary: review design before release.'
+          : hasWarn
+            ? 'Executive summary: workable design with recommended checks.'
+            : 'Executive summary: baseline design is consistent for iteration.',
+        actionsEs: hasCritical
+          ? ['Corregir los campos en rojo.', 'Aumentar módulo o ancho de cara para subir márgenes AGMA.']
+          : ['Confirmar lubricación y régimen real.', 'Validar con catálogo/fabricante antes de compra.'],
+        actionsEn: hasCritical
+          ? ['Fix the fields marked in red.', 'Increase module or face width to raise AGMA margins.']
+          : ['Confirm lubrication and real duty point.', 'Validate with supplier catalogue before purchase.'],
+      }),
+    );
     validationMsgs.forEach((msg) => parts.push(labAlert('danger', esc(msg))));
     agma.velocityAlerts.forEach((a) => {
       parts.push(labAlert(a.level === 'danger' ? 'danger' : 'warn', esc(a.text)));
@@ -253,6 +284,15 @@ function refreshCore() {
       }
     } else {
       parts.push(labAlert('info', t.alertNeedLoad(esc(agma.disclaimer))));
+      parts.push(
+        labAlert(
+          'info',
+          uxCopy(
+            'Para un veredicto completo, indique potencia o par de entrada.',
+            'For a complete verdict, add input power or torque.',
+          ),
+        ),
+      );
     }
     alerts.innerHTML = parts.join('');
   }

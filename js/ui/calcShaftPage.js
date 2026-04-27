@@ -4,7 +4,15 @@ import { renderShaftTorsionDiagram } from '../lab/diagramShaft.js';
 import { bindLabUnitSelectors, formatLength, getLabUnitPrefs } from '../lab/labUnitPrefs.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
-import { debounce, labAlert, metricHtml, renderResultHero, runCalcWithIndustrialFeedback } from './labCalcUx.js';
+import {
+  debounce,
+  executiveSummaryAlert,
+  labAlert,
+  metricHtml,
+  renderResultHero,
+  runCalcWithIndustrialFeedback,
+  uxCopy,
+} from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
 import { metricsFromShaft } from '../services/iaAdvisor.js';
@@ -95,9 +103,34 @@ function refreshCore() {
   const alerts = document.getElementById('shAlerts');
   if (alerts) {
     const parts = [];
+    parts.push(
+      executiveSummaryAlert({
+        level: validationMsgs.length ? 'danger' : 'ok',
+        titleEs: validationMsgs.length
+          ? 'Resumen ejecutivo: revisar entradas antes de validar diámetro.'
+          : 'Resumen ejecutivo: diámetro mínimo de torsión calculado.',
+        titleEn: validationMsgs.length
+          ? 'Executive summary: review inputs before validating diameter.'
+          : 'Executive summary: minimum torsional diameter calculated.',
+        actionsEs: validationMsgs.length
+          ? ['Corregir campos en rojo.', 'Recalcular para emitir recomendación de compra.']
+          : ['Añadir margen comercial de diámetro.', 'Comprobar chavetero, fatiga y concentradores.'],
+        actionsEn: validationMsgs.length
+          ? ['Fix fields marked in red.', 'Recalculate before issuing purchase guidance.']
+          : ['Add commercial diameter margin.', 'Check keyway, fatigue, and stress raisers.'],
+      }),
+    );
     validationMsgs.forEach((msg) => parts.push(labAlert('danger', msg)));
-    if (parts.length === 0) {
-      parts.push(labAlert('info', 'Torsion-only sizing. Validate keyways, fatigue, and commercial diameter.'));
+    if (validationMsgs.length === 0) {
+      parts.push(
+        labAlert(
+          'info',
+          uxCopy(
+            'Dimensionado solo a torsión. Valide chaveteros, fatiga y diámetro comercial.',
+            'Torsion-only sizing. Validate keyways, fatigue, and commercial diameter.',
+          ),
+        ),
+      );
     }
     alerts.innerHTML = parts.join('');
   }

@@ -20,6 +20,10 @@ function isEnglishUi() {
   return document?.documentElement?.lang?.toLowerCase().startsWith('en') || false;
 }
 
+export function uxCopy(es, en) {
+  return isEnglishUi() ? en : es;
+}
+
 /**
  * @param {'info'|'warn'|'danger'|'ok'} level
  * @param {string} htmlInner - texto ya escapado o HTML seguro
@@ -30,6 +34,25 @@ export function labAlert(level, htmlInner) {
   const icon = ALERT_ICONS[cls === 'ok' ? 'ok' : cls === 'danger' ? 'danger' : cls === 'warn' ? 'warn' : 'info'];
   const role = cls === 'danger' || cls === 'warn' ? 'alert' : 'status';
   return `<div class="lab-alert lab-alert--${cls}" role="${role}"><span class="lab-alert__icon" aria-hidden="true">${icon}</span><span class="lab-alert__body">${htmlInner}</span></div>`;
+}
+
+/**
+ * Resumen ejecutivo estándar para cada cálculo.
+ * @param {{
+ *   level: 'info'|'warn'|'danger'|'ok',
+ *   titleEs: string,
+ *   titleEn: string,
+ *   actionsEs?: string[],
+ *   actionsEn?: string[]
+ * }} opts
+ */
+export function executiveSummaryAlert(opts) {
+  const title = uxCopy(opts.titleEs, opts.titleEn);
+  const actions = uxCopy(opts.actionsEs || [], opts.actionsEn || []);
+  const list = actions.length
+    ? `<ul class="lab-alert__list">${actions.map((a) => `<li>${a}</li>`).join('')}</ul>`
+    : '';
+  return labAlert(opts.level, `<strong>${title}</strong>${list}`);
 }
 
 /**

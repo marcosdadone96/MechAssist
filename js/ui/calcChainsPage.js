@@ -11,7 +11,16 @@ import {
 } from '../lab/labUnitPrefs.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
-import { debounce, labAlert, labHelpTooltipMarkup, metricHtml, renderResultHero, runCalcWithIndustrialFeedback } from './labCalcUx.js';
+import {
+  debounce,
+  executiveSummaryAlert,
+  labAlert,
+  labHelpTooltipMarkup,
+  metricHtml,
+  renderResultHero,
+  runCalcWithIndustrialFeedback,
+  uxCopy,
+} from './labCalcUx.js';
 import { commerceIdForChainRef } from '../data/commerceCatalog.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
@@ -225,6 +234,29 @@ function refreshCore() {
   const alerts = document.getElementById('cAlerts');
   if (alerts) {
     const parts = [];
+    const hasValidation = validationMsgs.length > 0;
+    const hasPolyWarn = Boolean(r.polygonalEffect?.active);
+    parts.push(
+      executiveSummaryAlert({
+        level: hasValidation ? 'danger' : hasPolyWarn ? 'warn' : 'ok',
+        titleEs: hasValidation
+          ? 'Resumen ejecutivo: complete y corrija entradas para cerrar el cálculo.'
+          : hasPolyWarn
+            ? 'Resumen ejecutivo: cinemática válida con advertencias por efecto poligonal.'
+            : 'Resumen ejecutivo: resultado válido como base de selección.',
+        titleEn: hasValidation
+          ? 'Executive summary: complete/fix inputs to close the calculation.'
+          : hasPolyWarn
+            ? 'Executive summary: valid kinematics with polygonal-effect warnings.'
+            : 'Executive summary: valid baseline result for component selection.',
+        actionsEs: hasValidation
+          ? ['Corregir campos en rojo.', 'Recalcular antes de seleccionar componentes.']
+          : ['Confirmar lubricación y paso con catálogo real.', 'Validar cierre de longitud y montaje.'],
+        actionsEn: hasValidation
+          ? ['Fix fields marked in red.', 'Recalculate before selecting components.']
+          : ['Confirm lubrication and pitch with real catalogue.', 'Validate chain length closure and assembly.'],
+      }),
+    );
     validationMsgs.forEach((msg) => parts.push(labAlert('danger', esc(msg))));
     if (r.polygonalEffect?.active) {
       parts.push(labAlert('warn', esc(r.polygonalEffect.text)));
@@ -239,6 +271,15 @@ function refreshCore() {
     } else {
       parts.push(labAlert('info', esc(r.normsNote)));
     }
+    parts.push(
+      labAlert(
+        'info',
+        uxCopy(
+          'La selección final debe cerrarse con fabricante (carga admisible, lubricación y montaje).',
+          'Final selection should be closed with the supplier (allowable load, lubrication, and assembly).',
+        ),
+      ),
+    );
     alerts.innerHTML = parts.join('');
   }
 

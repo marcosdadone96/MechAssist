@@ -2320,6 +2320,15 @@
   min-width: 0;
 }
 
+.lab-alert__list {
+  margin: 0.4rem 0 0 1rem;
+  padding: 0;
+}
+
+.lab-alert__list li + li {
+  margin-top: 0.2rem;
+}
+
 .lab-alert__glyph {
   display: block;
 }
