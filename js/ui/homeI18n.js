@@ -9,10 +9,26 @@ const LS_LANG = 'mdr-home-lang';
 const dict = {
   es: {
     'header.tag': 'Transmisi\u00f3n',
+    'hero.eyebrow': 'Calculadoras t\u00e9cnicas \u00b7 ingenier\u00eda mec\u00e1nica',
+    'hero.tagline': 'Criterio de taller. Resultados al instante.',
+    'hero.expand': 'Ver presentaci\u00f3n',
+    'hero.desc1':
+      'MechAssist centraliza modelos de transmisi\u00f3n, transporte y fluidos en una interfaz clara: estimaciones \u00fatiles para preliminar, comparar alternativas y documentar hip\u00f3tesis.',
+    'hero.desc2':
+      'Referencias y m\u00e9todos alineados con buenas pr\u00e1cticas industriales; la decisi\u00f3n final debe validarse siempre con cat\u00e1logo, norma aplicable y condiciones reales de servicio.',
+    'hero.ctaLab': 'Explorar el laboratorio',
+    'hero.ctaExplore': 'Ver todas las \u00e1reas',
+    'hero.tier':
+      'Gratis: acceso amplio al n\u00facleo de calculadoras y modelos de m\u00e1quinas base. Pro: funciones extendidas por m\u00f3dulo (p. ej. lienzo t\u00e9cnico multieje, exportaciones o flujos premium, seg\u00fan disponibilidad).',
     'zone.machines': 'M\u00e1quinas',
+    'zone.machinesIntro':
+      'Bombas, cintas, elevadores y tornillos sinf\u00edn: potencia, fuerzas y par\u00e1metros operativos para dimensionar y revisar manejo de materiales.',
     'zone.lab': 'Laboratorio',
+    'zone.labIntro':
+      'Engranajes, correas, cadenas, rodamientos, ejes, ajustes ISO y m\u00e1s: c\u00e1lculo coherente con contexto t\u00e9cnico accionable.',
     'zone.fluids': 'Hidr\u00e1ulica y neum\u00e1tica',
-    'fluids.subtitle': 'Nuevos c\u00e1lculos del bloque de fluidos',
+    'zone.fluidsIntro':
+      'Cilindros, bombas y prensas: fuerzas, secciones, caudales y tiempos para orientar selecci\u00f3n y revisi\u00f3n de circuitos hidroneum\u00e1ticos.',
     'fluids.pump': 'Bomba hidr\u00e1ulica',
     'fluids.pumpMeta': 'Curva, potencia y selecci\u00f3n',
     'fluids.compressor': 'Compresor neum\u00e1tico',
@@ -56,10 +72,26 @@ const dict = {
   },
   en: {
     'header.tag': 'Power Transmission',
+    'hero.eyebrow': 'Technical calculators \u00b7 mechanical engineering',
+    'hero.tagline': 'Professional rigour. Results on demand.',
+    'hero.expand': 'View presentation',
+    'hero.desc1':
+      'MechAssist brings transmission, conveying and fluid models into one clear interface: practical estimates for early design, trade-offs and documenting assumptions.',
+    'hero.desc2':
+      'Methods grounded in industrial good practice; always validate against catalogues, applicable standards and real operating conditions.',
+    'hero.ctaLab': 'Open the laboratory',
+    'hero.ctaExplore': 'Browse all areas',
+    'hero.tier':
+      'Free: broad access to core calculators and base machine models. Pro: extended features per module (e.g. multi-shaft technical canvas, exports or premium flows, where available).',
     'zone.machines': 'Machines',
+    'zone.machinesIntro':
+      'Pumps, belts, elevators and screw conveyors: power, forces and operating parameters for bulk handling sizing and checks.',
     'zone.lab': 'Laboratory',
+    'zone.labIntro':
+      'Gears, belts, chains, bearings, shafts, ISO fits and more: coherent calculation with actionable technical context.',
     'zone.fluids': 'Hydraulics and pneumatics',
-    'fluids.subtitle': 'New calculators in the fluid block',
+    'zone.fluidsIntro':
+      'Cylinders, pumps and presses: forces, areas, flow rates and cycle timing to guide hydraulic and pneumatic circuit selection.',
     'fluids.pump': 'Hydraulic pump',
     'fluids.pumpMeta': 'Curve, power and selection',
     'fluids.compressor': 'Pneumatic compressor',
@@ -94,7 +126,8 @@ const dict = {
     'aria.machineSystems': 'Available systems',
     'aria.transmissionCalcs': 'Power transmission calculators',
     'aria.fluidCalcs': 'Hydraulic and pneumatic calculators',
-    footnote: 'Green = active \u00b7 Conveyors: free or Pro by module',
+    footnote:
+      'Legend: green = active calculator. Free tier covers most of the lab; Pro adds advanced capabilities on selected modules (including some conveyor models depending on configuration).',
     badgePro: 'PRO ACCESS',
     'footer.privacy': 'Privacy',
     'footer.terms': 'Terms',

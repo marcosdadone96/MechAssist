@@ -126,9 +126,177 @@ a.hub-account__btn--link:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: calc(100vh - 4rem);
   padding: 0.8rem 1rem 2rem;
+}
+
+/* --- Hero (portada) --- */
+.hub-hero {
+  width: min(720px, 100%);
+  margin: 0 auto 1.75rem;
+  padding: 1.35rem 1.25rem 1.5rem;
+  text-align: center;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 12px 40px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(10px);
+}
+
+.hub-hero--compact {
+  padding: 0;
+}
+
+.hub-hero__summary {
+  display: block;
+  padding: 1rem 1.1rem 1.05rem;
+  text-align: center;
+  cursor: pointer;
+  list-style: none;
+}
+
+.hub-hero__summary::-webkit-details-marker {
+  display: none;
+}
+
+.hub-hero--compact[open] .hub-hero__summary {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.hub-hero__panel {
+  padding: 1rem 1.1rem 1.25rem;
+}
+
+.hub-hero__eyebrow {
+  display: block;
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #0d9488;
+}
+
+.hub-hero__brand {
+  display: block;
+  margin: 0 0 0.25rem;
+  font-size: clamp(1.85rem, 5vw, 2.35rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  color: #0f172a;
+}
+
+.hub-hero__brand em {
+  font-style: normal;
+  color: #16a34a;
+}
+
+.hub-hero__tagline {
+  display: block;
+  margin: 0;
+  font-size: clamp(1.05rem, 2.4vw, 1.2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #334155;
+  line-height: 1.35;
+}
+
+.hub-hero__summary-cta {
+  display: inline-block;
+  margin-top: 0.55rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #0f766e;
+  border: 1px solid rgba(15, 118, 110, 0.35);
+  border-radius: 999px;
+  padding: 0.26rem 0.65rem;
+  background: rgba(240, 253, 250, 0.8);
+}
+
+.hub-hero__desc {
+  margin: 0 0 1.15rem;
+  text-align: left;
+  max-width: 52ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hub-hero__desc p {
+  margin: 0 0 0.65rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.55;
+  color: #475569;
+}
+
+.hub-hero__desc p:last-child {
+  margin-bottom: 0;
+}
+
+.hub-hero__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.hub-hero__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.62rem 1.15rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 999px;
+  text-decoration: none;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.hub-hero__btn--primary {
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid #0f172a;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18);
+}
+
+.hub-hero__btn--primary:hover {
+  background: #134e4a;
+  border-color: #134e4a;
+  color: #fff;
+}
+
+.hub-hero__btn--secondary {
+  background: rgba(255, 255, 255, 0.85);
+  color: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.55);
+}
+
+.hub-hero__btn--secondary:hover {
+  border-color: #0d9488;
+  color: #0f766e;
+  background: #f0fdfa;
+}
+
+.hub-hero__tier {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #64748b;
+  max-width: 52ch;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hub-zones-grid {
@@ -428,6 +596,26 @@ a.hub-account__btn--link:hover {
   text-transform: uppercase;
   color: #94a3b8;
   line-height: 1.35;
+}
+
+.hub-footnote--detail {
+  max-width: min(640px, 100%);
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-weight: 500;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.hub-zone__intro {
+  margin: 0 auto 0.85rem;
+  max-width: 28rem;
+  text-align: center;
+  font-size: 0.76rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #64748b;
 }
 
 .hub-footer-legal {

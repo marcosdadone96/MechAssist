@@ -6,7 +6,7 @@
     <title>MechAssist</title>
     <meta
       name="description"
-      content="MechAssist: calculadoras y laboratorio de transmisión — cintas, bombas, engranajes, correas y más."
+      content="MechAssist: calculadoras técnicas para ingeniería mecánica — transmisión, máquinas de transporte, hidráulica y neumática. Gratis y Pro."
     />
     <link rel="canonical" href="" id="mdr-canonical" />
     <meta property="og:type" content="website" />
@@ -14,7 +14,7 @@
     <meta property="og:title" content="MechAssist" />
     <meta
       property="og:description"
-      content="Calculadoras industriales y laboratorio de transmisión mecánica."
+      content="Calculadoras técnicas para ingeniería mecánica: transmisión, máquinas, hidráulica y neumática. Gratis y Pro."
     />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="MechAssist" />
@@ -38,10 +38,42 @@
     </header>
 
     <main class="hub-main">
-      <div class="hub-zones-grid">
+      <details class="hub-hero hub-hero--compact" aria-labelledby="hub-hero-heading">
+        <summary class="hub-hero__summary">
+          <span class="hub-hero__eyebrow" data-i18n="hero.eyebrow">Calculadoras técnicas · ingeniería mecánica</span>
+          <span id="hub-hero-heading" class="hub-hero__brand" role="heading" aria-level="1">Mech<em>Assist</em></span>
+          <span class="hub-hero__tagline" data-i18n="hero.tagline">Criterio de taller. Resultados al instante.</span>
+          <span class="hub-hero__summary-cta" data-i18n="hero.expand">Ver presentación</span>
+        </summary>
+        <div class="hub-hero__panel">
+          <div class="hub-hero__desc">
+            <p data-i18n="hero.desc1">
+              MechAssist centraliza modelos de transmisión, transporte y fluidos en una interfaz clara: estimaciones útiles para
+              preliminar, comparar alternativas y documentar hipótesis.
+            </p>
+            <p data-i18n="hero.desc2">
+              Referencias y métodos alineados con buenas prácticas industriales; la decisión final debe validarse siempre con
+              catálogo, norma aplicable y condiciones reales de servicio.
+            </p>
+          </div>
+          <div class="hub-hero__cta">
+            <a class="hub-hero__btn hub-hero__btn--primary" href="transmission-lab.html" data-i18n="hero.ctaLab">Explorar el laboratorio</a>
+            <a class="hub-hero__btn hub-hero__btn--secondary" href="#hub-zones" data-i18n="hero.ctaExplore">Ver todas las áreas</a>
+          </div>
+          <p class="hub-hero__tier" data-i18n="hero.tier">
+            Gratis: acceso amplio al núcleo de calculadoras y modelos de máquinas base. Pro: funciones extendidas por módulo (p.
+            ej. lienzo técnico multieje, exportaciones o flujos premium, según disponibilidad).
+          </p>
+        </div>
+      </details>
+
+      <div class="hub-zones-grid" id="hub-zones">
       <div class="hub-zone hub-zone--machines">
       <h2 class="hub-zone__title" data-i18n="zone.machines">Máquinas</h2>
-      <p class="hub-zone__sub hub-zone__sub--ghost" aria-hidden="true">.</p>
+      <p class="hub-zone__intro" data-i18n="zone.machinesIntro">
+        Bombas, cintas, elevadores y tornillos sinfín: potencia, fuerzas y parámetros operativos para dimensionar y revisar
+        manejo de materiales.
+      </p>
       <div class="hub-scene">
         <!-- Radios y radios: viewBox 0 0 100 100 -->
         <svg class="hub-wires" viewBox="0 0 100 100" aria-hidden="true">
@@ -259,6 +291,9 @@
 
       <div class="hub-zone hub-zone--lab">
         <h2 class="hub-zone__title" data-i18n="zone.lab">Laboratorio</h2>
+        <p class="hub-zone__intro" data-i18n="zone.labIntro">
+          Engranajes, correas, cadenas, rodamientos, ejes, ajustes ISO y más: cálculo coherente con contexto técnico accionable.
+        </p>
         <p class="hub-zone__sub">
           <a href="transmission-lab.html" data-i18n="lab.index">Índice</a>
           <span class="hub-zone__dot" aria-hidden="true">·</span>
@@ -414,7 +449,10 @@
 
       <div class="hub-zone hub-zone--fluids">
         <h2 class="hub-zone__title" data-i18n="zone.fluids">Hidráulica y neumática</h2>
-        <p class="hub-zone__sub" data-i18n="fluids.subtitle">Nuevos cálculos del bloque de fluidos</p>
+        <p class="hub-zone__intro" data-i18n="zone.fluidsIntro">
+          Cilindros, bombas y prensas: fuerzas, secciones, caudales y tiempos para orientar selección y revisión de circuitos
+          hidroneumáticos.
+        </p>
         <div class="hub-scene hub-scene--fluid">
           <svg class="hub-wires hub-wires--fluid" viewBox="0 0 100 100" aria-hidden="true">
             <defs>
@@ -529,7 +567,7 @@
       </div>
       </div>
 
-      <p class="hub-footnote" data-i18n="footnote">Verde = activo · Cintas: Gratis o Pro según el módulo</p>
+      <p class="hub-footnote hub-footnote--detail" data-i18n="footnote"></p>
 
       <footer class="hub-footer-legal">
         <nav class="hub-footer-legal__links" aria-label="Legal">
