@@ -1,5 +1,6 @@
 /**
- * Hub de maquinas: etiqueta de acceso Pro en cada modulo.
+ * Hub (portada): antes inyectaba badges en nodos del aro; el aro se retiró.
+ * Se mantiene el módulo por controles de cuenta en cabecera.
  */
 
 import { getCurrentUser, clearLocalUser } from '../services/localAuth.js';
@@ -16,6 +17,7 @@ function getTx(lang) {
   if (lang === 'en') {
     return {
       badgePro: 'PRO ACCESS',
+      badgeFree: 'FREE',
       hello: (name) => `Hi, ${name}`,
       logout: 'Log out',
       register: 'Register',
@@ -23,6 +25,7 @@ function getTx(lang) {
   }
   return {
     badgePro: 'ACCESO PRO',
+    badgeFree: 'GRATIS',
     hello: (name) => `Hola, ${name}`,
     logout: 'Cerrar sesi\u00f3n',
     register: 'Registrarse',
@@ -35,15 +38,34 @@ function badgeText() {
   return tx.badgePro;
 }
 
+function freeBadgeText() {
+  const tx = getTx(getLang());
+  if (typeof window.__t === 'function') return window.__t('badgeFree');
+  return tx.badgeFree;
+}
+
+const PRO_MACHINE_PATHS = new Set(['car-lift-screw.html', 'traction-elevator.html']);
+
+function isProNode(anchor) {
+  const href = anchor.getAttribute('href') || '';
+  return PRO_MACHINE_PATHS.has(href);
+}
+
 function renderHubProBadges() {
-  document.querySelectorAll('.hub-rim--machines a.hub-node--go[href]').forEach((a) => {
-    let badge = a.querySelector(':scope > .hub-badge.hub-badge--pro');
-    if (!(badge instanceof HTMLElement)) {
-      badge = document.createElement('span');
+  if (!document.querySelector('.hub-rim')) return;
+  document.querySelectorAll('.hub-rim a.hub-node--go[href]').forEach((a) => {
+    const current = a.querySelector(':scope > .hub-badge');
+    if (current instanceof HTMLElement) current.remove();
+
+    const badge = document.createElement('span');
+    if (isProNode(a)) {
       badge.className = 'hub-badge hub-badge--pro';
-      a.appendChild(badge);
+      badge.textContent = badgeText();
+    } else {
+      badge.className = 'hub-badge hub-badge--free';
+      badge.textContent = freeBadgeText();
     }
-    badge.textContent = badgeText();
+    a.appendChild(badge);
   });
 }
 

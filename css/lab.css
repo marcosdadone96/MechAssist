@@ -3775,3 +3775,137 @@
   padding-top: 0.65rem;
   border-top: 1px dashed var(--border);
 }
+
+/* --- Hub list pages (machines / fluids) --- */
+.lab-body--hub {
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -10%, rgba(13, 148, 136, 0.08), transparent 55%),
+    linear-gradient(168deg, #f8fafc 0%, #f1f5f9 50%, #e8edf2 100%);
+}
+
+.lab-panel--hub {
+  max-width: 1080px;
+  margin-inline: auto;
+  padding: 1.35rem 1.25rem 2rem;
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(248, 250, 252, 0.96) 100%);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.07);
+}
+
+.lab-hub-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #0f766e;
+}
+
+.lab-panel--hub h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.45rem, 3vw, 1.85rem);
+  letter-spacing: -0.03em;
+}
+
+.lab-lead--hub {
+  max-width: 44rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin-bottom: 1.35rem;
+}
+
+.lab-index-section--hub {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: #64748b;
+}
+
+.lab-index-grid--hub {
+  gap: 1.15rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.lab-card--hub {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1.2rem 1.2rem 1.15rem;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: linear-gradient(165deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 2px 14px rgba(15, 23, 42, 0.06);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  overflow: hidden;
+}
+
+.lab-card--hub::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, #0d9488, #14b8a6, #2dd4bf);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+a.lab-card--hub:hover {
+  transform: translateY(-4px);
+  border-color: rgba(13, 148, 136, 0.45);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.11);
+}
+
+a.lab-card--hub:hover::before {
+  opacity: 1;
+}
+
+a.lab-card--hub:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 3px;
+}
+
+.lab-card--hub .lab-badge {
+  margin-top: 0.1rem;
+}
+
+.lab-card--hub h3 {
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.35rem;
+}
+
+.lab-card--hub p {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: #475569;
+}
+
+.lab-card--hub__icon {
+  font-size: 1.85rem;
+  line-height: 1;
+  margin-bottom: 0.15rem;
+  filter: grayscale(0.08);
+}
+
+.lab-card--hub__icon--muted {
+  opacity: 0.55;
+  filter: grayscale(0.35);
+}
+
+.lab-card--hub--soon {
+  cursor: default;
+  opacity: 0.88;
+  background: linear-gradient(165deg, #f8fafc 0%, #f1f5f9 100%);
+  border-style: dashed;
+}
+
+.lab-card--hub--soon::before {
+  display: none;
+}
