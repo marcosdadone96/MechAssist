@@ -35,6 +35,16 @@
           </div>
           <div class="lab-calc-layout__inputs">
             <div class="lab-grid lab-grid--2">
+              <div class="lab-field lab-field--wide">
+                <label for="shCalcMode">Modo de trabajo</label>
+                <select id="shCalcMode">
+                  <option value="design" selected>Diseño — carga y material → diámetro mínimo</option>
+                  <option value="diagnostic">Diagnóstico — diámetro instalado → tensión y aptitud</option>
+                </select>
+                <p class="lab-field-help" id="shCalcModeHelp">
+                  En <strong>diseño</strong> se obtiene el diámetro mínimo y se compara con un diámetro comercial. En <strong>diagnóstico</strong> se fija el diámetro real del eje y se comprueba si soporta el par (y flexión si aplica).
+                </p>
+              </div>
               <div class="lab-field">
                 <label for="shT" class="lab-field__label-row">
                   <span class="lab-field-ico" title="Par torsor">
@@ -48,7 +58,7 @@
                   <span class="lab-field__label-text">Par T (N·m)</span>
                 </label>
                 <input id="shT" type="number" min="0" step="any" value="480" />
-                <p class="lab-field-help">Par torsor de diseño que debe transmitir el eje (N·m). Entra en <strong>τ = 16T/(πd³)</strong> para sección circular maciza.</p>
+                <p class="lab-field-help" id="shTHelp">Par torsor de diseño que debe transmitir el eje (N·m). Entra en <strong>τ = 16T/(πd³)</strong> para sección circular maciza.</p>
               </div>
               <div class="lab-field">
                 <label for="shTau" class="lab-field__label-row">
@@ -115,9 +125,10 @@
                       <path d="M5 12h14" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Diámetro disponible (mm)</span>
+                  <span class="lab-field__label-text" id="shAvailableDLabel">Diámetro disponible / comercial (mm)</span>
                 </label>
                 <input id="shAvailableD" type="number" min="1" step="0.1" value="40" />
+                <p class="lab-field-help" id="shAvailableDHelp">Para comprobar que un diámetro de compra o normalizado cubre el mínimo analítico.</p>
               </div>
               <div class="lab-field lab-field--wide">
                 <label class="lab-field__label-row">

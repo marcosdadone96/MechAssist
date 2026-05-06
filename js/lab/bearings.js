@@ -32,3 +32,22 @@ export function computeBearingL10(p) {
     omega_rad_s,
   };
 }
+
+/**
+ * Carga dinámica mínima C (N) para alcanzar L₁₀ en horas a velocidad n y carga P (ISO 281 forma básica).
+ * L = (C/P)^p en millones de rev; L₁₀(rev) = 60·n·h.
+ * @param {{ equivalentLoad_N: number; type: 'ball'|'roller'; L10_target_hours: number; speed_rpm: number }} p
+ * @returns {number | null}
+ */
+export function requiredDynamicLoadC_N(p) {
+  const P = Math.max(1e-9, Number(p.equivalentLoad_N) || 0);
+  const type = p.type === 'roller' ? 'roller' : 'ball';
+  const exp = type === 'roller' ? 10 / 3 : 3;
+  const n = Number(p.speed_rpm);
+  const h = Number(p.L10_target_hours);
+  if (!(n > 0) || !(h > 0)) return null;
+  const L10_rev = 60 * n * h;
+  const L10_million = L10_rev / 1e6;
+  if (!(L10_million > 0)) return null;
+  return P * Math.pow(L10_million, 1 / exp);
+}

@@ -91,6 +91,16 @@ function powerKwFromInputs(n1_rpm, Topt, Popt) {
   return null;
 }
 
+function syncGearCalcModeUi() {
+  const design = document.getElementById('gCalcMode')?.value === 'design';
+  const help = document.getElementById('gCalcModeHelp');
+  if (help instanceof HTMLElement) {
+    help.innerHTML = design
+      ? 'En <strong>diseño</strong> utilice el par o potencia en piñón junto con el chequeo AGMA simplificado para iterar <strong>m</strong> y <strong>b</strong> hasta un uso del material aceptable.'
+      : 'En <strong>diagnóstico</strong> fije <strong>z₁, z₂, m, b</strong> reales del tren instalado y compruebe con la carga de servicio (par o potencia).';
+  }
+}
+
 function refreshCore() {
   const t = gearsRuntimeStrings(getLabLang());
   const u = getLabUnitPrefs();
@@ -397,10 +407,14 @@ const debounced = debounce(() => runCalcWithIndustrialFeedback(resultsWrap, refr
 
 bindLabUnitSelectors(debounced);
 
-['gZ1', 'gZ2', 'gM', 'gFace', 'gAlpha', 'gN1', 'gPower', 'gTorque', 'gLube'].forEach((id) => {
+['gCalcMode', 'gZ1', 'gZ2', 'gM', 'gFace', 'gAlpha', 'gN1', 'gPower', 'gTorque', 'gLube'].forEach((id) => {
   document.getElementById(id)?.addEventListener('input', debounced);
-  document.getElementById(id)?.addEventListener('change', debounced);
+  document.getElementById(id)?.addEventListener('change', () => {
+    if (id === 'gCalcMode') syncGearCalcModeUi();
+    debounced();
+  });
 });
+syncGearCalcModeUi();
 document.getElementById('gCopyResults')?.addEventListener('click', async () => {
   const btn = document.getElementById('gCopyResults');
   if (!(btn instanceof HTMLButtonElement)) return;

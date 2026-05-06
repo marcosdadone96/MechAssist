@@ -25,6 +25,7 @@ import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 
 const pumpInputIds = [
+  'pumpNameplateKw',
   'pumpFlow',
   'pumpHead',
   'pumpEta',
@@ -40,7 +41,7 @@ const pumpInputIds = [
   'pumpFreq',
 ];
 
-const pumpSelectIds = ['pumpFlowUnit', 'fluidType', 'pumpLoadDuty', 'couplingType'];
+const pumpSelectIds = ['pumpCalcMode', 'pumpFlowUnit', 'fluidType', 'pumpLoadDuty', 'couplingType'];
 
 /** @type {Record<string, string>} */
 const FLUID_TYPE_LABEL_EN = Object.freeze({
@@ -63,6 +64,7 @@ const PHYSICAL_LIMITS = Object.freeze({
   dailyHours: { min: 0.5, max: 24 },
   pumpVoltage: { min: 24, max: 15000 },
   pumpFreq: { min: 10, max: 400 },
+  pumpNameplateKw: { min: 0.01, max: 50000 },
 });
 
 function readNum(id, fallback) {
@@ -79,12 +81,20 @@ function readSelect(id, fallback) {
   return v || fallback;
 }
 
+function syncPumpCalcModeUi() {
+  const diag = readSelect('pumpCalcMode', 'design') === 'diagnostic';
+  const row = document.getElementById('pumpNameplateRow');
+  if (row instanceof HTMLElement) row.hidden = !diag;
+}
+
 function readInputs() {
   const premium = isPremiumEffective();
   const duty = /** @type {'uniform'|'moderate'|'heavy'|'custom'} */ (
     readSelect('pumpLoadDuty', 'moderate')
   );
   return {
+    pumpCalcMode: /** @type {'design'|'diagnostic'} */ (readSelect('pumpCalcMode', 'design')),
+    nameplatePower_kW: readNum('pumpNameplateKw', 0),
     flowValue: readNum('pumpFlow', 48),
     flowUnit: /** @type {'m3h'|'lmin'} */ (readSelect('pumpFlowUnit', 'm3h')),
     head_m: readNum('pumpHead', 32),
@@ -693,6 +703,42 @@ function refresh() {
             : `Servicio prolongado (${raw.dailyRunHours} h/día): se ha endurecido el factor de servicio respecto al valor base del tipo de carga.`,
         });
       }
+      if (raw.pumpCalcMode === 'diagnostic' && raw.nameplatePower_kW > 0) {
+        const Pmot = raw.nameplatePower_kW;
+        const Pshaft = r.shaftPower_kW;
+        const Pdes = r.requiredMotorPower_kW;
+        const ratioShaft = Pshaft > 0 ? Pmot / Pshaft : 0;
+        const ratioDes = Pdes > 0 ? Pmot / Pdes : 0;
+        if (ratioDes < 1) {
+          alerts.push({
+            level: 'warn',
+            text: en
+              ? `Diagnostic: nameplate ${formatNum(Pmot, 2)} kW is below design power ${formatNum(Pdes, 2)} kW (shaft × SF). Risk of overload or trip.`
+              : `Diagnóstico: la placa ${formatNum(Pmot, 2)} kW queda por debajo de la potencia de diseño ${formatNum(Pdes, 2)} kW (eje × SF). Riesgo de sobrecarga o disparos.`,
+          });
+        } else if (ratioShaft < 1) {
+          alerts.push({
+            level: 'warn',
+            text: en
+              ? `Diagnostic: nameplate ${formatNum(Pmot, 2)} kW is below shaft power ${formatNum(Pshaft, 2)} kW at this duty point.`
+              : `Diagnóstico: la placa ${formatNum(Pmot, 2)} kW es inferior a la potencia de eje ${formatNum(Pshaft, 2)} kW en este punto (Q, H, η).`,
+          });
+        } else {
+          alerts.push({
+            level: 'info',
+            text: en
+              ? `Diagnostic: nameplate / shaft = ×${formatNum(ratioShaft, 2)}; nameplate / design = ×${formatNum(ratioDes, 2)} (indicative margins).`
+              : `Diagnóstico: placa / P<sub>eje</sub> = ×${formatNum(ratioShaft, 2)}; placa / P<sub>diseño</sub> = ×${formatNum(ratioDes, 2)} (márgenes orientativos).`,
+          });
+        }
+      } else if (raw.pumpCalcMode === 'diagnostic') {
+        alerts.push({
+          level: 'info',
+          text: en
+            ? 'Diagnostic: enter nameplate motor power (kW) to compare against computed shaft and design power.'
+            : 'Diagnóstico: introduzca la potencia de placa del motor (kW) para comparar con P<sub>eje</sub> y P<sub>diseño</sub>.',
+        });
+      }
       els.designAlerts.innerHTML = alerts
         .map((a) => `<p class="design-alert design-alert--${a.level}">${escHtml(a.text)}</p>`)
         .join('');
@@ -882,6 +928,7 @@ pumpSelectIds.forEach((id) => {
   const el = document.getElementById(id);
   if (el instanceof HTMLSelectElement) {
     el.addEventListener('change', () => {
+      if (id === 'pumpCalcMode') syncPumpCalcModeUi();
       if (id === 'fluidType') applyFluidPresetFromSelect();
       if (id === 'pumpLoadDuty') syncLoadDutyUi();
       refresh();
@@ -921,6 +968,7 @@ applyPhysicalLimitsToInputs();
 localizePumpStaticContent();
 patchProInstallTeaserCheckoutLink();
 syncLoadDutyUi();
+syncPumpCalcModeUi();
 initInfoChipPopovers(document.body);
 refresh();
 

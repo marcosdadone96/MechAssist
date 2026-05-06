@@ -36,7 +36,18 @@
           </div>
           <div class="lab-calc-layout__inputs">
             <div class="lab-grid lab-grid--2">
-              <div class="lab-field">
+              <div class="lab-field lab-field--wide">
+                <label for="brgCalcMode">¿Qué desea calcular?</label>
+                <select id="brgCalcMode">
+                  <option value="design">Diseño — vida objetivo y carga P → C mínima de catálogo</option>
+                  <option value="diagnostic" selected>Diagnóstico — C de catálogo → vida L₁₀</option>
+                </select>
+                <p class="lab-field-help">
+                  <strong>Diseño:</strong> conoce la carga equivalente y la vida que exige la aplicación; obtiene la <strong>C</strong> que debe buscar en catálogo.
+                  <strong>Diagnóstico:</strong> tiene el rodamiento instalado (<strong>C</strong> del catálogo) y comprueba <strong>L₁₀</strong>.
+                </p>
+              </div>
+              <div class="lab-field" id="brgFieldC">
                 <label for="brgC" class="lab-field__label-row">
                   <span class="lab-field-ico" title="Carga dinámica de catálogo">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
@@ -49,6 +60,19 @@
                 </label>
                 <input id="brgC" type="number" min="100" value="32500" />
                 <p class="lab-field-help"><strong>Carga dinámica básica C</strong> (N): del catálogo del rodamiento; capacidad para un millón de revoluciones de referencia.</p>
+              </div>
+              <div class="lab-field" id="brgFieldL10Target" hidden>
+                <label for="brgL10TargetH" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Vida objetivo">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M12 7v5l3 3" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">L₁₀ objetivo (horas)</span>
+                </label>
+                <input id="brgL10TargetH" type="number" min="100" step="100" value="20000" />
+                <p class="lab-field-help">Vida básica deseada en <strong>horas</strong> a la velocidad indicada (90% de confiabilidad, modelo simplificado).</p>
               </div>
               <div class="lab-field">
                 <label for="brgP" class="lab-field__label-row">

@@ -63,9 +63,32 @@ function syncAdvancedUi() {
   });
 }
 
+function syncShCalcModeUi() {
+  const diag = readSelect('shCalcMode', 'design') === 'diagnostic';
+  const lbl = document.getElementById('shAvailableDLabel');
+  const dh = document.getElementById('shAvailableDHelp');
+  const th = document.getElementById('shTHelp');
+  if (lbl) {
+    lbl.textContent = diag
+      ? 'Diámetro del eje instalado (mm)'
+      : 'Diámetro disponible / comercial (mm)';
+  }
+  if (dh) {
+    dh.textContent = diag
+      ? 'Medida real de la sección resistente en el tramo analizado (sin filetear ni muescas).'
+      : 'Para comprobar que un diámetro de compra o normalizado cubre el mínimo analítico.';
+  }
+  if (th) {
+    th.textContent = diag
+      ? 'Par de trabajo que aplica la transmisión sobre este eje (N·m).'
+      : 'Par torsor de diseño que debe transmitir el eje (N·m). Entra en τ = 16T/(πd³) para sección circular maciza.';
+  }
+}
+
 function refreshCore() {
   const u = getLabUnitPrefs();
   const validationMsgs = [];
+  const mode = readSelect('shCalcMode', 'design');
   const tRaw = parseNumberInput('shT').value;
   const tauRaw = parseNumberInput('shTau').value;
   const mRaw = parseNumberInput('shM').value;
@@ -96,21 +119,43 @@ function refreshCore() {
   const Kt = useBending ? read('shKt', 1.0) : 1.0;
   const dAvail_mm = read('shAvailableD', 40);
   const tauAllow_Pa = tauAllow_MPa * 1e6;
-  const baseVm = Math.sqrt((32 * M) ** 2 + 3 * (16 * T) ** 2);
-  const baseTresca = 16 * Math.sqrt(M ** 2 + T ** 2);
-  const d_m =
-    criterion === 'tresca'
-      ? Math.pow((Kt * baseTresca) / (Math.PI * tauAllow_Pa), 1 / 3)
-      : Math.pow((Kt * baseVm) / (Math.PI * Math.sqrt(3) * tauAllow_Pa), 1 / 3);
-  const diameter_min_mm = d_m * 1000;
-  const tauTor_MPa = d_m > 0 ? (Kt * 16 * T) / (Math.PI * d_m ** 3) / 1e6 : 0;
-  const sigmaBend_MPa = d_m > 0 ? (Kt * 32 * M) / (Math.PI * d_m ** 3) / 1e6 : 0;
-  const sigmaEq_MPa =
-    criterion === 'tresca'
-      ? 2 * Math.sqrt((sigmaBend_MPa / 2) ** 2 + tauTor_MPa ** 2)
-      : Math.sqrt(sigmaBend_MPa ** 2 + 3 * tauTor_MPa ** 2);
   const sigmaAllow_MPa = Math.sqrt(3) * tauAllow_MPa;
-  const fitOk = dAvail_mm >= diameter_min_mm;
+
+  let diameter_min_mm;
+  let tauTor_MPa;
+  let sigmaBend_MPa;
+  let sigmaEq_MPa;
+  let fitOk;
+  let diagUtil = null;
+
+  if (mode === 'diagnostic') {
+    const d_m = dAvail_mm / 1000;
+    tauTor_MPa = d_m > 0 ? (Kt * 16 * T) / (Math.PI * d_m ** 3) / 1e6 : 0;
+    sigmaBend_MPa = d_m > 0 ? (Kt * 32 * M) / (Math.PI * d_m ** 3) / 1e6 : 0;
+    sigmaEq_MPa =
+      criterion === 'tresca'
+        ? 2 * Math.sqrt((sigmaBend_MPa / 2) ** 2 + tauTor_MPa ** 2)
+        : Math.sqrt(sigmaBend_MPa ** 2 + 3 * tauTor_MPa ** 2);
+    diagUtil = useBending ? sigmaEq_MPa / sigmaAllow_MPa : tauTor_MPa / tauAllow_MPa;
+    fitOk = diagUtil <= 1;
+    diameter_min_mm = dAvail_mm;
+  } else {
+    const baseVm = Math.sqrt((32 * M) ** 2 + 3 * (16 * T) ** 2);
+    const baseTresca = 16 * Math.sqrt(M ** 2 + T ** 2);
+    const d_m =
+      criterion === 'tresca'
+        ? Math.pow((Kt * baseTresca) / (Math.PI * tauAllow_Pa), 1 / 3)
+        : Math.pow((Kt * baseVm) / (Math.PI * Math.sqrt(3) * tauAllow_Pa), 1 / 3);
+    diameter_min_mm = d_m * 1000;
+    tauTor_MPa = d_m > 0 ? (Kt * 16 * T) / (Math.PI * d_m ** 3) / 1e6 : 0;
+    sigmaBend_MPa = d_m > 0 ? (Kt * 32 * M) / (Math.PI * d_m ** 3) / 1e6 : 0;
+    sigmaEq_MPa =
+      criterion === 'tresca'
+        ? 2 * Math.sqrt((sigmaBend_MPa / 2) ** 2 + tauTor_MPa ** 2)
+        : Math.sqrt(sigmaBend_MPa ** 2 + 3 * tauTor_MPa ** 2);
+    fitOk = dAvail_mm >= diameter_min_mm;
+  }
+
   const r = {
     torque_Nm: T,
     tauAllow_MPa,
@@ -120,68 +165,135 @@ function refreshCore() {
 
   const heroEl = document.getElementById('shHero');
   if (heroEl) {
-    heroEl.innerHTML = renderResultHero([
-      {
-        label: 'Diámetro mínimo (macizo)',
-        display: formatLength(r.diameter_min_mm, u.length),
-        hint: useBending ? 'Combinado T+M con Kt.' : 'Torsión pura; valide chaveteros, fatiga y medida comercial.',
-      },
-      {
-        label: useBending ? 'σeq en diámetro mínimo' : 'Tensión a ese diámetro',
-        display: useBending ? `${sigmaEq_MPa.toFixed(2)} MPa` : `${r.tauAtMinDiameter_MPa.toFixed(2)} MPa`,
-        hint: useBending
-          ? `${criterion === 'tresca' ? 'Tresca' : 'Von Mises'} con Kt = ${Kt.toFixed(2)}.`
-          : `Comparar con su τ adm = ${r.tauAllow_MPa.toFixed(2)} MPa.`,
-      },
-    ]);
+    const heroItems =
+      mode === 'diagnostic'
+        ? [
+            {
+              label: useBending ? 'Utilización σeq / σadm' : 'Utilización τ / τadm',
+              display:
+                diagUtil != null && Number.isFinite(diagUtil)
+                  ? `${(diagUtil * 100).toFixed(1)} %`
+                  : '—',
+              hint:
+                diagUtil != null && Number.isFinite(diagUtil)
+                  ? `FS nominal ≈ ${(1 / diagUtil).toFixed(2)} (modelo estático simplificado).`
+                  : '—',
+            },
+            {
+              label: useBending ? 'σeq en eje instalado' : 'τ en eje instalado',
+              display: useBending ? `${sigmaEq_MPa.toFixed(2)} MPa` : `${tauTor_MPa.toFixed(2)} MPa`,
+              hint: `Diámetro fijo ${dAvail_mm.toFixed(2)} mm · ${criterion === 'tresca' ? 'Tresca' : 'Von Mises'}.`,
+            },
+          ]
+        : [
+            {
+              label: 'Diámetro mínimo (macizo)',
+              display: formatLength(r.diameter_min_mm, u.length),
+              hint: useBending ? 'Combinado T+M con Kt.' : 'Torsión pura; valide chaveteros, fatiga y medida comercial.',
+            },
+            {
+              label: useBending ? 'σeq en diámetro mínimo' : 'Tensión a ese diámetro',
+              display: useBending ? `${sigmaEq_MPa.toFixed(2)} MPa` : `${r.tauAtMinDiameter_MPa.toFixed(2)} MPa`,
+              hint: useBending
+                ? `${criterion === 'tresca' ? 'Tresca' : 'Von Mises'} con Kt = ${Kt.toFixed(2)}.`
+                : `Comparar con su τ adm = ${r.tauAllow_MPa.toFixed(2)} MPa.`,
+            },
+          ];
+    heroEl.innerHTML = renderResultHero(heroItems);
   }
 
   const fitVerdict = document.getElementById('shFitVerdict');
   if (fitVerdict) {
-    fitVerdict.innerHTML = `<div class="lab-verdict ${fitOk ? 'lab-verdict--ok' : 'lab-verdict--err'}">
+    fitVerdict.innerHTML =
+      mode === 'diagnostic'
+        ? `<div class="lab-verdict ${fitOk ? 'lab-verdict--ok' : 'lab-verdict--err'}">
+      Veredicto eje instalado: <strong>${fitOk ? 'APTO' : 'REVISAR'}</strong> · d = ${dAvail_mm.toFixed(2)} mm
+      ${diagUtil != null && Number.isFinite(diagUtil) ? `· utilización ${(diagUtil * 100).toFixed(1)} %` : ''}.
+    </div>`
+        : `<div class="lab-verdict ${fitOk ? 'lab-verdict--ok' : 'lab-verdict--err'}">
       Veredicto de diámetro disponible: <strong>${fitOk ? 'APTO' : 'INSUFICIENTE'}</strong> · requerido ≈ ${diameter_min_mm.toFixed(2)} mm, disponible = ${dAvail_mm.toFixed(2)} mm.
     </div>`;
   }
 
   const box = document.getElementById('shResults');
   if (box) {
-    box.innerHTML = [
-      metricHtml(
-        'Diámetro mínimo',
-        formatLength(r.diameter_min_mm, u.length),
-        'A partir de τ = 16T/(πd³); sin muescas ni concentradores.',
-      ),
-      metricHtml(
-        'Tensión tangencial calculada',
-        `${r.tauAtMinDiameter_MPa.toFixed(2)} MPa`,
-        'Debería igualar τ adm si el cierre analítico es coherente.',
-      ),
-      metricHtml(
-        'Modo de cálculo',
-        useBending ? `Avanzado · ${criterion === 'tresca' ? 'Tresca' : 'Von Mises'} · Kt = ${Kt.toFixed(2)}` : 'Básico · torsión pura',
-        'El modo avanzado combina flexión y torsión.',
-      ),
-      metricHtml(
-        'Momento flector M',
-        `${M.toFixed(2)} N·m`,
-        'Solo aplica en modo avanzado.',
-      ),
-      metricHtml(
-        'σ flexión en diámetro mínimo',
-        `${sigmaBend_MPa.toFixed(2)} MPa`,
-        'Con Kt aplicado.',
-      ),
-      metricHtml(
-        'σ equivalente',
-        `${sigmaEq_MPa.toFixed(2)} MPa`,
-        useBending ? 'Comparar contra límite admisible del criterio elegido.' : 'En básico coincide con torsión equivalente.',
-      ),
-      metricHtml(
-        'Tensión admisible (entrada)',
-        `${r.tauAllow_MPa.toFixed(2)} MPa`,
-        'Criterio suyo según material y norma.',
-      ),
-    ].join('');
+    const rows =
+      mode === 'diagnostic'
+        ? [
+            metricHtml(
+              'Diámetro analizado',
+              formatLength(dAvail_mm, u.length),
+              'Geometría instalada introducida por el usuario.',
+            ),
+            metricHtml(
+              useBending ? 'σ equivalente' : 'Tensión tangencial τ',
+              useBending ? `${sigmaEq_MPa.toFixed(2)} MPa` : `${tauTor_MPa.toFixed(2)} MPa`,
+              useBending ? `Límite ref. σadm = ${sigmaAllow_MPa.toFixed(2)} MPa.` : `Comparar con τadm = ${tauAllow_MPa.toFixed(2)} MPa.`,
+            ),
+            metricHtml(
+              'Utilización',
+              diagUtil != null && Number.isFinite(diagUtil) ? `${(diagUtil * 100).toFixed(1)} %` : '—',
+              'Modelo estático; no sustituye fatiga ni velocidad crítica.',
+            ),
+            metricHtml(
+              'Modo de cálculo',
+              useBending ? `Avanzado · ${criterion === 'tresca' ? 'Tresca' : 'Von Mises'} · Kt = ${Kt.toFixed(2)}` : 'Básico · torsión pura',
+              'Diagnóstico con diámetro fijo.',
+            ),
+            metricHtml(
+              'Momento flector M',
+              `${M.toFixed(2)} N·m`,
+              'Solo aplica en modo avanzado.',
+            ),
+            metricHtml(
+              'σ flexión',
+              `${sigmaBend_MPa.toFixed(2)} MPa`,
+              'Con Kt aplicado.',
+            ),
+            metricHtml(
+              'Tensión admisible τ (entrada)',
+              `${r.tauAllow_MPa.toFixed(2)} MPa`,
+              'Criterio suyo según material y norma.',
+            ),
+          ]
+        : [
+            metricHtml(
+              'Diámetro mínimo',
+              formatLength(r.diameter_min_mm, u.length),
+              'A partir de τ = 16T/(πd³); sin muescas ni concentradores.',
+            ),
+            metricHtml(
+              'Tensión tangencial calculada',
+              `${r.tauAtMinDiameter_MPa.toFixed(2)} MPa`,
+              'Debería igualar τ adm si el cierre analítico es coherente.',
+            ),
+            metricHtml(
+              'Modo de cálculo',
+              useBending ? `Avanzado · ${criterion === 'tresca' ? 'Tresca' : 'Von Mises'} · Kt = ${Kt.toFixed(2)}` : 'Básico · torsión pura',
+              'El modo avanzado combina flexión y torsión.',
+            ),
+            metricHtml(
+              'Momento flector M',
+              `${M.toFixed(2)} N·m`,
+              'Solo aplica en modo avanzado.',
+            ),
+            metricHtml(
+              'σ flexión en diámetro mínimo',
+              `${sigmaBend_MPa.toFixed(2)} MPa`,
+              'Con Kt aplicado.',
+            ),
+            metricHtml(
+              'σ equivalente',
+              `${sigmaEq_MPa.toFixed(2)} MPa`,
+              useBending ? 'Comparar contra límite admisible del criterio elegido.' : 'En básico coincide con torsión equivalente.',
+            ),
+            metricHtml(
+              'Tensión admisible (entrada)',
+              `${r.tauAllow_MPa.toFixed(2)} MPa`,
+              'Criterio suyo según material y norma.',
+            ),
+          ];
+    box.innerHTML = rows.join('');
   }
   const alerts = document.getElementById('shAlerts');
   if (alerts) {
@@ -191,24 +303,36 @@ function refreshCore() {
         level: validationMsgs.length ? 'danger' : !fitOk ? 'warn' : 'ok',
         titleEs: validationMsgs.length
           ? 'Resumen ejecutivo: revisar entradas antes de validar diámetro.'
-          : !fitOk
-            ? 'Resumen ejecutivo: el diámetro disponible no alcanza el mínimo calculado.'
-            : 'Resumen ejecutivo: diámetro mínimo calculado y verificado contra disponible.',
+          : mode === 'diagnostic' && !fitOk
+            ? 'Resumen ejecutivo: el eje instalado supera el criterio admisible con la carga indicada.'
+            : mode === 'diagnostic' && fitOk
+              ? 'Resumen ejecutivo: tensiones coherentes con el diámetro instalado (modelo estático).'
+              : !fitOk
+                ? 'Resumen ejecutivo: el diámetro disponible no alcanza el mínimo calculado.'
+                : 'Resumen ejecutivo: diámetro mínimo calculado y verificado contra disponible.',
         titleEn: validationMsgs.length
           ? 'Executive summary: review inputs before validating diameter.'
-          : !fitOk
-            ? 'Executive summary: available diameter is below required minimum.'
-            : 'Executive summary: minimum diameter calculated and checked against available size.',
+          : mode === 'diagnostic' && !fitOk
+            ? 'Executive summary: installed shaft exceeds allowable criterion at stated load.'
+            : mode === 'diagnostic' && fitOk
+              ? 'Executive summary: stresses are consistent with installed diameter (static model).'
+              : !fitOk
+                ? 'Executive summary: available diameter is below required minimum.'
+                : 'Executive summary: minimum diameter calculated and checked against available size.',
         actionsEs: validationMsgs.length
           ? ['Corregir campos en rojo.', 'Recalcular para emitir recomendación de compra.']
-          : !fitOk
-            ? ['Aumentar diámetro disponible o reducir cargas.', 'Revisar Kt y criterio para cierre de diseño.']
-            : ['Añadir margen comercial de diámetro.', 'Comprobar chavetero, fatiga y concentradores.'],
+          : mode === 'diagnostic' && !fitOk
+            ? ['Aumentar diámetro, reducir T o M, o revisar material (τadm).', 'Comprobar concentradores con Kt.']
+            : !fitOk
+              ? ['Aumentar diámetro disponible o reducir cargas.', 'Revisar Kt y criterio para cierre de diseño.']
+              : ['Añadir margen comercial de diámetro.', 'Comprobar chavetero, fatiga y concentradores.'],
         actionsEn: validationMsgs.length
           ? ['Fix fields marked in red.', 'Recalculate before issuing purchase guidance.']
-          : !fitOk
-            ? ['Increase available diameter or reduce loads.', 'Review Kt and criterion before release.']
-            : ['Add commercial diameter margin.', 'Check keyway, fatigue, and stress raisers.'],
+          : mode === 'diagnostic' && !fitOk
+            ? ['Increase diameter, reduce T or M, or review material (tau adm).', 'Review stress concentrations with Kt.']
+            : !fitOk
+              ? ['Increase available diameter or reduce loads.', 'Review Kt and criterion before release.']
+              : ['Add commercial diameter margin.', 'Check keyway, fatigue, and stress raisers.'],
       }),
     );
     validationMsgs.forEach((msg) => parts.push(labAlert('danger', msg)));
@@ -221,7 +345,7 @@ function refreshCore() {
             : 'Dimensionado en modo básico (torsión pura).',
         ),
       );
-      if (diameter_min_mm < 15) {
+      if (mode === 'design' && diameter_min_mm < 15) {
         parts.push(
           labAlert(
             'warn',
@@ -239,16 +363,20 @@ function refreshCore() {
     alerts.innerHTML = parts.join('');
   }
   renderShaftTorsionDiagram(document.getElementById('shDiagram'), {
-    diameter_mm: r.diameter_min_mm,
+    diameter_mm: mode === 'diagnostic' ? dAvail_mm : r.diameter_min_mm,
     showBending: useBending,
     moment_Nm: M,
   });
 
+  const shopD = mode === 'diagnostic' ? dAvail_mm : r.diameter_min_mm;
   const shoppingLines = [
     {
       commerceId: 'shaft-turned-quote',
       qty: 1,
-      note: `dₘᵢₙ macizo ≈ ${r.diameter_min_mm.toFixed(2)} mm · τ = ${r.tauAtMinDiameter_MPa.toFixed(1)} MPa`,
+      note:
+        mode === 'diagnostic'
+          ? `d instalado ${shopD.toFixed(2)} mm · util. ${diagUtil != null ? `${(diagUtil * 100).toFixed(0)} %` : '—'}`
+          : `dₘᵢₙ macizo ≈ ${r.diameter_min_mm.toFixed(2)} mm · τ = ${r.tauAtMinDiameter_MPa.toFixed(1)} MPa`,
     },
   ];
   emitEngineeringSnapshot({
@@ -264,7 +392,7 @@ function refreshCore() {
   setLabPurchaseFromShoppingLines(document.getElementById('labPurchaseSuggestions'), shoppingLines, [
     {
       label: 'Barra acero torno',
-      searchQuery: `barra redonda acero ${Math.ceil(r.diameter_min_mm)} mm`,
+      searchQuery: `barra redonda acero ${Math.ceil(shopD)} mm`,
     },
   ]);
 }
@@ -272,9 +400,12 @@ function refreshCore() {
 const wrap = document.getElementById('shResultsWrap');
 const debounced = debounce(() => runCalcWithIndustrialFeedback(wrap, refreshCore), 55);
 bindLabUnitSelectors(debounced);
-['shT', 'shTau', 'shM', 'shKt', 'shCriterion', 'shUseBending', 'shAvailableD'].forEach((id) => {
+['shCalcMode', 'shT', 'shTau', 'shM', 'shKt', 'shCriterion', 'shUseBending', 'shAvailableD'].forEach((id) => {
   document.getElementById(id)?.addEventListener('input', debounced);
-  document.getElementById(id)?.addEventListener('change', debounced);
+  document.getElementById(id)?.addEventListener('change', () => {
+    if (id === 'shCalcMode') syncShCalcModeUi();
+    debounced();
+  });
 });
 document.getElementById('shUseBending')?.addEventListener('change', () => {
   syncAdvancedUi();
@@ -291,4 +422,5 @@ document.querySelectorAll('#shTauChips [data-tau]').forEach((btn) => {
   });
 });
 syncAdvancedUi();
+syncShCalcModeUi();
 runCalcWithIndustrialFeedback(wrap, refreshCore);

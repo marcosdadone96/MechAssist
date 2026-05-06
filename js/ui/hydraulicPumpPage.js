@@ -1,7 +1,7 @@
 /**
- * Modulo avanzado oleohidraulico:
- * - Bomba hidraulica (power input)
- * - Dimensionamiento de tuberias (Reynolds + Darcy)
+ * Módulo avanzado oleohidráulico:
+ * - Bomba hidráulica (potencia absorbida)
+ * - Dimensionamiento de tuberías (Reynolds + Darcy)
  * - Veredicto integral
  */
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
@@ -20,25 +20,25 @@ const LANG = (() => {
 })();
 const TXT = {
   es: {
-    title: 'Power Input - Bomba Hidraulica y Conducciones',
-    lead: 'Modulo avanzado para analisis de bomba y lineas oleohidraulicas, con asesor IA de cavitacion, perdida de carga y criterio final de seguridad/eficiencia.',
+    title: 'Bomba Hidráulica — potencia y conducciones',
+    lead: 'Módulo avanzado para análisis de bomba y líneas oleohidráulicas, con asesor IA de cavitación, pérdida de carga y criterio final de seguridad y eficiencia.',
     verdictOk: 'SISTEMA APTO',
     mType: 'Tipo de bomba',
-    mPressure: 'Presion operacion',
-    mQTheo: 'Caudal teorico',
+    mPressure: 'Presión de operación',
+    mQTheo: 'Caudal teórico',
     mQReal: 'Caudal real',
     mPower: 'Potencia absorbida',
     mTorque: 'Torque eje',
-    mDiaS: 'Diametro succion',
-    mDiaL: 'Diametro linea actual',
+    mDiaS: 'Diámetro succión',
+    mDiaL: 'Diámetro línea actual',
     mVIn: 'Velocidad en conexion bomba',
     mVLine: 'Velocidad en tuberia',
     mRe: 'Numero de Reynolds',
     mF: 'Factor friccion',
-    mDp: 'Perdida de carga',
+    mDp: 'Pérdida de carga',
     mRange: 'Rango recomendado velocidad',
     mNpsh: 'Carga neta entrada (indicador)',
-    mNpshFoot: 'Patm + rho g z - dP linea; NPSHa indicativa',
+    mNpshFoot: 'Patm + ρ g z − ΔP línea; NPSHa indicativa',
     mSug: 'Diametro sugerido',
     mMotor: 'Potencia motor recomendada',
   },
@@ -74,81 +74,128 @@ function tr(k, vars = {}) {
 function applyStaticI18n() {
   document.documentElement.setAttribute('lang', LANG);
   if (LANG !== 'en') return;
-  document.title = 'Hydraulic Power Input - MechAssist';
+  document.title = 'Hydraulic Pump — MechAssist';
   const map = {
     Inicio: 'Home',
     Laboratorio: 'Laboratory',
     'Lienzo Pro': 'Pro canvas',
-    'Power Input - Bomba Hidraulica y Conducciones': 'Power Input - Hydraulic Pump and Piping',
-    'Modulo avanzado para analisis de bomba y lineas oleohidraulicas, con asesor IA de cavitacion, perdida de carga y criterio final de seguridad/eficiencia.':
-      'Advanced module for hydraulic pump and piping analysis, with AI advisor for cavitation, pressure drop and final safety/efficiency verdict.',
-    'Como obtener datos clave:': 'How to obtain key data:',
-    '1) Bomba hidraulica - corte de engranajes externos': '1) Hydraulic pump - external gear cross-section',
-    '2) Conducciones - mapa de perdida de carga': '2) Piping - pressure loss map',
+    'Bomba Hidráulica · Potencia y conducciones oleohidráulicas': 'Hydraulic pump · Power and oleohydraulic piping',
+    'Módulo avanzado para análisis de bomba y líneas oleohidráulicas, con asesor IA de cavitación, pérdida de carga y criterio final de seguridad y eficiencia.':
+      'Advanced module for pump and hydraulic line analysis, with AI advisor for cavitation, head loss and a final safety and efficiency verdict.',
+    'Cómo obtener datos clave:': 'How to obtain key data:',
+    '1) Bomba hidráulica — corte esquemático': '1) Hydraulic pump — schematic cross-section',
+    '2) Conducciones — mapa de pérdida de carga': '2) Piping — head loss map',
+    'Nivel de detalle memoria': 'Memory detail level',
+    'Aula (básico)': 'Classroom (basic)',
+    'Proyecto (NPSH + cota depósito)': 'Project (NPSH + tank elevation)',
+    'Pro · Avanzado': 'Pro · Advanced',
+    'Memoria y PDF ampliados en modo Proyecto': 'Expanded memory and PDF in Project mode',
+    'Proyecto incluye cota del depósito sobre la bomba, NPSHr de placa y trazabilidad de NPSHa indicativa.':
+      'Project mode includes tank elevation above the pump, nameplate NPSHr and indicative NPSHa traceability.',
+    '¿Qué quiere calcular?': 'What do you want to calculate?',
+    'Diseñar nueva máquina': 'Design new machine',
+    'Diagnosticar máquina existente': 'Diagnose existing machine',
+    'Modo objetivo del cálculo': 'Calculation objective mode',
+    'Diseño: objetivo de rendimiento y verificación integral. Diagnóstico: se calcula caudal real desde desplazamiento y RPM.':
+      'Design: performance target and full verification. Diagnostic: real flow from displacement and RPM.',
+    '① Bomba hidráulica': '① Hydraulic pump',
+    'Presión de trabajo, RPM, desplazamiento, tipo de bomba y diámetro de succión a la bomba.':
+      'Working pressure, RPM, displacement, pump type and suction diameter at the pump.',
     'Tipo de bomba': 'Pump type',
     'Engranajes': 'Gear',
     Paletas: 'Vane',
     Pistones: 'Piston',
-    'Unidad de presion': 'Pressure unit',
-    'Presion de trabajo': 'Working pressure',
-    'Presion efectiva de operacion': 'Effective operating pressure',
-    'Se usa para potencia hidraulica, potencia absorbida y validacion contra limites tipicos de la tecnologia seleccionada.':
-      'Used for hydraulic power, absorbed power and validation against typical limits of selected technology.',
+    'Define rendimiento y límite de presión': 'Sets efficiency and pressure limit',
+    'Cada tecnología tiene eficiencia volumétrica y mecánica y rango de presión distintos para la evaluación de seguridad.':
+      'Each technology has distinct volumetric and mechanical efficiency and pressure range for safety evaluation.',
+    'Unidad de presión': 'Pressure unit',
+    'Presión de trabajo': 'Working pressure',
+    'Presión efectiva de operación': 'Effective operating pressure',
+    'Indicador respecto al rango típico del tipo de bomba seleccionado (orientativo).':
+      'Indicator vs typical range for the selected pump type (guidance only).',
+    'Se usa para potencia hidráulica, potencia absorbida y validación contra límites típicos de la tecnología seleccionada.':
+      'Used for hydraulic power, absorbed power and checks against typical limits of the selected technology.',
     'RPM motor': 'Motor RPM',
     'Velocidad del eje primario': 'Primary shaft speed',
-    'Con el desplazamiento define el caudal teorico de bomba y el par requerido en el eje.':
+    'Con el desplazamiento define el caudal teórico de bomba y el par requerido en el eje.':
       'Together with displacement, defines theoretical pump flow and required shaft torque.',
-    'Desplazamiento (cm3/rev)': 'Displacement (cm3/rev)',
+    'Desplazamiento (cm³/rev)': 'Displacement (cm³/rev)',
     'Volumen por vuelta': 'Volume per revolution',
-    'Determina el caudal teorico Qteo = D x n; el caudal real incorpora eficiencia volumetrica.':
-      'Defines theoretical flow Qtheo = D x n; real flow includes volumetric efficiency.',
-    'Diametro de succion (in)': 'Suction diameter (in)',
-    'Critico para cavitacion': 'Critical for cavitation',
-    'Ingrese en pulgadas nominales. El sistema muestra tambien el equivalente en mm entre parentesis para trazabilidad.':
-      'Enter nominal inches. The system also shows mm equivalent in parentheses for traceability.',
-    'Tipo de linea': 'Line type',
-    Aspiracion: 'Suction',
-    Presion: 'Pressure',
+    'Determina el caudal teórico Qteo = D×n; el caudal real incorpora eficiencia volumétrica.':
+      'Defines theoretical flow Qₜₑₒ = D×n; real flow includes volumetric efficiency.',
+    'Diámetro de succión a bomba': 'Suction diameter at pump',
+    pulgadas: 'inches',
+    'Crítico para cavitación en succión': 'Critical for suction cavitation',
+    'El mismo selector de unidad aplica al diámetro de tubería en el bloque de conducciones.':
+      'The same unit selector applies to line diameter in the piping block.',
+    'Actualizar bomba y resultados': 'Update pump and results',
+    '② Conducciones — mapa de pérdida de carga': '② Piping — head loss map',
+    'Tipo de línea, caudal en conducción, viscosidad, longitud, diámetro interior, codos y válvulas.':
+      'Line type, line flow, viscosity, length, inner diameter, elbows and valves.',
+    'Tipo de línea': 'Line type',
+    Succión: 'Suction',
+    Presión: 'Pressure',
     Retorno: 'Return',
     'Cambia rango recomendado de velocidad': 'Changes recommended speed range',
-    'Rangos usados: aspiracion 0.5-1.2 m/s, presion 3-7 m/s, retorno 2-4 m/s.':
-      'Used ranges: suction 0.5-1.2 m/s, pressure 3-7 m/s, return 2-4 m/s.',
+    'Rangos usados: succión 0,5–1,2 m/s, presión 3–7 m/s, retorno 2–4 m/s.':
+      'Used ranges: suction 0.5–1.2 m/s, pressure 3–7 m/s, return 2–4 m/s.',
     'Caudal (L/min)': 'Flow (L/min)',
-    'Caudal en conduccion': 'Flow in line',
-    'Con diametro interno permite obtener velocidad de fluido y numero de Reynolds para clasificacion del flujo.':
-      'With inner diameter, it gives fluid velocity and Reynolds number for flow classification.',
-    'Viscosidad cinematica (cSt)': 'Kinematic viscosity (cSt)',
-    'Afecta Reynolds y friccion': 'Affects Reynolds and friction',
-    'Se convierte a m2/s para calcular Reynolds y el factor de friccion dentro de Darcy-Weisbach.':
-      'Converted to m2/s to calculate Reynolds and friction factor in Darcy-Weisbach.',
-    'Longitud de linea (m)': 'Line length (m)',
-    'Perdida lineal principal': 'Main linear loss',
-    'Incrementa la perdida de carga proporcionalmente en el termino f*(L/D) de Darcy-Weisbach.':
-      'Increases pressure loss proportionally in Darcy-Weisbach f*(L/D) term.',
-    'Diametro interior actual (in)': 'Current inner diameter (in)',
-    'Variable clave de optimizacion': 'Key optimization variable',
-    'Use nomenclatura hidraulica en pulgadas (ej. 3/4, 1, 1 1/4). Se convierte a mm para las ecuaciones de fluidos.':
-      'Use hydraulic inch nomenclature (e.g., 3/4, 1, 1 1/4). Converted to mm for fluid equations.',
-    'Numero de codos': 'Number of elbows',
-    'Perdidas menores por cambios de direccion': 'Minor losses by direction changes',
-    'Cada codo agrega perdidas singulares al balance de energia, aumentando la caida de presion total.':
-      'Each elbow adds minor losses to energy balance, increasing total pressure drop.',
-    'Numero de valvulas': 'Number of valves',
-    'Perdidas menores localizadas': 'Localized minor losses',
-    'Se suman como coeficientes K para calcular perdida localizada adicional en la linea.':
-      'Added as K coefficients to calculate additional localized line loss.',
+    'Caudal en conducción': 'Flow in line',
+    'Con diámetro interior permite obtener velocidad de fluido y número de Reynolds para la clasificación del flujo.':
+      'With inner diameter, yields fluid velocity and Reynolds number for flow classification.',
+    'Viscosidad cinemática (cSt)': 'Kinematic viscosity (cSt)',
+    'Afecta Reynolds y fricción': 'Affects Reynolds and friction',
+    'Se convierte a m²/s para calcular Reynolds y el factor de fricción en Darcy-Weisbach.':
+      'Converted to m²/s to compute Reynolds and the Darcy–Weisbach friction factor.',
+    'Aceite ISO VG': 'ISO VG oil',
+    'ν a 40 °C (cSt)': 'ν at 40 °C (cSt)',
+    'Uso típico': 'Typical use',
+    'Sistemas de alta velocidad': 'High-speed systems',
+    'Uso general industrial': 'General industrial use',
+    'Sistemas de alta presión': 'High-pressure systems',
+    'Temperatura elevada / exterior': 'High temperature / outdoor',
+    'Longitud de línea (m)': 'Line length (m)',
+    'Pérdida lineal principal': 'Main linear head loss',
+    'Incrementa la pérdida de carga proporcionalmente en el término f·(L/D) de Darcy-Weisbach.':
+      'Increases head loss proportionally in the Darcy–Weisbach f·(L/D) term.',
+    'Diámetro interior actual': 'Current inner diameter',
+    'Variable clave de optimización': 'Key optimization variable',
+    'Use nomenclatura hidráulica en pulgadas nominales; con el conmutador mm se muestran equivalentes comunes.':
+      'Use nominal hydraulic inches; the mm switch shows common metric equivalents.',
+    'Número de codos': 'Number of elbows',
+    'Pérdidas menores por cambios de dirección': 'Minor losses from direction changes',
+    'Cada codo añade pérdidas singulares al balance de energía, aumentando la caída de presión total.':
+      'Each elbow adds singular losses to the energy balance, increasing total pressure drop.',
+    'Número de válvulas': 'Number of valves',
+    'Pérdidas menores localizadas': 'Localized minor losses',
+    'Se suman como coeficientes K para calcular pérdida localizada adicional en la línea.':
+      'Summed as K coefficients for additional localized line loss.',
+    'Actualizar conducciones y resultados': 'Update piping and results',
+    'Memoria de cálculo, fórmulas y supuestos': 'Calculation memory, formulas and assumptions',
     'SISTEMA APTO': 'SYSTEM SUITABLE',
+    'Cota líquido sobre entrada bomba z (m)': 'Liquid level above pump inlet z (m)',
+    'Positivo si el nivel está por encima': 'Positive if level is above',
+    'NPSHr bomba (m) — placa': 'Pump NPSHr (m) — nameplate',
+    '0 si no se conoce': '0 if unknown',
+    'Temperatura aceite (°C)': 'Oil temperature (°C)',
+    'Trazabilidad; Pv fija simplificada en módulo': 'Traceability; simplified fixed Pv in module',
   };
-  document.querySelectorAll('label, span.hint, p.lab-field-help, p.lab-diagram-wrap__title, h2, p.lab-lead, nav a, option, #hpVerdict').forEach((el) => {
+  document.querySelectorAll(
+    'label, span.hint, p.lab-field-help, p.lab-diagram-wrap__title, h2, p.lab-lead, h3, p.hp-block__sub, nav a, option, #hpVerdict, .hp-vg-table th, .hp-vg-table td, summary, button.hp-dia-unit__btn',
+  ).forEach((el) => {
     const raw = (el.textContent || '').trim();
     if (map[raw]) el.textContent = map[raw];
   });
-  const infoStrong = document.querySelector('.lab-alert--info .lab-alert__body strong');
-  if (infoStrong) infoStrong.textContent = 'How to obtain key data:';
+  const infoBody = document.querySelector('.lab-alert--info .lab-alert__body');
+  if (infoBody) {
+    infoBody.innerHTML =
+      '<strong>How to obtain key data:</strong> <strong>Kinematic viscosity (cSt)</strong> comes from the oil datasheet (typically at 40 °C and 100 °C, ISO VG), and '
+      + '<strong>displacement (cm³/rev)</strong> is on the pump nameplate or datasheet. If missing, estimate with <strong>D = (Q×1000)/n</strong>.';
+  }
   const hpDiag = document.getElementById('hpDiagram');
-  if (hpDiag) hpDiag.setAttribute('aria-label', 'Hydraulic pump cross-section diagram');
+  if (hpDiag) hpDiag.setAttribute('aria-label', 'Hydraulic pump schematic cross-section by pump type');
   const pipeDiag = document.getElementById('hpPipeDiagram');
-  if (pipeDiag) pipeDiag.setAttribute('aria-label', 'Piping diagram with pressure-loss gradient');
+  if (pipeDiag) pipeDiag.setAttribute('aria-label', 'Piping diagram with head-loss gradient');
 }
 
 const RHO_OIL = 860; // kg/m3
@@ -158,10 +205,99 @@ const DIA_STD_MM = [12, 16, 20, 25, 32, 40, 50, 65, 80, 100];
 const P_ATM_BAR = 1.013;
 const P_VAP_BAR = 0.01;
 
+/**
+ * Rangos orientativos: presión típica / máxima (bar) por tecnología.
+ * @param {'gear'|'vane'|'piston'} type
+ */
 function getPumpPreset(type) {
-  if (type === 'piston') return { etaV: 0.95, etaM: 0.91, maxPressureBar: 420, label: 'Pistones' };
-  if (type === 'vane') return { etaV: 0.92, etaM: 0.88, maxPressureBar: 210, label: 'Paletas' };
-  return { etaV: 0.9, etaM: 0.85, maxPressureBar: 250, label: 'Engranajes' };
+  if (type === 'piston') {
+    return { etaV: 0.95, etaM: 0.91, typicalPressureBar: 350, maxPressureBar: 420, label: 'Pistones', key: 'piston' };
+  }
+  if (type === 'vane') {
+    return { etaV: 0.92, etaM: 0.88, typicalPressureBar: 160, maxPressureBar: 200, label: 'Paletas', key: 'vane' };
+  }
+  return { etaV: 0.9, etaM: 0.85, typicalPressureBar: 200, maxPressureBar: 250, label: 'Engranajes', key: 'gear' };
+}
+
+/** mm nominales frecuentes para etiquetado del desplegable (cálculo sigue en pulgadas × 25,4 salvo mapa). */
+const NOMINAL_INCH_TO_MM = new Map([
+  [0.5, 12.7],
+  [0.75, 19.1],
+  [1, 25.4],
+  [1.25, 31.8],
+  [1.5, 38.1],
+  [2, 50.8],
+  [2.5, 63.5],
+  [3, 76.2],
+]);
+
+function displayMmForInchNominal(inch) {
+  if (NOMINAL_INCH_TO_MM.has(inch)) return NOMINAL_INCH_TO_MM.get(inch);
+  return inch * 25.4;
+}
+
+let diaUnitHp = 'in';
+
+function ensureHpDiaOptionInchLabelsCached() {
+  document.querySelectorAll('select.hp-dia-select').forEach((sel) => {
+    if (!(sel instanceof HTMLSelectElement)) return;
+    Array.from(sel.options).forEach((opt) => {
+      if (!opt.dataset.inLabel) opt.dataset.inLabel = opt.textContent.trim();
+    });
+  });
+}
+
+function rebuildHpDiaSelectLabels(unit) {
+  ensureHpDiaOptionInchLabelsCached();
+  diaUnitHp = unit === 'mm' ? 'mm' : 'in';
+  document.querySelectorAll('select.hp-dia-select').forEach((sel) => {
+    if (!(sel instanceof HTMLSelectElement)) return;
+    Array.from(sel.options).forEach((opt) => {
+      const inch = parseFloat(opt.value);
+      const mm = displayMmForInchNominal(inch);
+      opt.textContent = unit === 'mm' ? `${fmt(mm, 1)} mm` : (opt.dataset.inLabel || '');
+    });
+  });
+  const bIn = document.getElementById('hpDiaUnitIn');
+  const bMm = document.getElementById('hpDiaUnitMm');
+  if (bIn) bIn.classList.toggle('hp-dia-unit__btn--active', unit === 'in');
+  if (bMm) bMm.classList.toggle('hp-dia-unit__btn--active', unit === 'mm');
+}
+
+function mountHpDiaUnitToggle() {
+  const bIn = document.getElementById('hpDiaUnitIn');
+  const bMm = document.getElementById('hpDiaUnitMm');
+  if (!(bIn instanceof HTMLButtonElement) || !(bMm instanceof HTMLButtonElement)) return;
+  const onUnit = (u) => {
+    rebuildHpDiaSelectLabels(u);
+  };
+  bIn.addEventListener('click', () => onUnit('in'));
+  bMm.addEventListener('click', () => onUnit('mm'));
+  rebuildHpDiaSelectLabels('in');
+}
+
+function updateHpPressureZoneEl(pBar, preset) {
+  const el = document.getElementById('hpPressureZone');
+  if (!(el instanceof HTMLElement)) return;
+  const typ = preset.typicalPressureBar;
+  const max = preset.maxPressureBar;
+  const lab = preset.label;
+  if (pBar > max) {
+    el.className = 'hp-pressure-zone hp-pressure-zone--red';
+    el.textContent = LANG === 'en'
+      ? `Pressure above typical maximum for ${lab} (~${max} bar). Risk of overload / life reduction.`
+      : `Presión por encima del máximo orientativo para ${lab} (~${max} bar). Riesgo de sobrecarga / reducción de vida útil.`;
+  } else if (pBar > typ) {
+    el.className = 'hp-pressure-zone hp-pressure-zone--yellow';
+    el.textContent = LANG === 'en'
+      ? `Near limit: above typical ${typ} bar for ${lab}, still within ~${max} bar indicative band.`
+      : `Próximo al límite: por encima de lo típico (${typ} bar) para ${lab}, aún dentro de la banda orientativa (~${max} bar máx.).`;
+  } else {
+    el.className = 'hp-pressure-zone hp-pressure-zone--green';
+    el.textContent = LANG === 'en'
+      ? `Within typical range for ${lab} (up to ~${typ} bar working pressure).`
+      : `Dentro del rango típico para ${lab} (hasta ~${typ} bar de trabajo orientativo).`;
+  }
 }
 
 function val(id, fallback = '') {
@@ -258,8 +394,63 @@ function nearestMotorSizeKw(requiredKw) {
   return std[std.length - 1];
 }
 
-function renderPumpDiagram(svg) {
+/**
+ * @param {SVGElement | null} svg
+ * @param {'gear'|'vane'|'piston'} pumpType
+ */
+function renderPumpDiagram(svg, pumpType) {
   if (!(svg instanceof SVGElement)) return;
+  const t = pumpType === 'vane' || pumpType === 'piston' ? pumpType : 'gear';
+  const titleGear = LANG === 'en' ? 'External gear pump — functional section' : 'Bomba de engranajes externos — corte funcional';
+  const titleVane = LANG === 'en' ? 'Vane pump — rotor and sliding vanes (schematic)' : 'Bomba de paletas — rotor y paletas deslizantes (esquemático)';
+  const titlePiston = LANG === 'en' ? 'Radial piston pump — cylinders (schematic)' : 'Bomba de pistones radiales — cilindros (esquemático)';
+  const title = t === 'vane' ? titleVane : t === 'piston' ? titlePiston : titleGear;
+  const lblIn = LANG === 'en' ? 'Suction' : 'Succión';
+  const lblOut = LANG === 'en' ? 'Discharge' : 'Descarga';
+
+  const bodyGear = `
+    <rect x="90" y="110" width="600" height="120" rx="60" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
+    <circle cx="300" cy="170" r="52" fill="#cbd5e1" stroke="#475569" stroke-width="2"/>
+    <circle cx="430" cy="170" r="52" fill="#cbd5e1" stroke="#475569" stroke-width="2"/>
+    <circle cx="300" cy="170" r="12" fill="#334155"/>
+    <circle cx="430" cy="170" r="12" fill="#334155"/>
+    <path d="M248 118 L248 222 M352 118 L352 222 M378 118 L378 222 M482 118 L482 222" stroke="#94a3b8" stroke-width="2"/>
+    <path d="M110 170 L200 170" stroke="#22d3ee" stroke-width="3" marker-end="url(#hpArrow)"/>
+    <path d="M215 118 Q300 82 385 118" stroke="#22d3ee" stroke-width="3" fill="none" marker-end="url(#hpArrow)"/>
+    <path d="M515 222 Q610 248 675 170" stroke="#22d3ee" stroke-width="3" fill="none" marker-end="url(#hpArrow)"/>`;
+
+  const bodyVane = `
+    <ellipse cx="390" cy="170" rx="220" ry="95" fill="#e0f2fe" stroke="#0369a1" stroke-width="2.5"/>
+    <circle cx="390" cy="170" r="38" fill="#bae6fd" stroke="#0c4a6e" stroke-width="2"/>
+    <circle cx="390" cy="170" r="10" fill="#0f172a"/>
+    <g stroke="#0ea5e9" stroke-width="3" stroke-linecap="round">
+      <line x1="390" y1="170" x2="520" y2="125"/>
+      <line x1="390" y1="170" x2="505" y2="195"/>
+      <line x1="390" y1="170" x2="450" y2="235"/>
+      <line x1="390" y1="170" x2="330" y2="235"/>
+      <line x1="390" y1="170" x2="275" y2="195"/>
+      <line x1="390" y1="170" x2="260" y2="125"/>
+    </g>
+    <path d="M95 170 H230" stroke="#22d3ee" stroke-width="3" marker-end="url(#hpArrow)"/>
+    <path d="M555 170 H685" stroke="#22d3ee" stroke-width="3" marker-end="url(#hpArrow)"/>`;
+
+  const bodyPiston = `
+    <circle cx="390" cy="170" r="105" fill="#f1f5f9" stroke="#475569" stroke-width="2"/>
+    <circle cx="390" cy="170" r="28" fill="#cbd5e1" stroke="#334155" stroke-width="2"/>
+    <circle cx="390" cy="170" r="8" fill="#0f172a"/>
+    ${[0, 45, 90, 135, 180, 225, 270, 315]
+      .map((deg) => {
+        const rad = (deg * Math.PI) / 180;
+        const cx = 390 + Math.cos(rad) * 72;
+        const cy = 170 + Math.sin(rad) * 72;
+        return `<rect x="${cx - 10}" y="${cy - 22}" width="20" height="44" rx="4" fill="#94a3b8" stroke="#334155" stroke-width="1.5" transform="rotate(${deg + 90} ${cx} ${cy})"/>`;
+      })
+      .join('')}
+    <path d="M95 170 H250" stroke="#22d3ee" stroke-width="3" marker-end="url(#hpArrow)"/>
+    <path d="M530 170 H685" stroke="#22d3ee" stroke-width="3" marker-end="url(#hpArrow)"/>`;
+
+  const body = t === 'vane' ? bodyVane : t === 'piston' ? bodyPiston : bodyGear;
+
   svg.setAttribute('viewBox', '0 0 780 320');
   svg.innerHTML = `
     <defs>
@@ -269,17 +460,10 @@ function renderPumpDiagram(svg) {
     </defs>
     <rect width="780" height="320" fill="#f8fafc"/>
     <rect x="30" y="40" width="720" height="230" rx="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
-    <text x="50" y="66" font-size="14" font-weight="800" fill="#0f766e" font-family="Inter,system-ui,sans-serif">Bomba de engranajes externos - corte funcional</text>
-    <rect x="90" y="110" width="600" height="120" rx="60" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
-    <circle cx="300" cy="170" r="52" fill="#cbd5e1" stroke="#475569" stroke-width="2"/>
-    <circle cx="430" cy="170" r="52" fill="#cbd5e1" stroke="#475569" stroke-width="2"/>
-    <circle cx="300" cy="170" r="12" fill="#334155"/>
-    <circle cx="430" cy="170" r="12" fill="#334155"/>
-    <path d="M110 170 L200 170" stroke="#22d3ee" stroke-width="3" marker-end="url(#hpArrow)"/>
-    <path d="M215 118 Q300 82 385 118" stroke="#22d3ee" stroke-width="3" fill="none" marker-end="url(#hpArrow)"/>
-    <path d="M515 222 Q610 248 675 170" stroke="#22d3ee" stroke-width="3" fill="none" marker-end="url(#hpArrow)"/>
-    <text x="112" y="158" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${LANG === 'en' ? 'Suction' : 'Aspiracion'}</text>
-    <text x="640" y="158" font-size="10" fill="#14532d" font-family="Inter,system-ui,sans-serif">${LANG === 'en' ? 'Discharge' : 'Descarga'}</text>
+    <text x="50" y="66" font-size="14" font-weight="800" fill="#0f766e" font-family="Inter,system-ui,sans-serif">${title}</text>
+    ${body}
+    <text x="95" y="158" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${lblIn}</text>
+    <text x="620" y="158" font-size="10" fill="#14532d" font-family="Inter,system-ui,sans-serif">${lblOut}</text>
   `;
 }
 
@@ -304,7 +488,7 @@ function renderPipeDiagram(svg, dpBar) {
     <rect x="40" y="32" width="700" height="156" rx="14" fill="#ffffff" stroke="#cbd5e1"/>
     <path d="M90 110 H260 V70 H520 V145 H690" fill="none" stroke="${c}" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
     <path d="M90 110 H260 V70 H520 V145 H690" fill="none" stroke="#0f172a" stroke-width="2.8" stroke-dasharray="12 8"/>
-    <text x="92" y="92" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${LANG === 'en' ? 'Flow line' : 'Linea de flujo'}</text>
+    <text x="92" y="92" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${LANG === 'en' ? 'Flow line' : 'Línea de flujo'}</text>
     <text x="520" y="172" font-size="11" font-weight="800" fill="${c}" font-family="Inter,system-ui,sans-serif">dP = ${fmt(dpBar, 2)} bar</text>
   `;
 }
@@ -321,8 +505,8 @@ function metric(label, value, unit = '', valueClass = '', valueTitle = '') {
 
 function reynoldsVisual(re) {
   if (re < 2000) return { cls: 'hp-re-laminar', title: 'Flujo laminar: ideal para minimizar espuma y calentamiento del aceite.' };
-  if (re <= 4000) return { cls: 'hp-re-transitional', title: 'Flujo transicional: zona intermedia; revisar perdidas y estabilidad.' };
-  return { cls: 'hp-re-turbulent', title: 'Flujo turbulento: mayor cizalla, perdidas y calentamiento del aceite.' };
+  if (re <= 4000) return { cls: 'hp-re-transitional', title: 'Flujo transicional: zona intermedia; revisar pérdidas y estabilidad.' };
+  return { cls: 'hp-re-turbulent', title: 'Flujo turbulento: mayor cizalla, pérdidas y calentamiento del aceite.' };
 }
 
 function syncDiametersSuggestion() {
@@ -356,23 +540,23 @@ function computeAndRender() {
     return r.ok ? r.value : NaN;
   };
 
-  const pressureInput = need(readLabNumber('hpPressure', 1, pMaxGauge, errLabel('Presion de trabajo', 'Working pressure')));
+  const pressureInput = need(readLabNumber('hpPressure', 1, pMaxGauge, errLabel('Presión de trabajo', 'Working pressure')));
   const rpm = need(readLabNumber('hpRpm', 100, 12000, errLabel('RPM motor', 'Motor RPM')));
-  const disp = need(readLabNumber('hpDispCm3Rev', 0.1, 5000, errLabel('Desplazamiento (cm3/rev)', 'Displacement (cm3/rev)')));
-  const suctionIn = need(readLabNumber('hpSuctionIn', 0.125, 24, errLabel('Diametro de succion (in)', 'Suction diameter (in)')));
+  const disp = need(readLabNumber('hpDispCm3Rev', 0.1, 5000, errLabel('Desplazamiento (cm³/rev)', 'Displacement (cm³/rev)')));
+  const suctionIn = need(readLabNumber('hpSuctionIn', 0.125, 24, errLabel('Diámetro de succión (in)', 'Suction diameter (in)')));
   const pipeLineType = val('pipeLineType', 'suction');
   let pipeFlowLminIn = 42;
   if (mode === 'design') {
-    pipeFlowLminIn = need(readLabNumber('pipeFlowLmin', 0.1, 1e6, errLabel('Caudal linea (L/min)', 'Line flow (L/min)')));
+    pipeFlowLminIn = need(readLabNumber('pipeFlowLmin', 0.1, 1e6, errLabel('Caudal línea (L/min)', 'Line flow (L/min)')));
   } else {
-    const pf = readLabNumber('pipeFlowLmin', 0.1, 1e6, errLabel('Caudal linea (L/min)', 'Line flow (L/min)'));
+    const pf = readLabNumber('pipeFlowLmin', 0.1, 1e6, errLabel('Caudal línea (L/min)', 'Line flow (L/min)'));
     if (pf.ok) pipeFlowLminIn = pf.value;
   }
-  const viscCst = need(readLabNumber('pipeViscCst', 0.5, 5000, errLabel('Viscosidad cinematica (cSt)', 'Kinematic viscosity (cSt)')));
-  const lineLength = need(readLabNumber('pipeLengthM', 0.1, 5000, errLabel('Longitud de linea (m)', 'Line length (m)')));
-  const pipeDiaIn = need(readLabNumber('pipeDiaIn', 0.125, 48, errLabel('Diametro interior tuberia (in)', 'Pipe inner diameter (in)')));
-  const elbows = need(readLabNumber('pipeElbows', 0, 500, errLabel('Numero de codos', 'Number of elbows')));
-  const valves = need(readLabNumber('pipeValves', 0, 500, errLabel('Numero de valvulas', 'Number of valves')));
+  const viscCst = need(readLabNumber('pipeViscCst', 0.5, 5000, errLabel('Viscosidad cinemática (cSt)', 'Kinematic viscosity (cSt)')));
+  const lineLength = need(readLabNumber('pipeLengthM', 0.1, 5000, errLabel('Longitud de línea (m)', 'Line length (m)')));
+  const pipeDiaIn = need(readLabNumber('pipeDiaIn', 0.125, 48, errLabel('Diámetro interior tubería (in)', 'Pipe inner diameter (in)')));
+  const elbows = need(readLabNumber('pipeElbows', 0, 500, errLabel('Número de codos', 'Number of elbows')));
+  const valves = need(readLabNumber('pipeValves', 0, 500, errLabel('Número de válvulas', 'Number of valves')));
 
   const labTierHp = document.getElementById('hpLabTier') instanceof HTMLSelectElement
     ? document.getElementById('hpLabTier').value
@@ -381,7 +565,7 @@ function computeAndRender() {
   let npshrM = 0;
   let oilTempCHp = 46;
   if (labTierHp === 'project') {
-    const zt = readLabNumber('hpTankZ_m', -50, 100, errLabel('Cota deposito z (m)', 'Tank head z (m)'));
+    const zt = readLabNumber('hpTankZ_m', -50, 100, errLabel('Cota depósito z (m)', 'Tank head z (m)'));
     if (!zt.ok) errors.push(zt.error);
     else tankZM = zt.value;
     const nr = readLabNumber('hpNPSHr_m', 0, 80, errLabel('NPSHr bomba (m)', 'Pump NPSHr (m)'));
@@ -395,7 +579,12 @@ function computeAndRender() {
   if (errors.length) {
     results.innerHTML = '';
     if (formulaBody instanceof HTMLElement) formulaBody.innerHTML = '';
-    const title = LANG === 'en' ? 'Invalid input' : 'Entrada no valida';
+    const pz = document.getElementById('hpPressureZone');
+    if (pz instanceof HTMLElement) {
+      pz.textContent = '';
+      pz.className = 'hp-pressure-zone';
+    }
+    const title = LANG === 'en' ? 'Invalid input' : 'Entrada no válida';
     const vtext = LANG === 'en' ? 'Please correct the form values.' : 'Revise los valores del formulario.';
     advisor.innerHTML = `<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${title}:</strong><ul style="margin:0.4em 0 0 1.1em;padding:0">${errors.map((e) => `<li>${e}</li>`).join('')}</ul></div></div>`;
     verdict.className = 'lab-verdict lab-verdict--err';
@@ -420,8 +609,8 @@ function computeAndRender() {
   const qSuctionM3s = qRealLmin / 60000;
   const areaSuction = (Math.PI * Math.pow(suctionMm / 1000, 2)) / 4;
   const vSuction = qSuctionM3s / areaSuction;
-  const cavitationRisk = vSuction > 1.5;
   const pressureRisk = pBar > preset.maxPressureBar;
+  updateHpPressureZoneEl(pBar, preset);
 
   const qPipeLmin = mode === 'diagnostic' ? qRealLmin : pipeFlowLminIn;
   const flowInput = document.getElementById('pipeFlowLmin');
@@ -458,14 +647,15 @@ function computeAndRender() {
   const pvPa = P_VAP_BAR * 1e5;
   const npshaM = Math.max(0, (pInletAbsPa - pvPa) / (RHO_OIL * 9.81) - (vSuction * vSuction) / (2 * 9.81));
   const npshMarginM = npshrM > 0 ? npshaM - npshrM : NaN;
-  const highCavitationRisk = pInletAbsBar <= P_VAP_BAR || vSuction > 1.2
+  const suctionVelElevated = vSuction > 1.2;
+  const highCavitationRisk = pInletAbsBar <= P_VAP_BAR || vSuction > 1.5
     || (labTierHp === 'project' && npshrM > 0 && npshaM < npshrM);
   const restrictionRisk = pipeDiaIn < suctionIn;
   const reVisual = reynoldsVisual(re);
   const pMotorRecKw = (pAbsKw / 0.9) * 1.1;
   const pMotorStdKw = nearestMotorSizeKw(pMotorRecKw);
 
-  renderPumpDiagram(document.getElementById('hpDiagram'));
+  renderPumpDiagram(document.getElementById('hpDiagram'), type === 'vane' || type === 'piston' ? type : 'gear');
   renderPipeDiagram(document.getElementById('hpPipeDiagram'), dpBar);
 
   const mainCards = [
@@ -494,7 +684,7 @@ function computeAndRender() {
       '',
       LANG === 'en'
         ? 'Guide only: assumes atmospheric supply minus modeled line loss. Full NPSHa needs tank elevation, suction line detail, fluid temperature, and comparison with pump NPSHr.'
-        : 'Solo guia: supone alimentacion a Patm menos la perdida modelada. NPSHa real requiere cota del deposito, trazado de succion, temperatura del aceite y comparacion con NPSHr de la bomba.',
+        : 'Solo guía: supone alimentación a Patm menos la pérdida modelada. NPSHa real requiere cota del depósito, trazado de succión, temperatura del aceite y comparación con NPSHr de la bomba.',
     ),
     metric(tr('mSug'), `${fmt(mmToIn(dOptMm), 3)} in`, `(${dOptMm} mm) - ${schedule.sch} / t~${fmt(schedule.tMm, 2)} mm`),
   ];
@@ -515,6 +705,7 @@ function computeAndRender() {
         'P_hyd_kW = p_bar * Q_real / 600; P_shaft = P_hyd / (eta_v * eta_m).',
         'Re = v * D / nu; Darcy-Weisbach for dP with blended laminar/turbulent f.',
         `NPSHa (indicative): p_in_abs = p_atm + rho*g*z - dP_line; NPSHa = (p_in - Pv)/(rho*g) - v_s^2/(2g). z=${fmt(tankZM, 2)} m.`,
+        'NPSHa here is indicative only; it does not replace the manufacturer pump cavitation / NPSHr curves.',
         'Schedule suggestion uses simplified hoop stress with pressure factor; for traceability only.',
       ]
     : [
@@ -522,12 +713,13 @@ function computeAndRender() {
         'P_hid_kW = p_bar * Q_real / 600; P_eje = P_hid / (eta_v * eta_m).',
         'Re = v * D / nu; Darcy-Weisbach para dP con f laminar/turbulento interpolado.',
         `NPSHa (indicativa): p_ent_abs = p_atm + rho*g*z - dP_linea; NPSHa = (p_ent - Pv)/(rho*g) - v_s^2/(2g). z=${fmt(tankZM, 2)} m.`,
+        'La NPSHa calculada es indicativa y no sustituye la curva de cavitación ni los datos NPSHr del fabricante de la bomba.',
         'Sugerencia schedule: esfuerzo aro simplificado; solo trazabilidad.',
       ];
 
   if (formulaBody instanceof HTMLElement) {
     formulaBody.innerHTML = `
-      <p class="lab-fluid-formulas__lead">${labTierHp === 'project' ? (LANG === 'en' ? 'Project: tank head z and NPSHr comparison enabled.' : 'Proyecto: cota z y comparacion NPSHr activas.') : (LANG === 'en' ? 'Classroom: z=0 unless project mode.' : 'Aula: z=0 salvo modo proyecto.')}</p>
+      <p class="lab-fluid-formulas__lead">${labTierHp === 'project' ? (LANG === 'en' ? 'Project: tank head z and NPSHr comparison enabled.' : 'Proyecto: cota z y comparación NPSHr activas.') : (LANG === 'en' ? 'Classroom: z=0 unless project mode.' : 'Aula: z=0 salvo modo proyecto.')}</p>
       <p class="lab-fluid-formulas__sub">${LANG === 'en' ? 'Oil temperature recorded' : 'Temperatura aceite registrada'}: ${fmt(oilTempCHp, 0)} C (${LANG === 'en' ? 'Pv still simplified' : 'Pv aun simplificada'}).</p>
       <ol class="lab-fluid-formulas__list">${formulaLinesHp.map((x) => `<li>${x}</li>`).join('')}</ol>
     `;
@@ -545,29 +737,48 @@ function computeAndRender() {
 
   const alerts = [];
   if (restrictionRisk) {
-    alerts.push(`<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'Restriction detected' : 'Restriccion detectada'}:</strong> ${LANG === 'en' ? 'Reducing line diameter below pump suction dramatically increases cavitation risk.' : 'Reducir el diametro de tuberia por debajo de la succion de la bomba aumenta drasticamente el riesgo de cavitacion.'}</div></div>`);
+    alerts.push(`<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'Restriction detected' : 'Restricción detectada'}:</strong> ${LANG === 'en' ? 'Reducing line diameter below pump suction dramatically increases cavitation risk.' : 'Reducir el diámetro de tubería por debajo de la succión de la bomba aumenta drásticamente el riesgo de cavitación.'}</div></div>`);
+  }
+  if (suctionVelElevated) {
+    alerts.push(
+      `<div class="lab-alert lab-alert--warn"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'Suction line' : 'Línea de succión'}:</strong> ${
+        LANG === 'en'
+          ? 'Elevated suction velocity — cavitation risk. Increase suction diameter.'
+          : 'Velocidad de succión elevada — riesgo de cavitación. Aumentar diámetro de succión.'
+      }</div></div>`,
+    );
   }
   if (highCavitationRisk) {
-    alerts.push(`<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'HIGH CAVITATION RISK' : 'RIESGO ALTO DE CAVITACION'}:</strong> ${LANG === 'en' ? 'Pressure loss reduces inlet pressure below safe limits.' : 'La perdida de carga reduce la presion de entrada por debajo de los limites seguros.'}</div></div>`);
-  } else if (cavitationRisk) {
-    alerts.push(`<div class="lab-alert lab-alert--warn"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'Cavitation' : 'Cavitacion'}:</strong> ${LANG === 'en' ? `Inlet velocity ${fmt(vSuction, 2)} m/s > 1.5 m/s. Increase suction diameter (in) to reduce velocity.` : `velocidad de entrada ${fmt(vSuction, 2)} m/s > 1.5 m/s. Aumentar diametro de succion (in) para reducir velocidad.`}</div></div>`);
+    let cavBody = LANG === 'en'
+      ? 'Pressure loss or inlet conditions reduce margin below safe limits for this model.'
+      : 'La pérdida de carga o las condiciones de entrada reducen el margen por debajo de límites seguros para este modelo.';
+    if (pInletAbsBar <= P_VAP_BAR) {
+      cavBody = LANG === 'en'
+        ? 'Absolute inlet pressure approaches vapour pressure — severe cavitation risk.'
+        : 'La presión absoluta de entrada roza la presión de vapor — riesgo grave de cavitación.';
+    } else if (labTierHp === 'project' && npshrM > 0 && npshaM < npshrM) {
+      cavBody = LANG === 'en'
+        ? `NPSHa ${fmt(npshaM, 2)} m is below pump NPSHr ${fmt(npshrM, 2)} m.`
+        : `NPSHa ${fmt(npshaM, 2)} m por debajo del NPSHr de placa ${fmt(npshrM, 2)} m.`;
+    } else if (vSuction > 1.5) {
+      cavBody = LANG === 'en'
+        ? `Inlet velocity ${fmt(vSuction, 2)} m/s exceeds 1.5 m/s — increase suction diameter urgently.`
+        : `Velocidad de entrada ${fmt(vSuction, 2)} m/s supera 1,5 m/s — aumentar con urgencia el diámetro de succión.`;
+    }
+    alerts.push(`<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'HIGH CAVITATION RISK' : 'RIESGO ALTO DE CAVITACIÓN'}:</strong> ${cavBody}</div></div>`);
   }
   if (pressureRisk) {
-    alerts.push(`<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'Safety' : 'Seguridad'}:</strong> ${LANG === 'en' ? `${fmt(pBar, 1)} bar exceeds typical ${preset.label.toLowerCase()} limit (${preset.maxPressureBar} bar).` : `${fmt(pBar, 1)} bar supera limite tipico de ${preset.label.toLowerCase()} (${preset.maxPressureBar} bar).`}</div></div>`);
+    alerts.push(`<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'Safety' : 'Seguridad'}:</strong> ${LANG === 'en' ? `${fmt(pBar, 1)} bar exceeds typical ${preset.label.toLowerCase()} limit (${preset.maxPressureBar} bar).` : `${fmt(pBar, 1)} bar supera el límite orientativo de ${preset.label.toLowerCase()} (${preset.maxPressureBar} bar).`}</div></div>`);
   }
   if (speedOutOfRange) {
-    alerts.push(`<div class="lab-alert lab-alert--warn"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'Line speed' : 'Velocidad de linea'}:</strong> ${LANG === 'en' ? `${fmt(vPipe, 2)} m/s is outside recommended range for ${pipeLineType}.` : `${fmt(vPipe, 2)} m/s fuera del rango recomendado para ${pipeLineType}.`}</div></div>`);
-  }
-  if (pipeLineType === 'suction' && vSuction > 1.2 && vSuction <= 1.5) {
-    const pct = ((vSuction / 1.2) - 1) * 100;
-    alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'Optimization' : 'Optimizacion'}:</strong> ${LANG === 'en' ? `You are only ${fmt(pct, 1)}% above the recommended limit. Increasing diameter by one commercial step removes noise and vibration.` : `Estas solo un ${fmt(pct, 1)}% por encima del limite recomendado. Aumentar el diametro un paso comercial eliminaria ruido y vibracion.`}</div></div>`);
+    alerts.push(`<div class="lab-alert lab-alert--warn"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'Line speed' : 'Velocidad de línea'}:</strong> ${LANG === 'en' ? `${fmt(vPipe, 2)} m/s is outside recommended range for ${pipeLineType}.` : `${fmt(vPipe, 2)} m/s fuera del rango recomendado para ${pipeLineType}.`}</div></div>`);
   }
   if (Math.abs(pMotorStdKw - pMotorRecKw) <= 1.8 || (pMotorStdKw - pMotorRecKw) / pMotorStdKw < 0.1) {
-    alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'Motor efficiency' : 'Eficiencia del motor'}:</strong> ${LANG === 'en' ? `Required power ${fmt(pMotorRecKw, 2)} kW. Suggested standard commercial size: ${fmt(pMotorStdKw, 1)} kW.` : `potencia requerida ${fmt(pMotorRecKw, 2)} kW. Tama?o comercial normalizado sugerido: ${fmt(pMotorStdKw, 1)} kW.`}</div></div>`);
+    alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'Motor efficiency' : 'Eficiencia del motor'}:</strong> ${LANG === 'en' ? `Required power ${fmt(pMotorRecKw, 2)} kW. Suggested standard commercial size: ${fmt(pMotorStdKw, 1)} kW.` : `Potencia requerida ${fmt(pMotorRecKw, 2)} kW. Tamaño comercial normalizado sugerido: ${fmt(pMotorStdKw, 1)} kW.`}</div></div>`);
   }
-  alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body"><strong>Smart insight:</strong> ${LANG === 'en' ? `Current pipe causes ${fmt(dpBar, 3)} bar loss vs ${fmt(dpOptBar, 3)} bar with ${fmt(mmToIn(dOptMm), 3)} in (${dOptMm} mm). This implies ${fmt(heatLossKw, 3)} kW avoidable hydraulic heating.` : `tu tuberia actual genera una perdida de ${fmt(dpBar, 3)} bar frente a ${fmt(dpOptBar, 3)} bar con ${fmt(mmToIn(dOptMm), 3)} in (${dOptMm} mm). Esto implica ${fmt(heatLossKw, 3)} kW de calentamiento hidraulico evitable.`}</div></div>`);
+  alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body"><strong>Smart insight:</strong> ${LANG === 'en' ? `Current pipe causes ${fmt(dpBar, 3)} bar loss vs ${fmt(dpOptBar, 3)} bar with ${fmt(mmToIn(dOptMm), 3)} in (${dOptMm} mm). This implies ${fmt(heatLossKw, 3)} kW avoidable hydraulic heating.` : `La tubería actual genera una pérdida de ${fmt(dpBar, 3)} bar frente a ${fmt(dpOptBar, 3)} bar con ${fmt(mmToIn(dOptMm), 3)} in (${dOptMm} mm). Esto implica ${fmt(heatLossKw, 3)} kW de calentamiento hidráulico evitable.`}</div></div>`);
   if (mode === 'diagnostic' && (rpm > 1800 || vSuction > 1.5)) {
-    alerts.push(`<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'Diagnostic warning' : 'Advertencia diagnostico'}:</strong> ${LANG === 'en' ? 'RPM is high for this displacement. Cavitation risk increases due to excessive suction velocity.' : 'Las RPM son altas para este desplazamiento. Aumenta el riesgo de cavitacion por velocidad de succion excesiva.'}</div></div>`);
+    alerts.push(`<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${LANG === 'en' ? 'Diagnostic warning' : 'Advertencia de diagnóstico'}:</strong> ${LANG === 'en' ? 'RPM is high for this displacement. Cavitation risk increases due to excessive suction velocity.' : 'Las RPM son altas para este desplazamiento. Aumenta el riesgo de cavitación por velocidad de succión excesiva.'}</div></div>`);
   }
   if (labTierHp === 'project' && npshrM > 0 && npshaM < npshrM) {
     alerts.push(`<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>NPSH:</strong> NPSHa ${fmt(npshaM, 2)} m &lt; NPSHr ${fmt(npshrM, 2)} m.</div></div>`);
@@ -578,7 +789,7 @@ function computeAndRender() {
   let verdictClass = 'lab-verdict lab-verdict--ok';
   if (pressureRisk || highCavitationRisk || restrictionRisk || dpBar > 8) {
     verdictText = highCavitationRisk
-      ? (LANG === 'en' ? 'SYSTEM NOT SUITABLE - Critical cavitation failure risk' : 'SISTEMA NO APTO - Riesgo de fallo critico por cavitacion')
+      ? (LANG === 'en' ? 'SYSTEM NOT SUITABLE - Critical cavitation failure risk' : 'SISTEMA NO APTO — Riesgo de fallo crítico por cavitación')
       : (LANG === 'en' ? 'FAILURE RISK' : 'RIESGO DE FALLO');
     verdictClass = 'lab-verdict lab-verdict--err';
   } else if (speedOutOfRange || dpBar > 3 || heatLossKw > 0.8) {
@@ -595,7 +806,7 @@ function computeAndRender() {
   const ts = formatDateTimeLocale(new Date(), langPdf);
   pumpPdfSnapshot = {
     valid: true,
-    title: langPdf === 'en' ? 'Report - Hydraulic pump and piping' : 'Informe - Bomba hidraulica y tuberias',
+    title: langPdf === 'en' ? 'Report — Hydraulic pump and piping' : 'Informe — Bomba hidráulica y tuberías',
     fileBase: `${langPdf === 'en' ? 'report-hydraulic-pump' : 'informe-bomba-hidraulica'}-${new Date().toISOString().slice(0, 10)}`,
     timestamp: ts,
     tierLabel: labTierHp === 'project' ? (langPdf === 'en' ? 'Mode: Project' : 'Modo: Proyecto') : (langPdf === 'en' ? 'Mode: Classroom' : 'Modo: Aula'),
@@ -621,12 +832,15 @@ function computeAndRender() {
     formulaLines: formulaLinesHp,
     assumptions: [
       `rho=${RHO_OIL} kg/m3, Patm=${P_ATM_BAR} bar, Pv=${P_VAP_BAR} bar (simplified).`,
-      langPdf === 'en' ? 'Line dP model is 1-D Darcy + K losses.' : 'Modelo dP: Darcy 1D + perdidas K.',
+      langPdf === 'en' ? 'Line dP model is 1-D Darcy + K losses.' : 'Modelo ΔP: Darcy 1D + pérdidas K.',
+      langPdf === 'en'
+        ? 'NPSHa in this report is indicative and does not replace manufacturer cavitation / NPSHr curves.'
+        : 'La NPSHa de este informe es indicativa y no sustituye las curvas de cavitación / NPSHr del fabricante.',
     ],
     verdict: verdict.textContent,
     disclaimer: langPdf === 'en'
       ? 'NPSHa is indicative; use manufacturer NPSHr curves and site layout for final acceptance.'
-      : 'NPSHa es indicativa; usar curvas NPSHr del fabricante y trazado real para aceptacion final.',
+      : 'NPSHa es indicativa; usar curvas NPSHr del fabricante y trazado real para aceptación final.',
   };
 }
 
@@ -636,6 +850,10 @@ function syncHpLabTierUi() {
     : 'basic';
   const panel = document.getElementById('hpProjectPanel');
   if (panel instanceof HTMLElement) panel.hidden = tier !== 'project';
+  const badge = document.getElementById('hpProjectBadge');
+  if (badge instanceof HTMLElement) {
+    badge.classList.toggle('hp-tier-badge--active', tier === 'project');
+  }
 }
 
 function syncPumpModeUi() {
@@ -689,9 +907,15 @@ function syncPumpModeUi() {
 syncDiametersSuggestion();
 syncHpLabTierUi();
 syncPumpModeUi();
+mountHpDiaUnitToggle();
 applyStaticI18n();
 mountCompactLabFieldHelp();
 computeAndRender();
+
+['hpBtnCalcPump', 'hpBtnCalcPipes'].forEach((btnId) => {
+  const b = document.getElementById(btnId);
+  if (b) b.addEventListener('click', () => computeAndRender());
+});
 
 mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountHp'), {
   getPayload: () => pumpPdfSnapshot,

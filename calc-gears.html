@@ -38,6 +38,16 @@
           </div>
           <div class="lab-calc-layout__inputs">
             <div class="lab-grid lab-grid--2">
+              <div class="lab-field lab-field--wide">
+                <label for="gCalcMode">Modo de trabajo</label>
+                <select id="gCalcMode">
+                  <option value="design">Diseño — objetivo de carga → ajustar módulo, ancho y geometría</option>
+                  <option value="diagnostic" selected>Diagnóstico — engranaje instalado → comprobar con par/potencia</option>
+                </select>
+                <p class="lab-field-help" id="gCalcModeHelp">
+                  En <strong>diseño</strong> utilice el par o potencia en piñón junto con el chequeo AGMA simplificado para iterar <strong>m</strong> y <strong>b</strong> hasta un uso del material aceptable. En <strong>diagnóstico</strong> fije <strong>z₁, z₂, m, b</strong> reales y compruebe con la carga de servicio.
+                </p>
+              </div>
               <div class="lab-field">
                 <label for="gZ1" class="lab-field__label-row">
                   <span class="lab-field-ico" title="Número de dientes piñón">

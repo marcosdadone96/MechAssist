@@ -11,6 +11,8 @@ const SIGMA_ALLOW = 140e6; // Pa
 const DESIGN_FACTOR_PRESSURE = 1.5;
 const ETA_DIAG = 0.92;
 const WALL_STD_MM = [3, 4, 5, 6, 8, 10, 12, 14, 16, 20, 25];
+/** Opciones del selector de espesor comercial (mm) con p_max orientativa en etiqueta */
+const WALL_COMMERCIAL_MM = [3, 4, 5, 6, 8, 10, 12];
 const ISO_3320_RODS_BY_BORE = {
   32: [14, 18, 22],
   40: [18, 22, 28],
@@ -32,84 +34,100 @@ const LANG = (() => {
 })();
 const I18N = {
   es: {
-    title: 'Cilindro hidraulico - fuerza, caudal y seguridad estructural',
-    lead: 'Valida fuerza de empuje/traccion, caudal requerido, pandeo del vastago (Euler) y espesor minimo de tubo para operar con seguridad a presion nominal.',
+    pageTitle: 'Cilindro hidráulico — MechAssist',
+    title: 'Cilindro hidráulico — fuerza, caudal y seguridad estructural',
+    lead: 'Valida fuerza de empuje/tracción, caudal requerido, pandeo del vástago (Euler) y espesor mínimo de tubo para operar con seguridad a presión nominal.',
     verdictOk: 'SISTEMA APTO',
     detailsTitle: 'Ver Datos Tecnicos Secundarios',
     detailsHint: 'Caudales, pandeo y espesor',
     mPush: 'Fuerza de avance',
-    mPull: 'Fuerza de traccion',
+    mPull: 'Fuerza de tracción',
+    mPushDiag: 'Tonelaje real (diagnóstico)',
     mSpeed: 'Velocidad (segun caudal)',
     mArea: 'Relacion de areas',
     mStruct: 'Factor seguridad estructural',
     mFlowReq: 'Caudal requerido objetivo',
     mPortSpeed: 'Velocidad en puertos',
     mQout: 'Qout en retroceso',
-    mEuler: 'Carga critica Euler',
-    mTmin: 'Espesor minimo calculado',
+    mEuler: 'Carga crítica Euler',
+    mTmin: 'Espesor mínimo calculado',
     mTstd: 'Espesor comercial recomendado',
     mFsTube: 'FS tubo',
     mFsBuck: 'FS pandeo',
     mVsPneu: 'Comparativa vs neumatica 6 bar',
     mCapacity: 'Capacidad de empuje',
-    detailsSub1: 'A_piston / A_anular (retorno mas rapido)',
+    detailsSub1: 'A_piston / A_anular (retorno más rápido)',
     detailsSub2: 'pandeo + espesor',
     alertSpeed: 'Control de velocidad',
-    alertSpeedBody: 'Tu bomba entrega mas caudal del necesario para la velocidad objetivo. Necesitaras una valvula reguladora de flujo para no exceder los {v} m/s.',
+    alertSpeedBody: 'Tu bomba entrega más caudal del necesario para la velocidad objetivo. Necesitarás una válvula reguladora de flujo para no exceder los {v} m/s.',
     alertThin: 'Espesor no apto',
-    alertThinBody: '{wr} mm es menor que el minimo calculado ({tr} mm). Aumenta el espesor del tubo para evitar deformacion por presion.',
+    alertThinBody: '{wr} mm es menor que el mínimo calculado ({tr} mm). Aumenta el espesor del tubo para evitar deformación por presión.',
     alertCommercial: 'Espesor poco logico comercialmente',
-    alertCommercialBody: 'Aunque cumple por calculo, se recomienda usar al menos {t} mm (serie estandar) para fabricacion y suministro.',
+    alertCommercialBody: 'Aunque cumple por cálculo, se recomienda usar al menos {t} mm (serie estándar) para fabricación y suministro.',
     alertThick: 'Espesor elevado',
     alertThickBody: '{wr} mm es muy superior al recomendado ({t} mm). Revisa peso, coste y disipacion termica del cilindro.',
     alertPort: 'Insight',
     alertPortBody: 'Velocidad de flujo alta. Considera aumentar el tamano de las conexiones para evitar sobrecalentamiento.',
     alertBuckling: 'RIESGO DE FLEXION',
-    alertBucklingBody: 'El vastago podria doblarse bajo esta carga. Aumenta el diametro del vastago o usa un montaje con guia.',
+    alertBucklingBody: 'El vástago podría doblarse bajo esta carga. Aumenta el diámetro del vástago o usa un montaje con guía.',
     alertInstability: 'Inestabilidad detectada',
-    alertInstabilityBody: 'Para una carrera de {s} mm, el vastago estandar de {d} mm corre riesgo de pandeo. Selecciona el vastago reforzado de {dr} mm.',
+    alertInstabilityBody: 'Para una carrera de {s} mm, el vástago estándar de {d} mm corre riesgo de pandeo. Selecciona el vástago reforzado de {dr} mm.',
     alertArea: 'Relacion de areas ({r}x)',
-    alertAreaBody: 'El aceite saldra {rr} veces mas rapido por el lado del vastago durante el retroceso (v_ret ~ {vr} m/s). Este dato ayuda a dimensionar valvulas de retorno y lineas de descarga.',
+    alertAreaBody: 'El aceite saldrá {rr} veces más rápido por el lado del vástago durante el retroceso (v_ret ~ {vr} m/s). Este dato ayuda a dimensionar válvulas de retorno y líneas de descarga.',
     alertReturn: 'Chequeo de retorno',
-    alertReturnBody: 'En retroceso el caudal de salida por lado vastago sube a {q} L/min. Verifica capacidad de valvulas y linea de retorno para evitar bloqueo o contrapresion.',
+    alertReturnBody: 'En retroceso el caudal de salida por lado vástago sube a {q} L/min. Verifica capacidad de válvulas y línea de retorno para evitar bloqueo o contrapresión.',
     alertCompare: 'Comparativa',
-    alertCompareBody: 'Diferencia con Neumatica: Este cilindro genera {x} veces mas fuerza que su equivalente neumatico a 6 bar, permitiendo un diseno mucho mas compacto.',
-    sealInfo: 'Kit de sellos estandar disponible: KIT-ISO3320-{b}/{r}-{m} (equivalente comercial: Seal kit {b}x{r} DA {m}). Este formato es facil de encontrar en suministro industrial.',
-    verdictApto: 'SISTEMA APTO - Estructura y vastago adecuados para la presion y carga indicadas.',
+    alertCompareBody: 'Diferencia con neumática: este cilindro genera {x} veces más fuerza que su equivalente neumático a 6 bar, permitiendo un diseño mucho más compacto.',
+    sealInfo: 'Kit de sellos estándar disponible: KIT-ISO3320-{b}/{r}-{m} (equivalente comercial: Seal kit {b}×{r} DA {m}). Este formato es fácil de encontrar en suministro industrial.',
+    verdictApto: 'SISTEMA APTO — Estructura y vástago adecuados para la presión y carga indicadas.',
     verdictNo: 'SISTEMA NO APTO - Causas: {reasons}. Acciones: {actions}.',
-    verdictMargin: 'SISTEMA CON MARGEN AJUSTADO - Funciona, pero conviene optimizar conexiones y seguridad estructural.',
-    reasonForce: 'Fuerza insuficiente ({v}x < 1.25x)',
-    reasonBuck: 'Pandeo critico (FS {v}x < 3.5x)',
-    reasonTube: 'Espesor de tubo insuficiente (FS tubo {v}x < 2.0x)',
+    verdictMargin: 'SISTEMA CON MARGEN AJUSTADO — Funciona, pero conviene optimizar conexiones y seguridad estructural.',
+    reasonForce: 'Fuerza insuficiente ({v}× < 1,25×)',
+    reasonBuck: 'Pandeo crítico (FS {v}× < 3,5×)',
+    reasonTube: 'Espesor de tubo insuficiente (FS tubo {v}× < 2,0×)',
     actionForce: 'aumentar diametro de piston o presion de trabajo',
-    actionBuck: 'aumentar diametro de vastago o reducir carrera libre',
+    actionBuck: 'aumentar diámetro de vástago o reducir carrera libre',
     actionTube: 'subir espesor real a {t} mm o superior estandar',
     driverTube: 'Por que no cambia el FS al aumentar vastago',
-    driverTubeBody: 'El limite actual lo impone el tubo (FS tubo {ft}x) y no el pandeo del vastago (FS pandeo {fb}x). Para subir el FS global debes aumentar espesor de tubo o reducir presion de trabajo.',
+    driverTubeBody: 'El límite actual lo impone el tubo (FS tubo {ft}×) y no el pandeo del vástago (FS pandeo {fb}×). Para subir el FS global debes aumentar espesor de tubo o reducir presión de trabajo.',
     driverBuck: 'FS controlado por pandeo',
-    driverBuckBody: 'En este punto el vastago domina la seguridad. Aumentar diametro de vastago o reducir carrera mejorara directamente el FS global.',
-    alertDiagPressure: 'Peligro: Esta superando la presion de diseno habitual del cilindro. Riesgo de fatiga en tubo, vastago o sellos.',
-    errInputsTitle: 'Entrada no valida',
+    driverBuckBody: 'En este punto el vástago domina la seguridad. Aumentar diámetro de vástago o reducir carrera mejorará directamente el FS global.',
+    alertDiagPressure: 'Peligro: está superando la presión de diseño habitual del cilindro. Riesgo de fatiga en tubo, vástago o sellos.',
+    errInputsTitle: 'Entrada no válida',
     errInputsVerdict: 'Revise los valores del formulario.',
-    inpPressureBar: 'Presion de trabajo (bar)',
-    inpBore: 'Diametro piston (mm)',
-    inpRod: 'Diametro vastago (mm)',
+    inpPressureBar: 'Presión de trabajo (bar)',
+    inpBore: 'Diámetro pistón (mm)',
+    inpRod: 'Diámetro vástago (mm)',
     inpStroke: 'Carrera (mm)',
     inpLoad: 'Carga de trabajo (kg)',
     inpSpeed: 'Velocidad objetivo (m/s)',
     inpPumpFlow: 'Caudal disponible bomba (L/min)',
     inpPort: 'Diametro interno de puertos (mm)',
-    inpWall: 'Espesor real del tubo (mm)',
-    errRodGeBore: 'El vastago debe ser menor que el piston.',
+    inpWall: 'Espesor comercial del tubo (mm)',
+    errRodGeBore: 'El vástago debe ser menor que el pistón.',
+    alertDiagMode: 'Diagnóstico: con los componentes actuales, el factor de seguridad estructural es {v}×.',
+    vsTitle: 'Resumen de comprobaciones',
+    vsForce: 'Fuerza disponible vs carga',
+    vsForceLineOk: 'Margen {p} % sobre la carga de trabajo.',
+    vsForceLineDiag: 'Modo diagnóstico: carga de referencia interna; sin margen % frente a objetivo externo.',
+    vsForceLineBad: 'Ratio fuerza/carga {r}× (objetivo ≥ 1,25×).',
+    vsBuck: 'Pandeo del vástago (Euler)',
+    vsBuckOk: 'Apto — FS pandeo {v}× (≥ 3,5×).',
+    vsBuckWarn: 'Revisar carrera o diámetro de vástago — FS pandeo {v}×.',
+    vsTube: 'Espesor de tubo',
+    vsTubeOk: 'Apto — FS tubo {v}× (≥ 2× sobre espesor mínimo).',
+    vsTubeBad: 'Insuficiente — espesor por debajo del mínimo calculado.',
   },
   en: {
-    title: 'Hydraulic cylinder - force, flow and structural safety',
+    pageTitle: 'Hydraulic cylinder — MechAssist',
+    title: 'Hydraulic cylinder — force, flow and structural safety',
     lead: 'Validate push/pull force, required flow, rod buckling (Euler) and minimum tube wall thickness for safe operation at nominal pressure.',
     verdictOk: 'SYSTEM SUITABLE',
     detailsTitle: 'View Secondary Technical Data',
     detailsHint: 'Flow, buckling and wall thickness',
     mPush: 'Push force',
     mPull: 'Pull force',
+    mPushDiag: 'Real tonnage (diagnostic)',
     mSpeed: 'Speed (from flow)',
     mArea: 'Area ratio',
     mStruct: 'Structural safety factor',
@@ -172,6 +190,18 @@ const I18N = {
     inpPort: 'Port inner diameter (mm)',
     inpWall: 'Actual tube wall thickness (mm)',
     errRodGeBore: 'Rod diameter must be less than bore.',
+    alertDiagMode: 'Diagnostic: with your current components, structural safety factor is {v}×.',
+    vsTitle: 'Check summary',
+    vsForce: 'Available force vs load',
+    vsForceLineOk: '{p} % margin on working load.',
+    vsForceLineDiag: 'Diagnostic mode: internal reference load; no % margin vs external target.',
+    vsForceLineBad: 'Force/load ratio {r}× (target ≥ 1.25×).',
+    vsBuck: 'Rod buckling (Euler)',
+    vsBuckOk: 'OK — buckling SF {v}× (≥ 3.5×).',
+    vsBuckWarn: 'Review stroke or rod diameter — buckling SF {v}×.',
+    vsTube: 'Tube wall thickness',
+    vsTubeOk: 'OK — tube SF {v}× (≥ 2× vs minimum).',
+    vsTubeBad: 'Insufficient — below calculated minimum thickness.',
   },
 };
 function t(key, vars = {}) {
@@ -181,7 +211,7 @@ function t(key, vars = {}) {
 
 function applyStaticI18n() {
   document.documentElement.setAttribute('lang', LANG);
-  document.title = t('title');
+  document.title = t('pageTitle');
   const h2 = document.querySelector('.lab-panel h2');
   const lead = document.querySelector('.lab-lead');
   const verdict = document.getElementById('hcVerdict');
@@ -190,56 +220,121 @@ function applyStaticI18n() {
     Inicio: 'Home',
     Laboratorio: 'Laboratory',
     'Lienzo Pro': 'Pro canvas',
+    'Nivel de detalle memoria': 'Memory detail level',
+    'Aula (básico)': 'Classroom (basic)',
+    'Proyecto (Euler + temperatura aceite)': 'Project (Euler + oil temperature)',
+    'Memoria ampliada y PDF': 'Expanded memory and PDF',
+    'Proyecto permite ajustar longitud efectiva de pandeo del vástago y registrar temperatura de aceite (supuestos).':
+      'Project mode lets you adjust effective buckling length factor and record oil temperature (assumptions).',
+    'Factor longitud efectiva pandeo (× carrera)': 'Effective buckling length factor (× stroke)',
+    '1,0 — apoyos ideales cortos': '1.0 — short ideal supports',
+    '1,2 — valor por defecto previo': '1.2 — previous default value',
+    '1,5 — guías intermedias débiles': '1.5 — weak intermediate guides',
+    '2,0 — vástago muy libre': '2.0 — very free rod',
+    'Temperatura aceite (°C) — nota': 'Oil temperature (°C) — note',
+    'Para trazabilidad; viscosidad no recalculada aquí': 'For traceability; viscosity not recalculated here',
+    '¿Qué quieres calcular?': 'What do you want to calculate?',
+    'Diseñar nueva máquina': 'Design new machine',
+    'Diagnosticar máquina existente': 'Diagnose existing machine',
+    'Diseño o flujo inverso': 'Design or inverse sizing',
+    'Diseño: carga objetivo y dimensionado. Diagnóstico: presión y diámetro reales para obtener fuerza/tonelaje disponible.':
+      'Design: target load and sizing. Diagnostic: real pressure and diameter to get available force/tonnage.',
+    'Corte de cilindro hidráulico (doble efecto, alta presión)': 'Hydraulic cylinder cross-section (double acting, high pressure)',
     'Corte de cilindro hidraulico (doble efecto, alta presion)': 'Hydraulic cylinder cross-section (double acting, high pressure)',
+    'Puertos A/B de aceite, sellos de alta presión, guía de vástago y zonas de empuje/tracción.':
+      'Oil ports A/B, high-pressure seals, rod guide, and push/pull zones.',
     'Puertos A/B de aceite, sellos de alta presion, guia de vastago y zonas de empuje/traccion.':
       'Oil ports A/B, high-pressure seals, rod guide, and push/pull zones.',
+    'Presión de trabajo (bar)': 'Working pressure (bar)',
     'Presion de trabajo (bar)': 'Working pressure (bar)',
+    'Presión hidráulica efectiva': 'Effective hydraulic pressure',
     'Presion hidraulica efectiva': 'Effective hydraulic pressure',
     'Usada para calcular fuerza real del cilindro y para el chequeo estructural del tubo.':
       'Used to calculate real cylinder force and tube structural check.',
+    Aplicación: 'Application',
+    'Presión típica': 'Typical pressure',
+    'Maquinaria agrícola': 'Agricultural machinery',
+    'Máquina herramienta': 'Machine tool',
+    'Prensas industriales': 'Industrial presses',
+    'Ingeniería civil / móvil': 'Civil / mobile machinery',
+    'Diámetro pistón (mm)': 'Piston diameter (mm)',
     'Diametro piston (mm)': 'Piston diameter (mm)',
+    'Define área de empuje': 'Defines push area',
     'Define area de empuje': 'Defines push area',
+    'A mayor diámetro, mayor fuerza de avance para la misma presión.':
+      'Larger diameter means higher extension force at same pressure.',
     'A mayor diametro, mayor fuerza de avance para la misma presion.':
       'Larger diameter means higher extension force at same pressure.',
+    'Diámetro vástago (mm)': 'Rod diameter (mm)',
     'Diametro vastago (mm)': 'Rod diameter (mm)',
+    'Afecta tracción y pandeo': 'Affects pull force and buckling',
     'Afecta traccion y pandeo': 'Affects pull force and buckling',
+    'Un vástago mayor mejora estabilidad al pandeo y reduce riesgo de flexión.':
+      'Larger rod improves buckling stability and reduces bending risk.',
     'Un vastago mayor mejora estabilidad al pandeo y reduce riesgo de flexion.':
       'Larger rod improves buckling stability and reduces bending risk.',
     'Carrera (mm)': 'Stroke (mm)',
+    'Longitud útil de desplazamiento': 'Useful travel length',
     'Longitud util de desplazamiento': 'Useful travel length',
+    'Carreras largas aumentan la carga crítica del chequeo Euler.':
+      'Long strokes increase critical load in Euler check.',
     'Carreras largas aumentan la carga critica del chequeo Euler.':
       'Long strokes increase critical load in Euler check.',
     'Carga de trabajo (kg)': 'Working load (kg)',
+    'Carga mecánica externa': 'External mechanical load',
     'Carga mecanica externa': 'External mechanical load',
     'Se convierte a N para comparar con fuerza disponible y factor de seguridad.':
       'Converted to N to compare against available force and safety factor.',
     'Velocidad objetivo (m/s)': 'Target speed (m/s)',
     'Define caudal requerido': 'Defines required flow',
+    'Con el área de pistón permite dimensionar el caudal que debe entregar la bomba.':
+      'Together with piston area, it defines required pump flow.',
     'Con area de piston permite dimensionar el caudal que debe entregar la bomba.':
       'Together with piston area, it defines required pump flow.',
     'Caudal disponible bomba (L/min)': 'Available pump flow (L/min)',
     'Para estimar velocidad real': 'To estimate real speed',
+    'Permite calcular la velocidad real del cilindro según el flujo disponible.':
+      'Allows estimating real cylinder speed based on available flow.',
     'Permite calcular la velocidad real del cilindro segun el flujo disponible.':
       'Allows estimating real cylinder speed based on available flow.',
+    'Diámetro interno de puertos (mm)': 'Port inner diameter (mm)',
     'Diametro interno de puertos (mm)': 'Port inner diameter (mm)',
     'Control de velocidad del aceite': 'Oil speed control',
+    'Si la velocidad en puertos es alta, aumenta calentamiento y pérdidas.':
+      'High port velocity increases heating and losses.',
     'Si la velocidad en puertos es alta, aumenta calentamiento y perdidas.':
       'High port velocity increases heating and losses.',
-    'Espesor real del tubo (mm)': 'Actual tube wall thickness (mm)',
+    'Espesor comercial del tubo (mm)': 'Commercial tube wall thickness (mm)',
+    'Espesor real del tubo (mm)': 'Commercial tube wall thickness (mm)',
+    'Presión máxima orientativa por fila según diámetro pistón': 'Indicative max pressure per row for selected bore',
     'Chequeo estructural del cuerpo': 'Body structural check',
+    'Valores comerciales habituales; se compara con el espesor mínimo calculado para la presión de trabajo.':
+      'Common commercial sizes; compared to minimum calculated thickness for working pressure.',
     'Se compara con espesor minimo calculado y con serie comercial estandar (3, 4, 5, 6, 8, 10, 12 mm, etc.) para evitar valores poco fabricables.':
       'Compared against calculated minimum and standard commercial wall series (3, 4, 5, 6, 8, 10, 12 mm, etc.) to avoid non-manufacturable values.',
     'Material kit de juntas': 'Seal kit material',
     'NBR (uso general)': 'NBR (general use)',
+    'PU (alta abrasión)': 'PU (high abrasion)',
     'PU (alta abrasion)': 'PU (high abrasion)',
     'FKM / Viton (alta temperatura)': 'FKM / Viton (high temperature)',
     'Define nomenclatura del kit': 'Defines kit nomenclature',
+    'La referencia del kit cambia según el material elastomérico seleccionado para compatibilidad con fluido y temperatura.':
+      'Kit reference changes with selected elastomer for fluid and temperature compatibility.',
     'La referencia de kit cambia segun material elastomerico seleccionado para compatibilidad con fluido y temperatura.':
       'Kit reference changes with selected elastomer for fluid and temperature compatibility.',
+    Material: 'Material',
+    'Fluido compatible': 'Compatible fluid',
+    'T máx.': 'T max.',
+    'Aceite mineral HLP': 'Mineral oil HLP',
+    'Aceite mineral, emulsiones': 'Mineral oil, emulsions',
+    'Aceite mineral, sintético': 'Mineral, synthetic oil',
+    'Memoria de cálculo, fórmulas y supuestos': 'Calculation memory, formulas and assumptions',
     'SISTEMA APTO': 'SYSTEM SUITABLE',
   };
   if (LANG === 'en') {
-    document.querySelectorAll('label, span.hint, p.lab-field-help, p.lab-diagram-wrap__title, p.lab-diagram-caption, nav a, option, #hcVerdict').forEach((el) => {
+    document.querySelectorAll(
+      'label, span.hint, p.lab-field-help, p.lab-diagram-wrap__title, p.lab-diagram-caption, nav a, option, #hcVerdict, .hc-mini-table th, .hc-mini-table td, summary',
+    ).forEach((el) => {
       const k = (el.textContent || '').trim();
       if (mapEn[k]) el.textContent = mapEn[k];
     });
@@ -273,6 +368,31 @@ function nearestStandardWallAtOrAbove(tReqMm) {
   return WALL_STD_MM[WALL_STD_MM.length - 1];
 }
 
+/** Presión máxima orientativa (bar) que soporta un espesor t con el mismo modelo que t_req */
+function maxPressureBarForWallMm(boreMm, wallMm) {
+  const d = boreMm / 1000;
+  const t = wallMm / 1000;
+  if (d <= 0 || t <= 0) return 0;
+  return (2 * SIGMA_ALLOW * t) / (d * DESIGN_FACTOR_PRESSURE) / 1e5;
+}
+
+function syncHcWallSelectOptions(boreMm) {
+  const sel = document.getElementById('hcWallMm');
+  if (!(sel instanceof HTMLSelectElement)) return;
+  const prevRaw = parseFloat(sel.value);
+  const prev = Number.isFinite(prevRaw) ? prevRaw : 6;
+  sel.innerHTML = WALL_COMMERCIAL_MM.map((w) => {
+    const pmax = maxPressureBarForWallMm(boreMm, w);
+    const label =
+      LANG === 'en'
+        ? `${w} mm (~${fmt(pmax, 0)} bar max, indicative)`
+        : `${w} mm (~${fmt(pmax, 0)} bar máx. orient.)`;
+    return `<option value="${w}">${label}</option>`;
+  }).join('');
+  const pick = WALL_COMMERCIAL_MM.includes(prev) ? prev : 6;
+  sel.value = String(pick);
+}
+
 function setRodOptionsForBore(boreMm, preferredRod = null) {
   const rodEl = document.getElementById('hcRodMm');
   if (!(rodEl instanceof HTMLSelectElement)) return;
@@ -282,21 +402,36 @@ function setRodOptionsForBore(boreMm, preferredRod = null) {
   rodEl.value = String(chosen);
 }
 
-function renderCylinderDiagram(svg, strokeMm, rodMm) {
+function renderCylinderDiagram(svg, strokeMm, rodMm, boreMm) {
   if (!(svg instanceof SVGElement)) return;
-  const rodScale = Math.max(10, Math.min(22, rodMm * 0.34));
+  const h = 122;
+  const innerGap = 28;
+  const rodRatio = rodMm / Math.max(boreMm, 1);
+  /** Altura SVG del vástago proporcional a d/D (sin aplastar todas las tallas al mismo rango px) */
+  const rodScale = Math.max(5, Math.min(h - innerGap, rodRatio * (h - innerGap) * 0.52));
   const bodyW = Math.max(300, Math.min(430, strokeMm * 0.3));
   const x0 = 72;
   const y0 = 92;
-  const h = 122;
   const capW = 28;
   const tubeX = x0 + capW;
   const pistonX = tubeX + bodyW * 0.44;
   const rodStart = pistonX + 12;
   const rodEnd = tubeX + bodyW + 180;
   const midY = y0 + h / 2;
+  const txtPortA = LANG === 'en' ? 'Port A' : 'Puerto A';
+  const txtPortB = LANG === 'en' ? 'Port B' : 'Puerto B';
+  const txtPush = LANG === 'en' ? 'Push chamber (extend)' : 'Cámara de empuje (avance)';
+  const txtPull = LANG === 'en' ? 'Annular chamber (retract)' : 'Cámara de tracción (retorno)';
+  const txtSeals = LANG === 'en' ? 'High-pressure seals' : 'Sellos alta presión';
+  const txtRod = LANG === 'en' ? 'Rod' : 'Vástago';
+  const txtStroke = LANG === 'en' ? 'Stroke' : 'Carrera';
+  const dimHint =
+    LANG === 'en'
+      ? `${txtStroke} ${fmt(strokeMm, 0)} mm · Ø rod ${fmt(rodMm, 0)} / Ø bore ${fmt(boreMm, 0)}`
+      : `${txtStroke} ${fmt(strokeMm, 0)} mm · Ø vástago ${fmt(rodMm, 0)} / Ø pistón ${fmt(boreMm, 0)}`;
 
   svg.setAttribute('viewBox', '0 0 820 350');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
   svg.innerHTML = `
     <defs>
       <marker id="hcArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
@@ -326,27 +461,53 @@ function renderCylinderDiagram(svg, strokeMm, rodMm) {
     <rect x="${pistonX + 10}" y="${y0 + 20}" width="4" height="${h - 40}" fill="#0f172a"/>
     <circle cx="${pistonX}" cy="${midY}" r="2.6" fill="#e2e8f0"/>
 
-    <rect x="${rodStart}" y="${midY - rodScale / 2}" width="${rodEnd - rodStart}" height="${rodScale}" rx="8" fill="url(#hcRod)" stroke="#475569"/>
+    <rect x="${rodStart}" y="${midY - rodScale / 2}" width="${rodEnd - rodStart}" height="${rodScale}" rx="${Math.min(8, rodScale / 2.5)}" fill="url(#hcRod)" stroke="#475569"/>
     <rect x="${tubeX + bodyW + 5}" y="${midY - rodScale / 2 - 5}" width="12" height="${rodScale + 10}" rx="3" fill="#334155"/>
     <circle cx="${rodEnd + 15}" cy="${midY}" r="12" fill="#cbd5e1" stroke="#64748b"/>
 
     <rect x="${tubeX + 38}" y="${y0 - 16}" width="12" height="16" rx="3" fill="#0284c7"/>
     <rect x="${tubeX + bodyW - 52}" y="${y0 - 16}" width="12" height="16" rx="3" fill="#0284c7"/>
-    <text x="${tubeX + 32}" y="${y0 - 22}" font-size="10.5" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">Puerto A</text>
-    <text x="${tubeX + bodyW - 94}" y="${y0 - 22}" font-size="10.5" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">Puerto B</text>
+    <text x="${tubeX + 32}" y="${y0 - 22}" font-size="10.5" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">${txtPortA}</text>
+    <text x="${tubeX + bodyW - 94}" y="${y0 - 22}" font-size="10.5" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">${txtPortB}</text>
 
     <path d="M${tubeX + 44} ${midY} L${pistonX - 18} ${midY}" stroke="#0ea5e9" stroke-width="2.6" marker-end="url(#hcArrow)"/>
     <path d="M${tubeX + bodyW - 46} ${midY} L${pistonX + 30} ${midY}" stroke="#0ea5e9" stroke-width="2.6" marker-end="url(#hcArrow)"/>
 
-    <text x="${tubeX + 20}" y="${y0 + h + 26}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">Camara de empuje (avance)</text>
-    <text x="${tubeX + bodyW - 175}" y="${y0 + h + 26}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">Camara de traccion (retorno)</text>
-    <text x="${pistonX - 35}" y="${y0 + h + 45}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">Sellos alta presion</text>
-    <text x="${rodEnd - 10}" y="${y0 + h + 45}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">Vastago</text>
+    <text x="${tubeX + 20}" y="${y0 + h + 26}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${txtPush}</text>
+    <text x="${tubeX + bodyW - 175}" y="${y0 + h + 26}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${txtPull}</text>
+    <text x="${pistonX - 35}" y="${y0 + h + 45}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${txtSeals}</text>
+    <text x="${rodEnd - 10}" y="${y0 + h + 45}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${txtRod}</text>
 
     <line x1="${tubeX}" y1="${y0 + h + 62}" x2="${tubeX + bodyW}" y2="${y0 + h + 62}" stroke="#64748b" stroke-width="1.3"/>
     <line x1="${tubeX}" y1="${y0 + h + 57}" x2="${tubeX}" y2="${y0 + h + 67}" stroke="#64748b" stroke-width="1.3"/>
     <line x1="${tubeX + bodyW}" y1="${y0 + h + 57}" x2="${tubeX + bodyW}" y2="${y0 + h + 67}" stroke="#64748b" stroke-width="1.3"/>
-    <text x="${tubeX + bodyW / 2 - 56}" y="${y0 + h + 80}" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif">Carrera ${fmt(strokeMm, 0)} mm</text>
+    <text x="${tubeX + bodyW / 2 - 56}" y="${y0 + h + 80}" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif">${dimHint}</text>
+  `;
+}
+
+function renderHcVerdictSummary(opts) {
+  const el = document.getElementById('hcVerdictSummary');
+  if (!(el instanceof HTMLElement)) return;
+  const {
+    mode, forceOk, bucklingOk, tubeOk, forceRatioPush, fsBuckling, fsTube, marginPct,
+  } = opts;
+  const row = (ok, label, sub) => `
+    <div class="hc-vs-item ${ok ? 'hc-vs-item--ok' : 'hc-vs-item--bad'}">
+      <span class="hc-vs-ico" aria-hidden="true">${ok ? '✓' : '✗'}</span>
+      <div><div class="hc-vs-label">${label}</div><div class="hc-vs-sub">${sub}</div></div>
+    </div>`;
+  const forceOkRow = mode === 'design' ? forceOk : true;
+  const forceSub =
+    mode === 'design'
+      ? (forceOk ? t('vsForceLineOk', { p: fmt(marginPct, 1) }) : t('vsForceLineBad', { r: fmt(forceRatioPush, 2) }))
+      : t('vsForceLineDiag');
+  const buckSub = bucklingOk ? t('vsBuckOk', { v: fmt(fsBuckling, 2) }) : t('vsBuckWarn', { v: fmt(fsBuckling, 2) });
+  const tubeSub = tubeOk ? t('vsTubeOk', { v: fmt(fsTube, 2) }) : t('vsTubeBad');
+  el.innerHTML = `
+    <div class="hc-verdict-summary__title">${t('vsTitle')}</div>
+    ${row(forceOkRow, t('vsForce'), forceSub)}
+    ${row(bucklingOk, t('vsBuck'), buckSub)}
+    ${row(tubeOk, t('vsTube'), tubeSub)}
   `;
 }
 
@@ -354,6 +515,10 @@ function computeAndRender() {
   const mode = document.getElementById('hcMode') instanceof HTMLSelectElement
     ? document.getElementById('hcMode').value
     : 'design';
+
+  const boreEarlyEl = document.getElementById('hcBoreMm');
+  const boreEarly = boreEarlyEl instanceof HTMLSelectElement ? Number(boreEarlyEl.value) : 63;
+  if (Number.isFinite(boreEarly)) syncHcWallSelectOptions(boreEarly);
 
   const results = document.getElementById('hcResults');
   const advisor = document.getElementById('hcAdvisor');
@@ -381,7 +546,7 @@ function computeAndRender() {
   const vTarget = need(readLabNumber('hcTargetSpeedMs', 0.001, 10, t('inpSpeed')));
   const qPumpLmin = need(readLabNumber('hcPumpFlowLmin', 0.1, 1e6, t('inpPumpFlow')));
   const portDiaMm = need(readLabNumber('hcPortDiaMm', 1, 500, t('inpPort')));
-  const wallRealMm = need(readLabNumber('hcWallMm', 0.5, 200, t('inpWall')));
+  const wallRealMm = need(readLabNumber('hcWallMm', 1, 40, t('inpWall')));
   if (Number.isFinite(rodMm) && Number.isFinite(boreMm) && rodMm >= boreMm) {
     errors.push(t('errRodGeBore'));
   }
@@ -390,6 +555,8 @@ function computeAndRender() {
     results.innerHTML = '';
     if (sealInfo instanceof HTMLElement) sealInfo.textContent = '';
     if (formulaBody instanceof HTMLElement) formulaBody.innerHTML = '';
+    const vsEl = document.getElementById('hcVerdictSummary');
+    if (vsEl instanceof HTMLElement) vsEl.innerHTML = '';
     advisor.innerHTML = `<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${t('errInputsTitle')}:</strong><ul style="margin:0.4em 0 0 1.1em;padding:0">${errors.map((e) => `<li>${e}</li>`).join('')}</ul></div></div>`;
     verdict.className = 'lab-verdict lab-verdict--err';
     verdict.textContent = t('errInputsVerdict');
@@ -467,10 +634,12 @@ function computeAndRender() {
   const pneuEqForce = 6e5 * areaPiston * 0.9;
   const hydraulicVsPneumatic = forcePushN / Math.max(1, pneuEqForce);
 
-  renderCylinderDiagram(document.getElementById('hcDiagram'), strokeMm, rodMm);
+  renderCylinderDiagram(document.getElementById('hcDiagram'), strokeMm, rodMm, boreMm);
+
+  const marginPct = (forceRatioPush - 1) * 100;
 
   const keyMetrics = [
-    metric(mode === 'diagnostic' ? 'Tonelaje real (diagnostico)' : t('mPush'), mode === 'diagnostic' ? `${fmt(forcePushN / (1000 * G), 2)} t` : `${fmt(forcePushN, 0)} N`, mode === 'diagnostic' ? `${fmt(forcePushN, 0)} N` : `${fmt(forcePushN / 1000, 1)} kN`),
+    metric(mode === 'diagnostic' ? t('mPushDiag') : t('mPush'), mode === 'diagnostic' ? `${fmt(forcePushN / (1000 * G), 2)} t` : `${fmt(forcePushN, 0)} N`, mode === 'diagnostic' ? `${fmt(forcePushN, 0)} N` : `${fmt(forcePushN / 1000, 1)} kN`),
     metric(t('mPull'), `${fmt(forcePullN, 0)} N`, `${fmt(forcePullN / 1000, 1)} kN`),
     metric(t('mSpeed'), `${fmt(vReal, 3)} m/s`, `Q bomba ${fmt(qPumpLmin, 1)} L/min`),
     metric(t('mArea'), `${fmt(areaRatio, 3)} x`, t('detailsSub1')),
@@ -530,13 +699,15 @@ function computeAndRender() {
         'E_steel = 210 GPa for rod buckling.',
         `Buckling uses stroke (${fmt(strokeMm, 0)} mm) * factor ${fmt(eulerLengthFactor, 2)} as unsupported length proxy.`,
         `Tube check: sigma_allow = ${fmt(SIGMA_ALLOW / 1e6, 0)} MPa nominal table value.`,
+        'Euler buckling here is a simplified check (straight column, centred axial load). Rods with side load or partial guiding need more detailed analysis.',
         'Does not replace ISO 6020/6022 manufacturer ratings.',
       ]
     : [
-        'E acero = 210 GPa para pandeo de vastago.',
-        `Pandeo: longitud libre modelada como carrera (${fmt(strokeMm, 0)} mm) * ${fmt(eulerLengthFactor, 2)}.`,
-        `Tubo: sigma_adm de referencia ${fmt(SIGMA_ALLOW / 1e6, 0)} MPa en el modulo.`,
-        'No sustituye catalogos ISO 6020/6022 del fabricante.',
+        'E acero = 210 GPa para pandeo de vástago.',
+        `Pandeo: longitud libre modelada como carrera (${fmt(strokeMm, 0)} mm) × ${fmt(eulerLengthFactor, 2)}.`,
+        `Tubo: sigma_adm de referencia ${fmt(SIGMA_ALLOW / 1e6, 0)} MPa en el módulo.`,
+        'El pandeo Euler aquí es verificación simplificada (columna recta, carga axial centrada). Vástagos con carga lateral o guiado parcial requieren análisis más detallado.',
+        'No sustituye catálogos ISO 6020/6022 del fabricante.',
       ];
 
   if (formulaBody instanceof HTMLElement) {
@@ -581,7 +752,7 @@ function computeAndRender() {
   }
   alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body"><strong>${t('alertCompare')}:</strong> ${t('alertCompareBody', { x: fmt(hydraulicVsPneumatic, 2) })}</div></div>`);
   if (mode === 'diagnostic') {
-    alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body"><strong>Diagnostico:</strong> Con tus componentes actuales, tu factor de seguridad estructural es ${fmt(fsStruct, 2)}x.</div></div>`);
+    alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body">${t('alertDiagMode', { v: fmt(fsStruct, 2) })}</div></div>`);
   }
   advisor.innerHTML = alerts.join('');
 
@@ -630,17 +801,28 @@ function computeAndRender() {
   verdict.className = verdictClass;
   verdict.textContent = verdictText;
 
+  renderHcVerdictSummary({
+    mode,
+    forceOk,
+    bucklingOk,
+    tubeOk,
+    forceRatioPush,
+    fsBuckling,
+    fsTube,
+    marginPct,
+  });
+
   const langPdf = getCurrentLang();
   const ts = formatDateTimeLocale(new Date(), langPdf);
   cylinderPdfSnapshot = {
     valid: true,
-    title: langPdf === 'en' ? 'Report - Hydraulic cylinder' : 'Informe - Cilindro hidraulico',
+    title: langPdf === 'en' ? 'Report — Hydraulic cylinder' : 'Informe — Cilindro hidráulico',
     fileBase: `${langPdf === 'en' ? 'report-hydraulic-cylinder' : 'informe-cilindro-hidraulico'}-${new Date().toISOString().slice(0, 10)}`,
     timestamp: ts,
     tierLabel: labTierHc === 'project' ? (langPdf === 'en' ? 'Mode: Project' : 'Modo: Proyecto') : (langPdf === 'en' ? 'Mode: Classroom' : 'Modo: Aula'),
     kpis: [
       { title: langPdf === 'en' ? 'Push' : 'Empuje', value: `${fmt(forcePushN / 1000, 1)} kN`, subtitle: `${pBar} bar` },
-      { title: langPdf === 'en' ? 'Pull' : 'Tiron', value: `${fmt(forcePullN / 1000, 1)} kN`, subtitle: 'annular' },
+      { title: langPdf === 'en' ? 'Pull' : 'Tirón', value: `${fmt(forcePullN / 1000, 1)} kN`, subtitle: 'annular' },
       { title: 'Q', value: `${fmt(qReqLmin, 1)} L/min`, subtitle: langPdf === 'en' ? 'target' : 'objetivo' },
       { title: 'FS', value: `${fmt(fsStruct, 2)}`, subtitle: langPdf === 'en' ? 'structural' : 'estructural' },
     ],
@@ -678,15 +860,29 @@ function syncModeUi() {
   const mode = document.getElementById('hcMode') instanceof HTMLSelectElement
     ? document.getElementById('hcMode').value
     : 'design';
+  const flowGroup = document.getElementById('hcGroupFlowSizing');
+  if (flowGroup instanceof HTMLElement) {
+    flowGroup.classList.toggle('hc-field-group--open', mode === 'design');
+  }
   const loadField = document.getElementById('hcLoadKg')?.closest('.lab-field');
   if (loadField instanceof HTMLElement) {
     loadField.classList.toggle('lab-field--auto', mode === 'diagnostic');
     const hint = loadField.querySelector('.hint');
     const help = loadField.querySelector('.lab-field-help');
-    if (hint) hint.textContent = mode === 'diagnostic' ? 'Calculado automaticamente' : 'Carga mecanica externa';
-    if (help) help.textContent = mode === 'diagnostic'
-      ? 'En modo diagnostico se calcula como capacidad maxima del cilindro para la presion y diametro actuales.'
-      : 'Se convierte a N para comparar con fuerza disponible y factor de seguridad.';
+    if (hint) {
+      hint.textContent = mode === 'diagnostic'
+        ? (LANG === 'en' ? 'Calculated automatically' : 'Calculado automáticamente')
+        : (LANG === 'en' ? 'External mechanical load' : 'Carga mecánica externa');
+    }
+    if (help) {
+      help.textContent = mode === 'diagnostic'
+        ? (LANG === 'en'
+          ? 'In diagnostic mode, load is computed as maximum cylinder capacity for current pressure and diameter.'
+          : 'En modo diagnóstico se calcula como capacidad máxima del cilindro para la presión y diámetro actuales.')
+        : (LANG === 'en'
+          ? 'Converted to N to compare against available force and safety factor.'
+          : 'Se convierte a N para comparar con fuerza disponible y factor de seguridad.');
+    }
   }
 }
 
@@ -725,14 +921,18 @@ document.getElementById('hcLabTier')?.addEventListener('change', () => {
 
 document.getElementById('hcBoreMm')?.addEventListener('change', () => {
   const b = readLabNumber('hcBoreMm', 1, 1e9, '');
-  setRodOptionsForBore(Math.round(b.ok ? b.value : 63));
+  const boreVal = Math.round(b.ok ? b.value : 63);
+  setRodOptionsForBore(boreVal);
+  syncHcWallSelectOptions(boreVal);
   computeAndRender();
 });
 
 (() => {
   const b = readLabNumber('hcBoreMm', 1, 1e9, '');
   const r = readLabNumber('hcRodMm', 1, 1e9, '');
-  setRodOptionsForBore(Math.round(b.ok ? b.value : 63), Math.round(r.ok ? r.value : 36));
+  const boreVal = Math.round(b.ok ? b.value : 63);
+  setRodOptionsForBore(boreVal, Math.round(r.ok ? r.value : 36));
+  syncHcWallSelectOptions(boreVal);
 })();
 applyStaticI18n();
 syncHcLabTierUi();

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Power Input Hidraulico - MechAssist</title>
+    <title>Bomba Hidráulica — MechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -43,6 +43,155 @@
       #hpResults .hp-more-details .lab-results {
         gap: 0.7rem;
       }
+      .hp-block {
+        grid-column: 1 / -1;
+        margin-top: 0.35rem;
+        padding: 1rem 1rem 1.1rem;
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: linear-gradient(165deg, #ffffff 0%, #f8fafc 100%);
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+      }
+      .hp-block--pump {
+        border-color: rgba(13, 148, 136, 0.35);
+        background: linear-gradient(165deg, #ffffff 0%, #f0fdfa 55%, #f8fafc 100%);
+      }
+      .hp-block--pipes {
+        border-color: rgba(37, 99, 235, 0.28);
+        background: linear-gradient(165deg, #ffffff 0%, #eff6ff 50%, #f8fafc 100%);
+      }
+      .hp-block__head {
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.55rem;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+      }
+      .hp-block__title {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: #0f172a;
+      }
+      .hp-block--pump .hp-block__title {
+        color: #0f766e;
+      }
+      .hp-block--pipes .hp-block__title {
+        color: #1e40af;
+      }
+      .hp-block__sub {
+        margin: 0.35rem 0 0;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: #64748b;
+        line-height: 1.45;
+      }
+      .hp-block .lab-grid {
+        margin-bottom: 0.65rem;
+      }
+      .hp-block__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        margin-top: 0.35rem;
+      }
+      .hp-tier-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem 0.75rem;
+      }
+      .hp-tier-row select {
+        flex: 1;
+        min-width: 12rem;
+      }
+      .hp-tier-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.28rem 0.55rem;
+        border-radius: 999px;
+        color: #5b21b6;
+        background: linear-gradient(135deg, #f5f3ff 0%, #fefce8 100%);
+        border: 1px solid rgba(139, 92, 246, 0.45);
+        white-space: nowrap;
+        opacity: 0.55;
+        transition: opacity 0.2s ease, box-shadow 0.2s ease;
+      }
+      .hp-tier-badge--active {
+        opacity: 1;
+        box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.28);
+      }
+      .hp-dia-unit {
+        display: inline-flex;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        overflow: hidden;
+        background: #fff;
+      }
+      .hp-dia-unit__btn {
+        border: 0;
+        background: transparent;
+        padding: 0.32rem 0.75rem;
+        font-size: 0.72rem;
+        font-weight: 800;
+        cursor: pointer;
+        color: #64748b;
+      }
+      .hp-dia-unit__btn--active {
+        background: #0f172a;
+        color: #f8fafc;
+      }
+      .hp-pressure-zone {
+        margin-top: 0.35rem;
+        padding: 0.4rem 0.55rem;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        line-height: 1.35;
+      }
+      .hp-pressure-zone--green {
+        color: #065f46;
+        background: #ecfdf5;
+        border: 1px solid #6ee7b7;
+      }
+      .hp-pressure-zone--yellow {
+        color: #854d0e;
+        background: #fef9c3;
+        border: 1px solid #facc15;
+      }
+      .hp-pressure-zone--red {
+        color: #991b1b;
+        background: #fef2f2;
+        border: 1px solid #fca5a5;
+      }
+      .hp-vg-table {
+        margin-top: 0.45rem;
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.72rem;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+      }
+      .hp-vg-table th,
+      .hp-vg-table td {
+        padding: 0.35rem 0.45rem;
+        text-align: left;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      .hp-vg-table th {
+        background: #f8fafc;
+        font-weight: 800;
+        color: #334155;
+      }
+      .hp-vg-table tr:last-child td {
+        border-bottom: 0;
+      }
     </style>
   </head>
   <body class="lab-body">
@@ -60,26 +209,26 @@
     </header>
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2>Power Input - Bomba Hidraulica y Conducciones</h2>
+        <h2>Bomba Hidráulica · Potencia y conducciones oleohidráulicas</h2>
         <p class="lab-lead">
-          Modulo avanzado para analisis de bomba y lineas oleohidraulicas, con asesor IA de cavitacion, perdida de carga y criterio final de seguridad/eficiencia.
+          Módulo avanzado para análisis de bomba y líneas oleohidráulicas, con asesor IA de cavitación, pérdida de carga y criterio final de seguridad y eficiencia.
         </p>
         <div class="lab-alert lab-alert--info" style="margin-bottom: 0.7rem">
           <div class="lab-alert__body">
-            <strong>Como obtener datos clave:</strong> la <strong>viscosidad cinematica (cSt)</strong> sale de la ficha del aceite (normalmente a 40 C y 100 C, ISO VG), y el
-            <strong>desplazamiento (cm3/rev)</strong> aparece en la placa/ficha de la bomba. Si no lo tienes, puede estimarse con <strong>D = (Qx1000)/n</strong>.
+            <strong>Cómo obtener datos clave:</strong> la <strong>viscosidad cinemática (cSt)</strong> sale de la ficha del aceite (normalmente a 40 °C y 100 °C, ISO VG), y el
+            <strong>desplazamiento (cm³/rev)</strong> aparece en la placa o ficha de la bomba. Si no lo tiene, puede estimarse con <strong>D = (Q×1000)/n</strong>.
           </div>
         </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag">
           <div class="lab-calc-layout__diagram">
             <div class="hp-diagrams-row">
               <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-                <p class="lab-diagram-wrap__title">1) Bomba hidraulica - corte de engranajes externos</p>
-                <svg id="hpDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema en corte de bomba de engranajes"></svg>
+                <p class="lab-diagram-wrap__title">① Bomba hidráulica — corte esquemático</p>
+                <svg id="hpDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema en corte según tipo de bomba"></svg>
               </div>
               <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-                <p class="lab-diagram-wrap__title">2) Conducciones - mapa de perdida de carga</p>
-                <svg id="hpPipeDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema de conduccion con gradiente de perdida"></svg>
+                <p class="lab-diagram-wrap__title">② Conducciones — mapa de pérdida de carga</p>
+                <svg id="hpPipeDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema de conducción con gradiente de pérdida"></svg>
               </div>
             </div>
           </div>
@@ -88,183 +237,231 @@
             <div class="lab-grid lab-grid--2">
               <div class="lab-field lab-field--wide">
                 <label for="hpLabTier">Nivel de detalle memoria</label>
-                <select id="hpLabTier">
-                  <option value="basic" selected>Aula (basico)</option>
-                  <option value="project">Proyecto (NPSH + cota deposito)</option>
-                </select>
-                <span class="hint">Memoria y PDF ampliados</span>
-                <p class="lab-field-help">Proyecto incluye cota del deposito sobre la bomba, NPSHr de placa y trazabilidad de NPSHa indicativa.</p>
+                <div class="hp-tier-row">
+                  <select id="hpLabTier">
+                    <option value="basic" selected>Aula (básico)</option>
+                    <option value="project">Proyecto (NPSH + cota depósito)</option>
+                  </select>
+                  <span class="hp-tier-badge" id="hpProjectBadge" title="Incluye NPSHa indicativa, cota del depósito y trazabilidad ampliada en memoria/PDF">Pro · Avanzado</span>
+                </div>
+                <span class="hint">Memoria y PDF ampliados en modo Proyecto</span>
+                <p class="lab-field-help">Proyecto incluye cota del depósito sobre la bomba, NPSHr de placa y trazabilidad de NPSHa indicativa.</p>
               </div>
               <div class="lab-field lab-field--wide" id="hpProjectPanel" hidden>
                 <div class="lab-grid lab-grid--2" style="gap:0.65rem">
                   <div class="lab-field">
-                    <label for="hpTankZ_m">Cota liquido sobre entrada bomba z (m)</label>
+                    <label for="hpTankZ_m">Cota líquido sobre entrada bomba z (m)</label>
                     <input id="hpTankZ_m" type="number" step="any" value="0" />
-                    <span class="hint">Positivo si el nivel esta por encima</span>
+                    <span class="hint">Positivo si el nivel está por encima</span>
                   </div>
                   <div class="lab-field">
-                    <label for="hpNPSHr_m">NPSHr bomba (m) - placa</label>
+                    <label for="hpNPSHr_m">NPSHr bomba (m) — placa</label>
                     <input id="hpNPSHr_m" type="number" min="0" step="any" value="0" />
                     <span class="hint">0 si no se conoce</span>
                   </div>
                   <div class="lab-field">
-                    <label for="hpOilTempC">Temperatura aceite (C)</label>
+                    <label for="hpOilTempC">Temperatura aceite (°C)</label>
                     <input id="hpOilTempC" type="number" step="any" value="46" />
-                    <span class="hint">Trazabilidad; Pv fija simplificada en modulo</span>
+                    <span class="hint">Trazabilidad; Pv fija simplificada en módulo</span>
                   </div>
                 </div>
               </div>
               <div class="lab-field lab-field--wide">
-                <label for="hpMode">¿Qué quieres calcular?</label>
+                <label for="hpMode">¿Qué quiere calcular?</label>
                 <select id="hpMode">
-                  <option value="design" selected>Diseñar nueva maquina</option>
-                  <option value="diagnostic">Diagnosticar maquina existente</option>
+                  <option value="design" selected>Diseñar nueva máquina</option>
+                  <option value="diagnostic">Diagnosticar máquina existente</option>
                 </select>
-                <span class="hint">Modo objetivo del calculo</span>
-                <p class="lab-field-help">Diseno: objetivo de rendimiento y verificacion integral. Diagnostico: se calcula caudal real desde desplazamiento y RPM.</p>
-              </div>
-              <div class="lab-field">
-                <label for="hpType">Tipo de bomba</label>
-                <select id="hpType">
-                  <option value="gear">Engranajes</option>
-                  <option value="vane">Paletas</option>
-                  <option value="piston">Pistones</option>
-                </select>
-                <span class="hint">Define rendimiento y limite de presion</span>
-                <p class="lab-field-help">Cada tecnologia tiene eficiencia volumetrica/mecanica y rango de presion diferentes para evaluacion de seguridad.</p>
-              </div>
-              <div class="lab-field">
-                <label for="hpPressureUnit">Unidad de presion</label>
-                <select id="hpPressureUnit">
-                  <option value="bar">bar</option>
-                  <option value="psi">PSI</option>
-                </select>
-                <span class="hint">Conversor automatico interno</span>
-                <p class="lab-field-help">Puede introducir presion en bar o PSI; el calculo siempre se unifica en bar para las ecuaciones del modulo.</p>
-              </div>
-              <div class="lab-field">
-                <label for="hpPressure">Presion de trabajo</label>
-                <input id="hpPressure" type="number" min="1" step="any" value="180" />
-                <span class="hint">Presion efectiva de operacion</span>
-                <p class="lab-field-help">Se usa para potencia hidraulica, potencia absorbida y validacion contra limites tipicos de la tecnologia seleccionada.</p>
-              </div>
-              <div class="lab-field">
-                <label for="hpRpm">RPM motor</label>
-                <input id="hpRpm" type="number" min="100" step="any" value="1450" />
-                <span class="hint">Velocidad del eje primario</span>
-                <p class="lab-field-help">Con el desplazamiento define el caudal teorico de bomba y el par requerido en el eje.</p>
-              </div>
-              <div class="lab-field">
-                <label for="hpDispCm3Rev">Desplazamiento (cm3/rev)</label>
-                <input id="hpDispCm3Rev" type="number" min="0.1" step="any" value="32" />
-                <span class="hint">Volumen por vuelta</span>
-                <p class="lab-field-help">Determina el caudal teorico Qteo = D x n; el caudal real incorpora eficiencia volumetrica.</p>
-              </div>
-              <div class="lab-field">
-                <label for="hpSuctionIn">Diametro de succion (in)</label>
-                <select id="hpSuctionIn">
-                  <option value="0.125">1/8"</option>
-                  <option value="0.25">1/4"</option>
-                  <option value="0.375">3/8"</option>
-                  <option value="0.5">1/2"</option>
-                  <option value="0.625">5/8"</option>
-                  <option value="0.75">3/4"</option>
-                  <option value="0.875">7/8"</option>
-                  <option value="1" selected>1"</option>
-                  <option value="1.125">1 1/8"</option>
-                  <option value="1.25">1 1/4"</option>
-                  <option value="1.375">1 3/8"</option>
-                  <option value="1.5">1 1/2"</option>
-                  <option value="1.625">1 5/8"</option>
-                  <option value="1.75">1 3/4"</option>
-                  <option value="1.875">1 7/8"</option>
-                  <option value="2">2"</option>
-                  <option value="2.5">2 1/2"</option>
-                  <option value="3">3"</option>
-                  <option value="3.5">3 1/2"</option>
-                  <option value="4">4"</option>
-                  <option value="5">5"</option>
-                  <option value="6">6"</option>
-                </select>
-                <span class="hint">Critico para cavitacion</span>
-                <p class="lab-field-help">Ingrese en pulgadas nominales. El sistema muestra tambien el equivalente en mm entre parentesis para trazabilidad.</p>
+                <span class="hint">Modo objetivo del cálculo</span>
+                <p class="lab-field-help">Diseño: objetivo de rendimiento y verificación integral. Diagnóstico: se calcula caudal real desde desplazamiento y RPM.</p>
               </div>
 
-              <div class="lab-field">
-                <label for="pipeLineType">Tipo de linea</label>
-                <select id="pipeLineType">
-                  <option value="suction">Aspiracion</option>
-                  <option value="pressure">Presion</option>
-                  <option value="return">Retorno</option>
-                </select>
-                <span class="hint">Cambia rango recomendado de velocidad</span>
-                <p class="lab-field-help">Rangos usados: aspiracion 0.5-1.2 m/s, presion 3-7 m/s, retorno 2-4 m/s.</p>
+              <div class="hp-block hp-block--pump">
+                <div class="hp-block__head">
+                  <h3 class="hp-block__title">① Bomba hidráulica</h3>
+                  <p class="hp-block__sub">Presión de trabajo, RPM, desplazamiento, tipo de bomba y diámetro de succión a la bomba.</p>
+                </div>
+                <div class="lab-grid lab-grid--2">
+                  <div class="lab-field">
+                    <label for="hpType">Tipo de bomba</label>
+                    <select id="hpType">
+                      <option value="gear">Engranajes</option>
+                      <option value="vane">Paletas</option>
+                      <option value="piston">Pistones</option>
+                    </select>
+                    <span class="hint">Define rendimiento y límite de presión</span>
+                    <p class="lab-field-help">Cada tecnología tiene eficiencia volumétrica y mecánica y rango de presión distintos para la evaluación de seguridad.</p>
+                  </div>
+                  <div class="lab-field">
+                    <label for="hpPressureUnit">Unidad de presión</label>
+                    <select id="hpPressureUnit">
+                      <option value="bar">bar</option>
+                      <option value="psi">PSI</option>
+                    </select>
+                    <span class="hint">Conversor automático interno</span>
+                    <p class="lab-field-help">Puede introducir presión en bar o PSI; el cálculo se unifica en bar para las ecuaciones del módulo.</p>
+                  </div>
+                  <div class="lab-field">
+                    <label for="hpPressure">Presión de trabajo</label>
+                    <input id="hpPressure" type="number" min="1" step="any" value="180" />
+                    <span class="hint">Presión efectiva de operación</span>
+                    <div id="hpPressureZone" class="hp-pressure-zone hp-pressure-zone--green" aria-live="polite"></div>
+                    <p class="lab-field-help">Indicador respecto al rango típico del tipo de bomba seleccionado (orientativo).</p>
+                  </div>
+                  <div class="lab-field">
+                    <label for="hpRpm">RPM motor</label>
+                    <input id="hpRpm" type="number" min="100" step="any" value="1450" />
+                    <span class="hint">Velocidad del eje primario</span>
+                    <p class="lab-field-help">Con el desplazamiento define el caudal teórico de bomba y el par requerido en el eje.</p>
+                  </div>
+                  <div class="lab-field">
+                    <label for="hpDispCm3Rev">Desplazamiento (cm³/rev)</label>
+                    <input id="hpDispCm3Rev" type="number" min="0.1" step="any" value="32" />
+                    <span class="hint">Volumen por vuelta</span>
+                    <p class="lab-field-help">Determina el caudal teórico Q<sub>teo</sub> = D×n; el caudal real incorpora eficiencia volumétrica.</p>
+                  </div>
+                  <div class="lab-field lab-field--wide">
+                    <label for="hpSuctionIn">Diámetro de succión a bomba</label>
+                    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;margin-bottom:0.25rem">
+                      <select id="hpSuctionIn" class="hp-dia-select" style="flex:1;min-width:10rem">
+                        <option value="0.125">1/8"</option>
+                        <option value="0.25">1/4"</option>
+                        <option value="0.375">3/8"</option>
+                        <option value="0.5">1/2"</option>
+                        <option value="0.625">5/8"</option>
+                        <option value="0.75">3/4"</option>
+                        <option value="0.875">7/8"</option>
+                        <option value="1" selected>1"</option>
+                        <option value="1.125">1 1/8"</option>
+                        <option value="1.25">1 1/4"</option>
+                        <option value="1.375">1 3/8"</option>
+                        <option value="1.5">1 1/2"</option>
+                        <option value="1.625">1 5/8"</option>
+                        <option value="1.75">1 3/4"</option>
+                        <option value="1.875">1 7/8"</option>
+                        <option value="2">2"</option>
+                        <option value="2.5">2 1/2"</option>
+                        <option value="3">3"</option>
+                        <option value="3.5">3 1/2"</option>
+                        <option value="4">4"</option>
+                        <option value="5">5"</option>
+                        <option value="6">6"</option>
+                      </select>
+                      <div class="hp-dia-unit" role="group" aria-label="Unidad de diámetro">
+                        <button type="button" class="hp-dia-unit__btn hp-dia-unit__btn--active" data-dia-unit="in" id="hpDiaUnitIn">pulgadas</button>
+                        <button type="button" class="hp-dia-unit__btn" data-dia-unit="mm" id="hpDiaUnitMm">mm</button>
+                      </div>
+                    </div>
+                    <span class="hint">Crítico para cavitación en succión</span>
+                    <p class="lab-field-help">El mismo selector de unidad aplica al diámetro de tubería en el bloque de conducciones.</p>
+                  </div>
+                </div>
+                <div class="hp-block__actions">
+                  <button type="button" class="lab-btn" id="hpBtnCalcPump">Actualizar bomba y resultados</button>
+                </div>
               </div>
-              <div class="lab-field" id="pipeFlowField">
-                <label for="pipeFlowLmin">Caudal (L/min)</label>
-                <input id="pipeFlowLmin" type="number" min="0.1" step="any" value="42" />
-                <span class="hint">Caudal en conduccion</span>
-                <p class="lab-field-help">Con diametro interno permite obtener velocidad de fluido y numero de Reynolds para clasificacion del flujo.</p>
-              </div>
-              <div class="lab-field">
-                <label for="pipeViscCst">Viscosidad cinematica (cSt)</label>
-                <input id="pipeViscCst" type="number" min="1" step="any" value="46" />
-                <span class="hint">Afecta Reynolds y friccion</span>
-                <p class="lab-field-help">Se convierte a m2/s para calcular Reynolds y el factor de friccion dentro de Darcy-Weisbach.</p>
-              </div>
-              <div class="lab-field">
-                <label for="pipeLengthM">Longitud de linea (m)</label>
-                <input id="pipeLengthM" type="number" min="0.5" step="any" value="12" />
-                <span class="hint">Perdida lineal principal</span>
-                <p class="lab-field-help">Incrementa la perdida de carga proporcionalmente en el termino f*(L/D) de Darcy-Weisbach.</p>
-              </div>
-              <div class="lab-field">
-                <label for="pipeDiaIn">Diametro interior actual (in)</label>
-                <select id="pipeDiaIn">
-                  <option value="0.125">1/8"</option>
-                  <option value="0.25">1/4"</option>
-                  <option value="0.375">3/8"</option>
-                  <option value="0.5">1/2"</option>
-                  <option value="0.625">5/8"</option>
-                  <option value="0.75" selected>3/4"</option>
-                  <option value="0.875">7/8"</option>
-                  <option value="1">1"</option>
-                  <option value="1.125">1 1/8"</option>
-                  <option value="1.25">1 1/4"</option>
-                  <option value="1.375">1 3/8"</option>
-                  <option value="1.5">1 1/2"</option>
-                  <option value="1.625">1 5/8"</option>
-                  <option value="1.75">1 3/4"</option>
-                  <option value="1.875">1 7/8"</option>
-                  <option value="2">2"</option>
-                  <option value="2.5">2 1/2"</option>
-                  <option value="3">3"</option>
-                  <option value="3.5">3 1/2"</option>
-                  <option value="4">4"</option>
-                  <option value="5">5"</option>
-                  <option value="6">6"</option>
-                </select>
-                <span class="hint">Variable clave de optimizacion</span>
-                <p class="lab-field-help">Use nomenclatura hidraulica en pulgadas (ej. 3/4, 1, 1 1/4). Se convierte a mm para las ecuaciones de fluidos.</p>
-              </div>
-              <div class="lab-field">
-                <label for="pipeElbows">Numero de codos</label>
-                <input id="pipeElbows" type="number" min="0" step="1" value="4" />
-                <span class="hint">Perdidas menores por cambios de direccion</span>
-                <p class="lab-field-help">Cada codo agrega perdidas singulares al balance de energia, aumentando la caida de presion total.</p>
-              </div>
-              <div class="lab-field">
-                <label for="pipeValves">Numero de valvulas</label>
-                <input id="pipeValves" type="number" min="0" step="1" value="2" />
-                <span class="hint">Perdidas menores localizadas</span>
-                <p class="lab-field-help">Se suman como coeficientes K para calcular perdida localizada adicional en la linea.</p>
+
+              <div class="hp-block hp-block--pipes">
+                <div class="hp-block__head">
+                  <h3 class="hp-block__title">② Conducciones — mapa de pérdida de carga</h3>
+                  <p class="hp-block__sub">Tipo de línea, caudal en conducción, viscosidad, longitud, diámetro interior, codos y válvulas.</p>
+                </div>
+                <div class="lab-grid lab-grid--2">
+                  <div class="lab-field">
+                    <label for="pipeLineType">Tipo de línea</label>
+                    <select id="pipeLineType">
+                      <option value="suction">Succión</option>
+                      <option value="pressure">Presión</option>
+                      <option value="return">Retorno</option>
+                    </select>
+                    <span class="hint">Cambia rango recomendado de velocidad</span>
+                    <p class="lab-field-help">Rangos usados: succión 0,5–1,2 m/s, presión 3–7 m/s, retorno 2–4 m/s.</p>
+                  </div>
+                  <div class="lab-field" id="pipeFlowField">
+                    <label for="pipeFlowLmin">Caudal (L/min)</label>
+                    <input id="pipeFlowLmin" type="number" min="0.1" step="any" value="42" />
+                    <span class="hint">Caudal en conducción</span>
+                    <p class="lab-field-help">Con diámetro interior permite obtener velocidad de fluido y número de Reynolds para la clasificación del flujo.</p>
+                  </div>
+                  <div class="lab-field lab-field--wide">
+                    <label for="pipeViscCst">Viscosidad cinemática (cSt)</label>
+                    <input id="pipeViscCst" type="number" min="1" step="any" value="46" />
+                    <span class="hint">Afecta Reynolds y fricción</span>
+                    <p class="lab-field-help">Se convierte a m²/s para calcular Reynolds y el factor de fricción en Darcy-Weisbach.</p>
+                    <table class="hp-vg-table" aria-label="Orientación ISO VG a 40 °C">
+                      <thead>
+                        <tr>
+                          <th>Aceite ISO VG</th>
+                          <th>ν a 40 °C (cSt)</th>
+                          <th>Uso típico</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>VG 32</td><td>~32</td><td>Sistemas de alta velocidad</td></tr>
+                        <tr><td>VG 46</td><td>~46</td><td>Uso general industrial</td></tr>
+                        <tr><td>VG 68</td><td>~68</td><td>Sistemas de alta presión</td></tr>
+                        <tr><td>VG 100</td><td>~100</td><td>Temperatura elevada / exterior</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="lab-field">
+                    <label for="pipeLengthM">Longitud de línea (m)</label>
+                    <input id="pipeLengthM" type="number" min="0.5" step="any" value="12" />
+                    <span class="hint">Pérdida lineal principal</span>
+                    <p class="lab-field-help">Incrementa la pérdida de carga proporcionalmente en el término f·(L/D) de Darcy-Weisbach.</p>
+                  </div>
+                  <div class="lab-field">
+                    <label for="pipeDiaIn">Diámetro interior actual</label>
+                    <select id="pipeDiaIn" class="hp-dia-select">
+                      <option value="0.125">1/8"</option>
+                      <option value="0.25">1/4"</option>
+                      <option value="0.375">3/8"</option>
+                      <option value="0.5">1/2"</option>
+                      <option value="0.625">5/8"</option>
+                      <option value="0.75" selected>3/4"</option>
+                      <option value="0.875">7/8"</option>
+                      <option value="1">1"</option>
+                      <option value="1.125">1 1/8"</option>
+                      <option value="1.25">1 1/4"</option>
+                      <option value="1.375">1 3/8"</option>
+                      <option value="1.5">1 1/2"</option>
+                      <option value="1.625">1 5/8"</option>
+                      <option value="1.75">1 3/4"</option>
+                      <option value="1.875">1 7/8"</option>
+                      <option value="2">2"</option>
+                      <option value="2.5">2 1/2"</option>
+                      <option value="3">3"</option>
+                      <option value="3.5">3 1/2"</option>
+                      <option value="4">4"</option>
+                      <option value="5">5"</option>
+                      <option value="6">6"</option>
+                    </select>
+                    <span class="hint">Variable clave de optimización</span>
+                    <p class="lab-field-help">Use nomenclatura hidráulica en pulgadas nominales; con el conmutador mm se muestran equivalentes comunes.</p>
+                  </div>
+                  <div class="lab-field">
+                    <label for="pipeElbows">Número de codos</label>
+                    <input id="pipeElbows" type="number" min="0" step="1" value="4" />
+                    <span class="hint">Pérdidas menores por cambios de dirección</span>
+                    <p class="lab-field-help">Cada codo añade pérdidas singulares al balance de energía, aumentando la caída de presión total.</p>
+                  </div>
+                  <div class="lab-field">
+                    <label for="pipeValves">Número de válvulas</label>
+                    <input id="pipeValves" type="number" min="0" step="1" value="2" />
+                    <span class="hint">Pérdidas menores localizadas</span>
+                    <p class="lab-field-help">Se suman como coeficientes K para calcular pérdida localizada adicional en la línea.</p>
+                  </div>
+                </div>
+                <div class="hp-block__actions">
+                  <button type="button" class="lab-btn" id="hpBtnCalcPipes">Actualizar conducciones y resultados</button>
+                </div>
               </div>
             </div>
           </div>
 
           <div class="lab-calc-layout__out">
             <details class="lab-fluid-formulas" id="hpFormulasBlock">
-              <summary>Memoria de calculo, formulas y supuestos</summary>
+              <summary>Memoria de cálculo, fórmulas y supuestos</summary>
               <div id="hpFormulaBody" class="lab-fluid-formulas__body"></div>
             </details>
             <div id="hpResults" class="lab-results"></div>
@@ -275,7 +472,7 @@
         </div>
       </section>
     </main>
-    <script type="module" src="js/ui/hydraulicPumpPage.js?v=20260424b"></script>
+    <script type="module" src="js/ui/hydraulicPumpPage.js?v=20260506a"></script>
     <script type="module" src="js/ui/labDonationFooter.js"></script>
   </body>
 </html>

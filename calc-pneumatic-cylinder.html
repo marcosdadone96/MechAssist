@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cilindro neumatico - Laboratorio</title>
+    <title>Cilindro neumático — MechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -30,13 +30,13 @@
         display: none;
       }
       .pc-more-details > summary::before {
-        content: '?';
+        content: '▸';
         font-size: 0.92rem;
         color: #0f766e;
         transform: translateY(-0.02em);
       }
       .pc-more-details[open] > summary::before {
-        content: '?';
+        content: '▾';
       }
       .pc-more-details__title {
         font-size: 0.9rem;
@@ -63,6 +63,107 @@
         background: #f1f5f9;
         border-color: #cbd5e1;
       }
+      .pc-flow-wrap {
+        grid-column: 1 / -1;
+      }
+      .pc-field-group {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.3s ease;
+      }
+      .pc-field-group--open {
+        grid-template-rows: 1fr;
+      }
+      .pc-field-group__inner {
+        min-height: 0;
+        overflow: hidden;
+      }
+      .pc-mini-table {
+        margin-top: 0.45rem;
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.72rem;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+      }
+      .pc-mini-table th,
+      .pc-mini-table td {
+        padding: 0.35rem 0.45rem;
+        text-align: left;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      .pc-mini-table th {
+        background: #f8fafc;
+        font-weight: 800;
+        color: #334155;
+      }
+      .pc-mini-table tr:last-child td {
+        border-bottom: 0;
+      }
+      .pc-fs-note {
+        margin-top: 0.4rem;
+        padding: 0.45rem 0.55rem;
+        font-size: 0.72rem;
+        line-height: 1.45;
+        color: #334155;
+        background: #eff6ff;
+        border: 1px solid #93c5fd;
+        border-radius: 8px;
+      }
+      .pc-verdict-summary {
+        display: grid;
+        gap: 0.5rem;
+        margin: 0.75rem 0 0.35rem;
+        padding: 0.65rem 0.75rem;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        background: linear-gradient(165deg, #ffffff 0%, #f8fafc 100%);
+      }
+      .pc-verdict-summary__title {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.15rem;
+      }
+      .pc-vs-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        font-size: 0.82rem;
+        line-height: 1.35;
+      }
+      .pc-vs-ico {
+        flex-shrink: 0;
+        font-weight: 800;
+        font-size: 1rem;
+        line-height: 1.2;
+      }
+      .pc-vs-item--ok .pc-vs-ico {
+        color: #059669;
+      }
+      .pc-vs-item--bad .pc-vs-ico {
+        color: #dc2626;
+      }
+      .pc-vs-item--info .pc-vs-ico {
+        color: #0369a1;
+      }
+      .pc-vs-label {
+        font-weight: 800;
+        color: #0f172a;
+      }
+      .pc-vs-sub {
+        font-size: 0.76rem;
+        color: #64748b;
+        font-weight: 600;
+        margin-top: 0.12rem;
+      }
+      .pc-vs-sub strong {
+        color: #0f172a;
+        font-weight: 800;
+      }
     </style>
   </head>
   <body class="lab-body">
@@ -81,7 +182,7 @@
 
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2>Cilindro neumatico - fuerza, consumo y estabilidad</h2>
+        <h2>Cilindro neumático — fuerza, consumo y estabilidad</h2>
         <p class="lab-lead">
           Calcula fuerza real, consumo de aire libre, chequeo de pandeo y margen de seguridad para validar si el cilindro es apto para la carga y la carrera.
         </p>
@@ -89,9 +190,9 @@
         <div class="lab-calc-layout lab-calc-layout--with-diag">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-              <p class="lab-diagram-wrap__title">Corte de cilindro neumatico (doble efecto)</p>
-              <svg id="pcDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema de cilindro con camaras A y B"></svg>
-              <p class="lab-diagram-caption">Camara A: avance. Camara B: retroceso. Se muestran embolo, sellos y vastago.</p>
+              <p class="lab-diagram-wrap__title">Corte de cilindro neumático (doble efecto)</p>
+              <svg id="pcDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema de cilindro con cámaras A y B"></svg>
+              <p class="lab-diagram-caption">Cámara A: avance. Cámara B: retroceso. Se muestran émbolo, sellos y vástago.</p>
             </div>
           </div>
 
@@ -104,57 +205,71 @@
                   <option value="diagnostic">Diagnosticar máquina existente</option>
                 </select>
                 <span class="hint">Cambia entre diseño y diagnóstico</span>
-                <p class="lab-field-help">Diagnóstico calcula fuerza real desde diámetro y presión reales de la máquina instalada.</p>
+                <p class="lab-field-help">El diagnóstico calcula la fuerza real a partir del diámetro y la presión de la máquina instalada.</p>
               </div>
               <div class="lab-field lab-field--wide">
                 <label for="pcLabTier">Nivel de detalle memoria</label>
                 <select id="pcLabTier">
-                  <option value="basic" selected>Aula (basico)</option>
+                  <option value="basic" selected>Aula (básico)</option>
                   <option value="project">Proyecto (Patm + Euler + nota)</option>
                 </select>
                 <span class="hint">Memoria ampliada y PDF</span>
-                <p class="lab-field-help">Proyecto permite Patm distinta de 1 bar para Nl, factor de longitud efectiva en pandeo y nota de metodo.</p>
+                <p class="lab-field-help">Proyecto permite Patm distinta de 1 bar para Nl, factor de longitud efectiva en pandeo y nota de método.</p>
               </div>
               <div class="lab-field lab-field--wide" id="pcProjectPanel" hidden>
                 <div class="lab-grid lab-grid--2" style="gap:0.65rem">
                   <div class="lab-field">
-                    <label for="pcPatmBar">Presion atmosferica local (bar abs)</label>
+                    <label for="pcPatmBar">Presión atmosférica local (bar abs)</label>
                     <input id="pcPatmBar" type="number" step="any" value="1.013" />
-                    <span class="hint">Para conversion a aire libre Nl</span>
+                    <span class="hint">Para conversión a aire libre Nl</span>
                   </div>
                   <div class="lab-field">
-                    <label for="pcEulerLengthFactor">Factor longitud efectiva pandeo (x carrera)</label>
+                    <label for="pcEulerLengthFactor">Factor longitud efectiva pandeo (× carrera)</label>
                     <select id="pcEulerLengthFactor">
-                      <option value="1">1.0 - apoyos ideales cortos</option>
-                      <option value="1.2" selected>1.2 - valor por defecto previo</option>
-                      <option value="1.5">1.5 - guias intermedias debiles</option>
-                      <option value="2">2.0 - vastago muy libre</option>
+                      <option value="1">1,0 — apoyos ideales cortos</option>
+                      <option value="1.2" selected>1,2 — valor por defecto previo</option>
+                      <option value="1.5">1,5 — guías intermedias débiles</option>
+                      <option value="2">2,0 — vástago muy libre</option>
                     </select>
                   </div>
                   <div class="lab-field lab-field--wide">
-                    <label for="pcMethodNote">Nota de metodo / supuestos (opcional)</label>
-                    <input id="pcMethodNote" type="text" maxlength="200" placeholder="Ej. ISO 15552, montaje con guia..." />
+                    <label for="pcMethodNote">Nota de método / supuestos (opcional)</label>
+                    <input id="pcMethodNote" type="text" maxlength="200" placeholder="Ej. ISO 15552, montaje con guía…" />
                     <span class="hint">Aparece en memoria y PDF</span>
                   </div>
                 </div>
               </div>
               <div class="lab-field lab-field--wide">
-                <label for="pcDiameterMode">Modo de diametros</label>
+                <label for="pcDiameterMode">Modo de diámetros</label>
                 <select id="pcDiameterMode">
-                  <option value="iso" selected>Estandar ISO (15552/6432)</option>
+                  <option value="iso" selected>Estándar ISO (15552/6432)</option>
                   <option value="manual">Manual</option>
                 </select>
                 <span class="hint">ISO reduce coste y plazo de entrega</span>
-                <p class="lab-field-help">En modo ISO se usan medidas comerciales normalizadas. En modo manual se permite valor libre con aviso de cercania a estandar.</p>
+                <p class="lab-field-help">En modo ISO se usan medidas comerciales normalizadas. En modo manual se permite valor libre con aviso de cercanía a estándar.</p>
               </div>
               <div class="lab-field">
-                <label for="pcPressureBar">Presion de red (bar)</label>
+                <label for="pcPressureBar">Presión de red (bar)</label>
                 <input id="pcPressureBar" type="number" min="1" step="any" value="6" />
-                <span class="hint">Presion manometrica de alimentacion</span>
-                <p class="lab-field-help">Valor disponible en la red neumatica en condiciones reales de operacion, sin caidas locales severas.</p>
+                <span class="hint">Presión manométrica de alimentación</span>
+                <p class="lab-field-help">Valor disponible en la red neumática en condiciones reales de operación, sin caídas locales severas.</p>
+                <table class="pc-mini-table" aria-label="Presión de red típica por aplicación">
+                  <thead>
+                    <tr>
+                      <th>Aplicación</th>
+                      <th>Presión de red típica</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Automatización ligera / packaging</td><td>4 – 6 bar</td></tr>
+                    <tr><td>Industrial general / manipulación</td><td>6 – 8 bar</td></tr>
+                    <tr><td>Aplicaciones de fuerza / prensado</td><td>8 – 10 bar</td></tr>
+                    <tr><td>Sistemas especiales (alta fuerza)</td><td>10 – 16 bar</td></tr>
+                  </tbody>
+                </table>
               </div>
               <div class="lab-field">
-                <label for="pcBoreIso">Diametro de embolo ISO (mm)</label>
+                <label for="pcBoreIso">Diámetro de émbolo ISO (mm)</label>
                 <select id="pcBoreIso">
                   <option value="32">32</option>
                   <option value="40">40</option>
@@ -163,74 +278,89 @@
                   <option value="80">80</option>
                   <option value="100">100</option>
                   <option value="125">125</option>
+                  <option value="160">160</option>
+                  <option value="200">200</option>
+                  <option value="250">250</option>
+                  <option value="320">320</option>
                 </select>
-                <span class="hint">Define area activa principal</span>
-                <p class="lab-field-help">Area de avance A = pi*D^2/4. A mayor D, mayor fuerza disponible a igual presion.</p>
+                <span class="hint">Define área activa principal</span>
+                <p class="lab-field-help">Área de avance A = π×D²/4. A mayor D, mayor fuerza disponible a igual presión. Al cambiar el émbolo, el vástago se ajusta al ISO por defecto (editable).</p>
               </div>
               <div class="lab-field">
-                <label for="pcRodIso">Diametro de vastago ISO (mm)</label>
+                <label for="pcRodIso">Diámetro de vástago ISO (mm)</label>
                 <select id="pcRodIso"></select>
                 <span class="hint">Afecta retroceso y pandeo</span>
-                <p class="lab-field-help">Reduce area efectiva en retroceso y determina rigidez a compresion frente a pandeo.</p>
+                <p class="lab-field-help">Reduce el área efectiva en retroceso y determina rigidez frente al pandeo.</p>
               </div>
               <div class="lab-field pc-manual-field" id="pcBoreManualField" hidden>
-                <label for="pcBoreManual">Diametro de embolo manual (mm)</label>
+                <label for="pcBoreManual">Diámetro de émbolo manual (mm)</label>
                 <input id="pcBoreManual" type="number" min="8" step="any" value="63" />
-                <span class="hint">Solo para caso no estandar</span>
-                <p class="lab-field-help">Si el valor no coincide con ISO, el asesor propone el diametro normalizado mas cercano.</p>
+                <span class="hint">Solo para caso no estándar</span>
+                <p class="lab-field-help">Si el valor no coincide con ISO, el asesor propone el diámetro normalizado más cercano.</p>
               </div>
               <div class="lab-field pc-manual-field" id="pcRodManualField" hidden>
-                <label for="pcRodManual">Diametro de vastago manual (mm)</label>
+                <label for="pcRodManual">Diámetro de vástago manual (mm)</label>
                 <input id="pcRodManual" type="number" min="4" step="any" value="20" />
                 <span class="hint">Validar disponibilidad comercial</span>
-                <p class="lab-field-help">Los vastagos fuera de serie ISO pueden aumentar coste y plazo de suministro.</p>
+                <p class="lab-field-help">Los vástagos fuera de serie ISO pueden aumentar coste y plazo de suministro.</p>
               </div>
               <div class="lab-field">
                 <label for="pcStrokeMm">Carrera (mm)</label>
                 <input id="pcStrokeMm" type="number" min="10" step="any" value="500" />
-                <span class="hint">Longitud util de desplazamiento</span>
+                <span class="hint">Longitud útil de desplazamiento</span>
                 <p class="lab-field-help">Carreras largas incrementan riesgo de pandeo y consumo por ciclo.</p>
               </div>
-              <div class="lab-field">
-                <label for="pcLoadKg">Carga a mover (kg)</label>
-                <input id="pcLoadKg" type="number" min="0.1" step="any" value="120" />
-                <span class="hint">Carga externa equivalente</span>
-                <p class="lab-field-help">Se convierte a fuerza en N (F = m*g) para comparar con fuerza real del cilindro.</p>
+              <div class="pc-flow-wrap">
+                <div id="pcGroupDesignLoad" class="pc-field-group pc-field-group--open">
+                  <div class="pc-field-group__inner">
+                    <div class="lab-field">
+                      <label for="pcLoadKg">Carga a mover (kg)</label>
+                      <input id="pcLoadKg" type="number" min="0.1" step="any" value="120" />
+                      <span class="hint">Carga externa equivalente</span>
+                      <p class="lab-field-help">Se convierte a fuerza en N (F = m×g) para comparar con la fuerza real del cilindro.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="lab-field">
                 <label for="pcCyclesMin">Ciclos por minuto (cpm)</label>
                 <input id="pcCyclesMin" type="number" min="0.1" step="any" value="12" />
-                <span class="hint">Frecuencia de operacion</span>
-                <p class="lab-field-help">Permite calcular el consumo en Nl/min para dimensionar compresor y acumulacion.</p>
+                <span class="hint">Frecuencia de operación</span>
+                <p class="lab-field-help">Permite calcular el consumo en Nl/min para dimensionar compresor y acumulación.</p>
               </div>
               <div class="lab-field lab-field--wide">
                 <label for="pcMotionType">Tipo de movimiento</label>
                 <select id="pcMotionType">
                   <option value="horizontal" selected>Horizontal</option>
-                  <option value="vertical">Vertical (elevacion)</option>
+                  <option value="vertical">Vertical (elevación)</option>
                 </select>
                 <span class="hint">Ajusta el criterio del factor de seguridad</span>
-                <p class="lab-field-help">Para elevacion vertical se recomienda margen de fuerza mayor (habitualmente superior a 2.0x).</p>
+                <p class="lab-field-help">Para elevación vertical se recomienda margen de fuerza mayor (habitualmente superior a 2,0×).</p>
+                <p class="pc-fs-note">
+                  Para movimiento horizontal: <strong>FS ≥ 1,5</strong>. Para elevación vertical: <strong>FS ≥ 2,0</strong>.
+                  Para aplicaciones de seguridad (sujeción de personas, piezas sobre operario): <strong>FS ≥ 3,0</strong> y verificar con la normativa de seguridad aplicable.
+                </p>
               </div>
             </div>
           </div>
 
           <div class="lab-calc-layout__out">
             <details class="lab-fluid-formulas" id="pcFormulasBlock">
-              <summary>Memoria de calculo, formulas y supuestos</summary>
+              <summary>Memoria de cálculo, fórmulas y supuestos</summary>
               <div id="pcFormulaBody" class="lab-fluid-formulas__body"></div>
             </details>
             <div id="pcResults" class="lab-results"></div>
             <div id="pcAdvisor" class="lab-alerts"></div>
             <p id="pcRodThreadInfo" class="lab-small-print"></p>
             <p id="pcVerdict" class="lab-verdict lab-verdict--ok">SISTEMA APTO</p>
+            <div id="pcVerdictSummary" class="pc-verdict-summary" aria-live="polite"></div>
             <div id="labFluidPdfMountPc" class="premium-pdf-mount"></div>
           </div>
         </div>
       </section>
     </main>
 
-    <script type="module" src="js/ui/pneumaticCylinderPage.js?v=20260424b"></script>
+    <script type="module" src="js/ui/pneumaticCylinderPage.js?v=20260506e"></script>
     <script type="module" src="js/ui/labDonationFooter.js"></script>
   </body>
 </html>

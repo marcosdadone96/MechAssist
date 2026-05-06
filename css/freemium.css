@@ -15,9 +15,14 @@
 }
 
 .tier-badge--free {
-  color: #065f46;
-  background: #ecfdf5;
-  border-color: #a7f3d0;
+  color: #064e3b;
+  background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+  border-color: #34d399;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 2px 6px rgba(5, 150, 105, 0.18);
+  font-size: 0.64rem;
+  padding: 0.22rem 0.52rem;
 }
 
 .tier-badge--pro {
@@ -187,11 +192,12 @@
 }
 
 .hub-pricing-card--pro {
-  background: linear-gradient(165deg, #ffffff 0%, #f8fafc 42%, #f5f3ff 100%);
-  border: 1px solid rgba(99, 102, 241, 0.28);
+  background: linear-gradient(165deg, #ffffff 0%, #faf5ff 38%, #f1f5f9 100%);
+  border: 1px solid rgba(99, 102, 241, 0.32);
   box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.88) inset,
     0 2px 4px rgba(79, 70, 229, 0.06),
-    0 20px 48px rgba(79, 70, 229, 0.12);
+    0 24px 56px rgba(79, 70, 229, 0.14);
 }
 
 .hub-pricing-card--pro:hover {
@@ -214,18 +220,21 @@
 
 .hub-pricing-card__ribbon {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 1.1rem;
+  right: 1.1rem;
   z-index: 1;
-  font-size: 0.62rem;
+  font-size: 0.64rem;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.32rem 0.62rem;
+  padding: 0.38rem 0.72rem;
   border-radius: 999px;
   color: #fff;
-  background: linear-gradient(135deg, #6366f1 0%, #7c3aed 50%, #9333ea 100%);
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45);
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 45%, #a855f7 100%);
+  box-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.12) inset,
+    0 6px 20px rgba(91, 33, 182, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .hub-pricing-card__top {
@@ -234,9 +243,23 @@
   border-bottom: 1px solid rgba(148, 163, 184, 0.2);
 }
 
+.hub-pricing-card__tagline {
+  margin: 0 0 0.65rem;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  font-weight: 600;
+  color: #475569;
+}
+
+.hub-pricing-card__tagline--muted {
+  font-weight: 500;
+  color: #64748b;
+}
+
 .hub-pricing-card--pro .hub-pricing-card__top {
   border-bottom-color: rgba(99, 102, 241, 0.15);
   padding-right: 6.5rem;
+  padding-top: 0.35rem;
 }
 
 .hub-pricing-card__name {
@@ -371,6 +394,17 @@
   font-size: 0.78rem;
   line-height: 1.5;
   color: #94a3b8;
+}
+
+@media (max-width: 560px) {
+  .hub-pricing-card--pro .hub-pricing-card__top {
+    padding-right: 0;
+  }
+
+  .hub-pricing-card__ribbon {
+    top: 0.85rem;
+    right: 0.85rem;
+  }
 }
 
 /* --- Modal --- */

@@ -18,10 +18,11 @@ const LANG = (() => {
 })();
 const TXT = {
   es: {
-    title: 'Cilindro neumatico - fuerza, consumo y estabilidad',
+    pageTitle: 'Cilindro neumático — MechAssist',
+    title: 'Cilindro neumático — fuerza, consumo y estabilidad',
     lead: 'Calcula fuerza real, consumo de aire libre, chequeo de pandeo y margen de seguridad para validar si el cilindro es apto para la carga y la carrera.',
-    details: 'Ver Datos Tecnicos Secundarios',
-    detailsHint: 'Teoricos e intermedios',
+    details: 'Ver datos técnicos secundarios',
+    detailsHint: 'Teóricos e intermedios',
     verdictOk: 'SISTEMA APTO',
     m1: 'Fuerza Real (Av/Ret)',
     m2: 'Factor de Seguridad Fuerza',
@@ -35,82 +36,84 @@ const TXT = {
     navHome: 'Inicio',
     navLab: 'Laboratorio',
     navCanvas: 'Lienzo Pro',
-    diagramTitle: 'Corte de cilindro neumatico (doble efecto)',
-    diagramCaption: 'Camara A: avance. Camara B: retroceso. Se muestran embolo, sellos y vastago.',
-    fModeLabel: 'Modo de diametros',
+    diagramTitle: 'Corte de cilindro neumático (doble efecto)',
+    diagramCaption: 'Cámara A: avance. Cámara B: retroceso. Se muestran émbolo, sellos y vástago.',
+    fModeLabel: 'Modo de diámetros',
     fModeHint: 'ISO reduce coste y plazo de entrega',
-    fModeHelp: 'En modo ISO se usan medidas comerciales normalizadas. En modo manual se permite valor libre con aviso de cercania a estandar.',
-    optIso: 'Estandar ISO (15552/6432)',
+    fModeHelp: 'En modo ISO se usan medidas comerciales normalizadas. En modo manual se permite valor libre con aviso de cercanía a estándar.',
+    optIso: 'Estándar ISO (15552/6432)',
     optManual: 'Manual',
-    fPressureLabel: 'Presion de red (bar)',
-    fPressureHint: 'Presion manometrica de alimentacion',
-    fPressureHelp: 'Valor disponible en la red neumatica en condiciones reales de operacion, sin caidas locales severas.',
-    fBoreIsoLabel: 'Diametro de embolo ISO (mm)',
-    fBoreIsoHint: 'Define area activa principal',
-    fBoreIsoHelp: 'Area de avance A = pi*D^2/4. A mayor D, mayor fuerza disponible a igual presion.',
-    fRodIsoLabel: 'Diametro de vastago ISO (mm)',
+    fPressureLabel: 'Presión de red (bar)',
+    fPressureHint: 'Presión manométrica de alimentación',
+    fPressureHelp: 'Valor disponible en la red neumática en condiciones reales de operación, sin caídas locales severas.',
+    fBoreIsoLabel: 'Diámetro de émbolo ISO (mm)',
+    fBoreIsoHint: 'Define área activa principal',
+    fBoreIsoHelp: 'Área de avance A = π×D²/4. A mayor D, mayor fuerza disponible a igual presión.',
+    fRodIsoLabel: 'Diámetro de vástago ISO (mm)',
     fRodIsoHint: 'Afecta retroceso y pandeo',
-    fRodIsoHelp: 'Reduce area efectiva en retroceso y determina rigidez a compresion frente a pandeo.',
-    fBoreManualLabel: 'Diametro de embolo manual (mm)',
-    fBoreManualHint: 'Solo para caso no estandar',
-    fBoreManualHelp: 'Si el valor no coincide con ISO, el asesor propone el diametro normalizado mas cercano.',
-    fRodManualLabel: 'Diametro de vastago manual (mm)',
+    fRodIsoHelp: 'Reduce el área efectiva en retroceso y determina la rigidez frente al pandeo.',
+    fBoreManualLabel: 'Diámetro de émbolo manual (mm)',
+    fBoreManualHint: 'Solo para caso no estándar',
+    fBoreManualHelp: 'Si el valor no coincide con ISO, el asesor propone el diámetro normalizado más cercano.',
+    fRodManualLabel: 'Diámetro de vástago manual (mm)',
     fRodManualHint: 'Validar disponibilidad comercial',
-    fRodManualHelp: 'Los vastagos fuera de serie ISO pueden aumentar coste y plazo de suministro.',
+    fRodManualHelp: 'Los vástagos fuera de serie ISO pueden aumentar coste y plazo de suministro.',
     fStrokeLabel: 'Carrera (mm)',
     fStrokeHint: 'Longitud util de desplazamiento',
     fStrokeHelp: 'Carreras largas incrementan riesgo de pandeo y consumo por ciclo.',
     fLoadLabel: 'Carga a mover (kg)',
     fLoadHint: 'Carga externa equivalente',
-    fLoadHelp: 'Se convierte a fuerza en N (F = m*g) para comparar con fuerza real del cilindro.',
+    fLoadHelp: 'Se convierte a fuerza en N (F = m·g) para comparar con la fuerza real del cilindro.',
     fCyclesLabel: 'Ciclos por minuto (cpm)',
-    fCyclesHint: 'Frecuencia de operacion',
-    fCyclesHelp: 'Permite calcular el consumo en Nl/min para dimensionar compresor y acumulacion.',
+    fCyclesHint: 'Frecuencia de operación',
+    fCyclesHelp: 'Permite calcular el consumo en Nl/min para dimensionar compresor y acumulación.',
     fMotionLabel: 'Tipo de movimiento',
     fMotionHint: 'Ajusta el criterio del factor de seguridad',
-    fMotionHelp: 'Para elevacion vertical se recomienda margen de fuerza mayor (habitualmente superior a 2.0x).',
+    fMotionHelp: 'Para elevación vertical se recomienda margen de fuerza mayor (habitualmente superior a 2,0×).',
     motionH: 'Horizontal',
-    motionV: 'Vertical (elevacion)',
-    warnNonStdBore: 'Diametro no normalizado',
-    warnNonStdBoreBody: 'El estandar ISO mas cercano es {near} mm. Usar medidas estandar reduce costos y plazos de entrega.',
-    warnNonStdRod: 'Vastago no normalizado',
-    warnNonStdRodBody: 'Usa un diametro ISO para mejorar disponibilidad y mantenimiento.',
+    motionV: 'Vertical (elevación)',
+    warnNonStdBore: 'Diámetro no normalizado',
+    warnNonStdBoreBody: 'El estándar ISO más cercano es {near} mm. Usar medidas estándar reduce costos y plazos de entrega.',
+    warnNonStdRod: 'Vástago no normalizado',
+    warnNonStdRodBody: 'Use un diámetro ISO para mejorar disponibilidad y mantenimiento.',
     warnFsHorizontal: 'Factor de seguridad ({fs}x)',
-    warnFsHorizontalBody: 'Aceptable para movimiento horizontal, pero bajo para elevacion vertical (se recomienda >2.0x).',
+    warnFsHorizontalBody: 'Aceptable para movimiento horizontal, pero bajo para elevación vertical (se recomienda >2,0×).',
     warnFsVertical: 'Fuerza insuficiente',
-    warnFsVerticalBody: 'Para elevacion vertical se recomienda factor >2.0x para compensar inercia y variaciones de presion.',
+    warnFsVerticalBody: 'Para elevación vertical se recomienda factor >2,0× para compensar inercia y variaciones de presión.',
     dangerBuckling: 'PELIGRO DE PANDEO',
-    dangerBucklingBody: 'El vastago es demasiado largo para esta carga. Aumenta el diametro del vastago o reduce la carrera.',
+    dangerBucklingBody: 'El vástago es demasiado largo para esta carga. Aumente el diámetro del vástago o reduzca la carrera.',
     warnThrottle: 'Posible estrangulamiento',
     warnThrottleBody: 'A {v} m/s, racores o mangueras de 1/4" pueden limitar caudal. Revisar seccion de paso efectiva.',
     infoCushion: 'Cilindro de 63 mm',
-    infoCushionBody: 'Se recomienda activar la amortiguacion neumatica para absorber la carga al final de carrera.',
+    infoCushionBody: 'Se recomienda activar la amortiguación neumática para absorber la carga al final de carrera.',
     infoAir: 'Insight',
-    infoAirBody: 'Este cilindro consumira {n} Nl por ciclo. Asegurate de que tu acumulador de aire tenga capacidad suficiente para mantener la presion.',
-    verdictNo: 'SISTEMA NO APTO - Riesgo de fallo por capacidad o pandeo',
-    verdictRiskV: 'RIESGO: Factor de seguridad bajo para elevacion vertical. Selecciona el siguiente diametro estandar ({d} mm).',
+    infoAirBody: 'Este cilindro consumirá {n} Nl por ciclo. Asegúrese de que el acumulador de aire tenga capacidad suficiente para mantener la presión.',
+    verdictNo: 'SISTEMA NO APTO — Riesgo de fallo por capacidad o pandeo',
+    verdictRiskV: 'RIESGO: factor de seguridad bajo para elevación vertical. Seleccione el siguiente diámetro estándar ({d} mm).',
     verdictLow: 'EFICIENCIA BAJA - Margen de fuerza reducido',
-    verdictOkLong: 'SISTEMA APTO - Cilindro valido para la carga y presion de red',
-    rodFallback: 'Conexion: Vastago {d} mm, confirmar rosca en catalogo del fabricante.',
-    diagramHead: 'Cilindro neumatico de doble efecto - corte longitudinal',
+    verdictOkLong: 'SISTEMA APTO — Cilindro válido para la carga y presión de red',
+    rodFallback: 'Conexión: vástago {d} mm; confirmar rosca en catálogo del fabricante.',
+    diagramHead: 'Cilindro neumático de doble efecto — corte longitudinal',
     diagramStroke: 'Carrera nominal {s} mm',
-    diagramRodD: 'Dvastago {d} mm',
-    diagramPiston: 'Embolo + sellos',
-    diagramRod: 'Vastago',
-    invalidTitle: 'Entrada no valida',
+    diagramRodD: 'Ø vástago {d} mm / Ø émbolo {b} mm',
+    diagramChamberA: 'Cámara A (avance)',
+    diagramChamberB: 'Cámara B (retroceso)',
+    diagramPiston: 'Émbolo + sellos',
+    diagramRod: 'Vástago',
+    invalidTitle: 'Entrada no válida',
     invalidVerdict: 'Revise los valores del formulario.',
-    errRodGeBore: 'El vastago debe ser menor que el piston.',
-    fFormulasSummary: 'Memoria de calculo, formulas y supuestos',
+    errRodGeBore: 'El vástago debe ser menor que el émbolo.',
+    fFormulasSummary: 'Memoria de cálculo, fórmulas y supuestos',
     fLabTierLabel: 'Nivel de detalle memoria',
     fLabTierHint: 'Memoria ampliada y PDF',
-    fLabTierHelp: 'Proyecto permite Patm distinta de 1 bar para Nl, factor de longitud efectiva en pandeo y nota de metodo.',
-    fPatmLabel: 'Presion atmosferica local (bar abs)',
+    fLabTierHelp: 'Proyecto permite Patm distinta de 1 bar para Nl, factor de longitud efectiva en pandeo y nota de método.',
+    fPatmLabel: 'Presión atmosférica local (bar abs)',
     fPatmHint: 'Para conversion a aire libre Nl',
-    fEulerLabel: 'Factor longitud efectiva pandeo (x carrera)',
-    fMethodNoteLabel: 'Nota de metodo / supuestos (opcional)',
+    fEulerLabel: 'Factor longitud efectiva pandeo (× carrera)',
+    fMethodNoteLabel: 'Nota de método / supuestos (opcional)',
     fMethodNoteHint: 'Aparece en memoria y PDF',
-    fMethodNoteHelp: 'Ej. norma de montaje, guias, criterio de carga.',
-    optTierBasic: 'Aula (basico)',
+    fMethodNoteHelp: 'Ej. norma de montaje, guías, criterio de carga.',
+    optTierBasic: 'Aula (básico)',
     optTierProject: 'Proyecto (Patm + Euler + nota)',
     fCalcModeLabel: '¿Qué quieres calcular?',
     fCalcModeHint: 'Cambia entre diseño y diagnóstico',
@@ -120,12 +123,25 @@ const TXT = {
     fLoadHintAuto: 'Calculado automáticamente',
     fLoadHelpDiag: 'En modo diagnóstico se usa la capacidad máxima de carga con tus diámetros y presión actuales.',
     infoDiagTitle: 'Diagnóstico',
-    infoDiagBody: 'Con tus componentes actuales, el factor de seguridad es {fs}x.',
+    infoDiagBody: 'Con sus componentes actuales, el factor de seguridad es {fs}×.',
     dangerPressureTitle: 'Presión fuera de rango',
     dangerPressureBody: 'El cilindro físico podría fallar estructuralmente.',
+    warnStrokeSlender: 'Relación carrera/émbolo elevada',
+    warnStrokeSlenderBody: 'Carrera/Ø émbolo = {r} (> 10): zona de riesgo de pandeo para vástagos estándar sin guía intermedia. Considere guías, vástago mayor o menor carrera.',
+    vsTitle: 'Resumen de comprobaciones',
+    vsForce: 'Fuerza disponible vs carga',
+    vsForceOk: 'Margen {p} % sobre la carga.',
+    vsForceDiag: 'Diagnóstico: carga de referencia interna; sin margen % frente a objetivo externo.',
+    vsForceBad: 'Ratio fuerza/carga {r}× (objetivo ≥ {m}×).',
+    vsBuck: 'Pandeo del vástago',
+    vsBuckOk: 'Apto — P_cr >> carga (riesgo bajo con modelo Euler).',
+    vsBuckBad: 'Revisar — riesgo de pandeo elevado.',
+    vsAir: 'Consumo de aire',
+    vsAirSub: '<strong>{q}</strong> Nl/min · <strong>{c}</strong> Nl/ciclo',
   },
   en: {
-    title: 'Pneumatic cylinder - force, consumption and stability',
+    pageTitle: 'Pneumatic cylinder — MechAssist',
+    title: 'Pneumatic cylinder — force, consumption and stability',
     lead: 'Calculate real force, free air consumption, buckling check and safety margin to validate if the cylinder is suitable for load and stroke.',
     details: 'View Secondary Technical Data',
     detailsHint: 'Theoretical and intermediate',
@@ -201,7 +217,9 @@ const TXT = {
     rodFallback: 'Connection: Rod {d} mm, verify thread in manufacturer catalog.',
     diagramHead: 'Double-acting pneumatic cylinder - longitudinal cross-section',
     diagramStroke: 'Nominal stroke {s} mm',
-    diagramRodD: 'Drod {d} mm',
+    diagramRodD: 'Ø rod {d} mm / Ø bore {b} mm',
+    diagramChamberA: 'Chamber A (extend)',
+    diagramChamberB: 'Chamber B (retract)',
     diagramPiston: 'Piston + seals',
     diagramRod: 'Rod',
     invalidTitle: 'Invalid input',
@@ -213,7 +231,7 @@ const TXT = {
     fLabTierHelp: 'Project mode enables local Patm for free air Nl, Euler effective length factor and a method note.',
     fPatmLabel: 'Local atmospheric pressure (bar abs)',
     fPatmHint: 'For free-air Nl conversion',
-    fEulerLabel: 'Euler effective length factor (x stroke)',
+    fEulerLabel: 'Euler effective length factor (× stroke)',
     fMethodNoteLabel: 'Method / assumptions note (optional)',
     fMethodNoteHint: 'Shown in memory and PDF',
     fMethodNoteHelp: 'E.g. mounting standard, guides, load criterion.',
@@ -230,6 +248,18 @@ const TXT = {
     infoDiagBody: 'With your current components, the safety factor is {fs}x.',
     dangerPressureTitle: 'Pressure out of typical range',
     dangerPressureBody: 'The physical cylinder could fail structurally.',
+    warnStrokeSlender: 'High stroke/bore ratio',
+    warnStrokeSlenderBody: 'Stroke/bore = {r} (> 10): buckling risk zone for standard rods without intermediate guiding. Consider guides, larger rod or shorter stroke.',
+    vsTitle: 'Check summary',
+    vsForce: 'Available force vs load',
+    vsForceOk: '{p} % margin on load.',
+    vsForceDiag: 'Diagnostic: internal reference load; no % margin vs external target.',
+    vsForceBad: 'Force/load ratio {r}× (target ≥ {m}×).',
+    vsBuck: 'Rod buckling',
+    vsBuckOk: 'OK — P_cr >> load (low risk in Euler model).',
+    vsBuckBad: 'Review — high buckling risk.',
+    vsAir: 'Air consumption',
+    vsAirSub: '<strong>{q}</strong> Nl/min · <strong>{c}</strong> Nl/cycle',
   },
 };
 function tr(k, vars = {}) {
@@ -250,7 +280,7 @@ function setFieldText(id, label, hint, help) {
 
 function applyStaticI18n() {
   document.documentElement.setAttribute('lang', LANG);
-  document.title = tr('title');
+  document.title = tr('pageTitle');
   const nav = document.querySelectorAll('.lab-header nav a');
   if (nav[0]) nav[0].textContent = tr('navHome');
   if (nav[1]) nav[1].textContent = tr('navLab');
@@ -305,25 +335,48 @@ function applyStaticI18n() {
     tierSel.options[1].textContent = tr('optTierProject');
   }
 }
-const ISO_BORES = [32, 40, 50, 63, 80, 100, 125];
+const ISO_BORES = [32, 40, 50, 63, 80, 100, 125, 160, 200, 250, 320];
+/** Vástago ISO por defecto (primero en cada lista de `ISO_RODS_BY_BORE`) según émbolo. */
+const ISO_DEFAULT_ROD_BY_BORE = {
+  32: 12,
+  40: 16,
+  50: 20,
+  63: 25,
+  80: 25,
+  100: 32,
+  125: 40,
+  160: 50,
+  200: 63,
+  250: 80,
+  320: 100,
+};
 const ISO_RODS_BY_BORE = {
   32: [12],
   40: [16],
   50: [20],
-  63: [20, 25],
+  63: [25, 20],
   80: [25, 30],
-  100: [25, 35],
-  125: [32, 40],
+  100: [32, 25, 35],
+  125: [40, 32],
+  160: [50, 40],
+  200: [63, 50],
+  250: [80, 63],
+  320: [100, 80],
 };
+const ALL_ISO_ROD_DIAMETERS = Array.from(new Set(Object.values(ISO_RODS_BY_BORE).flat()));
 const ROD_THREAD_INFO = {
-  12: { es: 'Conexion: Vastago 12 mm tipicamente usa rosca M10x1.25', en: 'Connection: 12 mm rod typically uses M10x1.25 thread' },
-  16: { es: 'Conexion: Vastago 16 mm tipicamente usa rosca M12x1.25', en: 'Connection: 16 mm rod typically uses M12x1.25 thread' },
-  20: { es: 'Conexion: Vastago 20 mm tipicamente usa rosca M16x1.5', en: 'Connection: 20 mm rod typically uses M16x1.5 thread' },
-  25: { es: 'Conexion: Vastago 25 mm tipicamente usa rosca M20x1.5', en: 'Connection: 25 mm rod typically uses M20x1.5 thread' },
-  30: { es: 'Conexion: Vastago 30 mm tipicamente usa rosca M24x2', en: 'Connection: 30 mm rod typically uses M24x2 thread' },
-  32: { es: 'Conexion: Vastago 32 mm tipicamente usa rosca M27x2', en: 'Connection: 32 mm rod typically uses M27x2 thread' },
-  35: { es: 'Conexion: Vastago 35 mm tipicamente usa rosca M30x2', en: 'Connection: 35 mm rod typically uses M30x2 thread' },
-  40: { es: 'Conexion: Vastago 40 mm tipicamente usa rosca M36x2', en: 'Connection: 40 mm rod typically uses M36x2 thread' },
+  12: { es: 'Conexión: vástago 12 mm — típicamente rosca M10×1,25', en: 'Connection: 12 mm rod — typically M10×1.25 thread' },
+  16: { es: 'Conexión: vástago 16 mm — típicamente rosca M12×1,25', en: 'Connection: 16 mm rod — typically M12×1.25 thread' },
+  20: { es: 'Conexión: vástago 20 mm — típicamente rosca M16×1,5', en: 'Connection: 20 mm rod — typically M16×1.5 thread' },
+  25: { es: 'Conexión: vástago 25 mm — típicamente rosca M20×1,5', en: 'Connection: 25 mm rod — typically M20×1.5 thread' },
+  30: { es: 'Conexión: vástago 30 mm — típicamente rosca M24×2', en: 'Connection: 30 mm rod — typically M24×2 thread' },
+  32: { es: 'Conexión: vástago 32 mm — típicamente rosca M27×2', en: 'Connection: 32 mm rod — typically M27×2 thread' },
+  35: { es: 'Conexión: vástago 35 mm — típicamente rosca M30×2', en: 'Connection: 35 mm rod — typically M30×2 thread' },
+  40: { es: 'Conexión: vástago 40 mm — típicamente rosca M36×2', en: 'Connection: 40 mm rod — typically M36×2 thread' },
+  50: { es: 'Conexión: vástago 50 mm — confirmar rosca en catálogo (p. ej. M45×2)', en: 'Connection: 50 mm rod — verify thread in catalog (e.g. M45×2)' },
+  63: { es: 'Conexión: vástago 63 mm — confirmar rosca en catálogo del fabricante', en: 'Connection: 63 mm rod — verify thread in manufacturer catalog' },
+  80: { es: 'Conexión: vástago 80 mm — confirmar rosca en catálogo del fabricante', en: 'Connection: 80 mm rod — verify thread in manufacturer catalog' },
+  100: { es: 'Conexión: vástago 100 mm — confirmar rosca en catálogo del fabricante', en: 'Connection: 100 mm rod — verify thread in manufacturer catalog' },
 };
 
 function fmt(n, d = 2) {
@@ -336,6 +389,58 @@ function escHtml(s) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+/**
+ * @param {{ calcMode: string; forceRatio: number; recommendedRatio: number; bucklingRisk: boolean; nlMin: number; nlCycle: number }} p
+ */
+function renderPcVerdictSummary(p) {
+  const el = document.getElementById('pcVerdictSummary');
+  if (!(el instanceof HTMLElement)) return;
+  const { calcMode, forceRatio, recommendedRatio, bucklingRisk, nlMin, nlCycle } = p;
+  const marginPct = (forceRatio - 1) * 100;
+  const forceOkDesign = calcMode === 'design' && forceRatio >= recommendedRatio;
+  const forceCls =
+    calcMode === 'design' ? (forceOkDesign ? 'pc-vs-item--ok' : 'pc-vs-item--bad') : 'pc-vs-item--info';
+  const forceIco = calcMode === 'design' ? (forceOkDesign ? '✓' : '✗') : 'ℹ';
+  const forceSub =
+    calcMode === 'design'
+      ? forceOkDesign
+        ? tr('vsForceOk', { p: fmt(marginPct, 1) })
+        : tr('vsForceBad', { r: fmt(forceRatio, 2), m: fmt(recommendedRatio, 2) })
+      : tr('vsForceDiag');
+
+  const buckOk = !bucklingRisk;
+  const buckCls = buckOk ? 'pc-vs-item--ok' : 'pc-vs-item--bad';
+  const buckIco = buckOk ? '✓' : '✗';
+  const buckSub = buckOk ? tr('vsBuckOk') : tr('vsBuckBad');
+
+  const airSub = tr('vsAirSub', { q: fmt(nlMin, 1), c: fmt(nlCycle, 2) });
+
+  el.innerHTML = `
+    <div class="pc-verdict-summary__title">${escHtml(tr('vsTitle'))}</div>
+    <div class="pc-vs-item ${forceCls}">
+      <span class="pc-vs-ico" aria-hidden="true">${forceIco}</span>
+      <div>
+        <div class="pc-vs-label">${escHtml(tr('vsForce'))}</div>
+        <div class="pc-vs-sub">${escHtml(forceSub)}</div>
+      </div>
+    </div>
+    <div class="pc-vs-item ${buckCls}">
+      <span class="pc-vs-ico" aria-hidden="true">${buckIco}</span>
+      <div>
+        <div class="pc-vs-label">${escHtml(tr('vsBuck'))}</div>
+        <div class="pc-vs-sub">${escHtml(buckSub)}</div>
+      </div>
+    </div>
+    <div class="pc-vs-item pc-vs-item--ok">
+      <span class="pc-vs-ico" aria-hidden="true">✓</span>
+      <div>
+        <div class="pc-vs-label">${escHtml(tr('vsAir'))}</div>
+        <div class="pc-vs-sub">${airSub}</div>
+      </div>
+    </div>
+  `;
 }
 
 function metric(label, value, unit = '') {
@@ -352,14 +457,21 @@ function nearestIsoBore(mm) {
   return ISO_BORES.reduce((best, cur) => (Math.abs(cur - mm) < Math.abs(best - mm) ? cur : best), ISO_BORES[0]);
 }
 
+/**
+ * @param {number} boreMm
+ * @param {number | null} preferredRodMm Si es `null`, se fuerza el vástago ISO por defecto del émbolo.
+ */
 function setRodOptionsForBore(boreMm, preferredRodMm = null) {
   const rodSel = document.getElementById('pcRodIso');
   if (!(rodSel instanceof HTMLSelectElement)) return;
-  const rods = ISO_RODS_BY_BORE[boreMm] || [20];
-  rodSel.innerHTML = rods.map((r) => `<option value="${r}">${r}</option>`).join('');
-  if (preferredRodMm && rods.includes(preferredRodMm)) {
-    rodSel.value = String(preferredRodMm);
-  }
+  const def = ISO_DEFAULT_ROD_BY_BORE[boreMm] ?? 20;
+  let rods = ISO_RODS_BY_BORE[boreMm];
+  if (!rods?.length) rods = [def];
+  const ordered = rods.includes(def) ? [def, ...rods.filter((r) => r !== def)] : rods;
+  rodSel.innerHTML = ordered.map((r) => `<option value="${r}">${r}</option>`).join('');
+  const pick =
+    preferredRodMm != null && ordered.includes(preferredRodMm) ? preferredRodMm : ordered[0];
+  rodSel.value = String(pick);
 }
 
 function syncManualVisibility() {
@@ -371,9 +483,11 @@ function syncManualVisibility() {
   if (f2 instanceof HTMLElement) f2.hidden = !manual;
 }
 
-function renderCylinderDiagram(svg, strokeMm, rodMm) {
+function renderCylinderDiagram(svg, strokeMm, rodMm, boreMm) {
   if (!(svg instanceof SVGElement)) return;
-  const rodScale = Math.max(8, Math.min(20, rodMm * 0.42));
+  const boreRef = Math.max(8, boreMm);
+  /** Grosor del vástago en pantalla proporcional a rod/bore (no tamaño fijo en mm de pantalla). */
+  const rodScale = Math.max(6, Math.min(34, ((rodMm / boreRef) * (98 - 24))));
   const strokeScale = Math.max(160, Math.min(330, strokeMm * 0.32));
   const x0 = 62;
   const y0 = 108;
@@ -389,8 +503,11 @@ function renderCylinderDiagram(svg, strokeMm, rodMm) {
   svg.setAttribute('viewBox', '0 0 760 320');
   svg.innerHTML = `
     <defs>
-      <marker id="pcArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-        <path d="M0,0 L8,4 L0,8 Z" fill="#0f766e"/>
+      <marker id="pcArrowA" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+        <path d="M0,0 L8,4 L0,8 Z" fill="#0369a1"/>
+      </marker>
+      <marker id="pcArrowB" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+        <path d="M0,0 L8,4 L0,8 Z" fill="#c2410c"/>
       </marker>
       <linearGradient id="pcTube" x1="0%" y1="0%" x2="0%" y2="100%">
         <stop offset="0%" stop-color="#eef2f7"/>
@@ -411,9 +528,11 @@ function renderCylinderDiagram(svg, strokeMm, rodMm) {
     <circle cx="${x0 + capW / 2}" cy="${midY}" r="6.5" fill="#64748b"/>
     <circle cx="${tubeX + tubeW + capW / 2}" cy="${midY}" r="6.5" fill="#64748b"/>
 
-    <!-- Camaras -->
-    <rect x="${tubeX + 10}" y="${y0 + 10}" width="${pistonX - tubeX - 10}" height="${h - 20}" rx="10" fill="#bae6fd" opacity="0.85"/>
-    <rect x="${pistonX + 12}" y="${y0 + 10}" width="${tubeX + tubeW - pistonX - 12}" height="${h - 20}" rx="10" fill="#d1fae5" opacity="0.85"/>
+    <!-- Cámaras: A avance (azul), B retroceso (naranja) -->
+    <rect x="${tubeX + 10}" y="${y0 + 10}" width="${pistonX - tubeX - 10}" height="${h - 20}" rx="10" fill="#7dd3fc" opacity="0.92" stroke="#0284c7" stroke-width="1.2"/>
+    <rect x="${pistonX + 12}" y="${y0 + 10}" width="${tubeX + tubeW - pistonX - 12}" height="${h - 20}" rx="10" fill="#fdba74" opacity="0.92" stroke="#ea580c" stroke-width="1.2"/>
+    <text x="${tubeX + 16}" y="${y0 + 28}" font-size="9.5" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">${escHtml(tr('diagramChamberA'))}</text>
+    <text x="${pistonX + 22}" y="${y0 + 28}" font-size="9.5" font-weight="800" fill="#7c2d12" font-family="Inter,system-ui,sans-serif">${escHtml(tr('diagramChamberB'))}</text>
 
     <!-- Embolo y sellos -->
     <rect x="${pistonX - 9}" y="${y0 + 8}" width="18" height="${h - 16}" rx="4" fill="#334155"/>
@@ -428,20 +547,20 @@ function renderCylinderDiagram(svg, strokeMm, rodMm) {
 
     <!-- Puertos -->
     <rect x="${tubeX + 34}" y="${y0 - 14}" width="12" height="14" rx="2" fill="#0ea5e9"/>
-    <rect x="${tubeX + tubeW - 44}" y="${y0 - 14}" width="12" height="14" rx="2" fill="#10b981"/>
+    <rect x="${tubeX + tubeW - 44}" y="${y0 - 14}" width="12" height="14" rx="2" fill="#f97316"/>
     <text x="${tubeX + 28}" y="${y0 - 20}" font-size="10.5" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">A</text>
-    <text x="${tubeX + tubeW - 48}" y="${y0 - 20}" font-size="10.5" font-weight="800" fill="#14532d" font-family="Inter,system-ui,sans-serif">B</text>
+    <text x="${tubeX + tubeW - 48}" y="${y0 - 20}" font-size="10.5" font-weight="800" fill="#9a3412" font-family="Inter,system-ui,sans-serif">B</text>
 
-    <!-- Flujo -->
-    <path d="M${tubeX + 40} ${midY} L${pistonX - 20} ${midY}" stroke="#0f766e" stroke-width="2.5" marker-end="url(#pcArrow)"/>
-    <path d="M${tubeX + tubeW - 38} ${midY} L${pistonX + 26} ${midY}" stroke="#166534" stroke-width="2.5" marker-end="url(#pcArrow)"/>
+    <!-- Flujo hacia cámaras -->
+    <path d="M${tubeX + 40} ${midY} L${pistonX - 20} ${midY}" stroke="#0284c7" stroke-width="2.5" marker-end="url(#pcArrowA)"/>
+    <path d="M${tubeX + tubeW - 38} ${midY} L${pistonX + 26} ${midY}" stroke="#ea580c" stroke-width="2.5" marker-end="url(#pcArrowB)"/>
 
     <!-- Cotas -->
     <line x1="${tubeX}" y1="${y0 + h + 24}" x2="${tubeX + tubeW}" y2="${y0 + h + 24}" stroke="#64748b" stroke-width="1.3"/>
     <line x1="${tubeX}" y1="${y0 + h + 19}" x2="${tubeX}" y2="${y0 + h + 29}" stroke="#64748b" stroke-width="1.3"/>
     <line x1="${tubeX + tubeW}" y1="${y0 + h + 19}" x2="${tubeX + tubeW}" y2="${y0 + h + 29}" stroke="#64748b" stroke-width="1.3"/>
     <text x="${tubeX + tubeW / 2 - 52}" y="${y0 + h + 39}" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif">${tr('diagramStroke', { s: fmt(strokeMm, 0) })}</text>
-    <text x="${rodEndX - 8}" y="${y0 + h + 20}" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif">${tr('diagramRodD', { d: fmt(rodMm, 0) })}</text>
+    <text x="${rodEndX - 8}" y="${y0 + h + 20}" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif">${escHtml(tr('diagramRodD', { d: fmt(rodMm, 0), b: fmt(boreMm, 0) }))}</text>
 
     <text x="${pistonX - 38}" y="${y0 + h + 58}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${tr('diagramPiston')}</text>
     <text x="${rodEndX - 18}" y="${y0 + h + 58}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${tr('diagramRod')}</text>
@@ -515,6 +634,8 @@ function computeAndRender() {
     results.innerHTML = '';
     if (formulaBody instanceof HTMLElement) formulaBody.innerHTML = '';
     if (rodThreadInfo instanceof HTMLElement) rodThreadInfo.textContent = '';
+    const vsEl = document.getElementById('pcVerdictSummary');
+    if (vsEl instanceof HTMLElement) vsEl.innerHTML = '';
     advisor.innerHTML = `<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${tr('invalidTitle')}:</strong><ul style="margin:0.4em 0 0 1.1em;padding:0">${errors.map((e) => `<li>${e}</li>`).join('')}</ul></div></div>`;
     verdict.className = 'lab-verdict lab-verdict--err';
     verdict.textContent = tr('invalidVerdict');
@@ -564,12 +685,12 @@ function computeAndRender() {
   const lowForceMargin = forceRatio < recommendedRatio;
   const highRisk = bucklingRisk || forceRatio < 1.0;
 
-  renderCylinderDiagram(document.getElementById('pcDiagram'), strokeMm, rodMm);
+  renderCylinderDiagram(document.getElementById('pcDiagram'), strokeMm, rodMm, boreMm);
 
   const estSpeed = (2 * strokeM * cyclesMin) / 60;
 
   const keyMetrics = [
-    metric(tr('m1'), `${fmt(forceRealAdvN, 0)} / ${fmt(forceRealRetN, 0)} N`, LANG === 'en' ? '-10% friction' : '-10% friccion'),
+    metric(tr('m1'), `${fmt(forceRealAdvN, 0)} / ${fmt(forceRealRetN, 0)} N`, LANG === 'en' ? '-10% friction' : '-10% fricción'),
     metric(tr('m2'), `${fmt(forceRatio, 2)} x`, LANG === 'en' ? 'Freal extension / F load' : 'Freal avance / F carga'),
     metric(tr('m3'), `${fmt(nlMin, 1)} Nl/min`, `${fmt(cyclesMin, 1)} cpm`),
     metric(
@@ -586,13 +707,15 @@ function computeAndRender() {
         'F_push = P_gauge * A_piston * eta_mech; F_pull = P_gauge * (A_piston - A_rod) * eta_mech.',
         `Free air per cycle: (V_push + V_pull) * ${labTierPc === 'project' ? '(P_gauge+Patm)/Patm' : '(P_gauge+1) with Patm=1 bar'}.`,
         `Euler buckling (rod): I = pi*d^4/64, L_eff = stroke * ${fmt(eulerLengthFactor, 2)}, Pcr = pi^2*E*I/L_eff^2.`,
-        'Consumption Nl/min = Nl/cycle * cpm.',
+        'Consumption Nl/min = Nl/cycle * cpm (assumes continuous cycling at entered cpm, no receiver smoothing).',
+        'Line and valve losses are not included; apply an empirical 1.2–1.5 multiplier when sizing the compressor.',
       ]
     : [
-        'F_avance = P_man * A_embolo * eta_mec; F_retroceso = P_man * (A_embolo - A_vastago) * eta_mec.',
-        `Aire libre por ciclo: (V_avance + V_retroceso) * ${labTierPc === 'project' ? '(P_man+Patm)/Patm' : '(P_man+1) con Patm=1 bar'}.`,
-        `Pandeo Euler vastago: I = pi*d^4/64, L_eff = carrera * ${fmt(eulerLengthFactor, 2)}, Pcr = pi^2*E*I/L_eff^2.`,
-        'Consumo Nl/min = Nl/ciclo * cpm.',
+        'F_avance = P_man × A_émbolo × η_mec; F_retroceso = P_man × (A_émbolo − A_vástago) × η_mec.',
+        `Aire libre por ciclo: (V_avance + V_retroceso) × ${labTierPc === 'project' ? '(P_man+Patm)/Patm' : '(P_man+1) con Patm=1 bar'}.`,
+        `Pandeo Euler (vástago): I = π×d⁴/64, L_eff = carrera × ${fmt(eulerLengthFactor, 2)}, Pcr = π²×E×I/L_eff².`,
+        'Consumo Nl/min = Nl/ciclo × cpm (supone ciclo continuo a la frecuencia indicada, sin efecto amortiguador de acumulador).',
+        'No se incluyen pérdidas en tuberías y válvulas; en dimensionado de compresor aplicar factor empírico 1,2–1,5 sobre el caudal calculado.',
       ];
 
   if (formulaBody instanceof HTMLElement) {
@@ -632,7 +755,7 @@ function computeAndRender() {
       const near = nearestIsoBore(boreMm);
       alerts.push(`<div class="lab-alert lab-alert--warn"><div class="lab-alert__body"><strong>${tr('warnNonStdBore')}:</strong> ${tr('warnNonStdBoreBody', { near })}</div></div>`);
     }
-    if (!Object.values(ISO_RODS_BY_BORE).flat().includes(Math.round(rodMm))) {
+    if (!ALL_ISO_ROD_DIAMETERS.includes(Math.round(rodMm))) {
       alerts.push(`<div class="lab-alert lab-alert--warn"><div class="lab-alert__body"><strong>${tr('warnNonStdRod')}:</strong> ${tr('warnNonStdRodBody')}</div></div>`);
     }
   }
@@ -645,6 +768,9 @@ function computeAndRender() {
   }
   if (bucklingRisk) {
     alerts.push(`<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${tr('dangerBuckling')}:</strong> ${tr('dangerBucklingBody')}</div></div>`);
+  }
+  if (boreMm > 0 && strokeMm / boreMm > 10) {
+    alerts.push(`<div class="lab-alert lab-alert--warn"><div class="lab-alert__body"><strong>${tr('warnStrokeSlender')}:</strong> ${tr('warnStrokeSlenderBody', { r: fmt(strokeMm / boreMm, 1) })}</div></div>`);
   }
   if (estSpeed > 0.5) {
     alerts.push(`<div class="lab-alert lab-alert--warn"><div class="lab-alert__body"><strong>${tr('warnThrottle')}:</strong> ${tr('warnThrottleBody', { v: fmt(estSpeed, 3) })}</div></div>`);
@@ -681,24 +807,36 @@ function computeAndRender() {
     rodThreadInfo.textContent = info ? info[LANG] : tr('rodFallback', { d: fmt(rodMm, 0) });
   }
 
+  renderPcVerdictSummary({
+    calcMode,
+    forceRatio,
+    recommendedRatio,
+    bucklingRisk,
+    nlMin,
+    nlCycle,
+  });
+
   const langPdf = getCurrentLang();
   const ts = formatDateTimeLocale(new Date(), langPdf);
   const assumptionsPc = [
     langPdf === 'en'
       ? `Mechanical efficiency ~ ${fmt((calcMode === 'diagnostic' ? 0.9 : ETA_MECH) * 100, 0)} % (mode).`
-      : `Eficiencia mecanica ~ ${fmt((calcMode === 'diagnostic' ? 0.9 : ETA_MECH) * 100, 0)} % (modo).`,
+      : `Eficiencia mecánica ~ ${fmt((calcMode === 'diagnostic' ? 0.9 : ETA_MECH) * 100, 0)} % (modo).`,
     langPdf === 'en'
       ? `Nl scaling: ${labTierPc === 'project' ? `(P_gauge+${fmt(patmBar, 3)})/${fmt(patmBar, 3)}` : 'P_gauge+1 (1 bar atm teaching model)'}.`
       : `Factor Nl: ${labTierPc === 'project' ? `(P_man+${fmt(patmBar, 3)})/${fmt(patmBar, 3)}` : 'P_man+1 (Patm 1 bar modelo aula)'}.`,
     langPdf === 'en'
       ? `Steel rod E = ${(E_STEEL / 1e9).toFixed(0)} GPa for Pcr.`
-      : `Vastago acero E = ${(E_STEEL / 1e9).toFixed(0)} GPa para Pcr.`,
+      : `Vástago acero E = ${(E_STEEL / 1e9).toFixed(0)} GPa para Pcr.`,
+    langPdf === 'en'
+      ? 'Nl/min assumes continuous cycling at entered cpm without receiver; piping and valve losses not included (use ×1.2–1.5 for compressor sizing).'
+      : 'Nl/min supone ciclo continuo a la frecuencia indicada sin acumulador; no incluye pérdidas en tuberías ni válvulas (factor 1,2–1,5 en compresor).',
   ];
   if (methodNote) assumptionsPc.push(`${langPdf === 'en' ? 'User note' : 'Nota usuario'}: ${methodNote}`);
 
   pcPdfSnapshot = {
     valid: true,
-    title: langPdf === 'en' ? 'Report - Pneumatic cylinder' : 'Informe - Cilindro neumatico',
+    title: langPdf === 'en' ? 'Report — Pneumatic cylinder' : 'Informe — Cilindro neumático',
     fileBase: `${langPdf === 'en' ? 'report-pneumatic-cylinder' : 'informe-cilindro-neumatico'}-${new Date().toISOString().slice(0, 10)}`,
     timestamp: ts,
     tierLabel: labTierPc === 'project' ? (langPdf === 'en' ? 'Mode: Project' : 'Modo: Proyecto') : (langPdf === 'en' ? 'Mode: Classroom' : 'Modo: Aula'),
@@ -742,6 +880,10 @@ function syncCalcModeUi() {
   const calcMode = document.getElementById('pcMode') instanceof HTMLSelectElement
     ? document.getElementById('pcMode').value
     : 'design';
+  const loadGroup = document.getElementById('pcGroupDesignLoad');
+  if (loadGroup instanceof HTMLElement) {
+    loadGroup.classList.toggle('pc-field-group--open', calcMode === 'design');
+  }
   const loadField = document.getElementById('pcLoadKg')?.closest('.lab-field');
   if (loadField instanceof HTMLElement) {
     loadField.classList.toggle('lab-field--auto', calcMode === 'diagnostic');
@@ -754,7 +896,7 @@ function syncCalcModeUi() {
 
 document.getElementById('pcBoreIso')?.addEventListener('change', () => {
   const b = readLabNumber('pcBoreIso', 1, 1e9, '');
-  setRodOptionsForBore(Math.round(b.ok ? b.value : 63));
+  setRodOptionsForBore(Math.round(b.ok ? b.value : 63), null);
   computeAndRender();
 });
 
@@ -778,8 +920,7 @@ document.getElementById('pcDiameterMode')?.addEventListener('change', () => {
 
 (() => {
   const b = readLabNumber('pcBoreIso', 1, 1e9, '');
-  const r = readLabNumber('pcRodIso', 1, 1e9, '');
-  setRodOptionsForBore(Math.round(b.ok ? b.value : 63), Math.round(r.ok ? r.value : 20));
+  setRodOptionsForBore(Math.round(b.ok ? b.value : 63), null);
 })();
 syncManualVisibility();
 applyStaticI18n();

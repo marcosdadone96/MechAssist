@@ -41,11 +41,22 @@
           </div>
           <div class="lab-calc-layout__inputs">
             <div class="lab-grid lab-grid--2">
-              <div class="lab-field">
+              <div class="lab-field lab-field--wide">
+                <label for="blCalcMode">Modo de trabajo</label>
+                <select id="blCalcMode">
+                  <option value="design">Diseño — fuerza de cálculo → propuesta M y grado mínimos</option>
+                  <option value="diagnostic" selected>Diagnóstico — tornillo instalado → comprobación frente a F</option>
+                </select>
+                <p class="lab-field-help" id="blCalcModeHelp">
+                  <strong>Diseño:</strong> indique la tracción que debe soportar la unión; el asistente propone la combinación métrica/grado más pequeña que cumple (catálogo interno).
+                  <strong>Diagnóstico:</strong> elija M y grado reales y compruebe F y precarga.
+                </p>
+              </div>
+              <div class="lab-field" id="blFieldD">
                 <label for="blD">Diámetro</label>
                 <select id="blD"></select>
               </div>
-              <div class="lab-field">
+              <div class="lab-field" id="blFieldGrade">
                 <label for="blGrade">Grado</label>
                 <select id="blGrade"></select>
               </div>

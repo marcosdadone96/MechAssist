@@ -50,6 +50,20 @@
           </p>
         </header>
 
+        <div class="field" style="margin: 0 0 0.65rem">
+          <label for="pumpCalcMode">¿Qué desea hacer?</label>
+          <select id="pumpCalcMode">
+            <option value="design" selected>Diseño — Q, H y rendimiento → potencia y accionamiento</option>
+            <option value="diagnostic">Diagnóstico — comparar punto de trabajo con potencia de placa</option>
+          </select>
+          <span class="field-hint" id="pumpCalcModeHint">En diseño se obtiene la potencia de eje necesaria. En diagnóstico, introduzca la potencia nominal del motor o de la placa de bomba para estimar margen respecto a P<sub>eje</sub> y P<sub>diseño</sub> (×SF).</span>
+        </div>
+        <div class="field" id="pumpNameplateRow" hidden style="margin-bottom: 0.65rem">
+          <label for="pumpNameplateKw">Potencia de placa / motor nominal (kW)</label>
+          <input id="pumpNameplateKw" type="number" step="any" min="0.01" value="22" />
+          <span class="field-hint">Típicamente P<sub>motor</sub> nominal ≥ P<sub>eje bomba</sub> y, a ser posible, ≥ P<sub>diseño</sub> con factor de servicio.</span>
+        </div>
+
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
