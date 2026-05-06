@@ -3,6 +3,7 @@
  */
 
 import { FEATURES } from '../config/features.js';
+import { isFreeMachineFullAccess } from '../config/freemium.js';
 import { isPremiumEffective } from '../services/accessTier.js';
 import { computeInclinedConveyor } from '../modules/inclinedConveyor.js';
 import { LOAD_DUTY_OPTIONS, LOAD_DUTY_OPTIONS_EN } from '../modules/serviceFactorByDuty.js';
@@ -528,6 +529,7 @@ function localizeInclinedStaticContent() {
 }
 
 function refresh() {
+  const conveyorExtrasUnlocked = isPremiumEffective() || isFreeMachineFullAccess();
   const LBL = getI18nLabels();
   const lang = getCurrentLang();
   const en = lang === 'en';
@@ -559,6 +561,11 @@ function refresh() {
         machineDiagram: 'Machine diagram',
         premiumOptTitle: 'Optimization (Premium)',
         premiumOptDesc: 'Brake / backstop: reserved.',
+        proPreparedTitle: 'Pro features (ready to enable)',
+        proPreparedLead: 'Billing matrix ready for inclined conveyor.',
+        proScenario: 'Scenario compare (angle, load, wrap)',
+        proCompare: 'Advanced multi-model comparator',
+        proPresets: 'Technical preset library',
         checklistLead: (ok, w, b) =>
           `<strong>Quick technical checklist</strong> - ${ok} OK - ${w} warnings - ${b} critical`,
         calcError: 'Calculation error:',
@@ -591,6 +598,11 @@ function refresh() {
         machineDiagram: 'Diagrama de la máquina',
         premiumOptTitle: 'Optimización (premium)',
         premiumOptDesc: 'Freno / anti-retorno: reservado.',
+        proPreparedTitle: 'Funciones Pro preparadas',
+        proPreparedLead: 'Matriz de cobro lista para activar en cinta inclinada.',
+        proScenario: 'Comparación de escenarios (ángulo, carga, envol.)',
+        proCompare: 'Comparador avanzado multi-modelo',
+        proPresets: 'Biblioteca de presets técnicos',
         checklistLead: (ok, w, b) =>
           `<strong>Checklist técnica rápida</strong> · ${ok} OK · ${w} avisos · ${b} críticos`,
         calcError: 'Error al calcular:',
@@ -758,7 +770,7 @@ function refresh() {
 
     if (els.premiumPdfMount) {
       mountPremiumPdfExportBar(els.premiumPdfMount, {
-        isPremium: isPremiumEffective(),
+        isPremium: conveyorExtrasUnlocked,
         getPayload: () => buildInclinedPdfPayload(raw, r),
         getDiagramElement: () => els.diagram,
         diagramTitle: TX.machineDiagram,
@@ -773,13 +785,26 @@ function refresh() {
     }
 
     if (els.premiumOpt) {
-      if (isPremiumEffective() && FEATURES.safetyOptimization) {
+      const m = FEATURES.monetization?.inclined;
+      const hasPreparedGate =
+        !!m && (m.scenarioCompare || m.advancedMotorCompare || m.premiumPresets);
+      if (conveyorExtrasUnlocked && FEATURES.safetyOptimization) {
         els.premiumOpt.innerHTML = `
       <section class="panel">
         <h2><span class="panel-icon">★</span> ${TX.premiumOptTitle}</h2>
         <p class="muted" style="margin:0">${TX.premiumOptDesc}</p>
       </section>
     `;
+      } else if (!conveyorExtrasUnlocked && hasPreparedGate) {
+        const items = [
+          m.scenarioCompare ? TX.proScenario : '',
+          m.advancedMotorCompare ? TX.proCompare : '',
+          m.premiumPresets ? TX.proPresets : '',
+        ]
+          .filter(Boolean)
+          .map((x) => `<li>${x}</li>`)
+          .join('');
+        els.premiumOpt.innerHTML = `<section class="panel"><h2><span class="panel-icon">★</span> ${TX.proPreparedTitle}</h2><p class="muted" style="margin:0 0 .5rem">${TX.proPreparedLead}</p><ul class="assumptions" style="margin:0">${items}</ul></section>`;
       } else {
         els.premiumOpt.innerHTML = '';
       }

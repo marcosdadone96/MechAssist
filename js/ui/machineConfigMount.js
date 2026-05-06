@@ -2,6 +2,7 @@
  * Guardado/carga local de configuraciones por maquina.
  */
 
+import { isFreeMachineFullAccess } from '../config/freemium.js';
 import { isPremiumEffective } from '../services/accessTier.js';
 
 const LS_KEY = 'mdr-machine-configs-v1';
@@ -157,7 +158,7 @@ export function mountMachineConfigBar() {
   if (document.getElementById('machineConfigBar')) return;
 
   const tool = getToolKey();
-  const isPro = isPremiumEffective();
+  const isPro = isPremiumEffective() || isFreeMachineFullAccess();
   const tx = getTx(getLang(), isPro);
   const host = document.createElement('section');
   host.className = 'panel machine-config-panel';

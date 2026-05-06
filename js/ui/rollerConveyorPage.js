@@ -3,6 +3,7 @@
  */
 
 import { FEATURES } from '../config/features.js';
+import { isFreeMachineFullAccess } from '../config/freemium.js';
 import { isPremiumEffective } from '../services/accessTier.js';
 import { computeRollerConveyor } from '../modules/rollerConveyor.js';
 import { LOAD_DUTY_OPTIONS, LOAD_DUTY_OPTIONS_EN } from '../modules/serviceFactorByDuty.js';
@@ -415,6 +416,7 @@ function localizeRollerStaticContent() {
 }
 
 function refresh() {
+  const conveyorExtrasUnlocked = isPremiumEffective() || isFreeMachineFullAccess();
   const LBL = getI18nLabels();
   const lang = getCurrentLang();
   const en = lang === 'en';
@@ -621,9 +623,9 @@ function refresh() {
     const m = FEATURES.monetization?.roller;
     const hasPreparedGate =
       !!m && (m.scenarioCompare || m.advancedMotorCompare || m.premiumPresets);
-    if (isPremiumEffective() && FEATURES.safetyOptimization) {
+    if (conveyorExtrasUnlocked && FEATURES.safetyOptimization) {
       els.premiumOpt.innerHTML = `<section class="panel"><h2><span class="panel-icon">★</span> ${TX.premiumOptTitle}</h2><p class="muted" style="margin:0">${TX.premiumOptDesc}</p></section>`;
-    } else if (!isPremiumEffective() && hasPreparedGate) {
+    } else if (!conveyorExtrasUnlocked && hasPreparedGate) {
       const items = [
         m.scenarioCompare ? TX.proScenario : '',
         m.advancedMotorCompare ? TX.proCompare : '',
@@ -640,7 +642,7 @@ function refresh() {
 
   if (els.premiumPdfMount) {
     mountPremiumPdfExportBar(els.premiumPdfMount, {
-      isPremium: isPremiumEffective(),
+      isPremium: conveyorExtrasUnlocked,
       getPayload: () => buildRollerPdfPayload(raw, r),
       getDiagramElement: () => els.diagram,
       diagramTitle: TX.machineDiagram,

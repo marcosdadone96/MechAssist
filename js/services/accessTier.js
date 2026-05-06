@@ -1,7 +1,7 @@
 /**
  * Plan de acceso — gratuito vs Pro (sin backend; listo para enlazar a pagos más adelante).
  *
- * Estrategia (qué módulo es la puerta gratis): `FEATURES.whichCalculatorIsFree` o `?freeTool=flat|inclined`.
+ * Cintas plana e inclinada: siempre desbloqueadas en `conveyorAppEntry`. `whichCalculatorIsFree` / `?freeTool=` quedan para pruebas o copy legacy.
  * Pro efectivo (por orden):
  * - `FEATURES.devSimulatePremium`
  * - `?pro=1` en la URL si `FEATURES.allowPremiumViaQueryPro`
@@ -57,11 +57,11 @@ export function getEffectiveTier() {
   return 'free';
 }
 
-/** @param {'flat'|'inclined'|'pump'|'screw'} tool */
+/** @param {'flat'|'inclined'} tool — solo entradas de conveyorAppEntry */
 export function isToolUnlocked(tool) {
   if (getEffectiveTier() === 'premium') return true;
-  if (tool === 'inclined' || tool === 'pump' || tool === 'screw') return true;
-  return getFreemiumStrategy() === tool;
+  if (tool === 'flat' || tool === 'inclined') return true;
+  return false;
 }
 
 /** Marca licencia Pro persistente sin navegar (p. ej. tras confirmar pago en checkout). */

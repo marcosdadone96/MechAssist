@@ -1,54 +1,37 @@
 /**
- * Hub (portada): antes inyectaba badges en nodos del aro; el aro se retiró.
- * Se mantiene el módulo por controles de cuenta en cabecera.
+ * Hub (home): cuenta en cabecera + badges si existiera el aro radial (legacy).
  */
 
 import { getCurrentUser, clearLocalUser } from '../services/localAuth.js';
+import { isProCalculatorPath } from '../config/freemium.js';
 
-function getLang() {
-  try {
-    return localStorage.getItem('mdr-home-lang') === 'en' ? 'en' : 'es';
-  } catch (_) {
-    return 'es';
-  }
+function lang() {
+  return window.__homeLang === 'en' ? 'en' : 'es';
 }
 
-function getTx(lang) {
-  if (lang === 'en') {
-    return {
-      badgePro: 'PRO ACCESS',
-      badgeFree: 'FREE',
-      hello: (name) => `Hi, ${name}`,
-      logout: 'Log out',
-      register: 'Register',
-    };
+function t(key, fallback) {
+  if (typeof window.__t === 'function') {
+    const v = window.__t(key);
+    if (v && v !== key) return v;
   }
-  return {
-    badgePro: 'ACCESO PRO',
-    badgeFree: 'GRATIS',
-    hello: (name) => `Hola, ${name}`,
-    logout: 'Cerrar sesi\u00f3n',
-    register: 'Registrarse',
-  };
+  return fallback;
+}
+
+function helloLabel(name) {
+  return lang() === 'en' ? `Hi, ${name}` : `Hola, ${name}`;
 }
 
 function badgeText() {
-  const tx = getTx(getLang());
-  if (typeof window.__t === 'function') return window.__t('badgePro');
-  return tx.badgePro;
+  return t('badgePro', lang() === 'en' ? 'PRO' : 'PRO');
 }
 
 function freeBadgeText() {
-  const tx = getTx(getLang());
-  if (typeof window.__t === 'function') return window.__t('badgeFree');
-  return tx.badgeFree;
+  return t('badgeFree', lang() === 'en' ? 'FREE' : 'GRATIS');
 }
-
-const PRO_MACHINE_PATHS = new Set(['car-lift-screw.html', 'traction-elevator.html']);
 
 function isProNode(anchor) {
   const href = anchor.getAttribute('href') || '';
-  return PRO_MACHINE_PATHS.has(href);
+  return isProCalculatorPath(href);
 }
 
 function renderHubProBadges() {
@@ -69,27 +52,61 @@ function renderHubProBadges() {
   });
 }
 
-renderHubProBadges();
-window.addEventListener('home-language-changed', renderHubProBadges);
-
 function mountHomeAccountControls() {
-  const right = document.querySelector('.hub-header__right');
-  if (!(right instanceof HTMLElement)) return;
-  if (right.querySelector('.hub-account')) return;
+  const slot =
+    document.querySelector('#hub-header-auth-slot') || document.querySelector('.hub-header__auth-slot');
+  if (!(slot instanceof HTMLElement)) return;
+  slot.replaceChildren();
 
   const user = getCurrentUser();
-  const tx = getTx(getLang());
-  const wrap = document.createElement('div');
-  wrap.className = 'hub-account';
-  wrap.innerHTML = user
-    ? `<span class="hub-account__user">${tx.hello(user.name)}</span><button type="button" class="hub-account__btn" data-logout>${tx.logout}</button>`
-    : `<a href="register.html" class="hub-account__btn hub-account__btn--link">${tx.register}</a>`;
 
-  wrap.querySelector('[data-logout]')?.addEventListener('click', () => {
-    clearLocalUser();
-    window.location.reload();
-  });
-  right.appendChild(wrap);
+  if (user) {
+    const wrap = document.createElement('div');
+    wrap.className = 'hub-account';
+    const userEl = document.createElement('span');
+    userEl.className = 'hub-account__user';
+    userEl.textContent = helloLabel(user.name);
+    const out = document.createElement('button');
+    out.type = 'button';
+    out.className = 'hub-account__btn';
+    out.setAttribute('data-logout', '');
+    out.textContent = t('auth.logout', lang() === 'en' ? 'Log out' : 'Cerrar sesi\u00f3n');
+    out.addEventListener('click', () => {
+      clearLocalUser();
+      window.location.reload();
+    });
+    wrap.appendChild(userEl);
+    wrap.appendChild(out);
+    slot.appendChild(wrap);
+    return;
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'hub-account hub-account--anon';
+
+  const loginBtn = document.createElement('button');
+  loginBtn.type = 'button';
+  loginBtn.className = 'hub-account__btn hub-account__btn--ghost';
+  loginBtn.setAttribute('data-ma-modal-open', 'auth');
+  loginBtn.setAttribute('data-auth-tab', 'login');
+  loginBtn.textContent = t('auth.login', lang() === 'en' ? 'Log in' : 'Iniciar sesi\u00f3n');
+
+  const regBtn = document.createElement('button');
+  regBtn.type = 'button';
+  regBtn.className = 'hub-account__btn hub-account__btn--procta';
+  regBtn.setAttribute('data-ma-modal-open', 'auth');
+  regBtn.setAttribute('data-auth-tab', 'register');
+  regBtn.textContent = t('auth.register', lang() === 'en' ? 'Sign up' : 'Registrarse');
+
+  wrap.appendChild(loginBtn);
+  wrap.appendChild(regBtn);
+  slot.appendChild(wrap);
 }
 
+renderHubProBadges();
 mountHomeAccountControls();
+
+window.addEventListener('home-language-changed', () => {
+  renderHubProBadges();
+  mountHomeAccountControls();
+});

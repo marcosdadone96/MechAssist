@@ -1,8 +1,8 @@
 /**
  * Feature flags — MechAssist
  * ---------------------------------------------------------------------------
- * Freemium: un calculador gratuito y el otro Pro (`whichCalculatorIsFree`).
- * Pruebas sin tocar código: `?freeTool=flat|inclined`, sesión Pro `?pro=1`, botón «Activar Pro» (guarda `mdr-pro-persistent-v1` en localStorage) o barra dev en cabecera.
+ * Freemium: cinta plana e inclinada accesibles sin Pro; `whichCalculatorIsFree` afecta sobre todo mensajes legacy / pruebas.
+ * Pruebas: `?freeTool=flat|inclined`, sesión Pro `?pro=1`, botón «Activar Pro» (guarda `mdr-pro-persistent-v1` en localStorage) o barra dev en cabecera.
  * Ver `js/services/accessTier.js` y `js/ui/conveyorAppEntry.js`.
  *
  * Futuro (placeholders):
@@ -128,6 +128,11 @@ export const FEATURES = Object.freeze({
       premiumPresets: false,
     }),
     roller: Object.freeze({
+      scenarioCompare: false,
+      advancedMotorCompare: false,
+      premiumPresets: false,
+    }),
+    inclined: Object.freeze({
       scenarioCompare: false,
       advancedMotorCompare: false,
       premiumPresets: false,

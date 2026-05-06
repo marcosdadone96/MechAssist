@@ -947,20 +947,27 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 0.2rem 0.45rem;
-  border-radius: 4px;
-  background: #ccfbf1;
-  color: #0f766e;
+  border-radius: 999px;
+  border: 1px solid transparent;
   margin-bottom: 0.5rem;
+}
+
+.lab-badge--free {
+  color: #065f46;
+  background: #ecfdf5;
+  border-color: #a7f3d0;
 }
 
 .lab-badge--beta {
   background: #ffedd5;
   color: #9a3412;
+  border-color: #fdba74;
 }
 
 .lab-badge--pro {
-  background: #fef3c7;
-  color: #92400e;
+  color: #5b21b6;
+  background: linear-gradient(135deg, #f5f3ff 0%, #fefce8 100%);
+  border-color: rgba(139, 92, 246, 0.45);
 }
 
 .lab-pro-card {

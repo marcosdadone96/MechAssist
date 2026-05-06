@@ -1,3 +1,4 @@
+import { isFreeMachineFullAccess } from '../config/freemium.js';
 import { isPremiumEffective } from '../services/accessTier.js';
 import { startProCheckoutFlow } from '../services/proCheckoutFlow.js';
 
@@ -46,6 +47,7 @@ function lockOneDetails(detailsEl) {
 }
 
 export function applyMachinePremiumGates(root = document) {
+  if (isFreeMachineFullAccess()) return;
   if (isPremiumEffective()) return;
   root.querySelectorAll('details').forEach((el) => lockOneDetails(el));
 }

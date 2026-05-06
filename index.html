@@ -26,6 +26,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/home.css" />
+    <link rel="stylesheet" href="css/freemium.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
   <body class="hub-body">
@@ -33,6 +34,8 @@
       <span class="hub-header__title">Mech<em>Assist</em></span>
       <div class="hub-header__right">
         <span class="hub-header__tag" data-i18n="header.tag">Transmisión</span>
+        <a class="hub-header__plans" href="#hub-pricing" data-i18n="nav.plans">Planes</a>
+        <div class="hub-header__auth-slot" id="hub-header-auth-slot"></div>
         <div class="hub-lang" role="group" aria-label="Language selector" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
           <button type="button" class="hub-lang__btn" data-lang="es">ES</button>
           <button type="button" class="hub-lang__btn" data-lang="en">EN</button>
@@ -159,56 +162,56 @@
         <div class="hub-featured__grid">
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--gear" aria-hidden="true">⚙️</div>
-            <span class="hub-featured-card__pill">Gratis</span>
+            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.gears.title">Engranajes cilíndricos</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.gears.desc">Define relación y centros en segundos para validar si tu transmisión encaja antes de fabricar.</p>
             <a class="hub-featured-card__cta" href="calc-gears.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--belt" aria-hidden="true">🟦</div>
-            <span class="hub-featured-card__pill">Gratis</span>
+            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.belts.title">Correas</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.belts.desc">Compara V, síncrona, plana o Poly-V y obtén una selección rápida para arrancar tu diseño.</p>
             <a class="hub-featured-card__cta" href="calc-belts.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--chain" aria-hidden="true">⛓️</div>
-            <span class="hub-featured-card__pill">Gratis</span>
+            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.chains.title">Cadenas y piñones</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.chains.desc">Chequea dientes, paso y riesgo dinámico para evitar vibraciones y sobredimensionado innecesario.</p>
             <a class="hub-featured-card__cta" href="calc-chains.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--bearing" aria-hidden="true">⭕</div>
-            <span class="hub-featured-card__pill">Gratis</span>
+            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.bearings.title">Rodamientos</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.bearings.desc">Selecciona por serie y valida vida útil esperada para decidir con mayor seguridad desde el inicio.</p>
             <a class="hub-featured-card__cta" href="calc-bearings-catalog.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--shaft" aria-hidden="true">🧱</div>
-            <span class="hub-featured-card__pill">Gratis</span>
+            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.shaft.title">Eje · torsión</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.shaft.desc">Calcula diámetro mínimo y comprueba viabilidad para evitar fallos tempranos por subdimensionado.</p>
             <a class="hub-featured-card__cta" href="calc-shaft.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--spring" aria-hidden="true">🌀</div>
-            <span class="hub-featured-card__pill">Gratis</span>
+            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.spring.title">Muelle helicoidal</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.spring.desc">Obtén rigidez y carrera útil rápidamente para pasar de idea a especificación sin perder tiempo.</p>
             <a class="hub-featured-card__cta" href="calc-compression-spring.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--bolt" aria-hidden="true">🔩</div>
-            <span class="hub-featured-card__pill">Gratis</span>
+            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.bolts.title">Tornillería ISO 898-1</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.bolts.desc">Define par de apriete y precarga con criterio práctico para montaje confiable y repetible.</p>
             <a class="hub-featured-card__cta" href="calc-bolts-iso898.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--iso" aria-hidden="true">📏</div>
-            <span class="hub-featured-card__pill">Gratis</span>
+            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.iso.title">Ajustes ISO 286</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.iso.desc">Elige ajuste correcto en minutos y evita retrabajos por holguras o interferencias mal definidas.</p>
             <a class="hub-featured-card__cta" href="calc-iso-fit.html" data-i18n="featured.cta">Probar ahora</a>
@@ -269,6 +272,7 @@
             </g>
           </svg>
         </div>
+        <p class="hub-scene__peek" data-i18n="zone.machines.peek">Cinta plana · Rodillos (gratis) · resto Pro</p>
       </a>
       <p class="hub-zone__intro" data-i18n="zone.machinesIntro">
         Bombas, cintas, elevadores y tornillos sinfín: potencia, fuerzas y parámetros operativos para dimensionar y revisar
@@ -323,6 +327,7 @@
               </g>
             </svg>
           </div>
+          <p class="hub-scene__peek" data-i18n="zone.lab.peek">Engranajes · Correas · Rodamientos · ISO</p>
         </a>
         <p class="hub-zone__intro" data-i18n="zone.labIntro">
           Engranajes, correas, cadenas, rodamientos, ejes, ajustes ISO y más: cálculo coherente con contexto técnico accionable.
@@ -350,6 +355,7 @@
               <path d="M50 33v18M41 42h18" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
           </div>
+          <p class="hub-scene__peek" data-i18n="zone.fluids.peek">Bombas · Cilindros · Prensa · Neumática</p>
         </a>
         <p class="hub-zone__intro" data-i18n="zone.fluidsIntro">
           Cilindros, bombas y prensas: fuerzas, secciones, caudales y tiempos para orientar selección y revisión de circuitos
@@ -361,6 +367,58 @@
 
       <p class="hub-footnote hub-footnote--detail" data-i18n="footnote"></p>
 
+      <section class="hub-pricing hub-pricing--footer" id="hub-pricing" aria-labelledby="hub-pricing-heading">
+        <div class="hub-pricing__inner">
+          <header class="hub-pricing__head">
+            <h2 id="hub-pricing-heading" class="hub-pricing__title" data-i18n="pricing.title">Elige tu plan</h2>
+            <p class="hub-pricing__lead" data-i18n="pricing.lead">Empieza gratis y escala cuando lo necesites</p>
+          </header>
+          <div class="hub-pricing__grid">
+            <article class="hub-pricing-card hub-pricing-card--free">
+              <div class="hub-pricing-card__top">
+                <h3 class="hub-pricing-card__name" data-i18n="pricing.free.name">Gratuito</h3>
+                <p class="hub-pricing-card__price" data-i18n="pricing.free.price">$0</p>
+                <p class="hub-pricing-card__price-hint" data-i18n="pricing.free.hint">Sin tarjeta · para siempre</p>
+              </div>
+              <ul class="hub-pricing-card__list hub-pricing-card__list--check">
+                <li data-i18n="pricing.free.b1">Acceso a calculadoras básicas</li>
+                <li data-i18n="pricing.free.b2">Uso ilimitado en módulos gratuitos</li>
+                <li data-i18n="pricing.free.b3">Soporte comunitario</li>
+                <li data-i18n="pricing.free.b4">Ideal para estudiantes y pruebas</li>
+              </ul>
+              <a class="hub-pricing-card__cta hub-pricing-card__cta--free" href="transmission-lab.html" data-i18n="pricing.free.cta">Empezar gratis</a>
+            </article>
+            <article class="hub-pricing-card hub-pricing-card--pro">
+              <span class="hub-pricing-card__ribbon" data-i18n="pricing.pro.ribbon">Más popular</span>
+              <div class="hub-pricing-card__top">
+                <h3 class="hub-pricing-card__name" data-i18n="pricing.pro.name">Pro</h3>
+                <p class="hub-pricing-card__price hub-pricing-card__price--pro" data-i18n="pricing.pro.priceFull">$9/mes o $79/año (ahorra 27%)</p>
+              </div>
+              <ul class="hub-pricing-card__list hub-pricing-card__list--check hub-pricing-card__list--pro">
+                <li data-i18n="pricing.pro.b1">Todas las calculadoras + funciones avanzadas</li>
+                <li data-i18n="pricing.pro.b2">Exportar resultados a PDF y Excel</li>
+                <li data-i18n="pricing.pro.b3">Guardar y recuperar proyectos</li>
+                <li data-i18n="pricing.pro.b4">Sin límites de uso</li>
+                <li data-i18n="pricing.pro.b5">Soporte prioritario</li>
+                <li data-i18n="pricing.pro.b6">Nuevas calculadoras prioritarias</li>
+              </ul>
+              <button
+                type="button"
+                class="hub-pricing-card__cta hub-pricing-card__cta--pro"
+                data-ma-modal-open="auth"
+                data-auth-tab="register"
+                data-i18n="pricing.pro.cta"
+              >
+                Empezar con Pro
+              </button>
+            </article>
+          </div>
+          <p class="hub-pricing__footnote" data-i18n="pricing.footnote">
+            Precios orientativos en USD. El cobro definitivo se confirmará antes del lanzamiento del checkout.
+          </p>
+        </div>
+      </section>
+
       <footer class="hub-footer-legal">
         <nav class="hub-footer-legal__links" aria-label="Legal">
           <a href="privacy.html" data-i18n="footer.privacy">Privacidad</a>
@@ -370,7 +428,63 @@
         </nav>
       </footer>
     </main>
+
+    <div class="ma-modal" id="ma-modal-auth" hidden role="dialog" aria-modal="true" aria-labelledby="ma-auth-title">
+      <div class="ma-modal__backdrop" data-ma-modal-close tabindex="-1"></div>
+      <div class="ma-modal__panel">
+        <button type="button" class="ma-modal__close" data-ma-modal-close aria-label="Cerrar" data-i18n="auth.close" data-i18n-attr="aria-label">
+          &times;
+        </button>
+        <div class="ma-modal__head">
+          <h2 id="ma-auth-title" class="ma-modal__title" data-i18n="auth.headline">Tu cuenta MechAssist</h2>
+          <p class="ma-modal__sub" data-i18n="auth.sub">
+            El registro completo llegará en breve. Esta vista adelanta el flujo para alinear diseño y mensajes.
+          </p>
+        </div>
+        <div class="ma-auth__tabs" role="tablist">
+          <button type="button" class="ma-auth__tab ma-auth__tab--active" data-tab="login" role="tab" aria-selected="true" data-i18n="auth.tabLogin">
+            Iniciar sesión
+          </button>
+          <button type="button" class="ma-auth__tab" data-tab="register" role="tab" aria-selected="false" data-i18n="auth.tabRegister">
+            Registrarse
+          </button>
+        </div>
+        <div class="ma-auth__panel" data-panel="login" role="tabpanel">
+          <form class="ma-auth__form" action="#" method="post" onsubmit="return false;">
+            <div class="ma-field">
+              <label for="ma-auth-login-email" data-i18n="auth.email">Correo</label>
+              <input id="ma-auth-login-email" name="email" type="email" autocomplete="username" placeholder="ingeniero@empresa.com" data-i18n="auth.emailPh" data-i18n-attr="placeholder" />
+            </div>
+            <div class="ma-field">
+              <label for="ma-auth-login-pass" data-i18n="auth.password">Contraseña</label>
+              <input id="ma-auth-login-pass" name="password" type="password" autocomplete="current-password" />
+            </div>
+            <button type="button" class="ma-auth__submit" data-i18n="auth.submitLogin">Entrar</button>
+          </form>
+        </div>
+        <div class="ma-auth__panel" data-panel="register" role="tabpanel" hidden>
+          <form class="ma-auth__form" action="#" method="post" onsubmit="return false;">
+            <div class="ma-field">
+              <label for="ma-auth-reg-name" data-i18n="auth.name">Nombre</label>
+              <input id="ma-auth-reg-name" name="name" type="text" autocomplete="name" />
+            </div>
+            <div class="ma-field">
+              <label for="ma-auth-reg-email" data-i18n="auth.email">Correo</label>
+              <input id="ma-auth-reg-email" name="email" type="email" autocomplete="email" />
+            </div>
+            <div class="ma-field">
+              <label for="ma-auth-reg-pass" data-i18n="auth.password">Contraseña</label>
+              <input id="ma-auth-reg-pass" name="password" type="password" autocomplete="new-password" />
+            </div>
+            <button type="button" class="ma-auth__submit" data-i18n="auth.submitRegister">Crear cuenta</button>
+          </form>
+        </div>
+        <p class="ma-modal__note" data-i18n="auth.backendNote">Backend pendiente: estos botones no envían datos todavía.</p>
+      </div>
+    </div>
+
     <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/freemiumUi.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>
   </body>
 </html>
