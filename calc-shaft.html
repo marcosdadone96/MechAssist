@@ -23,14 +23,14 @@
     </header>
     <main class="lab-main">
       <section class="lab-panel">
-        <h2>Eje macizo · torsión pura</h2>
-        <p class="lab-lead">τ = 16T/(πd³). Elija τ<sub>adm</sub> según material y criterio (ductilidad, fatiga, norma). Resultado orientativo.</p>
+        <h2>Eje macizo · torsión y flexión (modo básico/avanzado)</h2>
+        <p class="lab-lead">Modo básico: torsión pura. Modo avanzado: combina T y M con Von Mises o Tresca e incluye Kt. Resultado orientativo para predimensionado.</p>
         <div class="lab-calc-layout lab-calc-layout--with-diag">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-              <p class="lab-diagram-wrap__title">Vista esquemática · torsión</p>
+              <p class="lab-diagram-wrap__title">Vista esquemática · torsión (y flexión en avanzado)</p>
               <svg id="shDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de eje sometido a par"></svg>
-              <p class="lab-diagram-caption">Par <strong>T</strong> aplicado; diámetro calculado es orientativo (sin muescas ni fatiga detallada).</p>
+              <p class="lab-diagram-caption">Par <strong>T</strong> aplicado en extremos; en avanzado se representa <strong>M</strong> transversal. Modelo orientativo (sin fatiga detallada).</p>
             </div>
           </div>
           <div class="lab-calc-layout__inputs">
@@ -62,6 +62,89 @@
                 </label>
                 <input id="shTau" type="number" min="1" value="40" />
                 <p class="lab-field-help">Tensión tangencial <strong>admisible</strong> (MPa) según material, coeficientes de seguridad y criterio (ductilidad, fatiga). Típicamente tabulada en normas o manuales.</p>
+              </div>
+              <div class="lab-field lab-field--wide lab-field--check">
+                <label class="lab-check">
+                  <input id="shUseBending" type="checkbox" />
+                  <span>Incluir flexión (modo avanzado)</span>
+                </label>
+              </div>
+              <div class="lab-field sh-advanced-row sh-advanced-row--hidden" id="shMRow">
+                <label for="shM" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Momento flector">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M3 16h18" />
+                      <path d="M5 16c3-6 11-6 14 0" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Momento flector M (N·m)</span>
+                </label>
+                <input id="shM" type="number" min="0" step="any" value="0" />
+              </div>
+              <div class="lab-field sh-advanced-row sh-advanced-row--hidden" id="shCriterionRow">
+                <label for="shCriterion" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Criterio de combinación">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 18h16M6 14l3-3 3 2 6-6" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Criterio de combinación</span>
+                </label>
+                <select id="shCriterion">
+                  <option value="von_mises">Von Mises</option>
+                  <option value="tresca">Tresca</option>
+                </select>
+              </div>
+              <div class="lab-field sh-advanced-row sh-advanced-row--hidden" id="shKtRow">
+                <label for="shKt" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Factor de concentración">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M5 16l4-8 3 6 2-4 5 6" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Kt (concentración de tensiones)</span>
+                </label>
+                <input id="shKt" type="number" min="1" step="0.05" value="1.0" />
+                <p class="lab-field-help">Kt amplifica tensiones por entallas/chaveteros/cambios de sección. Si no hay detalle geométrico, use Kt = 1.0 como base conservadora inicial.</p>
+              </div>
+              <div class="lab-field">
+                <label for="shAvailableD" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Diámetro disponible">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="7" />
+                      <path d="M5 12h14" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">Diámetro disponible (mm)</span>
+                </label>
+                <input id="shAvailableD" type="number" min="1" step="0.1" value="40" />
+              </div>
+              <div class="lab-field lab-field--wide">
+                <label class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Tabla orientativa τadm">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 6h16M4 12h16M4 18h16M8 4v16M16 4v16" />
+                    </svg>
+                  </span>
+                  <span class="lab-field__label-text">τadm orientativa por material (MPa)</span>
+                </label>
+                <div style="overflow-x:auto">
+                  <table class="lab-catalog-table" style="margin-top:0">
+                    <thead><tr><th>Material</th><th>τadm estático</th><th>τadm fatiga</th></tr></thead>
+                    <tbody>
+                      <tr><td>Acero C45 (normalizado)</td><td>40 – 60</td><td>25 – 35</td></tr>
+                      <tr><td>Acero F-114 / 42CrMo4</td><td>70 – 90</td><td>45 – 60</td></tr>
+                      <tr><td>Acero inox AISI 304</td><td>35 – 50</td><td>20 – 30</td></tr>
+                      <tr><td>Aluminio 6061-T6</td><td>20 – 30</td><td>12 – 18</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div id="shTauChips" style="margin-top:.5rem;display:flex;flex-wrap:wrap;gap:.35rem">
+                  <button type="button" class="cp-ka-btn" data-tau="50">C45 · 50 MPa</button>
+                  <button type="button" class="cp-ka-btn" data-tau="80">F-114 / 42CrMo4 · 80 MPa</button>
+                  <button type="button" class="cp-ka-btn" data-tau="42">AISI 304 · 42 MPa</button>
+                  <button type="button" class="cp-ka-btn" data-tau="25">Al 6061-T6 · 25 MPa</button>
+                </div>
               </div>
             </div>
           </div>
@@ -100,6 +183,7 @@
               </label>
             </div>
             <div id="shHero"></div>
+            <div id="shFitVerdict"></div>
             <div class="lab-results-wrap" id="shResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">

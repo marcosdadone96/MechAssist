@@ -203,10 +203,11 @@ export function renderFlatConveyorDiagram(svg, p) {
 
   const summaryH = hasDetail ? 136 : 128;
   const summaryY = legendY + legendH + 14;
-  const VB_H = summaryY + summaryH + 18;
-
+  const compactStack = typeof window !== 'undefined' && window.matchMedia('(max-width: 480px)').matches;
   const colGap = 14;
-  const colW = (VB_W - 40 - colGap) / 2;
+  const colW = compactStack ? VB_W - 40 : (VB_W - 40 - colGap) / 2;
+  const rightColY = compactStack ? summaryY + summaryH + 12 : summaryY;
+  const VB_H = rightColY + summaryH + 18;
 
   const svgTitle = en
     ? 'Flat belt schematic \u2014 carrying strand, dimensions, legend'
@@ -395,7 +396,7 @@ export function renderFlatConveyorDiagram(svg, p) {
       ${hasDetail ? `<text x="14" y="100" font-size="9.5" fill="#94a3b8" font-family="Inter, Segoe UI, sans-serif">${accelLine}</text>` : ''}
     </g>
 
-    <g transform="translate(${20 + colW + colGap}, ${summaryY})">
+    <g transform="translate(${compactStack ? 20 : 20 + colW + colGap}, ${rightColY})">
       <rect x="0" y="0" width="${colW}" height="${summaryH}" rx="10" fill="#ffffff" stroke="#0d9488" stroke-width="1.5" filter="url(#cardSh)" />
       <text x="14" y="24" font-size="12" font-weight="800" fill="#0f172a" font-family="Inter, Segoe UI, sans-serif">${sumRightTitle}</text>
       <text x="14" y="42" font-size="10.5" fill="#475569" font-family="Inter, Segoe UI, sans-serif">SF ${fmt(sf)} · η ${fmt(etaPct)} % · T ${Tdesign.toFixed(2)} N·m</text>

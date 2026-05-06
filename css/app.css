@@ -640,6 +640,18 @@ body {
   cursor: not-allowed;
 }
 
+.field input.input-disabled-priority {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #64748b;
+}
+
+.flat-slider.input-disabled-priority {
+  filter: grayscale(0.4);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .field input.input-synced:read-only {
   background: #f1f5f9;
   color: #334155;
@@ -649,6 +661,10 @@ body {
 .field input.field-input--danger {
   border-color: #dc2626;
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.field.field--required-highlight > label {
+  color: #b91c1c;
 }
 
 .design-alerts {
@@ -912,6 +928,12 @@ body {
   color: var(--muted);
 }
 
+.inc-angle-warning {
+  margin-top: 0.4rem;
+  color: #b91c1c;
+  font-weight: 700;
+}
+
 .diagram-duo__real {
   margin: 0;
   padding: 0;
@@ -933,6 +955,67 @@ body {
   object-fit: contain;
   object-position: center;
   background: #f8fafc;
+}
+
+.machine-photo-placeholder {
+  width: 100%;
+  height: 240px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 0.75rem;
+  background: #e5e7eb;
+  color: #475569;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.reeving-visual {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.reeving-visual__opt {
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 0.55rem 0.65rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.reeving-visual__opt--active {
+  border-color: #0d9488;
+  background: #f0fdfa;
+}
+
+.reeving-visual__mini {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #475569;
+  line-height: 1.35;
+}
+
+.field-lock-icon {
+  margin-left: 0.25rem;
+  font-size: 0.85em;
+}
+
+.field--locked input {
+  transition: background-color 220ms ease, border-color 220ms ease, color 220ms ease, opacity 220ms ease;
+}
+
+#clSelfLockBanner {
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  html[data-machine-tool='car-lift'] .diagram-duo__schematic svg text {
+    font-size: 6.1px;
+  }
 }
 
 .diagram-duo__real figcaption {
@@ -2735,13 +2818,60 @@ html[data-conveyor-tool='screw'] .flat-dashboard .results-grid {
   text-decoration: none;
 }
 
+.pro-install-teaser .pro-install-teaser__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.6rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid #0f766e;
+  background: #0f766e;
+  color: #f8fafc;
+  text-decoration: none;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
 .pro-install-teaser a:hover {
   text-decoration: underline;
+}
+
+.pro-install-teaser .pro-install-teaser__cta:hover {
+  background: #0d9488;
+  border-color: #0d9488;
+  color: #ffffff;
+  text-decoration: none;
 }
 
 .pro-install-wrap--locked #proInstallFields {
   opacity: 0.45;
   filter: grayscale(0.15);
+}
+
+.pump-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+}
+
+.pump-quick-actions__btn {
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #0f172a;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.5rem 0.6rem;
+  cursor: pointer;
+}
+
+.pump-quick-actions__btn:hover {
+  border-color: #0d9488;
+  color: #0d9488;
+  background: #f0fdfa;
 }
 
 /* --- Tornillo: indicador RPM vs material --- */

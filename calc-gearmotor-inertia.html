@@ -7,6 +7,47 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
+    <style>
+      .gm-ref-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-top: 0.35rem;
+      }
+      .gm-ref-chip {
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #f8fafc;
+        color: #0f172a;
+        font: inherit;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.22rem 0.55rem;
+        cursor: pointer;
+      }
+      .gm-ref-chip:hover {
+        border-color: #0d9488;
+        color: #0f766e;
+      }
+      #gmChart {
+        min-height: 200px;
+      }
+      .gm-summary-grid {
+        margin-top: 0.45rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.45rem;
+      }
+      .gm-summary-item {
+        border-radius: 10px;
+        border: 1px solid #d1d5db;
+        padding: 0.5rem 0.6rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .gm-summary-item--ok { background: #ecfdf5; border-color: #6ee7b7; color: #065f46; }
+      .gm-summary-item--err { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
+    </style>
   </head>
   <body class="lab-body">
     <header class="lab-header">
@@ -50,6 +91,10 @@
                 Línea <strong>verde</strong>: par disponible <strong>T<sub>m</sub>(n)</strong> del modelo; punto <strong>ámbar</strong>: su par de carga; línea vertical: régimen
                 de operación.
               </p>
+              <p class="lab-diagram-caption gm-chart-legend">
+                Leyenda: línea <strong>verde</strong> = par disponible <strong>T<sub>m</sub>(n)</strong>; punto <strong>ámbar</strong> = par de carga;
+                <strong>área sombreada</strong> en el punto de operación = margen de arranque.
+              </p>
             </div>
           </div>
           <div class="lab-calc-layout__inputs">
@@ -64,6 +109,11 @@
                 <label for="gmJratioMax">Límite admisible Jext/Jmot</label>
                 <input id="gmJratioMax" type="number" min="1" step="0.5" value="10" />
                 <span class="hint">Relación máxima permitida</span>
+                <div class="gm-ref-chips" role="group" aria-label="Valores orientativos de relación de inercias">
+                  <button type="button" class="gm-ref-chip" data-gm-ratio="1">Servomotor: ≤ 1</button>
+                  <button type="button" class="gm-ref-chip" data-gm-ratio="3">Motor asíncrono variador: ≤ 3</button>
+                  <button type="button" class="gm-ref-chip" data-gm-ratio="5">Motor asíncrono arranque directo: ≤ 5</button>
+                </div>
                 <p class="lab-field-help">Criterio de diseño para arranque estable. Si no tiene dato del fabricante, use un valor conservador.</p>
               </div>
               <div class="lab-field">
@@ -85,10 +135,22 @@
                 <p class="lab-field-help">Define cuánta sobrecarga transitoria tiene el motorreductor al arrancar. Un valor mayor implica más capacidad inicial.</p>
               </div>
               <div class="lab-field">
+                <label for="gmJload">J carga (kg·m²) · opcional</label>
+                <input id="gmJload" type="number" min="0" step="any" />
+                <span class="hint">Inercia en el eje lento o de carga</span>
+                <p class="lab-field-help">Si indica relación de reducción, se calculará automáticamente la inercia reflejada al eje rápido.</p>
+              </div>
+              <div class="lab-field">
+                <label for="gmIratio">Relación de reducción i · opcional</label>
+                <input id="gmIratio" type="number" min="0.01" step="any" />
+                <span class="hint">i = n motor / n carga</span>
+                <p class="lab-field-help">Para cálculo rápido: J_reflejada = J_carga / i².</p>
+              </div>
+              <div class="lab-field">
                 <label for="gmJext">J carga reflejada (kg·m²)</label>
                 <input id="gmJext" type="number" min="0" step="any" value="0.008" />
                 <span class="hint">Inercia equivalente vista por el motor</span>
-                <p class="lab-field-help">Debe estar reflejada al eje del motorreductor. Incluye inercia de carga, transmisión y elementos rotativos acoplados.</p>
+                <p class="lab-field-help">Puede introducirla manualmente o dejar que se complete desde J_carga e i. Incluye inercia de transmisión y elementos acoplados.</p>
               </div>
               <div class="lab-field">
                 <label for="gmN">Velocidad operación (rpm)</label>
@@ -107,6 +169,16 @@
           <div class="lab-calc-layout__out">
             <div id="gmOut"></div>
             <div id="gmTable"></div>
+            <div id="gmSummary"></div>
+            <p class="lab-small-print">
+              La relación Jext/Jmot es una guía de selección rápida. Para accionamientos con variador de frecuencia el límite puede
+              relajarse; para arranque directo en red debe ser conservador. Consultar siempre las especificaciones del fabricante
+              del motor.
+            </p>
+            <p class="lab-small-print">
+              Hipótesis del gráfico: la curva T(n) es una aproximación lineal simplificada y no refleja el comportamiento real de
+              motores de inducción con variador ni servo drives.
+            </p>
           </div>
         </div>
       </section>

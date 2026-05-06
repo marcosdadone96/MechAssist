@@ -59,6 +59,7 @@
             <ul>
               <li><strong>L</strong>: longitud siguiendo la pendiente; <strong>H</strong>: desnivel. Si deja θ vacío, θ = arcsin(H/L).</li>
               <li>Si rellena <strong>θ</strong>, tiene prioridad sobre H para el cálculo.</li>
+              <li>Referencia típica de ángulo máximo: granos secos ~20°, arena húmeda ~15°, materiales finos ~12°.</li>
               <li>La resistencia combina peso en pendiente y rozamiento; de ahí salen P y T en el tambor.</li>
               <li><strong>Norma</strong>: ISO/DIN o CEMA (+6 % solo sobre la tracción de régimen, no sobre el término de aceleración).</li>
               <li><strong>Factor de servicio</strong>: lo fija el tipo de carga; use «Personalizado» si su norma da otro valor.</li>
@@ -122,8 +123,9 @@
             </div>
             <div class="field">
               <label for="incAngle">Ángulo θ (opcional) <span class="info-chip" title="Si lo rellena, el cálculo usa este ángulo en lugar de derivarlo desde H y L." aria-label="Ayuda ángulo.">?</span></label>
-              <input id="incAngle" type="number" step="0.1" min="0" max="89" value="" placeholder="auto" />
+              <input id="incAngle" type="number" step="0.1" min="0" max="89" value="" />
               <span class="field-hint">° — si se rellena, sustituye a H</span>
+              <span class="field-hint inc-angle-warning" id="incAngleWarn" hidden>⚠ θ &gt; 18°: usar banda con perfiles/nervios antideslizantes.</span>
             </div>
             <div class="field flat-field--slider">
               <label for="incLoadMass">Masa m <span class="info-chip" title="Masa total de material transportado en el tramo considerado por el modelo." aria-label="Ayuda masa de carga.">?</span></label>
@@ -290,6 +292,7 @@
           </div>
           <figure class="diagram-duo__real">
             <img
+              id="incReferenceImage"
               src="assets/inclined-conveyor-reference.png"
               alt="Cinta transportadora en instalación real"
               width="1024"
@@ -297,10 +300,10 @@
               loading="lazy"
               decoding="async"
             />
+            <div id="incReferencePlaceholder" class="machine-photo-placeholder" hidden>Imagen: cinta inclinada en obra</div>
             <figcaption>
-              Referencia visual (ejemplo).
-              <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>
-              — o copie su foto como <code>assets/inclined-conveyor-reference.png</code>.
+              Cinta inclinada en obra.
+              <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.
             </figcaption>
           </figure>
         </section>
@@ -322,7 +325,7 @@
               </div>
               <div class="field">
                 <label for="incVerifySearch">Filtrar modelo <span class="info-chip" title="Filtra por texto o código para encontrar más rápido un modelo del catálogo." aria-label="Ayuda filtro de modelo.">?</span></label>
-                <input id="incVerifySearch" type="search" placeholder="ej. SK 3S…" data-verify-search autocomplete="off" />
+                <input id="incVerifySearch" type="search" data-verify-search autocomplete="off" />
               </div>
               <div class="field" style="grid-column: 1 / -1">
                 <label for="incVerifyModel">Modelo del catálogo ejemplo <span class="info-chip" title="Se compara contra el punto calculado: potencia, par y rpm." aria-label="Ayuda modelo de catálogo.">?</span></label>

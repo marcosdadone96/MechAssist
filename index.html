@@ -38,34 +38,53 @@
     </header>
 
     <main class="hub-main">
-      <details class="hub-hero hub-hero--compact" aria-labelledby="hub-hero-heading">
-        <summary class="hub-hero__summary">
-          <span class="hub-hero__eyebrow" data-i18n="hero.eyebrow">Calculadoras técnicas · ingeniería mecánica</span>
-          <span id="hub-hero-heading" class="hub-hero__brand" role="heading" aria-level="1">Mech<em>Assist</em></span>
-          <span class="hub-hero__tagline" data-i18n="hero.tagline">Criterio de taller. Resultados al instante.</span>
-          <span class="hub-hero__summary-cta" data-i18n="hero.expand">Ver presentación</span>
-        </summary>
-        <div class="hub-hero__panel">
-          <div class="hub-hero__desc">
-            <p data-i18n="hero.desc1">
-              MechAssist centraliza modelos de transmisión, transporte y fluidos en una interfaz clara: estimaciones útiles para
-              preliminar, comparar alternativas y documentar hipótesis.
-            </p>
-            <p data-i18n="hero.desc2">
-              Referencias y métodos alineados con buenas prácticas industriales; la decisión final debe validarse siempre con
-              catálogo, norma aplicable y condiciones reales de servicio.
-            </p>
+      <section class="hub-hero" aria-labelledby="hub-hero-heading">
+        <div class="hub-hero__grid">
+          <div class="hub-hero__content">
+            <p class="hub-hero__eyebrow" data-i18n="hero.eyebrow">MechAssist</p>
+            <h1 id="hub-hero-heading" class="hub-hero__title">Mech<em>Assist</em></h1>
+            <p class="hub-hero__subtitle" data-i18n="hero.tagline">Calculadoras profesionales de Ingeniería Mecánica</p>
+            <div class="hub-hero__desc">
+              <p data-i18n="hero.desc1">
+                Dimensioná engranajes, correas, rodamientos, cilindros hidráulicos, tornillería y más en segundos.
+              </p>
+              <p data-i18n="hero.desc2">
+                Herramientas técnicas confiables con base en normas, la mayoría gratuitas.
+              </p>
+            </div>
+            <div class="hub-hero__cta">
+              <a class="hub-hero__btn hub-hero__btn--primary" href="transmission-lab.html" data-i18n="hero.ctaLab">Explorar calculadoras gratis</a>
+              <a class="hub-hero__btn hub-hero__btn--secondary" href="#hub-zones" data-i18n="hero.ctaExplore">Ver todas las áreas</a>
+            </div>
           </div>
-          <div class="hub-hero__cta">
-            <a class="hub-hero__btn hub-hero__btn--primary" href="transmission-lab.html" data-i18n="hero.ctaLab">Explorar el laboratorio</a>
-            <a class="hub-hero__btn hub-hero__btn--secondary" href="#hub-zones" data-i18n="hero.ctaExplore">Ver todas las áreas</a>
-          </div>
-          <p class="hub-hero__tier" data-i18n="hero.tier">
-            Gratis: acceso amplio al núcleo de calculadoras y modelos de máquinas base. Pro: funciones extendidas por módulo (p.
-            ej. lienzo técnico multieje, exportaciones o flujos premium, según disponibilidad).
-          </p>
+          <aside class="hub-hero__mockup" aria-label="Vista previa de calculadora">
+            <div class="hub-hero__mockup-head">
+              <span class="hub-hero__dot"></span>
+              <span class="hub-hero__dot"></span>
+              <span class="hub-hero__dot"></span>
+              <span class="hub-hero__mockup-title">Calculadora de correas</span>
+            </div>
+            <div class="hub-hero__mockup-body">
+              <div class="hub-hero__field">
+                <span class="hub-hero__label">Potencia</span>
+                <span class="hub-hero__value">7.5 kW</span>
+              </div>
+              <div class="hub-hero__field">
+                <span class="hub-hero__label">RPM motriz</span>
+                <span class="hub-hero__value">1450 rpm</span>
+              </div>
+              <div class="hub-hero__field">
+                <span class="hub-hero__label">Relación</span>
+                <span class="hub-hero__value">2.80 : 1</span>
+              </div>
+              <div class="hub-hero__result">
+                <span>Correa sugerida</span>
+                <strong>SPA 1600 + Poleas 112/315</strong>
+              </div>
+            </div>
+          </aside>
         </div>
-      </details>
+      </section>
 
       <div class="hub-zones-grid" id="hub-zones">
       <div class="hub-zone hub-zone--machines">

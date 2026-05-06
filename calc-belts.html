@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Belt drives — Lab · MechAssist</title>
+    <title>Correas — Laboratorio · MechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -11,31 +11,31 @@
   <body class="lab-body">
     <header class="lab-header">
       <a class="lab-header__brand" href="index.html">Mech<span>Assist</span></a>
-      <nav class="lab-header__nav" aria-label="Lab navigation">
+      <nav class="lab-header__nav" aria-label="Navegación laboratorio">
         <div class="lab-header__nav-start">
-          <a href="index.html">Home</a>
+          <a href="index.html">Inicio</a>
         </div>
         <div class="lab-header__nav-end">
-          <a href="transmission-lab.html" class="lab-header__nav-cta">Transmission lab</a>
-          <a href="transmission-canvas.html" title="Multi-shaft technical canvas (Pro)">Pro canvas</a>
+          <a href="transmission-lab.html" class="lab-header__nav-cta">Laboratorio</a>
+          <a href="transmission-canvas.html" title="Lienzo técnico multieje (Pro)">Lienzo Pro</a>
         </div>
       </nav>
     </header>
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2>Belt drive · kinematics and belt-speed regime</h2>
+        <h2>Transmisión por correas · cinemática y régimen de velocidad</h2>
         <p class="lab-lead">
-          Choose the <strong>belt family</strong>; the form adapts inputs and models: <strong>V-belt</strong> (ISO 4184 profile + 1–3&nbsp;% slip),
-          <strong>synchronous</strong> (tooth counts Z and pitch p, no kinematic slip), <strong>flat</strong>, and <strong>Poly-V</strong> (emphasis on <strong>v</strong> and wrap angle).
-          Primitive length for an <strong>open belt</strong> and a safety-style verdict from <strong>linear speed</strong> on the driver primitive.
+          Elija la <strong>familia de correa</strong>; el formulario adapta entradas y modelos: <strong>trapezoidal en V</strong> (perfil ISO 4184 + 1–3&nbsp;% de deslizamiento),
+          <strong>síncrona</strong> (dientes Z y paso p, sin deslizamiento cinemático), <strong>plana</strong> y <strong>Poly-V</strong> (énfasis en <strong>v</strong> y ángulo de abrazamiento).
+          Longitud primitiva para <strong>correa abierta</strong> y veredicto de seguridad a partir de la <strong>velocidad lineal</strong> en el primitivo motriz.
         </p>
         <div class="lab-calc-layout lab-calc-layout--with-diag">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-              <p class="lab-diagram-wrap__title">Live schematic · scale from primitives</p>
+              <p class="lab-diagram-wrap__title">Vista esquemática · se actualiza al cambiar los datos</p>
               <svg id="bDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Pulleys and belt diagram"></svg>
               <p class="lab-diagram-caption">
-                In the diagram: <strong>left = driver pulley 1 (d₁, n₁)</strong>, <strong>right = driven pulley 2 (d₂)</strong>. Teal dashed circle = <strong>pitch/primitive circle</strong>. Synchronous belt: schematic teeth.
+                En el esquema: <strong>izquierda = polea motriz 1 (d₁, n₁)</strong>, <strong>derecha = polea conducida 2 (d₂)</strong>. Círculo discontinuo turquesa = <strong>círculo primitivo</strong>. Correa síncrona: dientes esquemáticos.
               </p>
             </div>
           </div>
@@ -43,23 +43,40 @@
             <div class="lab-grid lab-grid--2">
               <div class="lab-field lab-field--wide">
                 <label for="bBeltType" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Belt family">
+                  <span class="lab-field-ico" title="Familia de correa">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <ellipse cx="12" cy="12" rx="9" ry="4" />
                       <path d="M3 12h18" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Belt type</span>
+                  <span class="lab-field__label-text">Tipo de correa</span>
                 </label>
                 <select id="bBeltType">
-                  <option value="v_trapezoidal">V-belt (trapezoidal) · ISO 4184</option>
-                  <option value="synchronous">Synchronous (toothed)</option>
-                  <option value="flat">Flat</option>
-                  <option value="poly_v">Ribbed (Poly-V) · ISO 9982</option>
+                  <option value="v_trapezoidal">Correa trapezoidal (en V) · ISO 4184</option>
+                  <option value="synchronous">Correa síncrona (dentada)</option>
+                  <option value="flat">Correa plana</option>
+                  <option value="poly_v">Correa nervada (Poly-V) · ISO 9982</option>
                 </select>
                 <p class="lab-field-help">
-                  Each type drives inputs (diameter vs. teeth), slip model, and <strong>v</strong> / wrap criteria. Final section selection still belongs in the manufacturer catalogue.
+                  Cada tipo adapta entradas (diámetros vs dientes), modelo de deslizamiento y criterio de <strong>v</strong> / ángulo de abrazamiento. La selección final de sección sigue siendo por catálogo del fabricante.
                 </p>
+                <div style="margin-top: 0.45rem; overflow-x: auto">
+                  <table class="lab-catalog-table" style="margin-top: 0">
+                    <thead>
+                      <tr>
+                        <th>Tipo</th>
+                        <th>v recomendada</th>
+                        <th>v máxima</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Trapezoidal (V)</td><td>10 – 25 m/s</td><td>30 m/s</td></tr>
+                      <tr><td>Síncrona</td><td>5 – 40 m/s</td><td>50 m/s</td></tr>
+                      <tr><td>Plana</td><td>5 – 30 m/s</td><td>50 m/s</td></tr>
+                      <tr><td>Poly-V</td><td>10 – 40 m/s</td><td>60 m/s</td></tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
               <div class="lab-field" data-belt-show="v_trapezoidal">
@@ -69,10 +86,10 @@
                       <path d="M8 18l4-12 4 12M9 14h6" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">V-belt section</span>
+                  <span class="lab-field__label-text">Sección de correa trapezoidal</span>
                 </label>
                 <select id="bVProfile"></select>
-                <p class="lab-field-help">Documentary reference; the math uses pitch diameters and slip. Number of belts and quoted lengths per standard / supplier.</p>
+                <p class="lab-field-help">Referencia documental; el cálculo usa diámetros primitivos y deslizamiento. El número de correas y longitudes comerciales se definen por norma/proveedor.</p>
               </div>
 
               <div class="lab-field" data-belt-show="poly_v">
@@ -85,67 +102,67 @@
                   <span class="lab-field__label-text">Poly-V profile</span>
                 </label>
                 <select id="bPolyProfile"></select>
-                <p class="lab-field-help">Section ID; pitch diameters are still the groove reference values (entered as diameters).</p>
+                <p class="lab-field-help">Identificador de sección; los diámetros primitivos siguen siendo valores de referencia de garganta (ingresados como diámetros).</p>
               </div>
 
               <div class="lab-field" data-belt-show="synchronous">
                 <label for="bSyncPitch" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Toothed belt pitch">
+                  <span class="lab-field-ico" title="Paso correa dentada">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M4 12h2l1-3 2 6 2-6 1 3h8" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Pitch p (profile / catalogue)</span>
+                  <span class="lab-field__label-text">Paso p (perfil / catálogo)</span>
                 </label>
                 <select id="bSyncPitch"></select>
-                <p class="lab-field-help">Linear pitch <strong>p</strong> in mm between homologous teeth. Primitive diameter: <strong>D = p·Z / π</strong>.</p>
+                <p class="lab-field-help">Paso lineal <strong>p</strong> en mm entre dientes homólogos. Diámetro primitivo: <strong>D = p·Z / π</strong>.</p>
               </div>
 
               <div class="lab-field" data-belt-show="synchronous">
                 <label for="bZ1" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Driver pulley teeth">
+                  <span class="lab-field-ico" title="Dientes polea motriz">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="7" />
                       <path d="M12 5v3M12 16v3M5 12h3M16 12h3" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Z₁ · teeth (driver)</span>
+                  <span class="lab-field__label-text">Z₁ · dientes (motriz)</span>
                 </label>
                 <input id="bZ1" type="number" min="6" value="20" />
-                <p class="lab-field-help">Tooth count on the driver pulley; with no slip: <strong>n₂ = n₁ · Z₁ / Z₂</strong>.</p>
+                <p class="lab-field-help">Número de dientes en la polea motriz; sin deslizamiento: <strong>n₂ = n₁ · Z₁ / Z₂</strong>.</p>
               </div>
 
               <div class="lab-field" data-belt-show="synchronous">
                 <label for="bZ2" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Driven pulley teeth">
+                  <span class="lab-field-ico" title="Dientes polea conducida">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="9" />
                       <path d="M12 3v4M12 17v4M3 12h4M17 12h4" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Z₂ · teeth (driven)</span>
+                  <span class="lab-field__label-text">Z₂ · dientes (conducida)</span>
                 </label>
                 <input id="bZ2" type="number" min="6" value="40" />
-                <p class="lab-field-help">Driven pulley teeth. Kinematic ratio <strong>i ≈ Z₂ / Z₁</strong> (speed reducer if Z₂ &gt; Z₁).</p>
+                <p class="lab-field-help">Dientes de la polea conducida. Relación cinemática <strong>i ≈ Z₂ / Z₁</strong> (reductora si Z₂ &gt; Z₁).</p>
               </div>
 
               <div class="lab-field" data-belt-show="v_trapezoidal,flat,poly_v">
                 <label for="bD1" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Driver primitive">
+                  <span class="lab-field-ico" title="Primitivo motriz">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="7" />
                       <path d="M5 12h14" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">d₁ primitive (mm) · driver</span>
+                  <span class="lab-field__label-text">d₁ primitivo (mm) · motriz</span>
                 </label>
                 <input id="bD1" type="number" min="10" value="125" />
-                <p class="lab-field-help"><strong>Pitch diameter</strong> on the driver pulley. Belt speed: <strong>v = π d₁ n₁ / 60&nbsp;000</strong> m/s (d₁ in mm).</p>
+                <p class="lab-field-help"><strong>Diámetro primitivo</strong> en la polea motriz. Velocidad de correa: <strong>v = π d₁ n₁ / 60&nbsp;000</strong> m/s (d₁ en mm).</p>
               </div>
 
               <div class="lab-field" data-belt-show="v_trapezoidal,flat,poly_v">
                 <label for="bD2" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Driven primitive">
+                  <span class="lab-field-ico" title="Primitivo conducido">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="9" />
                       <path d="M3 12h18" />
@@ -154,22 +171,22 @@
                   <span class="lab-field__label-text">d₂ primitive (mm) · driven</span>
                 </label>
                 <input id="bD2" type="number" min="10" value="280" />
-                <p class="lab-field-help">Driven pitch diameter. Theoretical speed ratio <strong>n₂,th = n₁ · d₁ / d₂</strong> before slip (if applicable).</p>
+                <p class="lab-field-help">Diámetro primitivo conducido. Velocidad teórica <strong>n₂,th = n₁ · d₁ / d₂</strong> antes del deslizamiento (si aplica).</p>
               </div>
 
               <div class="lab-field">
                 <label for="bC" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Centre distance">
+                  <span class="lab-field-ico" title="Distancia entre centros">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="7" cy="12" r="3" />
                       <circle cx="17" cy="12" r="3" />
                       <path d="M10 12h4" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Centre distance C (mm)</span>
+                  <span class="lab-field__label-text">Distancia entre centros C (mm)</span>
                 </label>
                 <input id="bC" type="number" min="50" value="520" />
-                <p class="lab-field-help">Shaft centre distance. Sets primitive belt length <strong>L</strong> and wrap angles β₁, β₂ (flat and Poly-V: capacity and fatigue).</p>
+                <p class="lab-field-help">Distancia entre ejes. Define longitud primitiva <strong>L</strong> y ángulos de abrazamiento β₁, β₂ (plana y Poly-V: capacidad y fatiga).</p>
               </div>
 
               <div class="lab-field">
@@ -181,7 +198,7 @@
                       <path d="M12 8v4l3 2" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">n₁ · RPM (driver)</span>
+                  <span class="lab-field__label-text">n₁ · RPM (motriz)</span>
                 </label>
                 <input id="bN1" type="number" min="0" value="1455" />
                 <span class="hint">0 = skip n₂ and v</span>
@@ -190,12 +207,12 @@
 
               <div class="lab-field">
                 <label for="bPowerKw" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Power (Advisor)">
+                  <span class="lab-field-ico" title="Potencia (asesor)">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Power transmitted (kW) — optional</span>
+                  <span class="lab-field__label-text">Potencia transmitida (kW) — opcional</span>
                 </label>
                 <input id="bPowerKw" type="number" min="0" step="any" placeholder="e.g. 5.5" />
                 <p class="lab-field-help">For the <strong>AI Advisor</strong> only: indicative loss comparison across belt types. Does not change the kinematics shown.</p>
@@ -203,16 +220,16 @@
 
               <div class="lab-field lab-field--wide" data-belt-show="v_trapezoidal,flat,poly_v">
                 <label for="bSlip" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Slip">
+                  <span class="lab-field-ico" title="Deslizamiento">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M4 16h6l2-8h8" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Slip s (%)</span>
+                  <span class="lab-field__label-text">Deslizamiento s (%)</span>
                 </label>
                 <input id="bSlip" type="number" step="0.1" min="0" max="15" value="2" />
-                <span class="hint">V-belt: typ. 1–3 · flat/Poly-V: lower</span>
-                <p class="lab-field-help">Simple driven-speed model: <strong>n₂,real ≈ n₂,th · (1 − s)</strong>. Synchronous belt: no kinematic slip (not editable).</p>
+                <span class="hint">Correa V: típ. 1–3 · plana/Poly-V: menor</span>
+                <p class="lab-field-help">Modelo simple de velocidad de salida: <strong>n₂,real ≈ n₂,th · (1 − s)</strong>. Correa síncrona: sin deslizamiento cinemático (no editable).</p>
               </div>
             </div>
           </div>
@@ -220,30 +237,29 @@
             <div
               class="lab-units-bar"
               role="group"
-              aria-label="Result units"
+              aria-label="Unidades de resultado"
               data-lab-convert-categories="length rotation linear"
-              data-lab-convert-title="Unit converter (belts)"
-              data-lab-convert-tip="Primitive diameters and developed lengths in mm; pulley RPM; belt linear speed."
-              data-lab-convert-ui-lang="en"
+              data-lab-convert-title="Conversor (correas)"
+              data-lab-convert-tip="Diámetros primitivos y longitudes desarrolladas en mm; RPM de poleas; velocidad lineal de correa."
             >
-              <span class="lab-units-bar__title">How to read results</span>
+              <span class="lab-units-bar__title">Cómo ver resultados</span>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Distance</span>
+                <span class="lab-units-bar__lbl">Distancia</span>
                 <select id="labUnitLength" class="lab-units-bar__select">
-                  <option value="mm">mm (shop)</option>
+                  <option value="mm">mm (taller)</option>
                   <option value="cm">cm</option>
                   <option value="m">m (SI)</option>
                 </select>
               </label>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Rotation</span>
+                <span class="lab-units-bar__lbl">Giro</span>
                 <select id="labUnitRotation" class="lab-units-bar__select">
                   <option value="rpm">RPM</option>
                   <option value="rad_s">rad/s</option>
                 </select>
               </label>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Linear speed</span>
+                <span class="lab-units-bar__lbl">Velocidad lineal</span>
                 <select id="labUnitLinear" class="lab-units-bar__select">
                   <option value="m_s">m/s</option>
                   <option value="mm_s">mm/s</option>
@@ -254,7 +270,7 @@
             <div id="bHero"></div>
             <div id="bSpeedVerdict" class="lab-belt-speed-verdict-wrap" aria-live="polite"></div>
             <details class="lab-results-details">
-              <summary>Results by element</summary>
+              <summary>Resultados por elemento</summary>
               <div id="bElementResults" class="lab-element-columns"></div>
             </details>
             <div class="lab-results-wrap" id="bResultsWrap">
@@ -265,10 +281,10 @@
                     d="M32 8l2.2 4.4 4.9-1.3 1.3 4.9 4.4 2.2-2.2 4.4 1.3 4.9-4.9 1.3-2.2 4.4-4.4-2.2-4.9 1.3-1.3-4.9-4.4-2.2 2.2-4.4-1.3-4.9 4.9-1.3 4.4-2.2zm0 10a14 14 0 100 28 14 14 0 000-28z"
                   />
                 </svg>
-                <span class="lab-results-computing__label">Recalculating</span>
+                <span class="lab-results-computing__label">Recalculando</span>
               </div>
               <details class="lab-results-details">
-                <summary>Full result</summary>
+                <summary>Resultado completo</summary>
                 <div class="lab-results" id="bResults"></div>
               </details>
             </div>

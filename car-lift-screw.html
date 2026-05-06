@@ -99,6 +99,12 @@
                 </thead>
                 <tbody>
                   <tr>
+                    <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem"><strong>Tr 32 x 6</strong></td>
+                    <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">32 mm</td>
+                    <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">6 mm</td>
+                    <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">~505 mm&sup2;</td>
+                  </tr>
+                  <tr>
                     <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem"><strong>Tr 40 x 7</strong></td>
                     <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">40 mm</td>
                     <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">7 mm</td>
@@ -111,10 +117,16 @@
                     <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">~1.134 mm&sup2;</td>
                   </tr>
                   <tr>
-                    <td style="padding: 0.45rem 0.4rem"><strong>Tr 50 x 8</strong></td>
-                    <td style="padding: 0.45rem 0.4rem">50 mm</td>
-                    <td style="padding: 0.45rem 0.4rem">8 mm</td>
-                    <td style="padding: 0.45rem 0.4rem">~1.385 mm&sup2;</td>
+                    <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem"><strong>Tr 50 x 8</strong></td>
+                    <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">50 mm</td>
+                    <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">8 mm</td>
+                    <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">~1.385 mm&sup2;</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.45rem 0.4rem"><strong>Tr 55 x 9</strong></td>
+                    <td style="padding: 0.45rem 0.4rem">55 mm</td>
+                    <td style="padding: 0.45rem 0.4rem">9 mm</td>
+                    <td style="padding: 0.45rem 0.4rem">~1.630 mm&sup2;</td>
                   </tr>
                 </tbody>
               </table>
@@ -124,6 +136,7 @@
               <strong>Materiales y desgaste:</strong> configuraci&oacute;n cl&aacute;sica de elevador industrial:
               <strong>husillo de acero al carbono (p. ej. C45)</strong> + <strong>tuerca de bronce (p. ej. CuSn12)</strong>.
               El objetivo es minimizar gripado y concentrar el desgaste en la tuerca, que es el componente reemplazable.
+              Vida &uacute;til orientativa de tuerca de bronce: <strong>500&ndash;2000 h</strong> seg&uacute;n carga y lubricaci&oacute;n; se recomienda inspecci&oacute;n peri&oacute;dica de holgura, temperatura y part&iacute;culas.
             </p>
 
             <div
@@ -194,9 +207,11 @@
                 <span class="info-chip" title="Seleccione una medida est&aacute;ndar para fijar d y p autom&aacute;ticamente, o use modo personalizado para escribir valores no est&aacute;ndar." aria-label="Ayuda husillo estandar o personalizado.">?</span></label
               >
               <select id="clThreadPreset">
+                <option value="tr32x6">Tr 32 x 6 (est&aacute;ndar)</option>
                 <option value="tr40x7">Tr 40 x 7 (est&aacute;ndar)</option>
                 <option value="tr45x7" selected>Tr 45 x 7 (est&aacute;ndar)</option>
                 <option value="tr50x8">Tr 50 x 8 (est&aacute;ndar)</option>
+                <option value="tr55x9">Tr 55 x 9 (est&aacute;ndar)</option>
                 <option value="custom">Personalizado (introducci&oacute;n manual)</option>
               </select>
               <span class="field-hint" id="clThreadPresetHint">d y paso bloqueados al est&aacute;ndar seleccionado</span>
@@ -204,6 +219,7 @@
             <div class="field flat-field--slider">
               <label for="clPitch"
                 >Paso del husillo (lead)
+                <span class="field-lock-icon" id="clPitchLock" aria-label="Campo bloqueado por estándar">🔒</span>
                 <span class="info-chip" title="Avance axial por vuelta (una entrada). M&aacute;s paso suele aumentar &lambda; y afectar al autofrenado." aria-label="Ayuda paso.">?</span></label
               >
               <input type="range" id="clPitchR" class="flat-slider" min="4" max="20" step="0.5" value="7" aria-label="Paso" />
@@ -215,6 +231,7 @@
             <div class="field flat-field--slider">
               <label for="clD"
                 >Di&aacute;metro husillo d
+                <span class="field-lock-icon" id="clDLock" aria-label="Campo bloqueado por estándar">🔒</span>
                 <span class="info-chip" title="Di&aacute;metro nominal exterior. El modelo usa di&aacute;metro medio dm para &aacute;ngulo y presi&oacute;n." aria-label="Ayuda diametro.">?</span></label
               >
               <input type="range" id="clDR" class="flat-slider" min="30" max="90" step="1" value="45" aria-label="Diametro" />
@@ -263,6 +280,9 @@
                 <input id="clMu" type="number" step="0.01" min="0.03" max="0.25" value="0.12" />
                 <span class="field-hint">&mdash;</span>
               </div>
+              <p class="field-hint" style="grid-column: 1 / -1; margin-top: 0.25rem">
+                Valores t&iacute;picos: acero&ndash;bronce lubricado &asymp; 0.08&ndash;0.12; sin lubricaci&oacute;n &asymp; 0.15&ndash;0.20.
+              </p>
             </div>
             <div class="field flat-field--slider">
               <label for="clPallow"
@@ -311,6 +331,7 @@
               <a href="#car-lift-assumptions">Hip&oacute;tesis</a> &middot; modelo orientativo, no norma completa.
             </p>
           </header>
+          <div id="clSelfLockBanner" class="design-alert design-alert--error" hidden></div>
           <div class="results-grid" id="clResults"></div>
           <div id="clVerdicts" class="design-alerts" style="margin-top: 1rem"></div>
           <p id="clDisclaimer" class="muted" style="margin-top: 0.75rem; font-size: 0.82rem"></p>
@@ -335,7 +356,7 @@
             <figcaption class="muted">
               Referencia: aplicaci&oacute;n en taller (ejemplo).
               <a href="https://commons.wikimedia.org/wiki/File:Two-post_lift.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>
-              &mdash; sustituya por <code>assets/car-lift-reference.png</code> si desea su imagen.
+              .
             </figcaption>
           </figure>
         </section>

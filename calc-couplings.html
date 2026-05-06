@@ -60,9 +60,10 @@
               <div class="lab-field lab-field--wide">
                 <label for="cpSeries">Modelo (serie)</label>
                 <select id="cpSeries"></select>
+                <p id="cpSeriesPreview" class="lab-small-print" aria-live="polite"></p>
               </div>
             </div>
-            <details class="lab-results-details">
+            <details class="lab-results-details cp-ka-accordion">
               <summary>Tabla recomendada de Kₐ (factor de aplicación)</summary>
               <div class="lab-results">
                 <div class="lab-metric lab-metric--wide">
@@ -117,6 +118,10 @@
           </div>
           <div class="lab-calc-layout__out">
             <div id="cpOut"></div>
+            <p class="lab-small-print">
+              Desalineación admisible orientativa: acoplamientos de mandíbula suelen admitir angular ≤ 1° y radial ≤ 0.1–0.3 mm.
+              Para desalineaciones mayores, considerar acoplamiento de disco o cardan.
+            </p>
             <div id="cpTable"></div>
           </div>
         </div>

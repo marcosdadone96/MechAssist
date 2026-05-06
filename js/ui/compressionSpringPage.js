@@ -31,7 +31,7 @@ const MATERIALS = {
   },
   aisi302: {
     label: 'Inox AISI 302',
-    G: 71000,
+    G: 68000,
     tauAllow: 420,
     source: 'Valores medios; inox depende fuerte del endurecimiento.',
   },
@@ -40,6 +40,12 @@ const MATERIALS = {
     G: 81500,
     tauAllow: 880,
     source: 'Muy aproximado; muelles reales usan aleaciones especificas.',
+  },
+  bronce: {
+    label: 'Bronce fosforoso',
+    G: 42000,
+    tauAllow: 260,
+    source: 'Valor orientativo para resortes no ferrosos; validar con proveedor.',
   },
 };
 
@@ -127,6 +133,7 @@ function elementCardHtml(title, rows) {
 function renderSpringDiagram(svg, p) {
   if (!(svg instanceof SVGSVGElement)) return;
   const { d, Dm, L0, n, sSim, sMax } = p;
+  const nVis = Math.max(3, Math.min(12, Math.round(n)));
   const L = Math.max(d * 1.5, L0 - sSim);
   const margin = { t: 36, r: 28, b: 42, l: 36 };
   const plotW = 420;
@@ -139,13 +146,13 @@ function renderSpringDiagram(svg, p) {
   const z0 = margin.t;
   const zScale = plotH / Math.max(L0, 1);
   const amp = Math.min((Dm / 2) * zScale * 0.9, plotW * 0.42);
-  const steps = Math.max(64, Math.ceil(n * 28));
+  const steps = Math.max(64, Math.ceil(nVis * 28));
   const sw = Math.max(2.2, Math.min(8, d * zScale * 0.35));
 
   let dPath = '';
   for (let i = 0; i <= steps; i += 1) {
     const u = i / steps;
-    const t = u * 2 * Math.PI * n;
+    const t = u * 2 * Math.PI * nVis;
     const z = z0 + u * L * zScale;
     const x = cx + amp * Math.cos(t);
     dPath += i === 0 ? `M ${fmt(x, 2)} ${fmt(z, 2)}` : ` L ${fmt(x, 2)} ${fmt(z, 2)}`;
@@ -176,15 +183,16 @@ function renderSpringDiagram(svg, p) {
     <line x1="${cx + amp}" y1="${zEnd + 6}" x2="${cx + amp + d * zScale * 0.5}" y2="${zEnd + 6}" stroke="#b45309" stroke-width="1.2" marker-end="url(#spArrow)"/>
     <text x="${cx + amp + 2}" y="${zEnd + 22}" font-size="10" font-weight="700" fill="#b45309" font-family="Inter,system-ui,sans-serif">d</text>
     <text x="${margin.l}" y="${h - 10}" font-size="9.5" fill="#64748b" font-family="Inter,system-ui,sans-serif">
-      Simulacion: s = ${fmt(sSim, 2)} mm | L = ${fmt(L, 1)} mm | smax = ${fmt(sMax, 2)} mm
+      Simulacion: s = ${fmt(sSim, 2)} mm | L = ${fmt(L, 1)} mm | smax = ${fmt(sMax, 2)} mm | n vis = ${nVis}
     </text>
   `;
 }
 
 function renderFsChart(svg, sMax, Fn, k, sOp) {
   if (!(svg instanceof SVGSVGElement)) return;
-  const W = 360;
-  const H = 120;
+  const mobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 480px)').matches;
+  const W = mobile ? 380 : 360;
+  const H = mobile ? 146 : 120;
   const pad = { l: 36, r: 12, t: 14, b: 28 };
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   if (!Number.isFinite(sMax) || sMax <= 0 || !Number.isFinite(Fn)) {
@@ -204,17 +212,17 @@ function renderFsChart(svg, sMax, Fn, k, sOp) {
   const yOp = hasOp ? fy(k * sOp) : null;
   svg.innerHTML = `
     <rect x="0" y="0" width="${W}" height="${H}" fill="#ffffff" rx="6"/>
-    <text x="${pad.l}" y="11" font-size="9" font-weight="700" fill="#64748b" font-family="Inter,sans-serif">F (N)</text>
-    <text x="${W - 52}" y="${H - 8}" font-size="9" font-weight="700" fill="#64748b" font-family="Inter,sans-serif">s (mm)</text>
+    <text x="${pad.l}" y="11" font-size="${mobile ? '10' : '9'}" font-weight="700" fill="#64748b" font-family="Inter,sans-serif">F (N)</text>
+    <text x="${W - 56}" y="${H - 8}" font-size="${mobile ? '10' : '9'}" font-weight="700" fill="#64748b" font-family="Inter,sans-serif">s (mm)</text>
     <line x1="${pad.l}" y1="${pad.t + ph}" x2="${W - pad.r}" y2="${pad.t + ph}" stroke="#cbd5e1" stroke-width="1"/>
     <line x1="${pad.l}" y1="${pad.t}" x2="${pad.l}" y2="${pad.t + ph}" stroke="#cbd5e1" stroke-width="1"/>
     <line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" stroke="#0f766e" stroke-width="2.5"/>
     ${hasOp && xOp != null && yOp != null ? `<line x1="${xOp}" y1="${pad.t + ph}" x2="${xOp}" y2="${yOp}" stroke="#b45309" stroke-width="1.5" stroke-dasharray="3 2"/>` : ''}
     ${hasOp && xOp != null && yOp != null ? `<circle cx="${xOp}" cy="${yOp}" r="3.2" fill="#b45309"/>` : ''}
     <circle cx="${x1}" cy="${y1}" r="3.5" fill="#0f766e"/>
-    <text x="${x1 + 4}" y="${y1 - 6}" font-size="9" fill="#0f172a" font-family="Inter,sans-serif">Fn ~ ${fmt(Fn, 0)} N</text>
-    ${hasOp && xOp != null ? `<text x="${Math.min(xOp + 4, W - 70)}" y="${(yOp ?? 0) - 8}" font-size="8" fill="#b45309" font-family="Inter,sans-serif">s_op</text>` : ''}
-    <text x="${pad.l}" y="${H - 10}" font-size="8.5" fill="#94a3b8" font-family="Inter,sans-serif">k = ${fmt(k, 3)} N/mm</text>
+    <text x="${x1 + 4}" y="${y1 - 6}" font-size="${mobile ? '10' : '9'}" fill="#0f172a" font-family="Inter,sans-serif">Fn ~ ${fmt(Fn, 0)} N</text>
+    ${hasOp && xOp != null ? `<text x="${Math.min(xOp + 4, W - 70)}" y="${(yOp ?? 0) - 8}" font-size="${mobile ? '9' : '8'}" fill="#b45309" font-family="Inter,sans-serif">s_op</text>` : ''}
+    <text x="${pad.l}" y="${H - 10}" font-size="${mobile ? '9.2' : '8.5'}" fill="#94a3b8" font-family="Inter,sans-serif">k = ${fmt(k, 3)} N/mm</text>
   `;
 }
 
@@ -243,7 +251,7 @@ function syncSpringLabTierUi() {
     ? document.getElementById('springLabTier').value
     : 'basic';
   const panel = document.getElementById('springProjectPanel');
-  if (panel instanceof HTMLElement) panel.hidden = tier !== 'project';
+  if (panel instanceof HTMLElement) toggleCollapsible(panel, tier === 'project');
 }
 
 function syncSpringWorkInputsUi() {
@@ -252,8 +260,29 @@ function syncSpringWorkInputsUi() {
     : 'deflection';
   const sw = document.getElementById('springSWorkWrap');
   const fw = document.getElementById('springFWorkWrap');
-  if (sw instanceof HTMLElement) sw.hidden = mode !== 'deflection';
-  if (fw instanceof HTMLElement) fw.hidden = mode !== 'force';
+  if (sw instanceof HTMLElement) toggleCollapsible(sw, mode === 'deflection');
+  if (fw instanceof HTMLElement) toggleCollapsible(fw, mode === 'force');
+}
+
+function toggleCollapsible(el, show) {
+  if (!(el instanceof HTMLElement)) return;
+  el.classList.add('spring-collapsible');
+  if (show) {
+    el.hidden = false;
+    const target = el.scrollHeight;
+    el.style.maxHeight = `${Math.max(target, 1)}px`;
+    el.classList.add('spring-collapsible--open');
+    window.setTimeout(() => {
+      if (el.classList.contains('spring-collapsible--open')) el.style.maxHeight = `${Math.max(el.scrollHeight, 1)}px`;
+    }, 280);
+  } else {
+    el.style.maxHeight = `${Math.max(el.scrollHeight, 1)}px`;
+    el.classList.remove('spring-collapsible--open');
+    window.setTimeout(() => {
+      el.style.maxHeight = '0px';
+      el.hidden = true;
+    }, 220);
+  }
 }
 
 function updateSimDisplay() {
@@ -572,6 +601,13 @@ function computeCore() {
         metricHtml('Goodman shear (docente)', fmt(fat.U, 2), 'U = tau_alt/tau_W + tau_m/tau_adm; tau_adm como limite medio simplificado.'),
       );
     }
+  metrics.push(
+    metricHtml(
+      'Nota Goodman',
+      'Aproximación docente',
+      'El diagrama de Goodman aquí es una aproximación docente. Para diseño a fatiga completo, usar DIN 2089 parte 1 con datos certificados del hilo y curvas S-N del fabricante.',
+    ),
+  );
     resultsBox.innerHTML = metrics.join('');
     const wrap = document.createElement('div');
     wrap.className = 'spring-chart-embed';
@@ -617,6 +653,12 @@ function computeCore() {
     labAlert(
       'info',
       '<strong>Fuente de datos:</strong> G y tau_adm del material son orientativos; en Proyecto puede fijar tau_adm y tau_W del fabricante. Pandeo: abaco docente, no sustituye norma.',
+    ),
+  );
+  alertParts.push(
+    labAlert(
+      'info',
+      '<strong>Goodman:</strong> el diagrama aquí es una aproximación docente. Para fatiga completa, use DIN 2089 parte 1 con datos certificados del hilo y curvas S-N del fabricante.',
     ),
   );
 
@@ -728,6 +770,7 @@ function computeCore() {
   if (labTier === 'project') {
     formulaLines.push('Proyecto: tau_adm y tau_W manuales opcionales; nota en PDF.');
   }
+  formulaLines.push('Hipótesis: no se verifica estabilidad lateral con método completo de Euler; se usa relación de esbeltez docente L0/Dm.');
 
   if (formulaBody instanceof HTMLElement) {
     formulaBody.innerHTML = `
@@ -853,6 +896,24 @@ const listenIds = [
   'springWorkDefine', 'springSWork', 'springFWork', 'springFMin',
 ];
 
+const DEFAULTS = {
+  springLabTier: 'basic',
+  springTauAdmMpa: '',
+  springTauW: '',
+  springAssumptionNote: '',
+  springMaterial: 'f1430',
+  springDWire: '4',
+  springDiaMode: 'dm',
+  springDiaValue: '28',
+  springNActive: '8',
+  springL0: '65',
+  springEnds: 'ground',
+  springWorkDefine: 'deflection',
+  springSWork: '12',
+  springFWork: '',
+  springFMin: '0',
+};
+
 listenIds.forEach((id) => {
   document.getElementById(id)?.addEventListener('input', () => {
     if (id === 'springLabTier') syncSpringLabTierUi();
@@ -878,6 +939,26 @@ document.getElementById('springSimToggle')?.addEventListener('click', () => {
     btn.setAttribute('aria-expanded', simOpen ? 'true' : 'false');
   }
   if (simOpen) updateSimDisplay();
+});
+
+document.getElementById('springResetDefaults')?.addEventListener('click', () => {
+  Object.entries(DEFAULTS).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement) el.value = val;
+  });
+  simOpen = false;
+  const body = document.getElementById('springSimBody');
+  const btn = document.getElementById('springSimToggle');
+  if (body instanceof HTMLElement) body.hidden = true;
+  if (btn instanceof HTMLButtonElement) {
+    btn.textContent = 'Simular compresion';
+    btn.setAttribute('aria-expanded', 'false');
+  }
+  const sl = document.getElementById('springSimSlider');
+  if (sl instanceof HTMLInputElement) sl.value = '0';
+  syncSpringLabTierUi();
+  syncSpringWorkInputsUi();
+  runCalcWithIndustrialFeedback(resultsWrap, computeCore);
 });
 
 runCalcWithIndustrialFeedback(resultsWrap, computeCore);

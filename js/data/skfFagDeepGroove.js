@@ -7,13 +7,14 @@ export const DEEP_GROOVE_SERIES = [
     id: '6000',
     label: 'Serie 6000 (liviana)',
     bearings: [
-      { designation: '6000-2Z', d: 10, D: 26, B: 8, C_N: 5070, Co_N: 2360 },
       { designation: '6001-2Z', d: 12, D: 28, B: 8, C_N: 6370, Co_N: 3100 },
       { designation: '6002-2Z', d: 15, D: 32, B: 9, C_N: 7800, Co_N: 3750 },
       { designation: '6003-2Z', d: 17, D: 35, B: 10, C_N: 9560, Co_N: 4550 },
       { designation: '6004-2Z', d: 20, D: 42, B: 12, C_N: 12700, Co_N: 6200 },
       { designation: '6005-2Z', d: 25, D: 47, B: 12, C_N: 14000, Co_N: 6950 },
       { designation: '6006-2Z', d: 30, D: 55, B: 13, C_N: 19800, Co_N: 10200 },
+      { designation: '6007-2Z', d: 35, D: 62, B: 14, C_N: 26200, Co_N: 13700 },
+      { designation: '6008-2Z', d: 40, D: 68, B: 15, C_N: 31300, Co_N: 17200 },
     ],
   },
   {
@@ -29,6 +30,8 @@ export const DEEP_GROOVE_SERIES = [
       { designation: '6206-2Z', d: 30, D: 62, B: 16, C_N: 26000, Co_N: 13200 },
       { designation: '6207-2Z', d: 35, D: 72, B: 17, C_N: 33500, Co_N: 17300 },
       { designation: '6208-2Z', d: 40, D: 80, B: 18, C_N: 41600, Co_N: 22400 },
+      { designation: '6210-2Z', d: 50, D: 90, B: 20, C_N: 51000, Co_N: 30500 },
+      { designation: '6212-2Z', d: 60, D: 110, B: 22, C_N: 69000, Co_N: 45000 },
     ],
   },
   {

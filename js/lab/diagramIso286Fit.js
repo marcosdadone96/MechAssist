@@ -19,7 +19,7 @@ export function renderIso286FitDiagram(el, result) {
     el.setAttribute('role', 'img');
     el.innerHTML = `
       <rect width="640" height="200" fill="#f1f5f9" />
-      <text x="320" y="100" text-anchor="middle" font-size="13" fill="#64748b" font-family="Inter, system-ui, sans-serif">Introduzca cotas validas (1-500 mm) y letras IT soportadas</text>
+      <text x="320" y="100" text-anchor="middle" font-size="13" fill="#64748b" font-family="Inter, system-ui, sans-serif">Introduzca cotas válidas (1-500 mm) y letras IT soportadas</text>
     `;
     return;
   }
@@ -62,6 +62,13 @@ export function renderIso286FitDiagram(el, result) {
 
   const holeCode = `${result.hole.letter}${String(result.hole.it).replace(/^IT/i, '')}`;
   const shaftCode = `${result.shaft.letter}${String(result.shaft.it).replace(/^IT/i, '')}`;
+  const fitKind = String(result.fitKind || 'transition');
+  const fitBadge =
+    fitKind === 'clearance'
+      ? { label: 'Juego', fill: '#dbeafe', stroke: '#2563eb', text: '#1d4ed8' }
+      : fitKind === 'interference'
+        ? { label: 'Apriete', fill: '#fee2e2', stroke: '#dc2626', text: '#b91c1c' }
+        : { label: 'Transición', fill: '#fef3c7', stroke: '#d97706', text: '#b45309' };
 
   el.innerHTML = `
     <defs>
@@ -73,13 +80,15 @@ export function renderIso286FitDiagram(el, result) {
     <rect width="${W}" height="${H}" fill="url(#${id}Bg)" />
     <text x="${W / 2}" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">Zonas de tolerancia (desviaciones)</text>
     <text x="${W / 2}" y="44" text-anchor="middle" font-size="10" fill="#475569" font-family="Inter, system-ui, sans-serif">${holeCode} / ${shaftCode} - nominal ${d0} mm</text>
+    <rect x="${W - 176}" y="12" width="154" height="22" rx="11" fill="${fitBadge.fill}" stroke="${fitBadge.stroke}" stroke-width="1.2" />
+    <text x="${W - 99}" y="27" text-anchor="middle" font-size="10" font-weight="700" fill="${fitBadge.text}" font-family="Inter, system-ui, sans-serif">Tipo: ${fitBadge.label}</text>
 
     <line x1="${left}" y1="${H - 36}" x2="${right}" y2="${H - 36}" stroke="#94a3b8" stroke-width="1.2" />
     <text x="${left}" y="${H - 18}" font-size="9" fill="#64748b" font-family="Inter, system-ui, sans-serif">${fmt(vmin)} um</text>
     <text x="${right}" y="${H - 18}" text-anchor="end" font-size="9" fill="#64748b" font-family="Inter, system-ui, sans-serif">${fmt(vmax)} um</text>
 
     <line x1="${x0}" y1="34" x2="${x0}" y2="${H - 48}" stroke="#0f766e" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.85" />
-    <text x="${x0 + 5}" y="64" font-size="9" font-weight="700" fill="#0f766e" font-family="Inter, system-ui, sans-serif">Linea cero</text>
+    <text x="${x0 + 5}" y="64" font-size="9" font-weight="700" fill="#0f766e" font-family="Inter, system-ui, sans-serif">Línea cero</text>
 
     <text x="8" y="${yHole + 22}" font-size="11" font-weight="700" fill="#0f766e" font-family="Inter, system-ui, sans-serif">Agujero</text>
     <rect x="${Math.min(xh0, xh1)}" y="${yHole}" width="${Math.abs(xh1 - xh0)}" height="${bandH}" rx="4" fill="rgba(13,148,136,0.22)" stroke="#0f766e" stroke-width="1.6" />
@@ -89,6 +98,6 @@ export function renderIso286FitDiagram(el, result) {
     <rect x="${Math.min(xs0, xs1)}" y="${yShaft}" width="${Math.abs(xs1 - xs0)}" height="${bandH}" rx="4" fill="rgba(234,88,12,0.2)" stroke="#c2410c" stroke-width="1.6" />
     <text x="${(xs0 + xs1) / 2}" y="${yShaft + bandH + 14}" text-anchor="middle" font-size="9" fill="#9a3412" font-family="Inter, system-ui, sans-serif">ei-es: ${fmt(dsMin)} ... ${fmt(dsMax)} um</text>
 
-    <text x="${W / 2}" y="${H - 6}" text-anchor="middle" font-size="9" fill="#475569" font-family="Inter, system-ui, sans-serif">Micras respecto al diametro nominal (ISO 286, extracto)</text>
+    <text x="${W / 2}" y="${H - 6}" text-anchor="middle" font-size="9" fill="#475569" font-family="Inter, system-ui, sans-serif">Micras respecto al diámetro nominal (ISO 286, extracto)</text>
   `;
 }

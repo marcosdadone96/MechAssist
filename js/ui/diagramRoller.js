@@ -1,4 +1,4 @@
-ï»¿/**
+/**
  * Transportador de rodillos motorizado - esquema sin solapar etiquetas sobre el dibujo.
  * Texto del SVG en ASCII + escapes \u para evitar problemas de codificacion en Windows.
  */

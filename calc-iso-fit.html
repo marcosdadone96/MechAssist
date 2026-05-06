@@ -25,23 +25,28 @@
       <section class="lab-panel">
         <h2>Ajustes ISO 286-1 (extracto 1-500 mm)</h2>
         <p class="lab-lead">
-          Calculo orientativo de limites dimensionales y tipo de ajuste (juego, transicion, apriete) a partir del diametro nominal, posicion de tolerancia (agujero
+          Cálculo orientativo de límites dimensionales y tipo de ajuste (juego, transición, apriete) a partir del diámetro nominal, posición de tolerancia (agujero
           A-H, JS; eje a-h, js, k, m, n, p) y grado IT. Basado en tablas tipo ISO 286; no sustituye la norma completa.
         </p>
         <div class="lab-calc-layout lab-calc-layout--with-diag">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-              <p class="lab-diagram-wrap__title">Zonas de tolerancia vs linea cero</p>
+              <p class="lab-diagram-wrap__title">Zonas de tolerancia vs línea cero</p>
               <svg id="isoDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de tolerancias agujero y eje"></svg>
               <p class="lab-diagram-caption">
-                Ejemplo de referencia: <strong>25 H7/g6</strong> &rarr; agujero +21/0 um, eje -7/-20 um; juego max. 41 um, min. 7 um.
+                Ejemplo de referencia: <strong>25 H7/g6</strong> &rarr; agujero +21/0 um, eje -7/-20 um; juego máx. 41 um, mín. 7 um.
               </p>
+              <div style="display:flex;flex-wrap:wrap;gap:.35rem;padding:0 .75rem .55rem">
+                <button type="button" class="cp-ka-btn" data-iso-chip="H7/g6@25">Ejemplo H7/g6</button>
+                <button type="button" class="cp-ka-btn" data-iso-chip="H7/k6@40">Ejemplo H7/k6</button>
+                <button type="button" class="cp-ka-btn" data-iso-chip="H7/p6@30">Ejemplo H7/p6</button>
+              </div>
             </div>
           </div>
           <div class="lab-calc-layout__inputs">
             <div class="lab-field">
               <label for="isoD" class="lab-field__label-row">
-                <span class="lab-field__label-text">Diametro nominal d (mm)</span>
+                <span class="lab-field__label-text">Diámetro nominal d (mm)</span>
               </label>
               <input id="isoD" type="number" min="1" max="500" step="any" value="25" />
               <p class="lab-field-help">Rango tabulado en esta demo: 1 a 500 mm.</p>
@@ -52,7 +57,7 @@
               </label>
               <select id="isoAppPreset"></select>
               <p class="lab-field-help">
-                Rellena automaticamente el ajuste tipico (puede editarlo despues). Abra la tabla inferior para comparar usos cotidianos.
+                Rellena automáticamente el ajuste típico (puede editarlo después). Abra la tabla inferior para comparar usos cotidianos.
               </p>
             </div>
             <details class="lab-results-details lab-iso-rec-details">
@@ -61,8 +66,9 @@
                 <table class="lab-iso-rec-table" id="isoRecTable">
                   <thead>
                     <tr>
-                      <th class="lab-iso-rec-table__col-fit">Cotas</th>
-                      <th class="lab-iso-rec-table__col-use">Uso y ejemplos en maquinas</th>
+                      <th class="lab-iso-rec-table__col-fit">Ajuste</th>
+                      <th class="lab-iso-rec-table__col-fit">Tipo</th>
+                      <th class="lab-iso-rec-table__col-use">Uso típico</th>
                       <th class="lab-iso-rec-table__col-act" aria-label="Aplicar"></th>
                     </tr>
                   </thead>
@@ -113,6 +119,9 @@
               <div class="lab-results" id="isoResults"></div>
             </div>
             <div id="isoAlerts" class="lab-alerts"></div>
+            <p class="lab-small-print">
+              Hipótesis: este módulo cubre el extracto de 1 a 500 mm. Para rangos, materiales o condiciones especiales, consulte ISO 286-1 completa.
+            </p>
           </div>
         </div>
       </section>

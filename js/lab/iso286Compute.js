@@ -207,7 +207,7 @@ export function computeIsoFit(dNom, holeLetter, holeIt, shaftLetter, shaftIt) {
   const jMinUm = (hLim.dMin - sLim.dMax) * 1000;
 
   let fitKind = 'transition';
-  let fitLabelEs = 'Ajuste de transicion';
+  let fitLabelEs = 'Ajuste de transición';
   let fitLabelEn = 'Transition fit';
   if (jMinUm >= 0) {
     fitKind = 'clearance';

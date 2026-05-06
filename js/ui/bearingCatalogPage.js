@@ -26,7 +26,9 @@ function fillBearingSelect(seriesId) {
   const sel = document.getElementById('bcBearing');
   const ser = DEEP_GROOVE_SERIES.find((s) => s.id === seriesId);
   if (!sel || !ser) return;
-  sel.innerHTML = ser.bearings.map((b) => `<option value="${b.designation}">${b.designation} · d=${b.d} C=${b.C_N} N</option>`).join('');
+  sel.innerHTML = ser.bearings
+    .map((b) => `<option value="${b.designation}">${b.designation} · d=${b.d} / D=${b.D} / B=${b.B} · C=${b.C_N} N</option>`)
+    .join('');
 }
 
 function render() {
@@ -35,8 +37,10 @@ function render() {
   const P = parseFloat(document.getElementById('bcP')?.value || '0');
   const n = parseFloat(document.getElementById('bcN')?.value || '0');
   const Lreq = parseFloat(document.getElementById('bcLreq')?.value || '20000');
+  const hpd = parseFloat(document.getElementById('bcHpd')?.value || '16');
   const out = document.getElementById('bcOut');
   const tbl = document.getElementById('bcTable');
+  const autoGeom = document.getElementById('bcAutoGeom');
   if (!out || !tbl) return;
 
   const ser = DEEP_GROOVE_SERIES.find((s) => s.id === seriesId);
@@ -44,7 +48,11 @@ function render() {
   if (!b) {
     out.innerHTML = '';
     tbl.innerHTML = '';
+    if (autoGeom) autoGeom.textContent = 'Geometría y C del rodamiento seleccionado.';
     return;
+  }
+  if (autoGeom) {
+    autoGeom.textContent = `${b.designation}: d=${b.d} mm · D=${b.D} mm · B=${b.B} mm · C=${b.C_N.toLocaleString('es-ES')} N`;
   }
 
   renderCatalogDeepGrooveSection(document.getElementById('bcDiagram'), {
@@ -58,18 +66,30 @@ function render() {
   const Puse = Math.max(1, P);
   const Lrev = l10_revolutions(C, Puse);
   const nUse = Number.isFinite(n) && n > 0 ? n : null;
+  const hpdUse = Number.isFinite(hpd) && hpd > 0 ? Math.min(24, hpd) : null;
   const Lh = nUse != null ? l10_hours(Lrev, nUse) : NaN;
-  if (nUse == null) {
-    out.innerHTML = '<p class=\"lab-verdict lab-verdict--err\">Entrada no válida: use n &gt; 0 min⁻¹.</p>';
+  if (nUse == null || hpdUse == null) {
+    out.innerHTML = '<p class=\"lab-verdict lab-verdict--err\">Entrada no válida: use n &gt; 0 min⁻¹ y horas/día &gt; 0.</p>';
     tbl.innerHTML = '';
     return;
   }
+  const Lyears = Lh / (hpdUse * 365);
+  const reqYears = Lreq / (hpdUse * 365);
+  const margin = Lreq > 0 ? (Lh - Lreq) / Lreq : 0;
   const ok = Lh >= Lreq;
 
-  if (ok) {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--ok">El rodamiento <strong>${b.designation}</strong> cumple con las <strong>${Lreq.toLocaleString('es-ES')} h</strong> solicitadas (L<sub>10h</sub> ≈ ${Lh.toFixed(0)} h a P=${Puse} N, n=${nUse} min⁻¹).</p>`;
+  if (ok && margin >= 0.5) {
+    out.innerHTML = `<p class="lab-verdict lab-verdict--ok"><strong>APTO con margen</strong>: ${b.designation} supera las ${Lreq.toLocaleString(
+      'es-ES',
+    )} h con margen ≥ 50% (L<sub>10h</sub> ≈ ${Lh.toFixed(0)} h; ${Lyears.toFixed(2)} años).</p>`;
+  } else if (ok) {
+    out.innerHTML = `<p class="lab-verdict lab-verdict--warn"><strong>APTO ajustado</strong>: ${b.designation} supera el objetivo, pero con margen < 50% (L<sub>10h</sub> ≈ ${Lh.toFixed(
+      0,
+    )} h; ${Lyears.toFixed(2)} años).</p>`;
   } else {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--err">El rodamiento <strong>${b.designation}</strong> <strong>no</strong> alcanza ${Lreq.toLocaleString('es-ES')} h (L<sub>10h</sub> ≈ ${Lh.toFixed(0)} h). Elija mayor C o menor P.</p>`;
+    out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>INSUFICIENTE</strong>: ${b.designation} no alcanza ${Lreq.toLocaleString(
+      'es-ES',
+    )} h (L<sub>10h</sub> ≈ ${Lh.toFixed(0)} h; ${Lyears.toFixed(2)} años). Elija mayor C o menor P.</p>`;
   }
 
   tbl.innerHTML = `
@@ -82,11 +102,14 @@ function render() {
         <tr><td>C₀</td><td>${b.Co_N.toLocaleString('es-ES')} N</td></tr>
         <tr><td>P equivalente</td><td>${Puse.toLocaleString('es-ES')} N</td></tr>
         <tr><td>n trabajo</td><td>${nUse.toFixed(0)} min⁻¹</td></tr>
+        <tr><td>Horas servicio por día</td><td>${hpdUse.toFixed(0)} h/día</td></tr>
         <tr><td>L<sub>10</sub> (mill. rev)</td><td>${(Lrev / 1e6).toFixed(3)}</td></tr>
         <tr><td>L<sub>10h</sub></td><td><strong>${Lh.toFixed(0)} h</strong></td></tr>
+        <tr><td>Vida en años</td><td><strong>${Lyears.toFixed(2)} años</strong></td></tr>
+        <tr><td>Horas requeridas</td><td>${Lreq.toLocaleString('es-ES')} h (${reqYears.toFixed(2)} años)</td></tr>
       </tbody>
     </table>
-    <p class="lab-small-print">C y C₀ son valores demostrativos. Vida según L = (C/P)³ y horas = L/(60n).</p>`;
+    <p class="lab-small-print">C y C₀ son valores demostrativos (±10%). Vida según L = (C/P)³ y horas = L/(60n).</p>`;
 }
 
 fillSeriesSelect();
@@ -97,6 +120,9 @@ document.getElementById('bcSeries')?.addEventListener('change', (e) => {
   render();
 });
 document.getElementById('bcBearing')?.addEventListener('change', render);
-['bcP', 'bcN', 'bcLreq'].forEach((id) => document.getElementById(id)?.addEventListener('input', render));
+['bcP', 'bcN', 'bcLreq', 'bcHpd'].forEach((id) => {
+  document.getElementById(id)?.addEventListener('input', render);
+  document.getElementById(id)?.addEventListener('change', render);
+});
 
 render();

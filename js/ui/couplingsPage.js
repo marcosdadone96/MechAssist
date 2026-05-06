@@ -22,6 +22,21 @@ function fillSeriesSelect(brandId) {
   const brand = COUPLING_BRANDS.find((b) => b.id === brandId);
   if (!sel || !brand) return;
   sel.innerHTML = brand.series.map((s) => `<option value="${s.model}">${s.model} · ${s.family} · ${s.T_nom_Nm} N·m</option>`).join('');
+  updateSeriesPreview();
+}
+
+function updateSeriesPreview() {
+  const brandId = document.getElementById('cpBrand')?.value;
+  const model = document.getElementById('cpSeries')?.value;
+  const preview = document.getElementById('cpSeriesPreview');
+  const brand = COUPLING_BRANDS.find((b) => b.id === brandId);
+  const row = brand?.series.find((s) => s.model === model);
+  if (!preview) return;
+  if (!row) {
+    preview.textContent = '';
+    return;
+  }
+  preview.innerHTML = `Catálogo demo seleccionado: <strong>${row.model}</strong> · T<sub>nom</sub> = <strong>${row.T_nom_Nm} N·m</strong>`;
 }
 
 function findSuggestedModel(brandId, T_req_Nm) {
@@ -59,10 +74,13 @@ function render() {
   }
 
   const ok = row.T_nom_Nm >= T_des;
+  const ratio = T_des / row.T_nom_Nm;
   const sug = ok ? null : findSuggestedModel(brandId, T_des);
 
-  if (ok) {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--ok"><strong>OK:</strong> ${row.model} admite el par de diseño (${T_des.toFixed(1)} N·m ≤ ${row.T_nom_Nm} N·m cat.).</p>`;
+  if (ratio <= 0.8) {
+    out.innerHTML = `<p class="lab-verdict lab-verdict--ok"><strong>Margen holgado:</strong> ${row.model} trabaja cómodo (${T_des.toFixed(1)} N·m ≤ 0.8·T<sub>nom</sub>).</p>`;
+  } else if (ratio <= 1) {
+    out.innerHTML = `<p class="lab-verdict lab-verdict--warn"><strong>Margen justo:</strong> ${row.model} está cerca del límite (${(ratio * 100).toFixed(1)}% de T<sub>nom</sub>).</p>`;
   } else {
     out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>ERROR:</strong> El modelo <strong>${row.model}</strong> no soporta la carga (${T_des.toFixed(1)} N·m &gt; ${row.T_nom_Nm} N·m).<br/>
       <strong>Sugerido:</strong> modelo <strong>${sug?.model ?? '—'}</strong> (${sug ? `${sug.T_nom_Nm} N·m` : ''}).</p>`;
@@ -82,19 +100,24 @@ function render() {
         <tr><td>Notas cat.</td><td colspan="2">${row.note}</td></tr>
       </tbody>
     </table>
-    <p class="lab-small-print">Datos demostrativos. Verifique siempre con la hoja técnica del fabricante.</p>`;
+    <p class="lab-small-print">Datos de catálogo demostrativos. La selección final debe hacerse con el catálogo oficial del fabricante y su condición real de servicio.</p>`;
 }
 
 renderCouplingAssemblyDiagram(document.getElementById('cpDiagram'));
 
 fillBrandSelect();
 fillSeriesSelect(COUPLING_BRANDS[0].id);
+updateSeriesPreview();
 
 document.getElementById('cpBrand')?.addEventListener('change', (e) => {
   fillSeriesSelect(e.target.value);
+  updateSeriesPreview();
   render();
 });
-document.getElementById('cpSeries')?.addEventListener('change', render);
+document.getElementById('cpSeries')?.addEventListener('change', () => {
+  updateSeriesPreview();
+  render();
+});
 ['cpPower', 'cpRpm', 'cpK'].forEach((id) => document.getElementById(id)?.addEventListener('input', render));
 document.querySelectorAll('.cp-ka-btn').forEach((btn) => {
   btn.addEventListener('click', () => {

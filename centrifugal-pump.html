@@ -77,6 +77,7 @@
             <label for="pumpEta">Eficiencia de la bomba η <span class="info-chip" title="Rendimiento de la bomba en el punto (Q,H). Valores típicos 60–85%." aria-label="Ayuda eficiencia de bomba.">?</span></label>
             <input id="pumpEta" type="number" step="0.1" min="1" max="99" value="74" />
             <span class="field-hint">% en el punto (Q, H); típ. ~60–85 según máquina.</span>
+            <span class="field-hint">Orientativo: centrífuga pequeña 50–65%, industrial media 65–80%, gran caudal 80–88%.</span>
           </div>
           </div>
         </details>
@@ -125,7 +126,7 @@
           <p id="proInstallTeaser" class="pro-install-teaser">
             Active el plan <strong>Pro</strong> para introducir succión, tubería y horario; así obtendrá <strong>avisos de instalación</strong> y un
             <strong>factor de servicio</strong> más realista en servicio continuo.
-            <a href="?pro=1">Probar Pro (?pro=1)</a>
+            <a class="pro-install-teaser__cta" href="?pro=1">Activar Pro</a>
           </p>
           <div id="proInstallFields" class="field-grid field-grid--essential">
             <div class="field">
@@ -200,6 +201,10 @@
         <button type="button" class="btn-calc" id="btnPumpCalc" title="Actualiza resultados y motorreductores">
           Calcular y mostrar motorreductor
         </button>
+        <div class="pump-quick-actions" aria-label="Accesos rápidos">
+          <button type="button" class="pump-quick-actions__btn" id="btnPumpResults">Ver resultados</button>
+          <button type="button" class="pump-quick-actions__btn" id="btnPumpMotors">Ir a motorreductores</button>
+        </div>
         <p class="calc-hint">Los valores se actualizan al cambiar los campos habilitados. Use servidor HTTP, no <code>file://</code>.</p>
       </aside>
 
@@ -228,9 +233,8 @@
               decoding="async"
             />
             <figcaption>
-              Foto real de aplicación en estación de bombeo (ejemplo).
-              <a href="https://commons.wikimedia.org/wiki/File:Pump_station.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>
-              — puede sustituir por foto propia en <code>assets/centrifugal-pump-reference.png</code>.
+              Bomba centrífuga en estación de bombeo.
+              <a href="https://commons.wikimedia.org/wiki/File:Pump_station.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.
             </figcaption>
           </figure>
         </section>
@@ -254,7 +258,7 @@
               </div>
               <div class="field">
                 <label for="pumpVerifySearch">Filtrar modelo <span class="info-chip" title="Búsqueda por texto/código del modelo en el catálogo mostrado." aria-label="Ayuda filtro modelo bomba.">?</span></label>
-                <input id="pumpVerifySearch" type="search" placeholder="ej. R47…" data-verify-search autocomplete="off" />
+                <input id="pumpVerifySearch" type="search" data-verify-search autocomplete="off" />
               </div>
               <div class="field" style="grid-column: 1 / -1">
                 <label for="pumpVerifyModel">Modelo <span class="info-chip" title="Modelo de catálogo a contrastar con potencia, par y rpm calculados." aria-label="Ayuda modelo comprobador bomba.">?</span></label>

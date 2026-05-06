@@ -45,29 +45,32 @@
     <main class="app-main app-main--be">
       <div class="be-main-col">
         <section class="panel">
-          <h2><span class="panel-icon">⬆</span> <span data-be-i18n="beMainH2"></span></h2>
-          <p class="form-lead" data-be-i18n="beMainLead"></p>
+          <h2><span class="panel-icon">⬆</span> <span data-be-i18n="beMainH2">Elevador de cangilones — diseño orientativo (CEMA)</span></h2>
+          <p class="form-lead" data-be-i18n="beMainLead">Asistente técnico para geometría, capacidad, cinemática y motorreductor.</p>
           <details class="help-details flat-help" style="margin-top:.8rem">
-            <summary data-be-i18n="beHelpSum"></summary>
+            <summary data-be-i18n="beHelpSum">Guía rápida de cada magnitud</summary>
             <div class="help-details__body">
+              <p class="help-details__lead muted">
+                Junto a cada etiqueta hay un <span class="info-chip info-chip--static" aria-hidden="true">?</span>: en escritorio, pase el cursor; en móvil, pulse para ver la ayuda.
+              </p>
               <ul>
-                <li data-be-i18n="beHelp1"></li>
-                <li data-be-i18n="beHelp2"></li>
-                <li data-be-i18n="beHelp3"></li>
-                <li data-be-i18n="beHelp4"></li>
+                <li data-be-i18n="beHelp1"><strong>Geometría y capacidad:</strong> use H y Q como base del punto de diseño.</li>
+                <li data-be-i18n="beHelp2"><strong>Material:</strong> densidad, fluidez y abrasividad cambian el rango operativo.</li>
+                <li data-be-i18n="beHelp3"><strong>Cinemática:</strong> velocidad, paso y diámetro de polea definen descarga y potencia.</li>
+                <li data-be-i18n="beHelp4"><strong>Motorreductor:</strong> compare potencia, par y rpm del tambor de cabeza.</li>
               </ul>
             </div>
           </details>
 
           <nav class="be-wizard-nav" id="beWizardNav" aria-label="Pasos del asistente">
             <button type="button" class="be-wizard-nav__btn be-wizard-nav__btn--active" data-be-step="1">
-              <span class="be-wizard-nav__n">1</span> <span data-be-i18n="beWiz1"></span>
+              <span class="be-wizard-nav__n">1</span> <span data-be-i18n="beWiz1">Geometría y capacidad</span>
             </button>
             <button type="button" class="be-wizard-nav__btn" data-be-step="2">
-              <span class="be-wizard-nav__n">2</span> <span data-be-i18n="beWiz2"></span>
+              <span class="be-wizard-nav__n">2</span> <span data-be-i18n="beWiz2">Material</span>
             </button>
             <button type="button" class="be-wizard-nav__btn" data-be-step="3">
-              <span class="be-wizard-nav__n">3</span> <span data-be-i18n="beWiz3"></span>
+              <span class="be-wizard-nav__n">3</span> <span data-be-i18n="beWiz3">Cinemática y verificación</span>
             </button>
           </nav>
           <div id="mountingConfigHost" class="mounting-config-host" style="margin-top: 1rem"></div>
@@ -78,21 +81,38 @@
             <details class="flat-accordion">
               <summary class="flat-accordion__summary">
                 <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
-                <span class="flat-accordion__label" data-be-i18n="beAccMat"></span>
+                <span class="flat-accordion__label" data-be-i18n="beAccGeom">Geometría y capacidad</span>
               </summary>
               <div class="flat-accordion__body field-grid">
                 <div class="field">
-                  <label for="beRho"><span data-be-i18n="beLblRho"></span> <span class="info-chip" data-be-chip="rho" title="" aria-label="">?</span></label>
+                  <label for="beH"><span data-be-i18n="beLblH">Altura de elevación H</span> <span class="info-chip" data-be-chip="h" title="" aria-label="">?</span></label>
+                  <input id="beH" type="number" step="0.5" min="1" value="28" />
+                  <span class="field-hint" data-be-i18n="beHintH">m</span>
+                </div>
+                <div class="field">
+                  <label for="beQ"><span data-be-i18n="beLblQ">Capacidad requerida</span> <span class="info-chip" data-be-chip="q" title="" aria-label="">?</span></label>
+                  <input id="beQ" type="number" step="0.5" min="0.5" value="45" />
+                  <span class="field-hint" data-be-i18n="beHintQ">t/h</span>
+                </div>
+                <div class="field">
+                  <label for="beBucket"><span data-be-i18n="beLblBucket">Tipo de cangilón</span> <span class="info-chip" data-be-chip="bucket" title="" aria-label="">?</span></label>
+                  <select id="beBucket"></select>
+                </div>
+              </div>
+            </details>
+            <details class="flat-accordion">
+              <summary class="flat-accordion__summary">
+                <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
+                <span class="flat-accordion__label" data-be-i18n="beAccMat">Material</span>
+              </summary>
+              <div class="flat-accordion__body field-grid">
+                <div class="field">
+                  <label for="beRho"><span data-be-i18n="beLblRho">Densidad aparente</span> <span class="info-chip" data-be-chip="rho" title="" aria-label="">?</span></label>
                   <input id="beRho" type="number" step="10" min="200" value="850" />
                   <span class="field-hint" data-be-i18n="beHintRho"></span>
                 </div>
                 <div class="field">
-                  <label for="beParticle"><span data-be-i18n="beLblParticle"></span> <span class="info-chip" data-be-chip="particle" title="" aria-label="">?</span></label>
-                  <input id="beParticle" type="number" step="0.5" min="0.1" value="8" />
-                  <span class="field-hint" data-be-i18n="beHintParticle"></span>
-                </div>
-                <div class="field">
-                  <label for="beFluidity"><span data-be-i18n="beLblFluid"></span> <span class="info-chip" data-be-chip="fluidity" title="" aria-label="">?</span></label>
+                  <label for="beFluidity"><span data-be-i18n="beLblFluid">Fluidez</span> <span class="info-chip" data-be-chip="fluidity" title="" aria-label="">?</span></label>
                   <select id="beFluidity">
                     <option value="poor">Pobre — polvo pegajoso / muy fino</option>
                     <option value="medium" selected>Media — granel típico</option>
@@ -100,47 +120,66 @@
                   </select>
                 </div>
                 <div class="field">
-                  <label for="beNature"><span data-be-i18n="beLblNature"></span> <span class="info-chip" data-be-chip="nature" title="" aria-label="">?</span></label>
+                  <label for="beNature"><span data-be-i18n="beLblNature">Abrasividad</span> <span class="info-chip" data-be-chip="nature" title="" aria-label="">?</span></label>
                   <select id="beNature">
                     <option value="fragile_abrasive">Frágil / abrasivo — baja velocidad</option>
                     <option value="normal" selected>Estándar</option>
                     <option value="fluid_light">Fluido / ligero — velocidad mayor</option>
                   </select>
                 </div>
-                <div class="field">
-                  <label for="beQ"><span data-be-i18n="beLblQ"></span> <span class="info-chip" data-be-chip="q" title="" aria-label="">?</span></label>
-                  <input id="beQ" type="number" step="0.5" min="0.5" value="45" />
-                  <span class="field-hint" data-be-i18n="beHintQ"></span>
-                </div>
               </div>
             </details>
             <details class="flat-accordion">
               <summary class="flat-accordion__summary">
                 <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
-                <span class="flat-accordion__label" data-be-i18n="beAccGeom"></span>
+                <span class="flat-accordion__label" data-be-i18n="beAccKin">Cinemática</span>
               </summary>
               <div class="flat-accordion__body field-grid">
                 <div class="field">
-                  <label for="beH"><span data-be-i18n="beLblH"></span> <span class="info-chip" data-be-chip="h" title="" aria-label="">?</span></label>
-                  <input id="beH" type="number" step="0.5" min="1" value="28" />
-                  <span class="field-hint" data-be-i18n="beHintH"></span>
+                  <label for="beVbelt"><span data-be-i18n="beLblVbelt">Velocidad de banda/cadena</span> <span class="info-chip" data-be-chip="vbelt" title="" aria-label="">?</span></label>
+                  <input id="beVbelt" type="number" step="0.05" min="0.4" value="1.9" />
+                  <span class="field-hint">m/s</span>
                 </div>
                 <div class="field">
-                  <label for="beC"><span data-be-i18n="beLblC"></span> <span class="info-chip" data-be-chip="c" title="" aria-label="">?</span></label>
-                  <input id="beC" type="number" step="0.5" min="1" value="30" />
-                  <span class="field-hint" data-be-i18n="beHintC"></span>
+                  <label for="bePitchManual"><span data-be-i18n="beLblPitch">Paso entre cangilones</span> <span class="info-chip" title="Paso calculado orientativo en función de Q, velocidad y volumen de cangilón." aria-label="Ayuda paso entre cangilones.">?</span></label>
+                  <input id="bePitchManual" type="number" step="5" min="120" value="380" />
+                  <span class="field-hint">mm</span>
                 </div>
                 <div class="field">
-                  <label for="beDhead"><span data-be-i18n="beLblDhead"></span> <span class="info-chip" data-be-chip="dhead" title="" aria-label="">?</span></label>
+                  <label for="beDhead"><span data-be-i18n="beLblDhead">Diámetro de polea superior</span> <span class="info-chip" data-be-chip="dhead" title="" aria-label="">?</span></label>
                   <input id="beDhead" type="number" step="0.05" min="0.2" value="0.65" />
                   <span class="field-hint" data-be-i18n="beHintM"></span>
                 </div>
                 <div class="field">
-                  <label for="beDboot"><span data-be-i18n="beLblDboot"></span> <span class="info-chip" data-be-chip="dboot" title="" aria-label="">?</span></label>
+                  <label for="beDboot"><span data-be-i18n="beLblDboot">Diámetro de polea inferior</span> <span class="info-chip" data-be-chip="dboot" title="" aria-label="">?</span></label>
                   <input id="beDboot" type="number" step="0.05" min="0.2" value="0.55" />
                   <span class="field-hint" data-be-i18n="beHintM"></span>
                 </div>
+                <div class="field">
+                  <label for="beDischargeType"><span data-be-i18n="beLblDischarge">Tipo de descarga</span> <span class="info-chip" title="Centrífuga para materiales fluidos y mayor velocidad; gravedad para materiales frágiles/abrasivos; mixta para compromisos." aria-label="Ayuda tipo de descarga.">?</span></label>
+                  <select id="beDischargeType">
+                    <option value="centrifugal">Centrífuga</option>
+                    <option value="gravity">Por gravedad</option>
+                    <option value="mixed" selected>Mixta</option>
+                  </select>
+                  <span class="field-hint" data-be-i18n="beDischargeHint">Centrífuga: material fluido y alta velocidad. Gravedad: producto frágil/abrasivo. Mixta: compromiso.</span>
+                </div>
                 <p class="field-hint" style="margin-top: 0.75rem; grid-column: 1 / -1" data-be-i18n="beDiagNote"></p>
+                <div class="field" style="grid-column: 1 / -1">
+                  <details class="friction-guide">
+                    <summary>Tabla orientativa de velocidad de banda</summary>
+                    <div class="friction-guide__body">
+                      <table>
+                        <thead><tr><th>Material</th><th>Velocidad orientativa</th></tr></thead>
+                        <tbody>
+                          <tr><td>Granos secos, semillas</td><td>1.2 – 2.0 m/s</td></tr>
+                          <tr><td>Carbón, fertilizantes</td><td>1.0 – 1.5 m/s</td></tr>
+                          <tr><td>Materiales abrasivos</td><td>0.8 – 1.2 m/s</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </details>
+                </div>
               </div>
             </details>
           </section>
@@ -151,26 +190,17 @@
             <details class="flat-accordion">
               <summary class="flat-accordion__summary">
                 <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
-                <span class="flat-accordion__label" data-be-i18n="beAccSel"></span>
+                <span class="flat-accordion__label" data-be-i18n="beAccSel">Banda y comprobaciones</span>
               </summary>
               <div class="flat-accordion__body">
                 <div class="field-grid">
-                  <div class="field" style="grid-column: 1 / -1">
-                    <label for="beBucket"><span data-be-i18n="beLblBucket"></span> <span class="info-chip" data-be-chip="bucket" title="" aria-label="">?</span></label>
-                    <select id="beBucket"></select>
-                  </div>
                   <div class="field">
-                    <label for="beVbelt"><span data-be-i18n="beLblVbelt"></span> <span class="info-chip" data-be-chip="vbelt" title="" aria-label="">?</span></label>
-                    <input id="beVbelt" type="number" step="0.05" min="0.4" value="1.9" />
-                    <span class="field-hint">m/s</span>
-                  </div>
-                  <div class="field">
-                    <label for="beWidth"><span data-be-i18n="beLblWidth"></span> <span class="info-chip" data-be-chip="width" title="" aria-label="">?</span></label>
+                    <label for="beWidth"><span data-be-i18n="beLblWidth">Ancho de banda/cadena</span> <span class="info-chip" data-be-chip="width" title="" aria-label="">?</span></label>
                     <input id="beWidth" type="number" step="10" min="150" value="400" />
                     <span class="field-hint">mm</span>
                   </div>
                   <div class="field">
-                    <label for="beSigma"><span data-be-i18n="beLblSigma"></span> <span class="info-chip" data-be-chip="sigma" title="" aria-label="">?</span></label>
+                    <label for="beSigma"><span data-be-i18n="beLblSigma">Resistencia nominal de banda</span> <span class="info-chip" data-be-chip="sigma" title="" aria-label="">?</span></label>
                     <input id="beSigma" type="number" step="5" min="20" value="315" />
                     <span class="field-hint" data-be-i18n="beHintSigma"></span>
                   </div>
@@ -186,20 +216,20 @@
             <details class="flat-accordion">
               <summary class="flat-accordion__summary">
                 <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
-                <span class="flat-accordion__label" data-be-i18n="beAccEff"></span>
+                <span class="flat-accordion__label" data-be-i18n="beAccEff">Rendimientos y arrastre (bota)</span>
               </summary>
               <div class="flat-accordion__body field-grid">
                 <div class="field">
-                  <label for="beEta"><span data-be-i18n="beLblEta"></span> <span class="info-chip" data-be-chip="eta" title="" aria-label="">?</span></label>
+                  <label for="beEta"><span data-be-i18n="beLblEta">Rendimiento de elevación η</span> <span class="info-chip" data-be-chip="eta" title="" aria-label="">?</span></label>
                   <input id="beEta" type="number" step="0.01" min="0.55" max="0.95" value="0.78" />
                 </div>
                 <div class="field">
-                  <label for="beKboot"><span data-be-i18n="beLblKboot"></span> <span class="info-chip" data-be-chip="kboot" title="" aria-label="">?</span></label>
+                  <label for="beKboot"><span data-be-i18n="beLblKboot">Arrastre en bota</span> <span class="info-chip" data-be-chip="kboot" title="" aria-label="">?</span></label>
                   <input id="beKboot" type="number" step="0.02" min="0" max="0.4" value="0.18" />
                   <span class="field-hint" data-be-i18n="beHintKboot"></span>
                 </div>
                 <div class="field">
-                  <label for="beEtaTrans"><span data-be-i18n="beLblEtaTrans"></span> <span class="info-chip" data-be-chip="etatrans" title="" aria-label="">?</span></label>
+                  <label for="beEtaTrans"><span data-be-i18n="beLblEtaTrans">Rendimiento transmisión</span> <span class="info-chip" data-be-chip="etatrans" title="" aria-label="">?</span></label>
                   <input id="beEtaTrans" type="number" step="0.01" min="0.85" max="0.99" value="0.96" />
                 </div>
               </div>
@@ -207,21 +237,21 @@
             <details class="flat-accordion">
               <summary class="flat-accordion__summary">
                 <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
-                <span class="flat-accordion__label" data-be-i18n="beAccRes"></span>
+                <span class="flat-accordion__label" data-be-i18n="beAccRes">Resultados y comprobación</span>
               </summary>
               <div class="flat-accordion__body">
                 <div id="beResults" class="results-grid"></div>
                 <div id="beVerdicts" class="design-alerts" style="margin-top: 1rem"></div>
                 <p id="beDisclaimer" class="muted" style="margin-top: 0.75rem; font-size: 0.82rem"></p>
                 <p style="margin-top: 1rem">
-                  <button type="button" class="button button--ghost" id="beOpenMotors" style="width: 100%" data-be-i18n="beBtnMotors"></button>
+                  <button type="button" class="button button--ghost" id="beOpenMotors" style="width: 100%" data-be-i18n="beBtnMotors">Abrir recomendaciones de motorreductores</button>
                 </p>
                 <div class="verify-panel" id="beVerifyPanel">
-                  <h2><span class="panel-icon">✓</span> <span data-be-i18n="beVerifyH2"></span></h2>
-                  <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem" data-be-i18n="beVerifyLead"></p>
+                  <h2><span class="panel-icon">✓</span> <span data-be-i18n="beVerifyH2">Comprobar motorreductor</span></h2>
+                  <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem" data-be-i18n="beVerifyLead">Selector de marca y modelo para comparación rápida con el punto calculado.</p>
                   <div class="verify-grid">
                     <div class="field">
-                      <label for="beVerifyBrand"><span data-be-i18n="beLblVbrand"></span> <span class="info-chip" data-be-chip="vbrand" title="" aria-label="">?</span></label>
+                      <label for="beVerifyBrand"><span data-be-i18n="beLblVbrand">Marca</span> <span class="info-chip" data-be-chip="vbrand" title="" aria-label="">?</span></label>
                       <select id="beVerifyBrand" data-verify-brand>
                         <option value="sew">SEW-Eurodrive</option>
                         <option value="siemens">Siemens (Simogear)</option>
@@ -231,15 +261,15 @@
                       </select>
                     </div>
                     <div class="field">
-                      <label for="beVerifySearch"><span data-be-i18n="beLblVsearch"></span> <span class="info-chip" data-be-chip="vsearch" title="" aria-label="">?</span></label>
-                      <input id="beVerifySearch" type="search" placeholder="ej. R47, SK…" data-verify-search autocomplete="off" data-be-placeholder-es="ej. R47, SK…" data-be-placeholder-en="e.g. R47, SK…" />
+                      <label for="beVerifySearch"><span data-be-i18n="beLblVsearch">Filtrar modelo</span> <span class="info-chip" data-be-chip="vsearch" title="" aria-label="">?</span></label>
+                      <input id="beVerifySearch" type="search" data-verify-search autocomplete="off" data-be-placeholder-es="" data-be-placeholder-en="" />
                     </div>
                     <div class="field" style="grid-column: 1 / -1">
-                      <label for="beVerifyModel"><span data-be-i18n="beLblVmodel"></span> <span class="info-chip" data-be-chip="vmodel" title="" aria-label="">?</span></label>
+                      <label for="beVerifyModel"><span data-be-i18n="beLblVmodel">Modelo</span> <span class="info-chip" data-be-chip="vmodel" title="" aria-label="">?</span></label>
                       <select id="beVerifyModel" data-verify-model size="1"></select>
                     </div>
                   </div>
-                  <button type="button" data-verify-run style="margin-top: 1rem; width: 100%" data-be-i18n="beBtnVerify"></button>
+                  <button type="button" data-verify-run style="margin-top: 1rem; width: 100%" data-be-i18n="beBtnVerify">Comprobar para este elevador</button>
                   <div data-verify-out></div>
                 </div>
               </div>
@@ -253,8 +283,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">◎</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title" data-be-i18n="beMotorsTitle"></span>
-                  <span class="motors-details__hint" data-be-i18n="beMotorsHint"></span>
+                  <span class="motors-details__title" data-be-i18n="beMotorsTitle">Motorreductores (catálogo ejemplo)</span>
+                  <span class="motors-details__hint" data-be-i18n="beMotorsHint">Recomendaciones y exportación</span>
                 </span>
               </span>
             </summary>
@@ -269,13 +299,13 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">&#8983;</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title" data-be-i18n="beEngTitle"></span>
-                  <span class="motors-details__hint" data-be-i18n="beEngHint"></span>
+                  <span class="motors-details__title" data-be-i18n="beEngTitle">Desglose de ingeniería</span>
+                  <span class="motors-details__hint" data-be-i18n="beEngHint">Cálculo paso a paso</span>
                 </span>
               </span>
             </summary>
             <div class="motors-details__body">
-              <p class="muted panel-lead" data-be-i18n="beEngLead"></p>
+              <p class="muted panel-lead" data-be-i18n="beEngLead">Detalle de cálculo para auditoría técnica rápida.</p>
               <div id="beEngineeringReport" class="eng-report"></div>
             </div>
           </details>
@@ -286,8 +316,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">&#8251;</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title" data-be-i18n="beHypTitle"></span>
-                  <span class="motors-details__hint" data-be-i18n="beHypHint"></span>
+                  <span class="motors-details__title" data-be-i18n="beHypTitle">Hipótesis del modelo</span>
+                  <span class="motors-details__hint" data-be-i18n="beHypHint">Supuestos y límites</span>
                 </span>
               </span>
             </summary>
@@ -297,14 +327,14 @@
           </details>
         </section>
         <section class="panel">
-          <h2><span class="panel-icon">PDF</span> <span data-be-i18n="bePdfH2"></span></h2>
+          <h2><span class="panel-icon">PDF</span> <span data-be-i18n="bePdfH2">Exportar informe</span></h2>
           <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
         </section>
       </div>
 
       <aside class="be-side-col">
         <section class="panel be-diag-panel">
-          <h2><span class="panel-icon">◇</span> <span data-be-i18n="beSchematicH2"></span></h2>
+          <h2><span class="panel-icon">◇</span> <span data-be-i18n="beSchematicH2">Esquema</span></h2>
           <div class="be-diag-wrap">
             <svg id="beDiagram" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama elevador"></svg>
           </div>
@@ -318,7 +348,7 @@
               loading="lazy"
               decoding="async"
             />
-            <figcaption data-be-i18n="beFigCaption"></figcaption>
+            <figcaption data-be-i18n="beFigCaption">Referencia real de elevador de cangilones. <a href="https://commons.wikimedia.org/wiki/File:Grain_elevator.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.</figcaption>
           </figure>
         </section>
       </aside>

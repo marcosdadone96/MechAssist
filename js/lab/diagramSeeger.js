@@ -45,6 +45,8 @@ export function renderSeegerDiagram(el, spec) {
     </defs>
     <rect width="${vbW}" height="${vbH}" fill="url(#${id}bg)"/>
     <text x="${cx}" y="30" text-anchor="middle" font-size="14" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">DIN 471 - Anillo exterior (eje)</text>
+    <rect x="18" y="14" width="102" height="20" rx="10" fill="#d1fae5" stroke="#047857" />
+    <text x="69" y="28" text-anchor="middle" font-size="9.5" font-weight="800" fill="#065f46" font-family="Inter,system-ui,sans-serif">DIN 471 · EJE</text>
     <text x="${cx}" y="48" text-anchor="middle" font-size="9.5" fill="#475569" font-family="Inter,system-ui,sans-serif">Secci\u00f3n esquem\u00e1tica, forma A (cotas mm)</text>
 
     <g transform="translate(${cx}, ${yShaft})" filter="url(#${id}sh)">
@@ -69,8 +71,9 @@ export function renderSeegerDiagram(el, spec) {
     <line x1="${cx - mPx / 2}" y1="${yShaft - 32}" x2="${cx - mPx / 2}" y2="${yShaft - 24}" stroke="#6366f1"/>
     <line x1="${cx + mPx / 2}" y1="${yShaft - 32}" x2="${cx + mPx / 2}" y2="${yShaft - 24}" stroke="#6366f1"/>
     <text x="${cx}" y="${yShaft - 34}" text-anchor="middle" font-size="9.5" font-weight="700" fill="#4338ca" font-family="Inter,system-ui,sans-serif">m = ${r.m}</text>
+    <text x="${cx + mPx / 2 + 20}" y="${yShaft - Rgroove + Rshaft - 2}" font-size="9.5" font-weight="700" fill="#7c3aed" font-family="Inter,system-ui,sans-serif">r fondo ~ ${(r.m * 0.12).toFixed(2)} mm</text>
 
-    <text x="${cx}" y="${vbH - 36}" text-anchor="middle" font-size="9.5" fill="#334155" font-family="Inter,system-ui,sans-serif">s = ${r.s} mm; diam. exterior libre aprox. ${r.dFree} mm</text>
+    <text x="${cx}" y="${vbH - 36}" text-anchor="middle" font-size="9.5" fill="#334155" font-family="Inter,system-ui,sans-serif">s = ${r.s} mm; d_ranura = d3 ${r.d3} mm; m = ${r.m} mm</text>
     <text x="${cx}" y="${vbH - 18}" text-anchor="middle" font-size="8.5" fill="#64748b" font-family="Inter,system-ui,sans-serif">Ranura en eje DIN 471; tolerancias seg\u00fan norma o fabricante.</text>
     `;
     return;
@@ -95,6 +98,8 @@ export function renderSeegerDiagram(el, spec) {
     </defs>
     <rect width="${vbW}" height="${vbH}" fill="url(#${id}bg)"/>
     <text x="${cx}" y="30" text-anchor="middle" font-size="14" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">DIN 472 - Anillo interior (agujero)</text>
+    <rect x="18" y="14" width="126" height="20" rx="10" fill="#dbeafe" stroke="#1d4ed8" />
+    <text x="81" y="28" text-anchor="middle" font-size="9.5" font-weight="800" fill="#1e40af" font-family="Inter,system-ui,sans-serif">DIN 472 · AGUJERO</text>
     <text x="${cx}" y="48" text-anchor="middle" font-size="9.5" fill="#475569" font-family="Inter,system-ui,sans-serif">Vista axial (cotas mm)</text>
 
     <g transform="translate(${cx}, ${cy})" filter="url(#${id}sh)">
@@ -116,7 +121,7 @@ export function renderSeegerDiagram(el, spec) {
     <line x1="${cx + Rg + 20}" y1="${cy - Rg}" x2="${cx + Rg + 28}" y2="${cy - Rg}" stroke="#b45309"/>
     <text x="${cx + Rg + 30}" y="${cy - Rg / 2 + 4}" font-size="9.5" font-weight="700" fill="#b45309" font-family="Inter,system-ui,sans-serif">dG -> ${r.dG} mm (fondo ranura)</text>
 
-    <text x="${cx}" y="${vbH - 36}" text-anchor="middle" font-size="9.5" fill="#334155" font-family="Inter,system-ui,sans-serif">s = ${r.s} mm; diam. anillo libre ~ ${r.odFree} mm; b ~ ${r.b} mm; m = ${r.m} mm</text>
+    <text x="${cx}" y="${vbH - 36}" text-anchor="middle" font-size="9.5" fill="#334155" font-family="Inter,system-ui,sans-serif">s = ${r.s} mm; d_ranura = dG ${r.dG} mm; m = ${r.m} mm; r fondo ~ ${(r.m * 0.12).toFixed(2)} mm</text>
     <text x="${cx}" y="${vbH - 18}" text-anchor="middle" font-size="8.5" fill="#64748b" font-family="Inter,system-ui,sans-serif">Esquema did\u00e1ctico DIN 472; verificar mecanizado con fabricante.</text>
   `;
 }

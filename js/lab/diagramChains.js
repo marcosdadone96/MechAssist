@@ -47,8 +47,9 @@ export function renderChainDriveDiagram(el, params) {
   if (!el) return;
   const r = computeRollerChain(params);
   const id = uid();
+  const mobile = typeof window !== 'undefined' && window.innerWidth < 480;
   const vbW = 668;
-  const headerH = 68;
+  const headerH = mobile ? 62 : 68;
   let k = 0.38;
   const y = 244;
   let xL = 94;
@@ -82,12 +83,12 @@ export function renderChainDriveDiagram(el, params) {
   const rollersTop = rollersOnSegment(tang.UL.x, tang.UL.y, tang.UR.x, tang.UR.y, pPx, rollerR);
   const rollersBot = rollersOnSegment(tang.LR.x, tang.LR.y, tang.LL.x, tang.LL.y, pPx, rollerR);
 
-  const pathL = sprocketPolygon(xL, y, RouterL, RvalL, Math.min(r.z2, 36));
-  const pathR = sprocketPolygon(xR, y, RouterR, RvalR, Math.min(r.z1, 36));
+  const pathL = sprocketPolygon(xL, y, RouterL, RvalL, Math.min(r.z2, 72));
+  const pathR = sprocketPolygon(xR, y, RouterR, RvalR, Math.min(r.z1, 72));
 
   const bodyBottom = y + Math.max(RouterL, RouterR) + 16;
   const dimY = bodyBottom + 14;
-  const tagY = dimY + 28;
+  const tagY = dimY + (mobile ? 36 : 28);
   const vbH = tagY + 40;
   const geomLeft = xL - RouterL;
   const geomRight = xR + RouterR;

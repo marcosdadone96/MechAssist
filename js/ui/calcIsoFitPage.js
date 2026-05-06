@@ -80,7 +80,7 @@ function mountAppPresetSelect() {
   const presetSel = document.getElementById('isoAppPreset');
   if (!presetSel || !(presetSel instanceof HTMLSelectElement)) return;
   presetSel.innerHTML = [
-    '<option value="">Elija una aplicacion (manual o tabla)</option>',
+    '<option value="">Elija una aplicación (manual o tabla)</option>',
     ...ISO286_FIT_RECOMMENDATIONS.map(
       (r) => `<option value="${escapeHtml(r.id)}">${escapeHtml(r.label)}</option>`,
     ),
@@ -95,12 +95,13 @@ function renderRecommendationTable() {
     <tr>
       <td class="lab-iso-rec-table__col-fit">
         <strong class="lab-iso-rec-table__code">${escapeHtml(r.fitCode)}</strong>
-        <span class="lab-iso-rec-table__meta">${escapeHtml(r.category)} &#183; &#216;${r.dNomSuggestion}</span>
+      </td>
+      <td class="lab-iso-rec-table__col-fit">
+        <span class="lab-iso-rec-table__meta">${escapeHtml(r.category)}</span>
       </td>
       <td class="lab-iso-rec-table__col-use">
-        <span class="lab-iso-rec-table__title">${escapeHtml(r.label)}</span>
-        <span class="lab-iso-rec-table__example"><span class="lab-iso-rec-table__example-prefix">Ej. real:</span> ${escapeHtml(r.examples)}</span>
-        <span class="lab-iso-rec-table__note">${escapeHtml(r.comment)}</span>
+        <span class="lab-iso-rec-table__title">${escapeHtml(r.comment)}</span>
+        <span class="lab-iso-rec-table__note">${escapeHtml(r.label)}. Ej.: ${escapeHtml(r.examples)} &#183; &#216; sugerido ${r.dNomSuggestion} mm.</span>
       </td>
       <td class="lab-iso-rec-table__col-act">
         <button type="button" class="lab-btn lab-iso-rec-table__btn" data-iso-preset="${escapeHtml(
@@ -117,7 +118,11 @@ function findMatchingRecommendationId() {
   const sL = readSelect('isoShaftLetter', '');
   const sI = readSelect('isoShaftIt', '');
   const row = ISO286_FIT_RECOMMENDATIONS.find(
-    (r) => r.holeLetter === hL && r.holeIt === hI && r.shaftLetter === sL && r.shaftIt === sI,
+    (r) =>
+      (r.applyHoleLetter || r.holeLetter) === hL &&
+      (r.applyHoleIt || r.holeIt) === hI &&
+      (r.applyShaftLetter || r.shaftLetter) === sL &&
+      (r.applyShaftIt || r.shaftIt) === sI,
   );
   return row ? row.id : '';
 }
@@ -136,10 +141,10 @@ function applyRecommendationById(id) {
   if (!row) return;
   const dEl = document.getElementById('isoD');
   if (dEl instanceof HTMLInputElement) dEl.value = String(row.dNomSuggestion);
-  setSelectValue('isoHoleLetter', row.holeLetter);
-  setSelectValue('isoHoleIt', row.holeIt);
-  setSelectValue('isoShaftLetter', row.shaftLetter);
-  setSelectValue('isoShaftIt', row.shaftIt);
+  setSelectValue('isoHoleLetter', row.applyHoleLetter || row.holeLetter);
+  setSelectValue('isoHoleIt', row.applyHoleIt || row.holeIt);
+  setSelectValue('isoShaftLetter', row.applyShaftLetter || row.shaftLetter);
+  setSelectValue('isoShaftIt', row.applyShaftIt || row.shaftIt);
   const presetSel = document.getElementById('isoAppPreset');
   if (presetSel instanceof HTMLSelectElement) presetSel.value = id;
 }
@@ -148,13 +153,9 @@ mountAppPresetSelect();
 renderRecommendationTable();
 
 function fitVerdictAlert(kind) {
-  if (kind === 'clearance') {
-    return labAlert('ok', '<strong>Ajuste con juego</strong> (clearance). J<sub>min</sub> &ge; 0.');
-  }
-  if (kind === 'interference') {
-    return labAlert('info', '<strong>Ajuste con apriete</strong> (interference). J<sub>max</sub> &le; 0.');
-  }
-  return labAlert('warn', '<strong>Ajuste de transicion</strong> (transition). J<sub>max</sub> &gt; 0 y J<sub>min</sub> &lt; 0.');
+  if (kind === 'clearance') return labAlert('ok', '<strong>Ajuste con juego</strong> (azul). J<sub>min</sub> &ge; 0.');
+  if (kind === 'interference') return labAlert('danger', '<strong>Ajuste con apriete</strong> (rojo). J<sub>max</sub> &le; 0.');
+  return labAlert('warn', '<strong>Ajuste de transición</strong> (amarillo). J<sub>max</sub> &gt; 0 y J<sub>min</sub> &lt; 0.');
 }
 
 function refreshCore() {
@@ -256,7 +257,7 @@ function refreshCore() {
       labAlert(
         'info',
         uxCopy(
-          'Validación simplificada ISO 286. Confirmar con proceso real de fabricación y metrología.',
+          'Validación simplificada ISO 286 (extracto 1-500 mm). Para condiciones especiales, confirmar con ISO 286-1 completa y proceso real de fabricación/metrología.',
           'Simplified ISO 286 validation. Confirm against real manufacturing and metrology process.',
         ),
       ),
@@ -268,9 +269,9 @@ function refreshCore() {
     const iStr = r.i_microns.toFixed(2);
     const dMStr = r.dGeo_mm.toFixed(3);
     box.innerHTML = [
-      metricHtml('Unidad i (tabla)', `${iStr} um`, `i = 0.45 * cbrt(D_M) + 0.001*D_M; D_M = ${dMStr} mm (media geometrica del tramo).`),
-      metricHtml('IT agujero', `${r.IT_hole_microns} um`, `Tolerancia ${r.hole.it}.`),
-      metricHtml('IT eje', `${r.IT_shaft_microns} um`, `Tolerancia ${r.shaft.it}.`),
+      metricHtml('Unidad i (tabla)', `${iStr} um`, `i = 0.45 * cbrt(D_M) + 0.001*D_M; D_M = ${dMStr} mm (media geométrica del tramo).`),
+      metricHtml('IT fundamental agujero', `${r.hole.it} = ${r.IT_hole_microns} um`, 'Valor útil para acotar en plano de fabricación.'),
+      metricHtml('IT fundamental eje', `${r.shaft.it} = ${r.IT_shaft_microns} um`, 'Valor útil para acotar en plano de fabricación.'),
       metricHtml('Agujero EI / ES', `${r.hole.EI_um} / ${r.hole.ES_um} um`, 'Desviaciones fundamentales + IT (micras).'),
       metricHtml('Eje ei / es', `${r.shaft.ei_um} / ${r.shaft.es_um} um`, 'Desviaciones fundamentales + IT (micras).'),
       metricHtml('D max / D min', `${r.hole.dMax.toFixed(6)} / ${r.hole.dMin.toFixed(6)} mm`, 'Limites del agujero.'),
@@ -314,6 +315,22 @@ document.getElementById('isoRecTable')?.addEventListener('click', (ev) => {
   if (!id) return;
   applyRecommendationById(id);
   runCalcWithIndustrialFeedback(wrap, refreshCore);
+});
+
+document.querySelectorAll('[data-iso-chip]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const spec = btn.getAttribute('data-iso-chip') || '';
+    const m = spec.match(/^([A-Z]{1,2})(\d+)\/([a-z]{1,2})(\d+)@(\d+(?:\.\d+)?)$/);
+    if (!m) return;
+    const [, hL, hItN, sL, sItN, dNom] = m;
+    setSelectValue('isoHoleLetter', hL);
+    setSelectValue('isoHoleIt', `IT${hItN}`);
+    setSelectValue('isoShaftLetter', sL);
+    setSelectValue('isoShaftIt', `IT${sItN}`);
+    const dEl = document.getElementById('isoD');
+    if (dEl instanceof HTMLInputElement) dEl.value = dNom;
+    runCalcWithIndustrialFeedback(wrap, refreshCore);
+  });
 });
 
 ['isoD', 'isoHoleLetter', 'isoHoleIt', 'isoShaftLetter', 'isoShaftIt'].forEach((id) => {

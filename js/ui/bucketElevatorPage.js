@@ -102,6 +102,8 @@ function buildParams() {
     etaElev: readNum('beEta', 0.78),
     kBootDrag: readNum('beKboot', 0.18),
     etaTransmission: readNum('beEtaTrans', 0.96),
+    dischargeType: /** @type {'centrifugal'|'gravity'|'mixed'} */ (readSelect('beDischargeType', 'mixed')),
+    manualPitch_mm: readNum('bePitchManual', b.typicalPitch_mm),
   };
 }
 
@@ -257,7 +259,24 @@ function computeAndRender() {
 
   const ver = document.getElementById('beVerdicts');
   if (ver) {
-    ver.innerHTML = r.verdicts
+    const extraVerdicts = [];
+    if (p.dischargeType === 'gravity' && p.beltSpeed_m_s > 1.0) {
+      extraVerdicts.push({
+        level: 'warn',
+        text: en
+          ? 'Gravity discharge selected with speed above 1.0 m/s: validate carry-over and fallback risk.'
+          : 'Descarga por gravedad con velocidad mayor a 1.0 m/s: validar riesgo de arrastre y recirculación.',
+      });
+    }
+    if (Number.isFinite(p.manualPitch_mm) && Math.abs(p.manualPitch_mm - r.pitch_mm) > 120) {
+      extraVerdicts.push({
+        level: 'warn',
+        text: en
+          ? `Manual bucket pitch (${p.manualPitch_mm.toFixed(0)} mm) differs significantly from indicative pitch (${r.pitch_mm.toFixed(0)} mm).`
+          : `El paso manual (${p.manualPitch_mm.toFixed(0)} mm) difiere de forma significativa del paso orientativo (${r.pitch_mm.toFixed(0)} mm).`,
+      });
+    }
+    ver.innerHTML = [...r.verdicts, ...extraVerdicts]
       .map(
         (v) =>
           `<p class="design-alert design-alert--${v.level === 'err' ? 'error' : v.level === 'warn' ? 'warn' : 'info'}">${esc(v.text)}</p>`,
@@ -289,7 +308,10 @@ function computeAndRender() {
 
   const asu = document.getElementById('beAssumptionsList');
   if (asu) {
-    asu.innerHTML = (r.assumptions || []).map((a) => `<li>${esc(a)}</li>`).join('');
+    const extra = en
+      ? ['This model does not replace belt/chain tension design or structural casing verification.']
+      : ['Este modelo no sustituye el cálculo de tensión de banda/cadena ni la verificación estructural de la carcasa.'];
+    asu.innerHTML = [...(r.assumptions || []), ...extra].map((a) => `<li>${esc(a)}</li>`).join('');
   }
 
   try {
@@ -394,6 +416,8 @@ const inputs = [
   'beDboot',
   'beBucket',
   'beVbelt',
+  'bePitchManual',
+  'beDischargeType',
   'beWidth',
   'beSigma',
   'beEta',

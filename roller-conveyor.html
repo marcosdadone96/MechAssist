@@ -204,6 +204,9 @@
             <span class="flat-accordion__label">Apoyo de carga y paso de rodillos</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
+            <p class="muted field-hint" style="grid-column: 1 / -1; margin: 0">
+              Use esta sección si necesita documentar la geometría del apoyo o detectar situaciones con pocos rodillos bajo la carga. No afecta al cálculo de potencia.
+            </p>
             <div class="field flat-field--slider">
               <label for="rollerPitch"
                 >Paso entre rodillos (ejes)
@@ -248,6 +251,7 @@
                 >
                 <input id="uniformRollersOverride" type="number" min="1" step="1" placeholder="Auto (L y paso)" />
                 <span class="field-hint">n&deg;</span>
+                <span class="field-hint" id="uniformRollersSuggestion"></span>
               </div>
             </div>
             <div id="supportPalletBlock" class="field-grid" hidden style="grid-column: 1 / -1">
@@ -315,6 +319,44 @@
                 <input id="rollingResistance" type="number" min="0.002" step="0.001" value="0.030" />
                 <span class="field-hint" title="Coeficiente adimensional">adim.</span>
               </div>
+              <details class="friction-guide">
+                <summary>Tabla orientativa de Crr</summary>
+                <div class="friction-guide__body">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Situación</th>
+                        <th>Crr orientativo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Rodillos de precisión, carga limpia y ligera</td>
+                        <td>0.010 – 0.020</td>
+                      </tr>
+                      <tr>
+                        <td>Industrial estándar, cajas o paletas</td>
+                        <td>0.020 – 0.035</td>
+                      </tr>
+                      <tr>
+                        <td>Polvo, restos de embalaje, alineación irregular</td>
+                        <td>0.035 – 0.055</td>
+                      </tr>
+                      <tr>
+                        <td>Rodillos desgastados o carga lateral</td>
+                        <td>≥ 0.050 (validar)</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div class="friction-presets" data-friction-preset-for="rollingResistance">
+                    <span class="friction-presets__label">Aplicar a Crr:</span>
+                    <button type="button" class="friction-preset-btn" data-mu="0.015">0.015</button>
+                    <button type="button" class="friction-preset-btn" data-mu="0.025">0.025</button>
+                    <button type="button" class="friction-preset-btn" data-mu="0.035">0.035</button>
+                    <button type="button" class="friction-preset-btn" data-mu="0.050">0.050</button>
+                  </div>
+                </div>
+              </details>
             </div>
             <div class="field" style="grid-column: 1 / -1">
               <p class="muted" style="margin: 0; font-size: 0.88rem; line-height: 1.45">
@@ -422,6 +464,10 @@
           </div>
           <figure class="diagram-duo__real">
             <img src="assets/roller-conveyor-reference.png" alt="Referencia transportador de rodillos" loading="lazy" decoding="async" />
+            <figcaption>
+              Transportador de rodillos en obra.
+              <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.
+            </figcaption>
           </figure>
         </section>
 

@@ -54,6 +54,8 @@ function render() {
   const l_use = Number.isFinite(lUser) && lUser > 0 ? lUser : nextStandardLength(row.b * 4);
   const sigma = sigmaCrush_MPa(T, d, row.h, l_use);
   const ok = sigma <= sigAdm;
+  const lLimit = 1.5 * d;
+  const overLengthAdvisory = Number.isFinite(l_use) && Number.isFinite(d) && l_use > lLimit;
   let suggestL = null;
   if (!ok && T !== 0) {
     const l_need = (2 * Math.abs(T)) / (d * (row.h / 2) * 1e-9) / (sigAdm * 1e6);
@@ -75,24 +77,38 @@ function render() {
   });
 
   if (ok) {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--ok"><strong>Cumple</strong> criterio de aplastamiento orientativo frente a ${KEY_MATERIAL_ALLOWABLE_MPA[mat].label} (σ ≈ ${sigma.toFixed(1)} MPa ≤ ${sigAdm} MPa).<br/>
+    out.innerHTML = `<p class="lab-verdict lab-verdict--ok"><strong>APTO</strong> criterio de aplastamiento orientativo frente a ${KEY_MATERIAL_ALLOWABLE_MPA[mat].label} (σ<sub>ap</sub> ≈ ${sigma.toFixed(1)} MPa ≤ σ<sub>adm</sub> ${sigAdm} MPa).<br/>
       <strong>Referencia norma:</strong> dimensiones según tabla paralela tipo DIN 6885-1 (extracto educativo).</p>`;
   } else {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--err">No cumple aplastamiento (σ ≈ ${sigma.toFixed(1)} MPa &gt; ${sigAdm} MPa).<br/>
+    out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>INSUFICIENTE</strong> en aplastamiento (σ<sub>ap</sub> ≈ ${sigma.toFixed(1)} MPa &gt; σ<sub>adm</sub> ${sigAdm} MPa).<br/>
       ${suggestL ? `<strong>Recomendado:</strong> longitud comercial ≥ <strong>${suggestL} mm</strong> (verificar ranura en eje/cubo).` : ''}</p>`;
   }
+  if (overLengthAdvisory) {
+    out.innerHTML += `<p class="lab-verdict lab-verdict--warn"><strong>Aviso orientativo:</strong> L = ${l_use.toFixed(1)} mm supera 1.5·d ≈ ${lLimit.toFixed(1)} mm. Para chavetas estándar, revise la recomendación L ≤ 1.5·d.</p>`;
+  }
 
+  const rowsHtml = DIN6885_FORM_A_ROWS.map((r) => {
+    const active = d >= r.d_min && d < r.d_max;
+    return `<tr${active ? ' class="ky-row--active"' : ''}>
+      <td>${r.d_min} – ${r.d_max}</td>
+      <td>${r.b} × ${r.h}</td>
+      <td>${r.t1.toFixed(1)}</td>
+      <td>${r.t2.toFixed(1)}</td>
+    </tr>`;
+  }).join('');
   tbl.innerHTML = `
     <table class="lab-catalog-table">
-      <thead><tr><th>Parámetro</th><th>Valor</th></tr></thead>
+      <thead><tr><th>Ø eje (mm)</th><th>b × h (mm)</th><th>t₁ (mm)</th><th>t₂ (mm)</th></tr></thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+    <table class="lab-catalog-table" style="margin-top:.55rem">
+      <thead><tr><th>Parámetro de cálculo</th><th>Valor</th></tr></thead>
       <tbody>
-        <tr><td>Rango eje tabla</td><td>${row.d_min} – ${row.d_max} mm</td></tr>
-        <tr><td>b × h (ISO/DIN)</td><td>${row.b} × ${row.h} mm</td></tr>
-        <tr><td>t₁ eje / t₂ cubo</td><td>${row.t1} / ${row.t2} mm</td></tr>
         <tr><td>Longitud analizada L</td><td>${l_use} mm</td></tr>
         <tr><td>Par aplicado |T|</td><td>${T.toFixed(2)} N·m</td></tr>
-        <tr><td>σ aplast. (modelo simpl.)</td><td>${sigma.toFixed(1)} MPa</td></tr>
-        <tr><td>σ adm. material</td><td>${sigAdm} MPa</td></tr>
+        <tr><td>σap (modelo simplificado)</td><td>${sigma.toFixed(1)} MPa</td></tr>
+        <tr><td>σadm material</td><td>${sigAdm} MPa (${KEY_MATERIAL_ALLOWABLE_MPA[mat].label})</td></tr>
+        <tr><td>Veredicto aplastamiento</td><td><strong>${ok ? 'APTO' : 'INSUFICIENTE'}</strong></td></tr>
       </tbody>
     </table>`;
 }

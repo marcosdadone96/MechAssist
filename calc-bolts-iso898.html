@@ -49,15 +49,62 @@
                 <label for="blGrade">Grado</label>
                 <select id="blGrade"></select>
               </div>
+              <div class="lab-field">
+                <label for="blMu">Coeficiente de rozamiento μ</label>
+                <select id="blMu">
+                  <option value="0.18">Seco (μ = 0.18)</option>
+                  <option value="0.12" selected>Ligeramente lubricado (μ = 0.12)</option>
+                  <option value="0.08">Lubricado con grasa (μ = 0.08)</option>
+                </select>
+              </div>
               <div class="lab-field lab-field--wide">
                 <label for="blF">Fuerza tracción de cálculo (kN)</label>
                 <input id="blF" type="number" min="0" step="any" value="42" />
+              </div>
+              <div class="lab-field lab-field--wide">
+                <details class="lab-results-details">
+                  <summary>Tabla rápida de par recomendado (μ ≈ 0.12)</summary>
+                  <div class="lab-table-wrap">
+                    <table class="lab-table">
+                      <thead>
+                        <tr><th>Métrica</th><th>Grado 8.8</th><th>Grado 10.9</th><th>Grado 12.9</th></tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>M6</td><td>10 N·m</td><td>14 N·m</td><td>17 N·m</td></tr>
+                        <tr><td>M8</td><td>25 N·m</td><td>35 N·m</td><td>41 N·m</td></tr>
+                        <tr><td>M10</td><td>49 N·m</td><td>69 N·m</td><td>83 N·m</td></tr>
+                        <tr><td>M12</td><td>86 N·m</td><td>120 N·m</td><td>145 N·m</td></tr>
+                        <tr><td>M16</td><td>210 N·m</td><td>295 N·m</td><td>350 N·m</td></tr>
+                        <tr><td>M20</td><td>410 N·m</td><td>580 N·m</td><td>690 N·m</td></tr>
+                      </tbody>
+                    </table>
+                    <p class="lab-small-print">Valores orientativos para rosca métrica estándar ISO, μ ≈ 0.12. Verificar siempre con especificación del fabricante.</p>
+                  </div>
+                </details>
+              </div>
+              <div class="lab-field lab-field--wide">
+                <details class="lab-results-details">
+                  <summary>Propiedades mecánicas mínimas por grado (ISO 898-1)</summary>
+                  <div class="lab-table-wrap">
+                    <table class="lab-table">
+                      <thead>
+                        <tr><th>Grado</th><th>σy mín. (MPa)</th><th>σu mín. (MPa)</th></tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>8.8</td><td>640</td><td>800</td></tr>
+                        <tr><td>10.9</td><td>900</td><td>1000</td></tr>
+                        <tr><td>12.9</td><td>1080</td><td>1220</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </details>
               </div>
             </div>
           </div>
           <div class="lab-calc-layout__out">
             <div id="blOut"></div>
             <div id="blTable"></div>
+            <p class="lab-small-print">Hipótesis: el modelo no incluye cargas de cortante combinadas ni fatiga de uniones atornilladas (VDI 2230).</p>
           </div>
         </div>
       </section>

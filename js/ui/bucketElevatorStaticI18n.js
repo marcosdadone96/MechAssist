@@ -191,7 +191,7 @@ function applyDataBeI18n(lang) {
     beMainLead: en
       ? 'Three-step assistant: material & geometry \u2192 bucket & belt \u2192 power, tensions and verdicts. Like belt and screw tools: <strong>gearmotor recommendations</strong> plus a verifier if you already own a unit. Formulas follow common practice (capacity, <em>P</em> \u2248 <em>Q\u00b7H/(367\u00b7\u03b7)</em>, boot drag). Validate with <strong>CEMA</strong> and your vendor.'
       : 'Asistente en <strong>tres pasos</strong>: material y geometr\u00eda \u2192 selecci\u00f3n de cangil\u00f3n y banda \u2192 potencia, tensiones y veredictos. Al final, igual que en cintas y tornillo: <strong>recomendaciones de motorreductor</strong> y comprobador si ya tiene un modelo. Las f\u00f3rmulas siguen la pr\u00e1ctica habitual (capacidad, <em>P</em> \u2248 <em>Q\u00b7H/(367\u00b7\u03b7)</em>, arrastre en bota). Valide con <strong>CEMA</strong> y fabricante.',
-    beHelpSum: en ? 'Quick guide' : 'Gu\u00eda r\u00e1pida',
+    beHelpSum: en ? 'Quick guide to each quantity' : 'Gu\u00eda r\u00e1pida de cada magnitud',
     beHelp1: en
       ? '<strong>Step 1:</strong> material, capacity and base geometry (H, C, drums).'
       : '<strong>Paso 1:</strong> material, capacidad y geometr\u00eda base (H, C, tambores).',
@@ -204,12 +204,13 @@ function applyDataBeI18n(lang) {
     beHelp4: en
       ? '<strong>Gearmotor:</strong> compared to shaft power, torque and head drum rpm.'
       : '<strong>Motorreductor:</strong> se compara contra potencia de eje, par y rpm del tambor de cabeza.',
-    beWiz1: en ? 'Geometry & material' : 'Geometr\u00eda y material',
-    beWiz2: en ? 'Buckets & belt' : 'Cangilones y banda',
-    beWiz3: en ? 'Power & verdict' : 'Potencia y veredicto',
-    beAccMat: en ? 'Material & capacity' : 'Material y capacidad',
-    beAccGeom: en ? 'Elevator geometry' : 'Geometr\u00eda del elevador',
-    beAccSel: en ? 'Bucket & belt selection' : 'Selecci\u00f3n de cangil\u00f3n y banda',
+    beWiz1: en ? 'Geometry and capacity' : 'Geometr\u00eda y capacidad',
+    beWiz2: en ? 'Material' : 'Material',
+    beWiz3: en ? 'Kinematics and checks' : 'Cinem\u00e1tica y verificaci\u00f3n',
+    beAccMat: en ? 'Material' : 'Material',
+    beAccGeom: en ? 'Geometry and capacity' : 'Geometr\u00eda y capacidad',
+    beAccKin: en ? 'Kinematics' : 'Cinem\u00e1tica',
+    beAccSel: en ? 'Belt and checks' : 'Banda y comprobaciones',
     beAccEff: en ? 'Efficiencies & boot drag' : 'Rendimientos y arrastre (bota)',
     beAccRes: en ? 'Results, power & checks' : 'Resultados, potencia y comprobaci\u00f3n',
     beLblRho: en
@@ -236,6 +237,11 @@ function applyDataBeI18n(lang) {
       ? 'Bucket type / volume (demo catalog)'
       : 'Tipo / volumen de cangil\u00f3n (cat\u00e1logo demo)',
     beLblVbelt: en ? 'Belt speed <em>v</em>' : 'Velocidad de banda <em>v</em>',
+    beLblPitch: en ? 'Bucket pitch' : 'Paso entre cangilones',
+    beLblDischarge: en ? 'Discharge type' : 'Tipo de descarga',
+    beDischargeHint: en
+      ? 'Centrifugal: free-flowing materials and higher speed. Gravity: fragile/abrasive materials and lower speed. Mixed: intermediate.'
+      : 'Centr\u00edfuga: materiales fluidos y mayor velocidad. Gravedad: materiales fr\u00e1giles/abrasivos y menor velocidad. Mixta: punto intermedio.',
     beLblWidth: en ? 'Adopted belt width' : 'Ancho de banda adoptado',
     beLblSigma: en ? 'Nominal belt strength (demo)' : 'Resistencia nominal banda (demo)',
     beHintSigma: en ? 'N/mm (indicative ST class)' : 'N/mm (ST clase orientativa)',
@@ -244,7 +250,7 @@ function applyDataBeI18n(lang) {
     beHintKboot: en ? 'fraction of <em>P</em><sub>e</sub>' : 'fracci\u00f3n sobre <em>P</em>\u2091',
     beLblEtaTrans: en ? '\u03b7 gearbox / transmission' : '\u03b7 reductor / transmisi\u00f3n',
     beBtnMotors: en ? 'Open gearmotor recommendations' : 'Abrir recomendaciones de motorreductores',
-    beVerifyH2: en ? 'Check a gearmotor I already have' : 'Comprobar un motorreductor que ya tengo',
+    beVerifyH2: en ? 'Check gearmotor' : 'Comprobar motorreductor',
     beVerifyLead: en
       ? 'Compare motor power, output torque and rpm with the <strong>head drum</strong> for this elevator (step 3).'
       : 'Compare potencia de motor, par de salida y rpm con el <strong>tambor de cabeza</strong> de este elevador (punto calculado en el paso 3).',
@@ -275,8 +281,8 @@ function applyDataBeI18n(lang) {
       ? 'Bucket elevator in an industrial plant'
       : 'Elevador de cangilones en instalaci\u00f3n industrial',
     beFigCaption: en
-      ? 'Real-world application photo (example). <a href="https://commons.wikimedia.org/wiki/File:Grain_elevator.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> \u2014 replace with <code>assets/bucket-elevator-reference.png</code> if needed.'
-      : 'Foto real de aplicaci\u00f3n (ejemplo). <a href="https://commons.wikimedia.org/wiki/File:Grain_elevator.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> \u2014 puede reemplazarla por <code>assets/bucket-elevator-reference.png</code>.',
+      ? 'Real-world bucket elevator reference. <a href="https://commons.wikimedia.org/wiki/File:Grain_elevator.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.'
+      : 'Referencia real de elevador de cangilones. <a href="https://commons.wikimedia.org/wiki/File:Grain_elevator.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.',
   };
   document.querySelectorAll('[data-be-i18n]').forEach((el) => {
     const k = el.getAttribute('data-be-i18n');

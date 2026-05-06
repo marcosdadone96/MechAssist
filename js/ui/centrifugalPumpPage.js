@@ -151,16 +151,17 @@ function applyFluidPresetFromSelect() {
 }
 
 function patchProInstallTeaserCheckoutLink() {
-  if (FEATURES.allowPremiumViaQueryPro) return;
   const t = document.getElementById('proInstallTeaser');
   if (!t) return;
   const a = t.querySelector('a');
   if (!(a instanceof HTMLAnchorElement)) return;
-  a.href = buildRegisterUrlWithNextCheckout();
+  if (!FEATURES.allowPremiumViaQueryPro) {
+    a.href = buildRegisterUrlWithNextCheckout();
+  }
   if (getCurrentLang() === 'en') {
-    a.textContent = 'Get Pro (sign in & checkout)';
+    a.textContent = 'Enable Pro';
   } else {
-    a.textContent = 'Obtener Pro (registro y pago)';
+    a.textContent = 'Activar Pro';
   }
 }
 
@@ -257,7 +258,7 @@ function localizePumpStaticContent() {
   setHtml(
     '#proInstallTeaser',
     `Enable <strong>Pro</strong> to enter suction, line and daily hours; you get <strong>installation alerts</strong> and a more realistic <strong>service factor</strong> for continuous duty.
-            <a href="?pro=1">Try Pro (?pro=1)</a>`,
+            <a class="pro-install-teaser__cta" href="?pro=1">Enable Pro</a>`,
   );
   setHtml(
     '.flat-accordion:nth-of-type(3) .flat-accordion__label',
@@ -385,9 +386,8 @@ function localizePumpStaticContent() {
   if (img) img.alt = 'Centrifugal pump installed in a pumping station';
   setHtml(
     '.diagram-duo__real figcaption',
-    `Real-world pumping station photo (example).
-              <a href="https://commons.wikimedia.org/wiki/File:Pump_station.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>
-              \u2014 replace with your own in <code>assets/centrifugal-pump-reference.png</code>.`,
+    `Centrifugal pump at a pumping station.
+              <a href="https://commons.wikimedia.org/wiki/File:Pump_station.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.`,
   );
   setHtml(
     '#pumpVerifyPanel h2',
@@ -405,8 +405,6 @@ function localizePumpStaticContent() {
     'label[for="pumpVerifySearch"]',
     `Filter model <span class="info-chip" title="Text search on the catalog list." aria-label="Help: verify filter.">?</span>`,
   );
-  const pvs = document.getElementById('pumpVerifySearch');
-  if (pvs instanceof HTMLInputElement) pvs.placeholder = 'e.g. R47\u2026';
   setHtml(
     'label[for="pumpVerifyModel"]',
     `Model <span class="info-chip" title="Catalog model compared to required power, torque and rpm." aria-label="Help: verify model.">?</span>`,
@@ -817,7 +815,16 @@ function refresh() {
     }
 
     if (els.assumptions) {
-      els.assumptions.innerHTML = (r.assumptions || []).map((a) => `<li>${escHtml(a)}</li>`).join('');
+      const extra = en
+        ? [
+            'This module is for preliminary sizing and does not replace a complete NPSH calculation.',
+            'It does not replace the real Q-H curve and full performance map from the pump manufacturer.',
+          ]
+        : [
+            'Este módulo es de predimensionado y no sustituye un cálculo completo de NPSH.',
+            'Tampoco sustituye la curva real Q-H ni el mapa completo de rendimiento del fabricante de la bomba.',
+          ];
+      els.assumptions.innerHTML = [...(r.assumptions || []), ...extra].map((a) => `<li>${escHtml(a)}</li>`).join('');
     }
 
     if (els.premiumOpt) {
@@ -889,6 +896,16 @@ try {
 }
 
 document.getElementById('btnPumpCalc')?.addEventListener('click', () => {
+  refresh();
+  openMotorsRecommendationsAndScroll('section-pump-motores');
+});
+
+document.getElementById('btnPumpResults')?.addEventListener('click', () => {
+  refresh();
+  document.querySelector('.layout-right > section.panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+document.getElementById('btnPumpMotors')?.addEventListener('click', () => {
   refresh();
   openMotorsRecommendationsAndScroll('section-pump-motores');
 });

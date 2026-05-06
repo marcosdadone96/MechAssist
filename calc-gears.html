@@ -134,6 +134,30 @@
                   <option value="oil" selected>Aceite (baño / salpicadura)</option>
                 </select>
                 <p class="lab-field-help">La app compara <strong>v en el primitivo</strong> con límites orientativos según grasa (más bajo) u aceite; confirme con fabricante y servicio.</p>
+                <div style="margin-top: 0.45rem; overflow-x: auto">
+                  <table class="lab-catalog-table" style="margin-top: 0">
+                    <thead>
+                      <tr>
+                        <th>Lubricación</th>
+                        <th>v límite orientativa</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Grasa</td>
+                        <td>≤ 4 m/s</td>
+                      </tr>
+                      <tr>
+                        <td>Aceite baño / salpicadura</td>
+                        <td>4 – 15 m/s</td>
+                      </tr>
+                      <tr>
+                        <td>Aceite circulación forzada</td>
+                        <td>&gt; 15 m/s</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
               <div class="lab-field">
                 <label for="gPower" class="lab-field__label-row">
@@ -219,6 +243,7 @@
                 <summary>Resultado completo</summary>
                 <div class="lab-results" id="gResults"></div>
               </details>
+              <button type="button" class="lab-btn" id="gCopyResults">Copiar resultados</button>
             </div>
             <div id="gAlerts" class="lab-alerts"></div>
             <div id="gSubstitution"></div>

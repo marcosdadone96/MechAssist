@@ -9,14 +9,14 @@ const LS_LANG = 'mdr-home-lang';
 const dict = {
   es: {
     'header.tag': 'Transmisi\u00f3n',
-    'hero.eyebrow': 'Calculadoras t\u00e9cnicas \u00b7 ingenier\u00eda mec\u00e1nica',
-    'hero.tagline': 'Criterio de taller. Resultados al instante.',
+    'hero.eyebrow': 'MechAssist',
+    'hero.tagline': 'Calculadoras profesionales de Ingenier\u00eda Mec\u00e1nica',
     'hero.expand': 'Ver presentaci\u00f3n',
     'hero.desc1':
-      'MechAssist centraliza modelos de transmisi\u00f3n, transporte y fluidos en una interfaz clara: estimaciones \u00fatiles para preliminar, comparar alternativas y documentar hip\u00f3tesis.',
+      'Dimension\u00e1 engranajes, correas, rodamientos, cilindros hidr\u00e1ulicos, torniller\u00eda y m\u00e1s en segundos.',
     'hero.desc2':
-      'Referencias y m\u00e9todos alineados con buenas pr\u00e1cticas industriales; la decisi\u00f3n final debe validarse siempre con cat\u00e1logo, norma aplicable y condiciones reales de servicio.',
-    'hero.ctaLab': 'Explorar el laboratorio',
+      'Herramientas t\u00e9cnicas confiables con base en normas, la mayor\u00eda gratuitas.',
+    'hero.ctaLab': 'Explorar calculadoras gratis',
     'hero.ctaExplore': 'Ver todas las \u00e1reas',
     'hero.tier':
       'Gratis: acceso amplio al n\u00facleo de calculadoras y modelos de m\u00e1quinas base. Pro: funciones extendidas por m\u00f3dulo (p. ej. lienzo t\u00e9cnico multieje, exportaciones o flujos premium, seg\u00fan disponibilidad).',
@@ -72,14 +72,14 @@ const dict = {
   },
   en: {
     'header.tag': 'Power Transmission',
-    'hero.eyebrow': 'Technical calculators \u00b7 mechanical engineering',
-    'hero.tagline': 'Professional rigour. Results on demand.',
+    'hero.eyebrow': 'MechAssist',
+    'hero.tagline': 'Professional Mechanical Engineering Calculators',
     'hero.expand': 'View presentation',
     'hero.desc1':
-      'MechAssist brings transmission, conveying and fluid models into one clear interface: practical estimates for early design, trade-offs and documenting assumptions.',
+      'Size gears, belts, bearings, hydraulic cylinders, bolting, and more in seconds.',
     'hero.desc2':
-      'Methods grounded in industrial good practice; always validate against catalogues, applicable standards and real operating conditions.',
-    'hero.ctaLab': 'Open the laboratory',
+      'Reliable technical tools grounded in standards, with most calculators available for free.',
+    'hero.ctaLab': 'Explore free calculators',
     'hero.ctaExplore': 'Browse all areas',
     'hero.tier':
       'Free: broad access to core calculators and base machine models. Pro: extended features per module (e.g. multi-shaft technical canvas, exports or premium flows, where available).',

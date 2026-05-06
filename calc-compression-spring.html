@@ -54,14 +54,14 @@
         font-weight: 800;
         padding: 0.4rem 0.85rem;
         border-radius: 8px;
-        border: 1px solid #0f766e;
-        background: #fff;
-        color: #0f766e;
+        border: 1px solid #b45309;
+        background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%);
+        color: #78350f;
         cursor: pointer;
       }
       .spring-pro__btn:hover {
-        background: #0f766e;
-        color: #fff;
+        background: linear-gradient(180deg, #fcd34d 0%, #f59e0b 100%);
+        color: #422006;
       }
       .spring-pro__body[hidden] {
         display: none !important;
@@ -97,6 +97,43 @@
       #springDiagram {
         max-height: 320px;
         width: 100%;
+      }
+      .spring-pro__btn::after {
+        content: ' PRO';
+        margin-left: 0.35rem;
+        padding: 0.08rem 0.32rem;
+        border-radius: 999px;
+        background: #78350f;
+        color: #fff;
+        font-size: 0.58rem;
+        letter-spacing: 0.06em;
+      }
+      .spring-collapsible {
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(-4px);
+        transition: max-height 280ms ease, opacity 220ms ease, transform 220ms ease;
+      }
+      .spring-collapsible--open {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .spring-g-table {
+        margin-top: 0.5rem;
+      }
+      .spring-reset-row {
+        margin-top: 0.6rem;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .spring-reset-btn {
+        min-height: 40px;
+      }
+      @media (max-width: 480px) {
+        #springDiagram {
+          max-height: 280px;
+        }
       }
     </style>
   </head>
@@ -192,6 +229,9 @@
                   </div>
                 </div>
               </div>
+              <div class="spring-reset-row lab-field lab-field--wide">
+                <button type="button" id="springResetDefaults" class="lab-btn spring-reset-btn">Restablecer valores por defecto</button>
+              </div>
 
               <div class="lab-field lab-field--wide">
                 <label for="springMaterial" class="lab-field__label-row">
@@ -207,10 +247,27 @@
                   <option value="f1430" selected>Acero de muelles (F-1430 / 50CrV4 t&iacute;p.)</option>
                   <option value="aisi302">Inoxidable AISI 302</option>
                   <option value="piano">Cuerda de piano</option>
+                  <option value="bronce">Bronce fosforoso</option>
                 </select>
                 <p class="lab-field-help">
                   <strong>G</strong> (N/mm<sup>2</sup>) y <strong>&tau;<sub>adm</sub></strong> son <em>orientativos</em> para comparar &oacute;rdenes de magnitud; en proyecto puede fijar &tau;<sub>adm</sub> manual y &tau;<sub>W</sub> (fatiga).
                 </p>
+                <details class="lab-results-details spring-g-table">
+                  <summary>Tabla orientativa de m&oacute;dulo de rigidez G</summary>
+                  <div class="lab-table-wrap">
+                    <table class="lab-table">
+                      <thead>
+                        <tr><th>Material</th><th>G (N/mm²)</th></tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>Acero de muelles (50CrV4)</td><td>81.500</td></tr>
+                        <tr><td>Inoxidable AISI 302</td><td>68.000</td></tr>
+                        <tr><td>Cuerda de piano</td><td>81.500</td></tr>
+                        <tr><td>Bronce fosforoso</td><td>42.000</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </details>
               </div>
 
               <div class="lab-field">

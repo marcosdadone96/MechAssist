@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rodamientos SKF/FAG · Catálogo — Laboratorio</title>
+    <title>Rodamientos series 6000/6200/6300 (catálogo demo) — Laboratorio</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -25,6 +25,9 @@
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
         <h2>Rodamientos rígidos de bolas · series 6000 / 6200 / 6300 (catálogo demo)</h2>
+        <p class="lab-small-print">
+          Usa este módulo para seleccionar un rodamiento de las series 6000/6200/6300 directamente por designación. Si ya tienes el valor C del catálogo, usa el módulo L10 genérico.
+        </p>
         <p class="lab-lead">
           Elija <strong>serie</strong> y <strong>designación</strong>; introduzca carga equivalente <strong>P</strong> y velocidad <strong>n</strong>. Se calcula
           <strong>L<sub>10h</sub></strong> con <code>L = (C/P)³</code> (bolas). Compare con las horas objetivo.
@@ -49,6 +52,7 @@
               <div class="lab-field lab-field--wide">
                 <label for="bcBearing">Designación (C de catálogo demo)</label>
                 <select id="bcBearing"></select>
+                <p id="bcAutoGeom" class="lab-field-help">Geometría y C del rodamiento seleccionado.</p>
               </div>
               <div class="lab-field">
                 <label for="bcP">P equivalente (N)</label>
@@ -62,11 +66,16 @@
                 <label for="bcLreq">Horas L₁₀ requeridas (h)</label>
                 <input id="bcLreq" type="number" min="100" step="100" value="20000" />
               </div>
+              <div class="lab-field">
+                <label for="bcHpd">Horas de servicio por día</label>
+                <input id="bcHpd" type="number" min="1" max="24" step="1" value="16" />
+              </div>
             </div>
           </div>
           <div class="lab-calc-layout__out">
             <div id="bcOut"></div>
             <div id="bcTable"></div>
+            <p class="lab-small-print">Hipótesis: valores C demostrativos con ±10% respecto a catálogos reales. Selección final con catálogo SKF, FAG, NSK o equivalente.</p>
           </div>
         </div>
       </section>

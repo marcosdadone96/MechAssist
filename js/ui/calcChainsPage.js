@@ -85,9 +85,17 @@ mountCompactLabFieldHelp();
 
 const manualEl = document.getElementById('cManualPitch');
 const pitchEl = document.getElementById('cPitch');
+const chainRefEl = document.getElementById('cChainRef');
 function syncPitchDisabled() {
   const manual = manualEl instanceof HTMLInputElement && manualEl.checked;
   if (pitchEl instanceof HTMLInputElement) pitchEl.disabled = !manual;
+  if (chainRefEl instanceof HTMLSelectElement) chainRefEl.disabled = manual;
+  if (chainRefEl instanceof HTMLSelectElement) {
+    chainRefEl.closest('.lab-field')?.classList.toggle('chain-ref--disabled', manual);
+  }
+  if (pitchEl instanceof HTMLInputElement) {
+    pitchEl.closest('.lab-field')?.classList.toggle('chain-pitch--active', manual);
+  }
 }
 manualEl?.addEventListener('change', syncPitchDisabled);
 syncPitchDisabled();
@@ -261,6 +269,22 @@ function refreshCore() {
     if (r.polygonalEffect?.active) {
       parts.push(labAlert('warn', esc(r.polygonalEffect.text)));
     }
+    if (r.z1 < 17) {
+      parts.push(
+        labAlert(
+          'warn',
+          'z₁ < 17: el efecto poligonal en el piñón motriz puede ser significativo y generar vibraciones. Se recomienda usar z₁ ≥ 17 siempre que sea posible.',
+        ),
+      );
+    }
+    if (r.articulationFrequency_Hz != null && r.articulationFrequency_Hz > 50) {
+      parts.push(
+        labAlert(
+          'danger',
+          `Frecuencia de articulación alta (${r.articulationFrequency_Hz.toFixed(2)} Hz): posible riesgo de resonancia. Requiere estudio dinámico del sistema.`,
+        ),
+      );
+    }
     if (parts.length === 0) {
       parts.push(
         labAlert(
@@ -274,10 +298,7 @@ function refreshCore() {
     parts.push(
       labAlert(
         'info',
-        uxCopy(
-          'La selección final debe cerrarse con fabricante (carga admisible, lubricación y montaje).',
-          'Final selection should be closed with the supplier (allowable load, lubrication, and assembly).',
-        ),
+        'Hipótesis del modelo: no verifica la resistencia a tracción de la cadena ni su vida a fatiga; la selección final debe cerrarse con catálogo del fabricante.',
       ),
     );
     alerts.innerHTML = parts.join('');

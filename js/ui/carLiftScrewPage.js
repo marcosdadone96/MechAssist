@@ -35,9 +35,11 @@ function recoCopyCarLift(en) {
 }
 
 const THREAD_PRESETS = {
+  tr32x6: { d_mm: 32, p_mm: 6, label: 'Tr 32 x 6' },
   tr40x7: { d_mm: 40, p_mm: 7, label: 'Tr 40 x 7' },
   tr45x7: { d_mm: 45, p_mm: 7, label: 'Tr 45 x 7' },
   tr50x8: { d_mm: 50, p_mm: 8, label: 'Tr 50 x 8' },
+  tr55x9: { d_mm: 55, p_mm: 9, label: 'Tr 55 x 9' },
 };
 
 const inputIds = [
@@ -52,6 +54,7 @@ const inputIds = [
   'clSF',
 ];
 const selectIds = ['clMotorPos', 'clThreadPreset'];
+let wasCustomThread = false;
 
 function readNum(id, fallback) {
   const el = document.getElementById(id);
@@ -135,6 +138,10 @@ function syncThreadPresetUi() {
 
   const preset = THREAD_PRESETS[presetEl.value];
   const custom = presetEl.value === 'custom' || !preset;
+  const pitchLock = document.getElementById('clPitchLock');
+  const dLock = document.getElementById('clDLock');
+  const pitchField = pitchEl.closest('.field');
+  const dField = dEl.closest('.field');
 
   const en = getCurrentLang() === 'en';
   if (custom) {
@@ -144,6 +151,17 @@ function syncThreadPresetUi() {
     dR.disabled = false;
     pitchEl.classList.remove('input-synced');
     dEl.classList.remove('input-synced');
+    pitchField?.classList.remove('field--locked');
+    dField?.classList.remove('field--locked');
+    if (pitchLock instanceof HTMLElement) pitchLock.hidden = true;
+    if (dLock instanceof HTMLElement) dLock.hidden = true;
+    if (!wasCustomThread) {
+      window.setTimeout(() => {
+        pitchEl.focus();
+        pitchEl.select();
+      }, 120);
+    }
+    wasCustomThread = true;
     if (hint) {
       hint.textContent = en
         ? 'Custom mode: enter screw diameter and lead manually'
@@ -162,6 +180,11 @@ function syncThreadPresetUi() {
   dR.disabled = true;
   pitchEl.classList.add('input-synced');
   dEl.classList.add('input-synced');
+  pitchField?.classList.add('field--locked');
+  dField?.classList.add('field--locked');
+  if (pitchLock instanceof HTMLElement) pitchLock.hidden = false;
+  if (dLock instanceof HTMLElement) dLock.hidden = false;
+  wasCustomThread = false;
   if (hint) {
     hint.textContent = en
       ? `${preset.label}: diameter and lead locked to this standard`
@@ -266,6 +289,12 @@ function localizeCarLiftStaticContent() {
         </thead>
         <tbody>
           <tr>
+            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem"><strong>Tr 32 x 6</strong></td>
+            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">32 mm</td>
+            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">6 mm</td>
+            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">~505 mm²</td>
+          </tr>
+          <tr>
             <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem"><strong>Tr 40 x 7</strong></td>
             <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">40 mm</td>
             <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">7 mm</td>
@@ -278,16 +307,23 @@ function localizeCarLiftStaticContent() {
             <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">~1,134 mm²</td>
           </tr>
           <tr>
-            <td style="padding: 0.45rem 0.4rem"><strong>Tr 50 x 8</strong></td>
-            <td style="padding: 0.45rem 0.4rem">50 mm</td>
-            <td style="padding: 0.45rem 0.4rem">8 mm</td>
-            <td style="padding: 0.45rem 0.4rem">~1,385 mm²</td>
+            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem"><strong>Tr 50 x 8</strong></td>
+            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">50 mm</td>
+            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">8 mm</td>
+            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">~1,385 mm²</td>
+          </tr>
+          <tr>
+            <td style="padding: 0.45rem 0.4rem"><strong>Tr 55 x 9</strong></td>
+            <td style="padding: 0.45rem 0.4rem">55 mm</td>
+            <td style="padding: 0.45rem 0.4rem">9 mm</td>
+            <td style="padding: 0.45rem 0.4rem">~1,630 mm²</td>
           </tr>
         </tbody>
       </table>
     </div>
     <p class="muted" style="margin: 0 0 0.8rem; line-height: 1.45">
       <strong>Materials and wear:</strong> typical industrial lift pairing: <strong>carbon steel screw (e.g. C45)</strong> + <strong>bronze nut (e.g. CuSn12)</strong>. Goal: reduce galling and concentrate wear in the replaceable nut.
+      Typical bronze nut life: <strong>500–2000 h</strong> depending on load and lubrication; plan periodic clearance and wear inspections.
     </p>
     <div style="margin-top: 0.8rem; padding: 0.7rem 0.8rem; border: 1px solid rgba(2, 132, 199, 0.35); background: rgba(14, 165, 233, 0.08); border-radius: 8px">
       <p style="margin: 0; font-size: 0.9rem; line-height: 1.45">
@@ -297,13 +333,17 @@ function localizeCarLiftStaticContent() {
   );
   const tp = document.getElementById('clThreadPreset');
   if (tp) {
+    const o32 = tp.querySelector('option[value="tr32x6"]');
     const o40 = tp.querySelector('option[value="tr40x7"]');
     const o45 = tp.querySelector('option[value="tr45x7"]');
     const o50 = tp.querySelector('option[value="tr50x8"]');
+    const o55 = tp.querySelector('option[value="tr55x9"]');
     const oc = tp.querySelector('option[value="custom"]');
+    if (o32) o32.textContent = 'Tr 32 x 6 (standard)';
     if (o40) o40.textContent = 'Tr 40 x 7 (standard)';
     if (o45) o45.textContent = 'Tr 45 x 7 (standard)';
     if (o50) o50.textContent = 'Tr 50 x 8 (standard)';
+    if (o55) o55.textContent = 'Tr 55 x 9 (standard)';
     if (oc) oc.textContent = 'Custom (manual entry)';
   }
   const mp = document.getElementById('clMotorPos');
@@ -338,7 +378,7 @@ function localizeCarLiftStaticContent() {
   const cap = document.querySelector('.diagram-duo__real figcaption');
   if (cap) {
     cap.innerHTML =
-      'Reference: workshop application (example). <a href="https://commons.wikimedia.org/wiki/File:Two-post_lift.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> — replace with <code>assets/car-lift-reference.png</code> for your own photo.';
+      'Reference: workshop application (example). <a href="https://commons.wikimedia.org/wiki/File:Two-post_lift.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.';
   }
   setHtml(
     '#carLiftVerifyPanel h2',
@@ -559,6 +599,18 @@ function refresh() {
 
   const disc = document.getElementById('clDisclaimer');
   if (disc) disc.textContent = r.disclaimer;
+  const selfLockBanner = document.getElementById('clSelfLockBanner');
+  if (selfLockBanner) {
+    if (!r.selfLocking) {
+      selfLockBanner.hidden = false;
+      selfLockBanner.textContent = en
+        ? 'Critical safety alert: no self-locking (lambda >= phi). Add brake/anti-backdrive and redesign immediately.'
+        : 'Alerta crítica de seguridad: no hay autofrenado (λ >= φ). Añada freno/antirretorno y rediseñe de inmediato.';
+    } else {
+      selfLockBanner.hidden = true;
+      selfLockBanner.textContent = '';
+    }
+  }
 
   const eng = document.getElementById('carLiftEngineeringReport');
   if (eng) {
@@ -588,7 +640,10 @@ function refresh() {
 
   const asul = document.getElementById('clAssumptionsList');
   if (asul) {
-    asul.innerHTML = (r.assumptions || []).map((a) => `<li>${esc(a)}</li>`).join('');
+    const extra = en
+      ? ['Educational model only: it does not replace vehicle-lift regulations such as EN 1493.']
+      : ['Modelo educativo: no sustituye normativa de elevadores de vehículos como EN 1493.'];
+    asul.innerHTML = [...(r.assumptions || []), ...extra].map((a) => `<li>${esc(a)}</li>`).join('');
   }
 
   const mb = document.getElementById('carLiftMotorBlock');

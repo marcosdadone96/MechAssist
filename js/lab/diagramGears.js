@@ -35,12 +35,13 @@ function toothPaths(cx, cy0, rPitch, rAdd, nTeeth, zFull) {
 
 /**
  * @param {SVGSVGElement | null} el
- * @param {Parameters<typeof computeSpurGearPair>[0]} params
+ * @param {Parameters<typeof computeSpurGearPair>[0] & { unitPrefs?: { length?: 'mm'|'cm'|'m' } }} params
  */
 export function renderGearPairDiagram(el, params) {
   if (!el) return;
   const r = computeSpurGearPair(params);
   const id = uid();
+  const mobile = typeof window !== 'undefined' && window.innerWidth < 480;
   const vbW = 668;
   const marginX = 50;
   const headerH = 72;
@@ -70,16 +71,24 @@ export function renderGearPairDiagram(el, params) {
   const p1 = toothPaths(cx1, cy, L.rp1, L.ra1, teeth1, r.z1).join(' ');
   const p2 = toothPaths(cx2, cy, L.rp2, L.ra2, teeth2, r.z2).join(' ');
 
-  const pitchBottom = cy + Math.max(L.ra1, L.ra2) + 16;
+  const pitchBottom = cy + Math.max(L.ra1, L.ra2) + (mobile ? 10 : 16);
   const dimY = pitchBottom + 12;
-  const tagY = dimY + 32;
+  const tagY = dimY + (mobile ? 46 : 32);
   const vbH = tagY + 46;
 
-  const am = r.centerDistance_mm / 1000;
   const midX = (cx1 + cx2) / 2;
   const geomLeft = cx1 - L.ra1;
   const geomRight = cx2 + L.ra2;
   const shiftX = vbW / 2 - (geomLeft + geomRight) / 2;
+  const unit = params.unitPrefs?.length === 'cm' ? 'cm' : params.unitPrefs?.length === 'm' ? 'm' : 'mm';
+  const fmtL = (mm) => {
+    if (unit === 'cm') return `${(mm / 10).toFixed(2)} cm`;
+    if (unit === 'm') return `${(mm / 1000).toFixed(4)} m`;
+    return `${mm.toFixed(2)} mm`;
+  };
+  const dir = r.z1 > r.z2 ? 1 : -1;
+  const arcSweep1 = dir > 0 ? 1 : 0;
+  const arcSweep2 = dir > 0 ? 0 : 1;
 
   el.setAttribute('viewBox', `0 0 ${vbW} ${vbH}`);
   el.setAttribute('preserveAspectRatio', 'xMidYMid meet');
@@ -99,11 +108,12 @@ export function renderGearPairDiagram(el, params) {
       </filter>
       <marker id="${id}ArrE" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#475569"/></marker>
       <marker id="${id}ArrS" markerWidth="8" markerHeight="8" refX="0" refY="4" orient="auto"><path d="M8,0 L0,4 L8,8 Z" fill="#475569"/></marker>
+      <marker id="${id}ArrRot" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#0f766e"/></marker>
     </defs>
     <rect width="${vbW}" height="${vbH}" fill="url(#${id}Bg)" />
     <rect x="0" y="0" width="${vbW}" height="${headerH - 8}" fill="#fff" opacity="0.55" />
     <text x="${vbW / 2}" y="32" text-anchor="middle" font-size="15" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">Engranajes cilíndricos rectos</text>
-    <text x="${vbW / 2}" y="52" text-anchor="middle" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">m = ${r.module_mm.toFixed(2)} mm · α = ${r.pressureAngle_deg.toFixed(2)}° · a = ${am.toFixed(2)} m</text>
+    <text x="${vbW / 2}" y="52" text-anchor="middle" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">m = ${r.module_mm.toFixed(2)} mm · α = ${r.pressureAngle_deg.toFixed(2)}° · a = ${fmtL(r.centerDistance_mm)}</text>
 
     <g transform="translate(${shiftX.toFixed(2)}, 0)">
     <line x1="${cx1}" y1="${pitchBottom}" x2="${cx2}" y2="${pitchBottom}" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="6 5" />
@@ -125,10 +135,12 @@ export function renderGearPairDiagram(el, params) {
     <circle cx="${midX}" cy="${cy}" r="4.5" fill="#0d9488" stroke="#0f766e" stroke-width="1.2" />
 
     <line x1="${cx1}" y1="${dimY}" x2="${cx2}" y2="${dimY}" stroke="#334155" stroke-width="1.2" marker-start="url(#${id}ArrS)" marker-end="url(#${id}ArrE)" />
-    <text x="${midX}" y="${dimY - 7}" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">a = ${r.centerDistance_mm.toFixed(2)} mm</text>
+    <text x="${midX}" y="${dimY - 7}" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">a = ${fmtL(r.centerDistance_mm)}</text>
 
-    <text x="${cx1}" y="${tagY}" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a" font-family="Inter, system-ui, sans-serif">z₁ = ${r.z1} · d₁ = ${r.d1.toFixed(2)} mm</text>
-    <text x="${cx2}" y="${tagY}" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a" font-family="Inter, system-ui, sans-serif">z₂ = ${r.z2} · d₂ = ${r.d2.toFixed(2)} mm</text>
+    <text x="${cx1}" y="${tagY}" text-anchor="middle" font-size="${mobile ? '9' : '10'}" font-weight="700" fill="#0f172a" font-family="Inter, system-ui, sans-serif">z₁ = ${r.z1} · d₁ = ${fmtL(r.d1)}</text>
+    <text x="${cx2}" y="${tagY}" text-anchor="middle" font-size="${mobile ? '9' : '10'}" font-weight="700" fill="#0f172a" font-family="Inter, system-ui, sans-serif">z₂ = ${r.z2} · d₂ = ${fmtL(r.d2)}</text>
+    <path d="M ${cx1 - L.rp1 * 0.62} ${cy - L.rp1 * 0.3} A ${L.rp1 * 0.62} ${L.rp1 * 0.62} 0 0 ${arcSweep1} ${cx1 + L.rp1 * 0.62} ${cy - L.rp1 * 0.3}" fill="none" stroke="#0f766e" stroke-width="1.8" marker-end="url(#${id}ArrRot)"/>
+    <path d="M ${cx2 - L.rp2 * 0.62} ${cy - L.rp2 * 0.3} A ${L.rp2 * 0.62} ${L.rp2 * 0.62} 0 0 ${arcSweep2} ${cx2 + L.rp2 * 0.62} ${cy - L.rp2 * 0.3}" fill="none" stroke="#0f766e" stroke-width="1.8" marker-end="url(#${id}ArrRot)"/>
     </g>
 
     <text x="${vbW / 2}" y="${vbH - 12}" text-anchor="middle" font-size="9" fill="#64748b" font-family="Inter, system-ui, sans-serif">${esc('Discontinuo: primitivo. Perfil esquemático (no es plano de taller).')}</text>

@@ -78,6 +78,8 @@ function drawChart(motor, T_load, n_op) {
   const xl = x(n_op);
   const yl = y(T_load);
   const ym = y(motorTorqueAtSpeed(motor, n_op));
+  const yTop = Math.min(yl, ym);
+  const yBottom = Math.max(yl, ym);
 
   const gridH = [0.25, 0.5, 0.75, 1].map((f) => H - padB - f * (H - padT - padB));
   const gridV = [0.2, 0.4, 0.6, 0.8, 1].map((f) => padL + f * (W - padL - padR));
@@ -115,6 +117,7 @@ function drawChart(motor, T_load, n_op) {
     <text transform="rotate(-90 14 ${(padT + H - padB) / 2})" x="14" y="${(padT + H - padB) / 2}" text-anchor="middle" font-size="9" font-weight="600" fill="#475569" font-family="Inter,system-ui,sans-serif">Par (N·m)</text>
     <path d="${pathD.trim()}" fill="none" stroke="#0d9488" stroke-width="2.8" stroke-linejoin="round" />
     <line x1="${xl}" y1="${padT}" x2="${xl}" y2="${H - padB}" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.95" />
+    <rect x="${(xl - 8).toFixed(1)}" y="${yTop.toFixed(1)}" width="16" height="${(yBottom - yTop).toFixed(1)}" fill="rgba(245, 158, 11, 0.24)" stroke="#f59e0b" stroke-width="1"/>
     <circle cx="${xl}" cy="${yl}" r="6" fill="#b45309" stroke="#fff" stroke-width="1.5" />
     <circle cx="${xl}" cy="${ym}" r="6" fill="#0d9488" stroke="#fff" stroke-width="1.5" />
     <text x="${W - padR - 130}" y="${padT + 16}" font-size="9" font-weight="700" fill="#0d9488" font-family="Inter,system-ui,sans-serif">● T motor en régimen</text>
@@ -123,15 +126,25 @@ function drawChart(motor, T_load, n_op) {
 }
 
 function render() {
+  const Jload = parseFloat(document.getElementById('gmJload')?.value || '');
+  const iRatio = parseFloat(document.getElementById('gmIratio')?.value || '');
+  const jExtInput = document.getElementById('gmJext');
   const Jext = parseFloat(document.getElementById('gmJext')?.value || '0');
   const nOp = parseFloat(document.getElementById('gmN')?.value || '1455');
   const Tload = parseFloat(document.getElementById('gmTload')?.value || '10');
   const out = document.getElementById('gmOut');
   const tbl = document.getElementById('gmTable');
+  const summary = document.getElementById('gmSummary');
   const motor = buildUserMotor();
-  if (!out || !tbl) return;
+  if (!out || !tbl || !summary) return;
 
-  const ratio = motor.J_motor_kgm2 > 0 ? Jext / motor.J_motor_kgm2 : Infinity;
+  let JextUse = Number.isFinite(Jext) ? Jext : 0;
+  if (Number.isFinite(Jload) && Jload >= 0 && Number.isFinite(iRatio) && iRatio > 0) {
+    JextUse = Jload / (iRatio * iRatio);
+    if (jExtInput instanceof HTMLInputElement) jExtInput.value = String(Number(JextUse.toPrecision(6)));
+  }
+
+  const ratio = motor.J_motor_kgm2 > 0 ? JextUse / motor.J_motor_kgm2 : Infinity;
   const okJ = ratio <= motor.J_ratio_max;
   const Tm = motorTorqueAtSpeed(motor, nOp);
   const okT = Tm >= Tload * 1.05;
@@ -151,21 +164,38 @@ function render() {
       <thead><tr><th>Parámetro</th><th>Valor</th></tr></thead>
       <tbody>
         <tr><td>J motorreductor</td><td>${motor.J_motor_kgm2.toExponential(3)} kg·m²</td></tr>
-        <tr><td>J carga reflejada</td><td>${Jext.toExponential(3)} kg·m²</td></tr>
+        <tr><td>J carga reflejada</td><td>${JextUse.toExponential(3)} kg·m²</td></tr>
+        <tr><td>J carga (entrada opc.)</td><td>${Number.isFinite(Jload) ? Jload.toExponential(3) : '—'} kg·m²</td></tr>
+        <tr><td>Relación i (entrada opc.)</td><td>${Number.isFinite(iRatio) && iRatio > 0 ? iRatio.toFixed(3) : '—'}</td></tr>
         <tr><td>T<sub>N</sub> nominal</td><td>${motor.T_N_m.toFixed(2)} N·m</td></tr>
         <tr><td>n síncrona base</td><td>${motor.n_sync.toFixed(0)} rpm</td></tr>
         <tr><td>Factor pico Tpico/Tn</td><td>${readNum('gmTpeak', 2.2).toFixed(2)}</td></tr>
       </tbody>
     </table>
     <p class="lab-small-print">Curva estimada según parámetros introducidos por usuario. Para validación final, use curva real del fabricante de su motorreductor.</p>`;
+
+  summary.innerHTML = `
+    <div class="gm-summary-grid">
+      <div class="gm-summary-item ${okJ ? 'gm-summary-item--ok' : 'gm-summary-item--err'}">${okJ ? '✓' : '✗'} Relación de inercias: Jext/Jmot = ${ratio.toFixed(2)} (límite ${motor.J_ratio_max})</div>
+      <div class="gm-summary-item ${okT ? 'gm-summary-item--ok' : 'gm-summary-item--err'}">${okT ? '✓' : '✗'} Par disponible: Tm(${nOp.toFixed(0)} rpm) = ${Tm.toFixed(2)} N·m vs T carga = ${Tload.toFixed(2)} N·m</div>
+    </div>`;
 }
 
 renderInertiaTransmissionLine(document.getElementById('gmLineDiagram'));
 mountCompactLabFieldHelp();
 
-['gmJmotor', 'gmJratioMax', 'gmTN', 'gmNsync', 'gmTpeak', 'gmJext', 'gmN', 'gmTload'].forEach((id) => {
+['gmJmotor', 'gmJratioMax', 'gmTN', 'gmNsync', 'gmTpeak', 'gmJload', 'gmIratio', 'gmJext', 'gmN', 'gmTload'].forEach((id) => {
   document.getElementById(id)?.addEventListener('input', render);
   document.getElementById(id)?.addEventListener('change', render);
+});
+
+document.querySelectorAll('.gm-ref-chip').forEach((chip) => {
+  chip.addEventListener('click', () => {
+    const v = chip.getAttribute('data-gm-ratio');
+    const input = document.getElementById('gmJratioMax');
+    if (input instanceof HTMLInputElement && v) input.value = v;
+    render();
+  });
 });
 
 render();

@@ -7,6 +7,87 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
+    <style>
+      .sg-input-grid {
+        gap: 0.8rem 1rem;
+      }
+      .sg-axial-table-block {
+        margin-top: 0.35rem;
+      }
+      #sgHero .lab-results,
+      #sgResults {
+        gap: 0.42rem;
+        align-items: start;
+      }
+      #sgHero .lab-metric,
+      #sgResults .lab-metric {
+        padding: 0.42rem 0.52rem;
+        height: auto;
+        align-self: start;
+      }
+      #sgHero .lab-metric .v {
+        font-size: 0.84rem;
+        line-height: 1.2;
+      }
+      #sgResults .lab-metric .v {
+        font-size: 0.88rem;
+      }
+      #sgResults .lab-alert {
+        align-self: start;
+      }
+      #sgResults > .lab-alert:first-child {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.55rem 0.7rem;
+        margin-bottom: 0.2rem;
+      }
+      #sgResults > .lab-alert:first-child .lab-alert__body {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        flex-wrap: wrap;
+      }
+      #sgResults > .lab-alert:first-child .lab-alert__body > strong {
+        margin-right: 0.25rem;
+      }
+      #sgResults > .lab-alert:first-child .lab-alert__list {
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.2rem 1rem;
+        list-style: none;
+        padding: 0;
+      }
+      #sgResults > .lab-alert:first-child .lab-alert__list li {
+        margin: 0;
+        white-space: nowrap;
+      }
+      #sgResults {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+      @media (max-width: 560px) {
+        .sg-input-grid {
+          gap: 0.7rem 0.85rem;
+        }
+        #sgResults > .lab-alert:first-child .lab-alert__body {
+          display: block;
+        }
+        #sgResults > .lab-alert:first-child .lab-alert__list {
+          display: block;
+          margin-top: 0.25rem;
+          list-style: disc;
+          padding-left: 1rem;
+        }
+        #sgResults > .lab-alert:first-child .lab-alert__list li {
+          white-space: normal;
+        }
+        #sgResults {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </head>
   <body class="lab-body">
     <header class="lab-header">
@@ -41,7 +122,27 @@
             </div>
           </div>
           <div class="lab-calc-layout__inputs">
-            <div class="lab-grid lab-grid--2">
+            <div class="lab-grid lab-grid--2 sg-input-grid">
+              <div class="lab-field">
+                <label for="sgSizePreset" class="lab-field__label-row">
+                  <span class="lab-field__label-text">Talla normalizada (rápida)</span>
+                </label>
+                <select id="sgSizePreset">
+                  <option value="">Manual (usar d1)</option>
+                  <option value="8">8 mm</option>
+                  <option value="10">10 mm</option>
+                  <option value="12">12 mm</option>
+                  <option value="15">15 mm</option>
+                  <option value="17">17 mm</option>
+                  <option value="20">20 mm</option>
+                  <option value="25">25 mm</option>
+                  <option value="30">30 mm</option>
+                  <option value="35">35 mm</option>
+                  <option value="40">40 mm</option>
+                  <option value="50">50 mm</option>
+                </select>
+                <p class="lab-field-help">Alternativa rápida para cargar tallas de uso común.</p>
+              </div>
               <div class="lab-field">
                 <label for="sgKind" class="lab-field__label-row">
                   <span class="lab-field-ico" title="Tipo">
@@ -71,6 +172,13 @@
                 <input id="sgD" type="number" min="3" step="0.1" value="25" />
                 <p class="lab-field-help">Eje: di&aacute;metro sobre el que apoya el conjunto antes de la ranura. Agujero: di&aacute;metro nominal del alojamiento.</p>
               </div>
+              <div class="lab-field">
+                <label for="sgFaxWork" class="lab-field__label-row">
+                  <span class="lab-field__label-text">Fuerza axial de trabajo (N) (opcional)</span>
+                </label>
+                <input id="sgFaxWork" type="number" min="0" step="any" value="" placeholder="Ej. 2500" />
+                <p class="lab-field-help">Si se completa, se compara contra Fax admisible orientativa del anillo.</p>
+              </div>
               <div class="lab-field lab-field--wide">
                 <label for="sgMaterial" class="lab-field__label-row">
                   <span class="lab-field-ico" title="Material">
@@ -86,6 +194,28 @@
                   <option value="inox">Acero inoxidable (a&ntilde;ade &quot; - INOX &quot; al c&oacute;digo)</option>
                 </select>
                 <p class="lab-field-help">La codificaci&oacute;n de almac&eacute;n suele a&ntilde;adir <strong>INOX</strong> para acero inoxidable; confirme con su proveedor.</p>
+              </div>
+              <div class="lab-field lab-field--wide sg-axial-table-block">
+                <details class="lab-results-details">
+                  <summary>Tabla orientativa de fuerza axial admisible (DIN 471)</summary>
+                  <div class="lab-table-wrap">
+                    <table class="lab-table">
+                      <thead>
+                        <tr><th>Talla DIN 471</th><th>d1 (mm)</th><th>Fax adm. orient. (N)</th></tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>10</td><td>10</td><td>~800</td></tr>
+                        <tr><td>20</td><td>20</td><td>~2.800</td></tr>
+                        <tr><td>30</td><td>30</td><td>~6.500</td></tr>
+                        <tr><td>40</td><td>40</td><td>~11.000</td></tr>
+                        <tr><td>50</td><td>50</td><td>~16.000</td></tr>
+                      </tbody>
+                    </table>
+                    <p class="lab-small-print">
+                      Valores orientativos para acero estándar. Confirmar con tabla completa del fabricante (p.ej. Seeger-Orbis, Smalley).
+                    </p>
+                  </div>
+                </details>
               </div>
             </div>
           </div>
@@ -103,6 +233,9 @@
               </div>
               <div class="lab-results" id="sgResults"></div>
             </div>
+            <p class="lab-small-print">
+              Instalación: usar alicates de montaje adecuados (DIN 471: punta recta, DIN 472: punta angular). La expansión excesiva del anillo puede reducir su capacidad de carga axial.
+            </p>
           </div>
         </div>
       </section>

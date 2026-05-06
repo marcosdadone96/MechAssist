@@ -8,11 +8,13 @@ function uid() {
 
 /**
  * @param {SVGSVGElement | null} el
- * @param {{ diameter_mm?: number }} [opts]
+ * @param {{ diameter_mm?: number, showBending?: boolean, moment_Nm?: number }} [opts]
  */
 export function renderShaftTorsionDiagram(el, opts) {
   if (!el) return;
   const d = Number(opts?.diameter_mm) || 45;
+  const showBending = Boolean(opts?.showBending);
+  const M = Number(opts?.moment_Nm) || 0;
   const id = uid();
   const dm = d / 1000;
   el.setAttribute('viewBox', '0 0 560 288');
@@ -35,8 +37,8 @@ export function renderShaftTorsionDiagram(el, opts) {
       </filter>
     </defs>
     <rect width="560" height="288" fill="url(#${id}Bg)" />
-    <text x="280" y="30" text-anchor="middle" font-size="15" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">Eje macizo · torsión</text>
-    <text x="280" y="48" text-anchor="middle" font-size="10" fill="#475569" font-family="Inter, system-ui, sans-serif">τ = 16T / (πd³) · sin concentración ni fatiga detallada</text>
+    <text x="280" y="30" text-anchor="middle" font-size="15" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">Eje macizo · torsión${showBending ? ' + flexión' : ''}</text>
+    <text x="280" y="48" text-anchor="middle" font-size="10" fill="#475569" font-family="Inter, system-ui, sans-serif">τ = 16T / (πd³)${showBending ? ' · combinado con M' : ''}</text>
 
     <g transform="translate(72, 154)" filter="url(#${id}Sh)">
       <rect x="0" y="-26" width="416" height="52" rx="8" fill="url(#${id}Shaft)" stroke="#334155" stroke-width="2" />
@@ -44,7 +46,11 @@ export function renderShaftTorsionDiagram(el, opts) {
       <line x1="0" y1="-38" x2="0" y2="44" stroke="#0d9488" stroke-width="2.2" />
       <line x1="416" y1="-38" x2="416" y2="44" stroke="#0d9488" stroke-width="2.2" />
       <path d="M -28,-10 L 0,0 L -28,10" fill="none" stroke="#c2410c" stroke-width="3" marker-end="url(#${id}Arr)" />
+      <path d="M 444,-10 L 416,0 L 444,10" fill="none" stroke="#c2410c" stroke-width="3" marker-end="url(#${id}Arr)" />
+      <path d="M 18,-38 A 22 22 0 0 1 58,-38" fill="none" stroke="#b45309" stroke-width="2" marker-end="url(#${id}Arr)" />
+      <path d="M 398,38 A 22 22 0 0 1 358,38" fill="none" stroke="#b45309" stroke-width="2" marker-end="url(#${id}Arr)" />
       <text x="200" y="-44" font-size="11" font-weight="700" fill="#9a3412" font-family="Inter, system-ui, sans-serif">T</text>
+      ${showBending ? `<line x1="206" y1="-62" x2="206" y2="-20" stroke="#1d4ed8" stroke-width="2.6" marker-end="url(#${id}Arr)"/><line x1="214" y1="-62" x2="214" y2="-20" stroke="#1d4ed8" stroke-width="2.6" marker-end="url(#${id}Arr)"/><text x="224" y="-66" font-size="11" font-weight="700" fill="#1d4ed8" font-family="Inter, system-ui, sans-serif">M ≈ ${M.toFixed(1)} N·m</text>` : ''}
     </g>
     <text x="280" y="238" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a" font-family="Inter, system-ui, sans-serif">Ø mín. ≈ ${dm.toFixed(5)} m (${d.toFixed(2)} mm)</text>
     <text x="280" y="268" text-anchor="middle" font-size="9" fill="#64748b" font-family="Inter, system-ui, sans-serif">Medida comercial; valide deflexión, crítico y acople.</text>

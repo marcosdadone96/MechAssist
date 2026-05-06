@@ -51,13 +51,16 @@
           El <strong>esquema del hueco</strong> está a la derecha, como en cinta plana y elevador de cangilones. No sustituye EN 81 ni memoria de instalación.
         </p>
         <details class="help-details flat-help">
-          <summary>Guía rápida</summary>
+          <summary>Guía rápida de cada magnitud</summary>
           <div class="help-details__body">
+            <p class="help-details__lead muted">
+              Junto a cada etiqueta hay un <span class="info-chip info-chip--static" aria-hidden="true">?</span>: en escritorio use hover; en móvil, pulse para abrir la ayuda.
+            </p>
             <ul>
-              <li><strong>Cargas:</strong> Q y Mc definen desequilibrio y potencia orientativa.</li>
-              <li><strong>Contrapeso:</strong> óptimo típico Mc + (0,40–0,50)*Q.</li>
-              <li><strong>Euler:</strong> adherencia en polea con T1/T2 y límite e^(mu*alpha).</li>
-              <li><strong>Cables:</strong> selección demo por carga mínima de rotura y SF según servicio.</li>
+              <li><strong>Q y Mc:</strong> fijan desequilibrio de masas, potencia y par en la polea tractora.</li>
+              <li><strong>Contrapeso óptimo:</strong> referencia inicial Mc + 45%·Q; luego ajuste según servicio real.</li>
+              <li><strong>Euler (T1/T2):</strong> valida adherencia en canal con el límite e^(μ·α).</li>
+              <li><strong>Cables y SF:</strong> selección orientativa por carga de rotura y factor mínimo según normativa.</li>
             </ul>
           </div>
         </details>
@@ -65,42 +68,68 @@
         <details class="flat-accordion" id="teAccLoads">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label" data-te-for="accLoads"></span>
+            <span class="flat-accordion__label" data-te-for="accLoads">Cargas y recorrido</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
-            <label for="teQ"><span data-te-for="lblQ"></span> <em>Q</em> <span class="info-chip" data-te-chip="q">?</span></label>
+            <label for="teQ"><span data-te-for="lblQ">Carga útil</span> <em>Q</em> <span class="info-chip" data-te-chip="q">?</span></label>
             <input id="teQ" type="number" step="50" min="0" value="2000" />
             <span class="field-hint">kg</span>
           </div>
           <div class="field">
-            <label for="teMc"><span data-te-for="lblMc"></span> <span class="info-chip" data-te-chip="mc">?</span></label>
+            <label for="teMc"><span data-te-for="lblMc">Masa cabina</span> <span class="info-chip" data-te-chip="mc">?</span></label>
             <input id="teMc" type="number" step="50" min="1" value="1200" />
             <span class="field-hint">kg</span>
           </div>
           <div class="field">
-            <label for="teH"><span data-te-for="lblH"></span> <span class="info-chip" data-te-chip="h">?</span></label>
+            <label for="teH"><span data-te-for="lblH">Altura de viaje</span> <span class="info-chip" data-te-chip="h">?</span></label>
             <input id="teH" type="number" step="0.5" min="0.5" value="12" />
             <span class="field-hint">m</span>
           </div>
           <div class="field">
-            <label for="teV"><span data-te-for="lblV"></span> <span class="info-chip" data-te-chip="v">?</span></label>
+            <label for="teV"><span data-te-for="lblV">Velocidad</span> <span class="info-chip" data-te-chip="v">?</span></label>
             <input id="teV" type="number" step="0.05" min="0.1" value="1" />
             <span class="field-hint">m/s</span>
           </div>
           <div class="field">
-            <label for="teDuty"><span data-te-for="lblDuty"></span> <span class="info-chip" data-te-chip="duty">?</span></label>
+            <label for="teDuty"><span data-te-for="lblDuty">Tipo de servicio</span> <span class="info-chip" data-te-chip="duty">?</span></label>
             <select id="teDuty">
               <option value="freight" selected>Montacargas / carga (SF ≈ 10)</option>
               <option value="persons">Personas (SF ≈ 12)</option>
             </select>
           </div>
           <div class="field">
-            <label for="teReeving"><span data-te-for="lblReeving"></span> <span class="info-chip" data-te-chip="reeving">?</span></label>
+            <label for="teReeving"><span data-te-for="lblReeving">Relación de eslingado</span> <span class="info-chip" data-te-chip="reeving">?</span></label>
             <select id="teReeving">
               <option value="1_1" selected>1:1</option>
               <option value="2_1">2:1</option>
             </select>
+          </div>
+          <div class="field" style="grid-column: 1 / -1">
+            <div id="teReevingVisual" class="reeving-visual" role="group" aria-label="Selector visual de eslingado">
+              <button type="button" class="reeving-visual__opt reeving-visual__opt--active" data-reeving="1_1">
+                <strong>1:1</strong>
+                <span class="reeving-visual__mini">Polea fija · la cabina se mueve a la misma velocidad del cable.</span>
+              </button>
+              <button type="button" class="reeving-visual__opt" data-reeving="2_1">
+                <strong>2:1</strong>
+                <span class="reeving-visual__mini">Polea móvil en cabina · mayor ventaja mecánica, más rpm de polea.</span>
+              </button>
+            </div>
+          </div>
+          <div class="field" style="grid-column: 1 / -1">
+            <details class="friction-guide">
+              <summary>Factores de seguridad mínimos orientativos</summary>
+              <div class="friction-guide__body">
+                <table>
+                  <thead><tr><th>Servicio</th><th>SF mínimo orientativo</th></tr></thead>
+                  <tbody>
+                    <tr><td>Montacargas / carga</td><td>10</td></tr>
+                    <tr><td>Personas (ascensor)</td><td>12</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </details>
           </div>
           </div>
         </details>
@@ -108,7 +137,7 @@
         <details class="flat-accordion" id="teAccCw">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label" data-te-for="accCw"></span>
+            <span class="flat-accordion__label" data-te-for="accCw">Contrapeso</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
@@ -116,15 +145,9 @@
             <input id="teKcw" type="number" step="0.05" min="0.35" max="0.55" value="0.45" />
             <span id="teHintKcw" class="field-hint">típ. 0,40–0,50 → <em>M</em><sub>cp</sub> ≈ <em>M</em><sub>c</sub> + <em>k</em>·<em>Q</em></span>
           </div>
-          <div class="field field--checkbox">
-            <label>
-              <input id="teCwManual" type="checkbox" />
-              <span data-te-for="lblCwManual"></span>
-            </label>
-          </div>
-          <div class="field" id="teMcpManualRow" hidden>
-            <label for="teMcpManual"><span data-te-for="lblMcpManual"></span> <span class="info-chip" data-te-chip="mcpManual">?</span></label>
-            <input id="teMcpManual" type="number" step="50" min="1" value="2100" />
+          <div class="field" id="teMcpManualRow">
+            <label for="teMcpManual"><span data-te-for="lblMcpManual">Contrapeso sugerido (editable)</span> <span class="info-chip" data-te-chip="mcpManual">?</span></label>
+            <input id="teMcpManual" type="number" step="50" min="1" value="2100" data-auto-suggestion="true" />
             <span class="field-hint">kg</span>
           </div>
           </div>
@@ -133,7 +156,7 @@
         <details class="flat-accordion" id="teAccSheave">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label" data-te-for="accSheave"></span>
+            <span class="flat-accordion__label" data-te-for="accSheave">Polea y adherencia (Euler-Eytelwein)</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
@@ -194,9 +217,8 @@
                 decoding="async"
               />
               <figcaption>
-                Foto real de aplicación (ejemplo).
-                <a href="https://commons.wikimedia.org/wiki/File:Elevator_machine_room.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>
-                — puede sustituirla por <code>assets/traction-elevator-reference.png</code>.
+                Referencia real de ascensor de tracción.
+                <a href="https://commons.wikimedia.org/wiki/File:Elevator_machine_room.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.
               </figcaption>
             </figure>
           </div>
@@ -220,8 +242,8 @@
                 </select>
               </div>
               <div class="field">
-                <label for="teVerifySearch"><span data-te-for="lblVSearch"></span> <span class="info-chip" data-te-chip="vSearch">?</span></label>
-                <input id="teVerifySearch" type="search" placeholder="ej. R47, SK…" data-verify-search autocomplete="off" />
+                <label for="teVerifySearch"><span data-te-for="lblVSearch">Filtrar modelo</span> <span class="info-chip" data-te-chip="vSearch">?</span></label>
+                <input id="teVerifySearch" type="search" data-verify-search autocomplete="off" />
               </div>
               <div class="field" style="grid-column: 1 / -1">
                 <label for="teVerifyModel"><span data-te-for="lblVModel"></span> <span class="info-chip" data-te-chip="vModel">?</span></label>

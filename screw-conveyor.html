@@ -69,11 +69,11 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label" data-sc-for="accGeom"></span>
+            <span class="flat-accordion__label" data-sc-for="accGeom">Geometría y capacidad</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
-              <label for="screwCap"><span data-sc-for="lblCap"></span> <span class="info-chip" data-sc-chip="cap">?</span></label>
+              <label for="screwCap"><span data-sc-for="lblCap">Capacidad requerida</span> <span class="info-chip" data-sc-chip="cap">?</span></label>
               <input type="range" id="screwCapR" class="flat-slider" min="5" max="250" step="0.5" value="45" data-sc-aria-for="capR" aria-label="Capacidad" />
               <div class="flat-field__num">
                 <input id="screwCap" type="number" step="any" min="0.01" value="45" />
@@ -81,7 +81,7 @@
               </div>
             </div>
             <div class="field">
-              <label for="screwCapUnit"><span data-sc-for="lblCapUnit"></span> <span class="info-chip" data-sc-chip="capUnit">?</span></label>
+              <label for="screwCapUnit"><span data-sc-for="lblCapUnit">Unidad capacidad</span> <span class="info-chip" data-sc-chip="capUnit">?</span></label>
               <select id="screwCapUnit" name="screwCapUnit">
                 <option value="m3h" selected>m³/h</option>
                 <option value="th">t/h</option>
@@ -89,7 +89,7 @@
               <span class="field-hint">t/h usa densidad del bloque Material.</span>
             </div>
             <div class="field flat-field--slider">
-              <label for="screwDiam"><span data-sc-for="lblDiam"></span> <span class="info-chip" data-sc-chip="diam">?</span></label>
+              <label for="screwDiam"><span data-sc-for="lblDiam">Diámetro tornillo</span> <span class="info-chip" data-sc-chip="diam">?</span></label>
               <input type="range" id="screwDiamR" class="flat-slider" min="80" max="900" step="1" value="315" data-sc-aria-for="diamR" aria-label="Ø tornillo" />
               <div class="flat-field__num">
                 <input id="screwDiam" type="number" step="any" min="1" value="315" />
@@ -97,14 +97,14 @@
               </div>
             </div>
             <div class="field">
-              <label for="screwDiamUnit"><span data-sc-for="lblDiamUnit"></span> <span class="info-chip" data-sc-chip="diamUnit">?</span></label>
+              <label for="screwDiamUnit"><span data-sc-for="lblDiamUnit">Unidad Ø</span> <span class="info-chip" data-sc-chip="diamUnit">?</span></label>
               <select id="screwDiamUnit" name="screwDiamUnit">
                 <option value="mm" selected>mm</option>
                 <option value="in">pulgadas</option>
               </select>
             </div>
             <div class="field flat-field--slider">
-              <label for="screwPitch"><span data-sc-for="lblPitch"></span> <span class="info-chip" data-sc-chip="pitch">?</span></label>
+              <label for="screwPitch"><span data-sc-for="lblPitch">Paso</span> <span class="info-chip" data-sc-chip="pitch">?</span></label>
               <input type="range" id="screwPitchR" class="flat-slider" min="50" max="800" step="1" value="280" data-sc-aria-for="pitchR" aria-label="Paso" />
               <div class="flat-field__num">
                 <input id="screwPitch" type="number" step="any" min="1" value="280" />
@@ -119,7 +119,7 @@
               </select>
             </div>
             <div class="field flat-field--slider">
-              <label for="screwLength"><span data-sc-for="lblLength"></span> <span class="info-chip" data-sc-chip="length">?</span></label>
+              <label for="screwLength"><span data-sc-for="lblLength">Longitud transporte</span> <span class="info-chip" data-sc-chip="length">?</span></label>
               <input type="range" id="screwLengthR" class="flat-slider" min="0.5" max="50" step="0.1" value="12" data-sc-aria-for="lengthR" aria-label="Longitud L" />
               <div class="flat-field__num">
                 <input id="screwLength" type="number" step="0.1" min="0.5" value="12" />
@@ -127,7 +127,7 @@
               </div>
             </div>
             <div class="field flat-field--slider">
-              <label for="screwAngle"><span data-sc-for="lblAngle"></span> <span class="info-chip" data-sc-chip="angle">?</span></label>
+              <label for="screwAngle"><span data-sc-for="lblAngle">Inclinación θ</span> <span class="info-chip" data-sc-chip="angle">?</span></label>
               <input type="range" id="screwAngleR" class="flat-slider" min="0" max="45" step="0.5" value="8" data-sc-aria-for="angleR" aria-label="Ángulo θ" />
               <div class="flat-field__num">
                 <input id="screwAngle" type="number" step="0.5" min="0" max="90" value="8" />
@@ -140,11 +140,11 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label" data-sc-for="accMat"></span>
+            <span class="flat-accordion__label" data-sc-for="accMat">Material y llenado</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
-              <label for="screwRho"><span data-sc-for="lblRho"></span> <span class="info-chip" data-sc-chip="rho">?</span></label>
+              <label for="screwRho"><span data-sc-for="lblRho">Densidad aparente</span> <span class="info-chip" data-sc-chip="rho">?</span></label>
               <input type="range" id="screwRhoR" class="flat-slider" min="200" max="2200" step="10" value="750" data-sc-aria-for="rhoR" aria-label="Densidad ρ" />
               <div class="flat-field__num">
                 <input id="screwRho" type="number" step="1" min="100" value="750" />
@@ -152,7 +152,7 @@
               </div>
             </div>
             <div class="field">
-              <label for="screwTroughLoad"><span data-sc-for="lblTrough"></span> <span class="info-chip" data-sc-chip="trough">?</span></label>
+              <label for="screwTroughLoad"><span data-sc-for="lblTrough">Trough loading</span> <span class="info-chip" data-sc-chip="trough">?</span></label>
               <select id="screwTroughLoad" name="screwTroughLoad">
                 <option value="15">15 % — fluidos</option>
                 <option value="30" selected>30 % — uso general</option>
@@ -160,7 +160,7 @@
               </select>
             </div>
             <div class="field">
-              <label for="screwAbrasive"><span data-sc-for="lblAbrasive"></span> <span class="info-chip" data-sc-chip="abrasive">?</span></label>
+              <label for="screwAbrasive"><span data-sc-for="lblAbrasive">Abrasividad</span> <span class="info-chip" data-sc-chip="abrasive">?</span></label>
               <select id="screwAbrasive" name="screwAbrasive">
                 <option value="low" selected>Baja</option>
                 <option value="medium">Media</option>
@@ -168,12 +168,41 @@
               </select>
             </div>
             <div class="field">
-              <label for="screwCorrosive"><span data-sc-for="lblCorrosive"></span> <span class="info-chip" data-sc-chip="corrosive">?</span></label>
+              <label for="screwCorrosive"><span data-sc-for="lblCorrosive">Corrosividad</span> <span class="info-chip" data-sc-chip="corrosive">?</span></label>
               <select id="screwCorrosive" name="screwCorrosive">
                 <option value="low" selected>Baja</option>
                 <option value="medium">Media</option>
                 <option value="high">Alta</option>
               </select>
+            </div>
+            <div class="field" style="grid-column: 1 / -1">
+              <details class="friction-guide">
+                <summary>Tabla orientativa de llenado del trough</summary>
+                <div class="friction-guide__body">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Tipo de material</th>
+                        <th>Llenado recomendado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Fluidos / polvos finos secos</td>
+                        <td>45%</td>
+                      </tr>
+                      <tr>
+                        <td>Uso general industrial</td>
+                        <td>30%</td>
+                      </tr>
+                      <tr>
+                        <td>Materiales abrasivos o difíciles</td>
+                        <td>15%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </details>
             </div>
           </div>
         </details>
@@ -181,11 +210,11 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label" data-sc-for="accFriction"></span>
+            <span class="flat-accordion__label" data-sc-for="accFriction">Rozamiento y servicio</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
-              <label for="screwMu"><span data-sc-for="lblMu"></span> <span class="info-chip" data-sc-chip="mu">?</span></label>
+              <label for="screwMu"><span data-sc-for="lblMu">μ material–acero</span> <span class="info-chip" data-sc-chip="mu">?</span></label>
               <input type="range" id="screwMuR" class="flat-slider" min="0.1" max="0.75" step="0.01" value="0.38" data-sc-aria-for="muR" aria-label="Coeficiente μ" />
               <div class="flat-field__num">
                 <input id="screwMu" type="number" step="0.01" min="0.05" max="0.9" value="0.38" />
@@ -198,7 +227,7 @@
               <span class="field-hint">%</span>
             </div>
             <div class="field">
-              <label for="screwLoadDuty"><span data-sc-for="lblLoadDuty"></span> <span class="info-chip" data-sc-chip="loadDuty">?</span></label>
+              <label for="screwLoadDuty"><span data-sc-for="lblLoadDuty">Tipo de carga</span> <span class="info-chip" data-sc-chip="loadDuty">?</span></label>
               <select id="screwLoadDuty" name="screwLoadDuty">
                 <option value="uniform">Carga uniforme — SF ≈ 1,15</option>
                 <option value="moderate" selected>Choque moderado — SF ≈ 1,35</option>
@@ -208,7 +237,7 @@
               <p class="field-hint" id="screwLoadDutyHint"></p>
             </div>
             <div class="field">
-              <label for="screwServiceFactor"><span data-sc-for="lblSf"></span> <span class="info-chip" data-sc-chip="sf">?</span></label>
+              <label for="screwServiceFactor"><span data-sc-for="lblSf">Factor de servicio SF</span> <span class="info-chip" data-sc-chip="sf">?</span></label>
               <input id="screwServiceFactor" type="number" step="0.05" min="1" max="3" value="1.35" readonly class="input-synced" />
               <span class="field-hint">Se combina con abrasividad/corrosividad.</span>
             </div>
@@ -269,7 +298,7 @@
             <p class="muted panel-lead">Misma lógica que cinta plana: compare con el punto calculado del tornillo.</p>
             <div class="verify-grid">
               <div class="field">
-                <label for="screwVerifyBrand"><span data-sc-for="lblVBrand"></span> <span class="info-chip" data-sc-chip="vBrand">?</span></label>
+                <label for="screwVerifyBrand"><span data-sc-for="lblVBrand">Marca</span> <span class="info-chip" data-sc-chip="vBrand">?</span></label>
                 <select id="screwVerifyBrand" data-verify-brand>
                   <option value="sew">SEW-Eurodrive</option>
                   <option value="siemens">Siemens (Simogear)</option>
@@ -279,11 +308,11 @@
                 </select>
               </div>
               <div class="field">
-                <label for="screwVerifySearch"><span data-sc-for="lblVSearch"></span> <span class="info-chip" data-sc-chip="vSearch">?</span></label>
+                <label for="screwVerifySearch"><span data-sc-for="lblVSearch">Filtrar modelo</span> <span class="info-chip" data-sc-chip="vSearch">?</span></label>
                 <input id="screwVerifySearch" type="search" data-verify-search autocomplete="off" />
               </div>
               <div class="field" style="grid-column: 1 / -1">
-                <label for="screwVerifyModel"><span data-sc-for="lblVModel"></span> <span class="info-chip" data-sc-chip="vModel">?</span></label>
+                <label for="screwVerifyModel"><span data-sc-for="lblVModel">Modelo</span> <span class="info-chip" data-sc-chip="vModel">?</span></label>
                 <select id="screwVerifyModel" data-verify-model size="1"></select>
               </div>
             </div>

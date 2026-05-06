@@ -8,11 +8,11 @@ import { rpmToRadPerSec } from './siUnits.js';
 /** @typedef {'v_trapezoidal'|'synchronous'|'flat'|'poly_v'} BeltDriveType */
 
 export const V_BELT_PROFILES = [
-  { id: 'SPZ', label: 'SPZ (narrow)', norm: 'ISO 4184' },
+  { id: 'SPZ', label: 'SPZ (estrecha)', norm: 'ISO 4184' },
   { id: 'SPA', label: 'SPA', norm: 'ISO 4184' },
   { id: 'SPB', label: 'SPB', norm: 'ISO 4184' },
   { id: 'SPC', label: 'SPC', norm: 'ISO 4184' },
-  { id: 'XPZ', label: 'XPZ (narrow high capacity)', norm: 'ISO 4184' },
+  { id: 'XPZ', label: 'XPZ (estrecha alta capacidad)', norm: 'ISO 4184' },
   { id: 'XPA', label: 'XPA', norm: 'ISO 4184' },
   { id: 'XPB', label: 'XPB', norm: 'ISO 4184' },
 ];
@@ -20,10 +20,10 @@ export const V_BELT_PROFILES = [
 /** Pitch p (mm) on synchronous primitive — indicative values for kinematics. */
 export const SYNC_PITCH_PRESETS = [
   { id: '2.032', label: 'XL · 2.032 mm (≈ 1/5")', pitch_mm: 2.032 },
-  { id: '3', label: 'HTD / 3M profile · 3 mm', pitch_mm: 3 },
+  { id: '3', label: 'HTD / perfil 3M · 3 mm', pitch_mm: 3 },
   { id: '5', label: 'HTD / T5 / 5M · 5 mm', pitch_mm: 5 },
-  { id: '8', label: 'HTD / AT5 family · 8 mm', pitch_mm: 8 },
-  { id: '8_at', label: 'AT10 (10 mm pitch)', pitch_mm: 10 },
+  { id: '8', label: 'HTD / familia AT5 · 8 mm', pitch_mm: 8 },
+  { id: '8_at', label: 'AT10 (paso 10 mm)', pitch_mm: 10 },
   { id: '14', label: 'HTD 14M · 14 mm', pitch_mm: 14 },
 ];
 
@@ -74,7 +74,7 @@ function openBeltPrimitiveGeometry(d1_mm, d2_mm, center_mm) {
     wrapAngle_deg_small: geometryValid ? (wrap1 * 180) / Math.PI : NaN,
     wrapAngle_deg_large: geometryValid ? (wrap2 * 180) / Math.PI : NaN,
     geometryValid,
-    geometryNote: geometryValid ? '' : 'Non-physical geometry: C must be greater than |d₂−d₁|/2.',
+    geometryNote: geometryValid ? '' : 'Geometría no física: C debe ser mayor que |d₂−d₁|/2.',
   };
 }
 
@@ -82,38 +82,44 @@ function openBeltPrimitiveGeometry(d1_mm, d2_mm, center_mm) {
  * Veredicto de régimen por velocidad lineal en primitivo motriz (m/s).
  * @param {number | null | undefined} v_m_s
  */
-export function beltLinearSpeedVerdict(v_m_s) {
+export function beltLinearSpeedVerdict(v_m_s, beltType = 'v_trapezoidal') {
+  const bands =
+    beltType === 'synchronous'
+      ? { min: 5, maxRec: 40, max: 50, label: 'Síncrona' }
+      : beltType === 'poly_v'
+        ? { min: 10, maxRec: 40, max: 60, label: 'Poly-V' }
+        : beltType === 'flat'
+          ? { min: 5, maxRec: 30, max: 50, label: 'Plana' }
+          : { min: 10, maxRec: 25, max: 30, label: 'Trapezoidal (V)' };
   if (v_m_s == null || !Number.isFinite(v_m_s)) {
     return {
       level: 'unknown',
       key: 'unknown',
-      title: 'No data',
-      detail: 'Enter n₁ &gt; 0 and diameters to estimate v.',
+      title: 'Sin datos',
+      detail: 'Introduzca n₁ &gt; 0 y diámetros para estimar v.',
     };
   }
-  if (v_m_s < 5) {
-    return {
-      level: 'warn',
-      key: 'low',
-      title: 'Low speed',
-      detail:
-        'v &lt; 5 m/s: limited cooling, possible strand instability, and reduced useful torque in the span — check tension, wrap, and number of belts.',
-    };
-  }
-  if (v_m_s > 30) {
+  if (v_m_s > bands.max) {
     return {
       level: 'danger',
       key: 'critical',
-      title: 'Critical speed',
-      detail:
-        'v &gt; 30 m/s: high centrifugal loading, heat, and stability risk — balanced pulleys, special profiles, and supplier validation.',
+      title: `Excede límite de ${bands.label}`,
+      detail: `v &gt; ${bands.max} m/s. Supera el máximo orientativo para ${bands.label}; validar con catálogo de fabricante.`,
+    };
+  }
+  if (v_m_s < bands.min || v_m_s > bands.maxRec) {
+    return {
+      level: 'warn',
+      key: 'low',
+      title: 'Fuera de banda recomendada',
+      detail: `Banda recomendada para ${bands.label}: ${bands.min}–${bands.maxRec} m/s.`,
     };
   }
   return {
     level: 'ok',
     key: 'optimal',
-    title: 'Typical design band',
-    detail: '5 m/s ≤ v ≤ 30 m/s: common industrial belt-speed band (always confirm in catalogue).',
+    title: 'Banda recomendada',
+    detail: `${bands.min} m/s ≤ v ≤ ${bands.maxRec} m/s para ${bands.label}.`,
   };
 }
 
@@ -182,7 +188,7 @@ export function computeBeltDriveTransmission(p) {
     n2_theoretical_rpm != null ? n2_theoretical_rpm * (1 - slip_frac) : null;
   const omega2_rad_s = n2_rpm_real != null ? rpmToRadPerSec(n2_rpm_real) : null;
 
-  const speedVerdict = beltLinearSpeedVerdict(v_m_s);
+  const speedVerdict = beltLinearSpeedVerdict(v_m_s, beltType);
 
   const profileNote = (() => {
     if (beltType === 'v_trapezoidal') {
@@ -200,7 +206,7 @@ export function computeBeltDriveTransmission(p) {
       const pr = POLY_V_PROFILES.find((x) => x.id === p.polyVProfileId) || POLY_V_PROFILES[1];
       return `${pr.label} · ${pr.norm}`;
     }
-    return 'Flat belt — pretension and friction per lining (supplier data)';
+    return 'Correa plana — pretensión y fricción según recubrimiento (dato de fabricante)';
   })();
 
   return {

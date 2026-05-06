@@ -7,9 +7,9 @@ import { refreshMountingConfigSection } from './mountingConfigSection.js';
 
 export const TRACTION_LANG_EVENT = 'mdr-home-lang-changed';
 
-/** @param {boolean} en */
-function chipAria(prefix, en) {
-  return `${en ? 'Help:' : 'Ayuda'} ${prefix}.`;
+/** @param {'es'|'en'} lang */
+function chipAria(prefix, lang) {
+  return `${lang === 'en' ? 'Help:' : 'Ayuda'} ${prefix}.`;
 }
 
 /** @type {Record<string, { es: { title: string; aria: string }; en: { title: string; aria: string } }>} */
@@ -211,14 +211,14 @@ const LBL = {
   accCw: { es: 'Contrapeso', en: 'Counterweight' },
   accSheave: { es: 'Polea y adherencia (Euler-Eytelwein)', en: 'Sheave and traction (Euler\u2013Eytelwein)' },
   lblQ: { es: 'Carga \u00fatil', en: 'Payload' },
-  lblMc: { es: 'Peso cabina vac\u00eda', en: 'Empty car mass' },
+  lblMc: { es: 'Masa cabina', en: 'Cabin mass' },
   lblH: { es: 'Altura de viaje', en: 'Travel height' },
   lblV: { es: 'Velocidad nominal', en: 'Rated speed' },
-  lblDuty: { es: 'Servicio', en: 'Duty' },
-  lblReeving: { es: 'Arrollamiento', en: 'Reeving' },
+  lblDuty: { es: 'Tipo de servicio', en: 'Service type' },
+  lblReeving: { es: 'Relaci\u00f3n de eslingado', en: 'Roping ratio' },
   lblKcw: { es: 'Fracci\u00f3n de Q en contrapeso \u00f3ptimo', en: 'Q fraction in optimal counterweight' },
   lblCwManual: { es: 'Fijar contrapeso manualmente (kg)', en: 'Fix counterweight manually (kg)' },
-  lblMcpManual: { es: 'Masa contrapeso', en: 'Counterweight mass' },
+  lblMcpManual: { es: 'Contrapeso sugerido (editable)', en: 'Suggested counterweight (editable)' },
   lblD: { es: '\u00d8 primitivo polea tractora', en: 'Traction sheave pitch \u00d8' },
   lblAlpha: { es: '\u00c1ngulo de abrazamiento', en: 'Wrap angle' },
   lblMu: { es: 'Coef. fricci\u00f3n cable\u2013canal \u03bc', en: 'Rope\u2013groove friction \u03bc' },
@@ -257,7 +257,7 @@ function applySelectsAndHints(lang) {
   const hintMaxN = document.getElementById('teHintMaxn');
   if (hintMaxN) hintMaxN.textContent = en ? 'design limit' : 'l\u00edmite dise\u00f1o';
   const ph = document.getElementById('teVerifySearch');
-  if (ph instanceof HTMLInputElement) ph.placeholder = en ? 'e.g. R47, SK\u2026' : 'ej. R47, SK\u2026';
+  if (ph instanceof HTMLInputElement) ph.placeholder = '';
 }
 
 /** @param {'es'|'en'} lang */
@@ -276,21 +276,25 @@ function applyBlocks(lang) {
       : 'Modelo orientativo de <strong>cables y contrapeso</strong>: relaci\u00f3n de tensiones vs <strong>Euler-Eytelwein</strong>, masa de contrapeso (cabina + 40\u201350% carga \u00fatil), elecci\u00f3n de <strong>\u00d8 y n\u00famero de cables</strong> con factor de seguridad (10 carga / 12 personas), y <strong>par de frenado</strong> en polea. El <strong>esquema del hueco</strong> est\u00e1 a la derecha, como en cinta plana y elevador de cangilones. No sustituye EN 81 ni memoria de instalaci\u00f3n.';
   }
   const helpSum = document.querySelector('.help-details.flat-help > summary');
-  if (helpSum) helpSum.textContent = en ? 'Quick guide' : 'Gu\u00eda r\u00e1pida';
+  if (helpSum) helpSum.textContent = en ? 'Quick guide to each quantity' : 'Gu\u00eda r\u00e1pida de cada magnitud';
   const helpBody = document.querySelector('.help-details.flat-help .help-details__body');
   if (helpBody) {
     helpBody.innerHTML = en
-      ? `<ul>
-      <li><strong>Loads:</strong> Q and Mc set imbalance and indicative power.</li>
-      <li><strong>Counterweight:</strong> typical optimum Mc + (0.40\u20130.50)\u00b7Q.</li>
-      <li><strong>Euler:</strong> traction at sheave with T1/T2 and e^(\u03bc\u03b1) limit.</li>
-      <li><strong>Ropes:</strong> demo pick by minimum breaking load and SF for the duty.</li>
+      ? `<p class="help-details__lead muted">
+      Every label has a <span class="info-chip info-chip--static" aria-hidden="true">?</span>: on desktop hover; on touch, tap to read help.
+    </p><ul>
+      <li><strong>Q and Mc:</strong> set mass imbalance, indicative power and sheave torque.</li>
+      <li><strong>Optimal counterweight:</strong> starting point Mc + 45%\u00b7Q, then tune to project duty.</li>
+      <li><strong>Euler (T1/T2):</strong> checks groove traction against e^(\u03bc\u00b7\u03b1) limit.</li>
+      <li><strong>Ropes and SF:</strong> indicative rope pick by breaking load and minimum safety factor.</li>
     </ul>`
-      : `<ul>
-      <li><strong>Cargas:</strong> Q y Mc definen desequilibrio y potencia orientativa.</li>
-      <li><strong>Contrapeso:</strong> \u00f3ptimo t\u00edpico Mc + (0,40\u20130,50)\u00b7Q.</li>
-      <li><strong>Euler:</strong> adherencia en polea con T1/T2 y l\u00edmite e^(\u03bc\u03b1).</li>
-      <li><strong>Cables:</strong> selecci\u00f3n demo por carga m\u00ednima de rotura y SF seg\u00fan servicio.</li>
+      : `<p class="help-details__lead muted">
+      Junto a cada etiqueta hay un <span class="info-chip info-chip--static" aria-hidden="true">?</span>: en escritorio use hover; en m\u00f3vil, pulse para abrir la ayuda.
+    </p><ul>
+      <li><strong>Q y Mc:</strong> fijan desequilibrio de masas, potencia y par en la polea tractora.</li>
+      <li><strong>Contrapeso \u00f3ptimo:</strong> referencia inicial Mc + 45%\u00b7Q; luego ajuste seg\u00fan servicio real.</li>
+      <li><strong>Euler (T1/T2):</strong> valida adherencia en canal con el l\u00edmite e^(\u03bc\u00b7\u03b1).</li>
+      <li><strong>Cables y SF:</strong> selecci\u00f3n orientativa por carga de rotura y factor m\u00ednimo seg\u00fan normativa.</li>
     </ul>`;
   }
   const btn = document.getElementById('btnTeCalc');
@@ -330,8 +334,8 @@ function applyBlocks(lang) {
   const cap = document.querySelector('.be-diag-panel figcaption');
   if (cap) {
     cap.innerHTML = en
-      ? 'Real-world application photo (example). <a href="https://commons.wikimedia.org/wiki/File:Elevator_machine_room.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> \u2014 you may replace with <code>assets/traction-elevator-reference.png</code>.'
-      : 'Foto real de aplicaci\u00f3n (ejemplo). <a href="https://commons.wikimedia.org/wiki/File:Elevator_machine_room.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> \u2014 puede sustituirla por <code>assets/traction-elevator-reference.png</code>.';
+      ? 'Real-world traction elevator reference. <a href="https://commons.wikimedia.org/wiki/File:Elevator_machine_room.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.'
+      : 'Referencia real de ascensor de tracci\u00f3n. <a href="https://commons.wikimedia.org/wiki/File:Elevator_machine_room.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.';
   }
   const vh2 = document.querySelector('#teVerifyPanel h2');
   if (vh2) {

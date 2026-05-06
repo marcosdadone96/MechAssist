@@ -74,8 +74,8 @@ export function renderCouplingAssemblyDiagram(el) {
       <rect x="-56" y="-48" width="112" height="96" rx="18" fill="url(#${g}elast)" stroke="#0f766e" stroke-width="2.2"/>
       <path d="M-40,-18 h18 l8,18 l-8,18 h-18 l-8,-18 z" fill="#ccfbf1" stroke="#0f766e" stroke-width="1.2"/>
       <path d="M16,-18 h18 l8,18 l-8,18 h-18 l-8,-18 z" fill="#ccfbf1" stroke="#0f766e" stroke-width="1.2"/>
-      <text x="0" y="-58" text-anchor="middle" font-size="10" font-weight="800" fill="#0f766e" font-family="Inter,system-ui,sans-serif">Elemento elástico</text>
-      <text x="0" y="62" text-anchor="middle" font-size="8.5" fill="#0f766e" font-family="Inter,system-ui,sans-serif">Amortigua vibración · desalineación leve</text>
+      <text x="0" y="-58" text-anchor="middle" font-size="10" font-weight="800" fill="#0f766e" font-family="Inter,system-ui,sans-serif">Elemento elástico (Shore A)</text>
+      <text x="0" y="62" text-anchor="middle" font-size="8.5" fill="#0f766e" font-family="Inter,system-ui,sans-serif">Amortigua vibración · Shore define rigidez torsional</text>
     </g>
 
     <!-- Cubo derecho -->
@@ -143,6 +143,7 @@ export function renderParallelKeyShaftDiagram(el, p) {
   const artRight = 408 + sideW;
   const artLeft = Math.min(cx - bw - 44, cx - R);
   const artShift = 320 - (artLeft + artRight) / 2;
+  const largeD = d > 100;
 
   el.setAttribute('viewBox', '0 0 640 360');
   el.setAttribute('preserveAspectRatio', 'xMidYMid meet');
@@ -176,8 +177,15 @@ export function renderParallelKeyShaftDiagram(el, p) {
     <line x1="${cx + bw}" y1="${cy - R - keyH - 32}" x2="${cx + bw}" y2="${cy - R - keyH - 22}" stroke="#0d9488"/>
     <text x="${cx}" y="${cy - R - keyH - 36}" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="Inter,system-ui,sans-serif">b</text>
 
-    <text x="${Math.min(cx + R + 14, 410)}" y="${cy - 8}" font-size="11" font-weight="800" fill="#334155" font-family="Inter,system-ui,sans-serif">Ø d = ${d.toFixed(1)} mm</text>
-    <text x="${Math.min(cx + R + 14, 410)}" y="${cy + 10}" font-size="9.5" fill="#64748b" font-family="Inter,system-ui,sans-serif">t₁ = ${t1} mm · t₂ = ${t2} mm</text>
+    <text x="${Math.min(cx + R + 10, 398)}" y="${cy - 8}" font-size="${largeD ? '10' : '11'}" font-weight="800" fill="#334155" font-family="Inter,system-ui,sans-serif">Ø d = ${d.toFixed(1)} mm</text>
+    <text x="${Math.min(cx + R + 10, 398)}" y="${cy + 10}" font-size="${largeD ? '8.8' : '9.5'}" fill="#64748b" font-family="Inter,system-ui,sans-serif">t₁ = ${t1} mm · t₂ = ${t2} mm</text>
+
+    <!-- Vista axial (eje + ranura) -->
+    <g transform="translate(486, 208)" filter="url(#${g}sh)">
+      <circle cx="0" cy="0" r="${Math.max(24, Math.min(44, R * 0.55)).toFixed(1)}" fill="#e2e8f0" stroke="#334155" stroke-width="2"/>
+      <rect x="-${Math.max(8, (bw * 0.42)).toFixed(1)}" y="-${Math.max(24, Math.min(44, R * 0.55)).toFixed(1)}" width="${Math.max(16, (bw * 0.84)).toFixed(1)}" height="${Math.max(6, (keyH * 0.26)).toFixed(1)}" fill="#fbbf24" stroke="#b45309" stroke-width="1.3" rx="1"/>
+      <text x="0" y="${(Math.max(24, Math.min(44, R * 0.55)) + 14).toFixed(1)}" text-anchor="middle" font-size="8.5" fill="#475569" font-family="Inter,system-ui,sans-serif">Vista axial · ranura chaveta</text>
+    </g>
 
     <!-- Vista lateral longitud L (encajada a la derecha sin salir del viewBox) -->
     <g transform="translate(408, 148)" filter="url(#${g}sh)">

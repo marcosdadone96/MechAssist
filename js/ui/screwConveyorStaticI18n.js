@@ -7,9 +7,9 @@ import { refreshMountingConfigSection } from './mountingConfigSection.js';
 
 export const SCREW_LANG_EVENT = 'mdr-home-lang-changed';
 
-/** @param {boolean} en */
-function chipAria(prefix, en) {
-  return `${en ? 'Help:' : 'Ayuda'} ${prefix}.`;
+/** @param {'es'|'en'} lang */
+function chipAria(prefix, lang) {
+  return `${lang === 'en' ? 'Help:' : 'Ayuda'} ${prefix}.`;
 }
 
 /** @type {Record<string, { es: { title: string; aria: string }; en: { title: string; aria: string } }>} */
@@ -271,9 +271,9 @@ const LBL = {
   lblVBrand: { es: 'Marca', en: 'Brand' },
   lblVSearch: { es: 'Filtrar modelo', en: 'Filter model' },
   lblVModel: { es: 'Modelo', en: 'Model' },
-  accGeom: { es: 'Capacidad y geometr\u00eda', en: 'Capacity and geometry' },
-  accMat: { es: 'Material', en: 'Material' },
-  accFriction: { es: 'Rozamiento, rendimiento y servicio', en: 'Friction, efficiency and service' },
+  accGeom: { es: 'Geometr\u00eda y capacidad', en: 'Geometry and capacity' },
+  accMat: { es: 'Material y llenado', en: 'Material and fill' },
+  accFriction: { es: 'Rozamiento y servicio', en: 'Friction and service' },
 };
 
 /** @type {Record<string, { es: string; en: string }>} */
@@ -323,9 +323,9 @@ function applySelectOptions(lang) {
   const trough15 = document.querySelector('#screwTroughLoad option[value="15"]');
   const trough30 = document.querySelector('#screwTroughLoad option[value="30"]');
   const trough45 = document.querySelector('#screwTroughLoad option[value="45"]');
-  if (trough15) trough15.textContent = en ? '15 % \u2014 fluid-like' : '15 % \u2014 fluidos';
+  if (trough15) trough15.textContent = en ? '15 % \u2014 abrasive / difficult' : '15 % \u2014 abrasivos/dif\u00edciles';
   if (trough30) trough30.textContent = en ? '30 % \u2014 general duty' : '30 % \u2014 uso general';
-  if (trough45) trough45.textContent = en ? '45 % \u2014 difficult' : '45 % \u2014 dif\u00edciles';
+  if (trough45) trough45.textContent = en ? '45 % \u2014 fluid-like / dry fine powders' : '45 % \u2014 fluidos/polvos finos secos';
   const wear = (sel) => {
     const low = document.querySelector(`${sel} option[value="low"]`);
     const med = document.querySelector(`${sel} option[value="medium"]`);

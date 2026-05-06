@@ -14,7 +14,7 @@ import { renderFullEngineeringAside } from './engineeringReport.js';
 import { renderScrewConveyorDiagram } from './diagramScrew.js';
 import { mountPremiumPdfExportBar, buildScrewPdfPayload } from '../services/reportPdfExport.js';
 import { readMountingPreferences } from '../modules/mountingPreferences.js';
-import { injectMountingConfigSection } from './mountingConfigSection.js';
+import { injectMountingConfigSection, MOUNTING_INPUT_IDS } from './mountingConfigSection.js';
 import { SCREW_LANG_EVENT } from './screwConveyorStaticI18n.js';
 import { openMotorsRecommendationsAndScroll } from './motorsCollapsible.js';
 import { applyMachinePremiumGates } from './machinePremiumGates.js';
@@ -44,6 +44,18 @@ const selectIds = [
   'screwCorrosive',
   'screwLoadDuty',
 ];
+
+function syncCapacityUnitUi() {
+  const unitEl = document.getElementById('screwCapUnit');
+  const rhoInput = document.getElementById('screwRho');
+  if (!(unitEl instanceof HTMLSelectElement) || !(rhoInput instanceof HTMLInputElement)) return;
+  const rhoField = rhoInput.closest('.field');
+  const requiresRho = unitEl.value === 'th';
+  if (rhoField) rhoField.hidden = !requiresRho;
+  if (rhoField) rhoField.classList.toggle('field--required-highlight', requiresRho);
+  rhoInput.required = requiresRho;
+  rhoInput.classList.toggle('field-input--danger', requiresRho && !Number.isFinite(parseFloat(rhoInput.value)));
+}
 
 function readNum(id, fallback) {
   const el = document.getElementById(id);
@@ -337,6 +349,7 @@ function refresh() {
     clearRuntimeError();
     const raw = readInputs();
     const r = computeScrewConveyor(raw);
+    syncCapacityUnitUi();
     const d = r.detail || {};
     const Dmm = (d.D_m ?? diameterToMeters(raw.diamValue, raw.diamUnit)) * 1000;
     const pitchMm = (d.pitch_m ?? pitchToMeters(raw.pitchValue, raw.pitchUnit)) * 1000;
@@ -369,6 +382,17 @@ function refresh() {
         alerts.push({ level: /** @type {const} */ ('error'), text: r.rpmRisk.label });
       } else if (r.rpmRisk?.level === 'caution') {
         alerts.push({ level: /** @type {const} */ ('warn'), text: r.rpmRisk.label });
+      }
+      const Dmm = (r.detail?.D_m ?? diameterToMeters(raw.diamValue, raw.diamUnit)) * 1000;
+      const rpmLimitByDiam =
+        Dmm <= 150 ? 100 : Dmm <= 300 ? 100 - ((Dmm - 150) / 150) * 40 : Math.max(30, 60 * (300 / Dmm));
+      if (r.screwRpm > rpmLimitByDiam) {
+        alerts.push({
+          level: /** @type {const} */ ('warn'),
+          text: en
+            ? `Calculated RPM (${formatNum(r.screwRpm, 1)}) is above indicative diameter limit (${formatNum(rpmLimitByDiam, 0)} rpm).`
+            : `RPM calculadas (${formatNum(r.screwRpm, 1)}) por encima del límite orientativo por diámetro (${formatNum(rpmLimitByDiam, 0)} rpm).`,
+        });
       }
       els.designAlerts.innerHTML = alerts
         .map((a) => `<p class="design-alert design-alert--${a.level}">${escHtml(a.text)}</p>`)
@@ -474,7 +498,10 @@ function refresh() {
     }
 
     if (els.assumptions) {
-      els.assumptions.innerHTML = (r.assumptions || []).map((a) => `<li>${escHtml(a)}</li>`).join('');
+      const extra = en
+        ? ['Indicative model: it does not replace CEMA 350 or full OEM screw sizing.']
+        : ['Modelo orientativo: no sustituye la norma CEMA 350 ni el dimensionamiento completo del fabricante del tornillo.'];
+      els.assumptions.innerHTML = [...(r.assumptions || []), ...extra].map((a) => `<li>${escHtml(a)}</li>`).join('');
     }
     applyMachinePremiumGates();
     foldAllMachineDetailsOncePerPageLoad();

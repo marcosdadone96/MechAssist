@@ -32,6 +32,14 @@ function readKind() {
   if (!el || !(el instanceof HTMLSelectElement)) return 'shaft';
   return el.value === 'bore' ? 'bore' : 'shaft';
 }
+function readFaxWork() {
+  const el = document.getElementById('sgFaxWork');
+  if (!el || !(el instanceof HTMLInputElement)) return null;
+  const raw = String(el.value || '').trim();
+  if (!raw) return null;
+  const n = parseFloat(raw.replace(',', '.'));
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
 
 /** @returns {boolean} true = inoxidable */
 function readInox() {
@@ -63,11 +71,37 @@ function techRef(kind, d1) {
   return kind === 'shaft' ? `DIN 471-A${d1}` : `DIN 472-J${d1}`;
 }
 
+const FAX_ORIENT_DIN471 = [
+  { d1: 10, faxN: 800 },
+  { d1: 20, faxN: 2800 },
+  { d1: 30, faxN: 6500 },
+  { d1: 40, faxN: 11000 },
+  { d1: 50, faxN: 16000 },
+];
+
+function interpFaxOrient(d1) {
+  const x = Number(d1);
+  if (!Number.isFinite(x) || x <= 0) return NaN;
+  if (x <= FAX_ORIENT_DIN471[0].d1) return FAX_ORIENT_DIN471[0].faxN;
+  const last = FAX_ORIENT_DIN471[FAX_ORIENT_DIN471.length - 1];
+  if (x >= last.d1) return last.faxN;
+  for (let i = 0; i < FAX_ORIENT_DIN471.length - 1; i += 1) {
+    const a = FAX_ORIENT_DIN471[i];
+    const b = FAX_ORIENT_DIN471[i + 1];
+    if (x >= a.d1 && x <= b.d1) {
+      const t = (x - a.d1) / (b.d1 - a.d1);
+      return a.faxN + (b.faxN - a.faxN) * t;
+    }
+  }
+  return NaN;
+}
+
 function refreshCore() {
   const d = readD();
   const kind = readKind();
   const inox = readInox();
   const hit = lookupSeeger(d, kind);
+  const faxWork = readFaxWork();
 
   const heroEl = document.getElementById('sgHero');
   const box = document.getElementById('sgResults');
@@ -108,14 +142,16 @@ function refreshCore() {
   const norm = kind === 'shaft' ? 'DIN 471' : 'DIN 472';
   const form = 'Forma A (referencia)';
   const pedido = orderCodeSeeger(kind, row.d1, inox);
+  const pedidoCompacto = `${norm} - ${row.d1}${inox ? ' - INOX' : ''}`;
   const refCorta = techRef(kind, row.d1);
+  const faxAdm = interpFaxOrient(row.d1);
   const hintPedido = `${refCorta} \u00b7 ${norm} ${form}. En comercio tambi\u00e9n: circlip, anillo de retenci\u00f3n. Confirme referencia en cat\u00e1logo.`;
 
   if (heroEl) {
     heroEl.innerHTML = renderResultHero([
       {
         label: 'C\u00f3digo de pedido (referencia)',
-        display: pedido,
+        display: pedidoCompacto,
         hint: hintPedido,
       },
       {
@@ -125,6 +161,11 @@ function refreshCore() {
           kind === 'shaft'
             ? 'Anillos de seguridad exteriores para ejes (DIN 471).'
             : 'Anillos de seguridad interiores para alojamientos (DIN 472).',
+      },
+      {
+        label: 'Fax admisible orient.',
+        display: Number.isFinite(faxAdm) ? `${Math.round(faxAdm)} N` : 'No disponible',
+        hint: 'Escalado orientativo con tabla DIN 471 (acero estándar). Confirmar en fabricante.',
       },
     ]);
   }
@@ -152,6 +193,17 @@ function refreshCore() {
         '\u00datil en fichas y dibujos; no sustituye el texto completo de pedido.',
       ),
     );
+    if (Number.isFinite(faxAdm)) {
+      parts.push(metricHtml('Fax admisible orientativa', `${Math.round(faxAdm)} N`, 'Tabla resumida DIN 471; valor solo orientativo.'));
+      if (faxWork != null) {
+        const ok = faxWork <= faxAdm;
+        parts.push(
+          `<div class="lab-alert lab-alert--${ok ? 'ok' : 'danger'}"><strong>${ok ? 'APTO' : 'NO APTO'} axial:</strong> Fax trabajo = ${Math.round(
+            faxWork,
+          )} N vs Fax adm orient. = ${Math.round(faxAdm)} N.</div>`,
+        );
+      }
+    }
     if (kind === 'shaft') {
       const ex = /** @type {import('../lab/seegerDinTables.js').SeegerExternalRow} */ (row);
       parts.push(
@@ -175,7 +227,7 @@ function refreshCore() {
     parts.push(
       `<div class="lab-metric lab-metric--wide"><div class="lab-metric__head"><span class="k">Pedido en cat\u00e1logo</span></div><div class="lab-metric__text">Solicite <strong>${esc(
         pedido,
-      )}</strong> o equivalente comercial (p. ej. ref. Seeger / circlip). Verifique acero${inox ? ' inoxidable' : ''}, bisel y empaque.</div></div>`,
+      )}</strong> o equivalente comercial (p. ej. ref. Seeger / circlip). Verifique acero${inox ? ' inoxidable' : ''}, bisel y empaque. Hipótesis: no sustituye ensayo de carga axial ni cálculo de asentamiento dinámico.</div></div>`,
     );
     box.innerHTML = parts.join('');
   }
@@ -204,8 +256,26 @@ function refreshCore() {
 
 const wrap = document.getElementById('sgResultsWrap');
 const debounced = debounce(() => runCalcWithIndustrialFeedback(wrap, refreshCore), 55);
+document.getElementById('sgSizePreset')?.addEventListener('change', () => {
+  const sel = document.getElementById('sgSizePreset');
+  const dInput = document.getElementById('sgD');
+  if (sel instanceof HTMLSelectElement && dInput instanceof HTMLInputElement && sel.value) {
+    dInput.value = sel.value;
+  }
+  debounced();
+});
 document.getElementById('sgD')?.addEventListener('input', debounced);
-document.getElementById('sgD')?.addEventListener('change', debounced);
+document.getElementById('sgD')?.addEventListener('change', () => {
+  const dInput = document.getElementById('sgD');
+  const preset = document.getElementById('sgSizePreset');
+  if (dInput instanceof HTMLInputElement && preset instanceof HTMLSelectElement) {
+    const v = String(Math.round(parseFloat(dInput.value || '')));
+    preset.value = Array.from(preset.options).some((o) => o.value === v) ? v : '';
+  }
+  debounced();
+});
 document.getElementById('sgKind')?.addEventListener('change', debounced);
 document.getElementById('sgMaterial')?.addEventListener('change', debounced);
+document.getElementById('sgFaxWork')?.addEventListener('input', debounced);
+document.getElementById('sgFaxWork')?.addEventListener('change', debounced);
 runCalcWithIndustrialFeedback(wrap, refreshCore);

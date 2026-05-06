@@ -207,6 +207,7 @@ function refreshCore() {
   const box = document.getElementById('gResults');
   if (box) {
     box.innerHTML = [
+      metricHtml('Relación real i = z₂/z₁', i.toFixed(4), 'Valor exacto con los dientes cargados en el formulario.'),
       metricHtml(t.mRatio, i.toFixed(2), t.mRatioHint(1 / i)),
       metricHtml(t.mVp1, formatLinearSpeed(r.v_pitch_m_s, u.linear), t.mVp1Hint),
       metricHtml(t.mCenter, formatLength(r.centerDistance_mm, u.length), t.mCenterHint),
@@ -294,6 +295,15 @@ function refreshCore() {
         ),
       );
     }
+    parts.push(
+      labAlert(
+        'info',
+        uxCopy(
+          'Hipótesis del modelo: engranajes cilíndricos rectos sin helicoidales, cónicos ni correcciones de perfil (x ≠ 0).',
+          'Model assumptions: spur gears only; no helical or bevel gears, and no profile-shift corrections (x ≠ 0).',
+        ),
+      ),
+    );
     alerts.innerHTML = parts.join('');
   }
 
@@ -326,7 +336,10 @@ function refreshCore() {
     sub.innerHTML = '';
   }
 
-  renderGearPairDiagram(document.getElementById('gDiagram'), p);
+  renderGearPairDiagram(document.getElementById('gDiagram'), {
+    ...p,
+    unitPrefs: u,
+  });
 
   const shoppingLines = [
     {
@@ -357,6 +370,28 @@ function refreshCore() {
   ]);
 }
 
+function buildCopyResultsText() {
+  const u = getLabUnitPrefs();
+  const p = {
+    z1: read('gZ1', 20),
+    z2: read('gZ2', 45),
+    module_mm: read('gM', 2.5),
+    pressureAngle_deg: read('gAlpha', 20),
+    n1: read('gN1', 1455),
+    faceWidth_mm: read('gFace', 28),
+  };
+  const r = computeSpurGearPair(p);
+  const rows = [
+    'MechAssist - Engranajes cilindricos',
+    `i real (z2/z1): ${r.ratio_transmission.toFixed(4)}`,
+    `Distancia entre ejes a: ${formatLength(r.centerDistance_mm, u.length)}`,
+    `d1: ${formatLength(r.d1, u.length)} | d2: ${formatLength(r.d2, u.length)}`,
+    `n1: ${formatRotation(r.n1, u.rotation)} | n2: ${formatRotation(r.n2, u.rotation)}`,
+    `v periferica: ${formatLinearSpeed(r.v_pitch_m_s, u.linear)}`,
+  ];
+  return rows.join('\n');
+}
+
 const resultsWrap = document.getElementById('gResultsWrap');
 const debounced = debounce(() => runCalcWithIndustrialFeedback(resultsWrap, refreshCore), 55);
 
@@ -365,6 +400,22 @@ bindLabUnitSelectors(debounced);
 ['gZ1', 'gZ2', 'gM', 'gFace', 'gAlpha', 'gN1', 'gPower', 'gTorque', 'gLube'].forEach((id) => {
   document.getElementById(id)?.addEventListener('input', debounced);
   document.getElementById(id)?.addEventListener('change', debounced);
+});
+document.getElementById('gCopyResults')?.addEventListener('click', async () => {
+  const btn = document.getElementById('gCopyResults');
+  if (!(btn instanceof HTMLButtonElement)) return;
+  const original = btn.textContent || 'Copiar resultados';
+  const text = buildCopyResultsText();
+  try {
+    await navigator.clipboard.writeText(text);
+    btn.textContent = 'Resultados copiados';
+  } catch {
+    btn.textContent = 'No se pudo copiar';
+  } finally {
+    window.setTimeout(() => {
+      btn.textContent = original;
+    }, 1200);
+  }
 });
 window.addEventListener(LAB_LANG_EVENT, () => {
   bootSmartDashboardIfEnabled(gearsRuntimeStrings(getLabLang()).dashboardBoot);

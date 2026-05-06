@@ -65,13 +65,12 @@ function formatMounting(pref, lang = getCurrentLang()) {
 }
 
 function buildParams() {
-  const useOptimal = !document.getElementById('teCwManual')?.checked;
   const manualCw = readNum('teMcpManual', 0);
   return {
     lang: getCurrentLang(),
     usefulLoad_kg: readNum('teQ', 2000),
     emptyCar_kg: readNum('teMc', 1200),
-    counterweight_kg: useOptimal ? null : manualCw,
+    counterweight_kg: manualCw,
     counterweightFraction: readNum('teKcw', 0.45),
     travelHeight_m: readNum('teH', 12),
     speed_m_s: readNum('teV', 1),
@@ -82,6 +81,29 @@ function buildParams() {
     duty: /** @type {'freight'|'persons'} */ (readSelect('teDuty', 'freight')),
     maxStrands: readNum('teMaxN', 8),
   };
+}
+
+function syncCounterweightSuggestion() {
+  const q = readNum('teQ', 2000);
+  const mc = readNum('teMc', 1200);
+  const input = document.getElementById('teMcpManual');
+  if (!(input instanceof HTMLInputElement)) return;
+  const suggested = mc + 0.45 * q;
+  const isAuto = input.dataset.autoSuggestion !== 'false';
+  if (isAuto || !Number.isFinite(parseFloat(input.value))) {
+    input.value = String(Math.round(suggested));
+    input.dataset.autoSuggestion = 'true';
+  }
+}
+
+function syncReevingVisual() {
+  const sel = document.getElementById('teReeving');
+  if (!(sel instanceof HTMLSelectElement)) return;
+  document.querySelectorAll('#teReevingVisual [data-reeving]').forEach((btn) => {
+    if (!(btn instanceof HTMLButtonElement)) return;
+    const on = btn.getAttribute('data-reeving') === sel.value;
+    btn.classList.toggle('reeving-visual__opt--active', on);
+  });
 }
 
 /** Requisitos de accionamiento en la polea (potencia motor orientativa incl. η transmisión). */
@@ -275,7 +297,16 @@ function computeAndRender() {
 
   const asu = document.getElementById('teAssumptionsList');
   if (asu) {
-    asu.innerHTML = (r.assumptions || []).map((a) => `<li>${esc(a)}</li>`).join('');
+    const extra = en
+      ? [
+          'This output does not replace EN 81 compliance checks or the formal installation technical memorandum.',
+          'Validate final selection and safety devices with a certified elevator installer.',
+        ]
+      : [
+          'Este cálculo no sustituye la verificación normativa EN 81 ni la memoria técnica de instalación.',
+          'Valide la selección final y los dispositivos de seguridad con un instalador certificado.',
+        ];
+    asu.innerHTML = [...(r.assumptions || []), ...extra].map((a) => `<li>${esc(a)}</li>`).join('');
   }
   const pdfMount = document.getElementById('premiumPdfExportMount');
   if (pdfMount) {
@@ -295,21 +326,32 @@ function computeAndRender() {
 }
 
 function syncCwManualUi() {
-  const cb = document.getElementById('teCwManual');
-  const row = document.getElementById('teMcpManualRow');
-  const on = cb instanceof HTMLInputElement && cb.checked;
-  if (row instanceof HTMLElement) row.hidden = !on;
+  syncCounterweightSuggestion();
 }
 
 injectMountingConfigSection();
 
-document.getElementById('teOpenMotors')?.addEventListener('click', () => {
+document.getElementById('btnTeCalc')?.addEventListener('click', () => {
+  computeAndRender();
   openMotorsRecommendationsAndScroll('section-te-motores');
 });
 
-document.getElementById('teCwManual')?.addEventListener('change', () => {
-  syncCwManualUi();
-  computeAndRender();
+document.querySelectorAll('#teReevingVisual [data-reeving]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    if (!(btn instanceof HTMLButtonElement)) return;
+    const v = btn.getAttribute('data-reeving');
+    const sel = document.getElementById('teReeving');
+    if (!(sel instanceof HTMLSelectElement)) return;
+    if (v !== '1_1' && v !== '2_1') return;
+    sel.value = v;
+    syncReevingVisual();
+    computeAndRender();
+  });
+});
+
+document.getElementById('teMcpManual')?.addEventListener('input', () => {
+  const input = document.getElementById('teMcpManual');
+  if (input instanceof HTMLInputElement) input.dataset.autoSuggestion = 'false';
 });
 
 [
@@ -327,7 +369,11 @@ document.getElementById('teCwManual')?.addEventListener('change', () => {
   'teMaxN',
 ].forEach((id) => {
   document.getElementById(id)?.addEventListener('input', computeAndRender);
-  document.getElementById(id)?.addEventListener('change', computeAndRender);
+  document.getElementById(id)?.addEventListener('change', () => {
+    if (id === 'teQ' || id === 'teMc' || id === 'teKcw') syncCounterweightSuggestion();
+    if (id === 'teReeving') syncReevingVisual();
+    computeAndRender();
+  });
 });
 
 document.getElementById('mountingConfigHost')?.addEventListener('input', computeAndRender);
@@ -346,6 +392,7 @@ window.addEventListener(TRACTION_LANG_EVENT, () => {
 });
 
 syncCwManualUi();
+syncReevingVisual();
 computeAndRender();
 initInfoChipPopovers(document.body);
 

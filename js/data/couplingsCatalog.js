@@ -46,4 +46,24 @@ export const COUPLING_BRANDS = [
       { model: 'Rupex 160', family: 'Grid', T_nom_Nm: 1200, bore_max_mm: 110, note: 'Muy alto par' },
     ],
   },
+  {
+    id: 'rexnord',
+    label: 'Rexnord / Falk (estilo grid-elástico)',
+    series: [
+      { model: 'Steelflex 1020T', family: 'Grid', T_nom_Nm: 95, bore_max_mm: 45, note: 'Cargas cíclicas moderadas' },
+      { model: 'Steelflex 1030T', family: 'Grid', T_nom_Nm: 190, bore_max_mm: 58, note: 'Servicio industrial general' },
+      { model: 'Steelflex 1040T', family: 'Grid', T_nom_Nm: 360, bore_max_mm: 70, note: 'Par elevado' },
+      { model: 'Steelflex 1050T', family: 'Grid', T_nom_Nm: 650, bore_max_mm: 85, note: 'Choques moderados' },
+    ],
+  },
+  {
+    id: 'ringfeder',
+    label: 'Ringfeder / TSCHAN (estilo mandíbula)',
+    series: [
+      { model: 'TNS S-LSt 65', family: 'Jaw', T_nom_Nm: 60, bore_max_mm: 42, note: 'Compacto de uso general' },
+      { model: 'TNS S-LSt 80', family: 'Jaw', T_nom_Nm: 120, bore_max_mm: 50, note: 'Media potencia' },
+      { model: 'TNS S-LSt 100', family: 'Jaw', T_nom_Nm: 240, bore_max_mm: 62, note: 'Par medio-alto' },
+      { model: 'TNS S-LSt 125', family: 'Jaw', T_nom_Nm: 420, bore_max_mm: 75, note: 'Servicio pesado' },
+    ],
+  },
 ];

@@ -1,4 +1,4 @@
-ï»¿/**
+/**
  * Pagina transportador de rodillos.
  */
 
@@ -219,6 +219,51 @@ function syncLoadSupportUi() {
   if (customDims) customDims.hidden = preset !== 'custom';
 }
 
+function getPalletAlongTransportMm() {
+  const mode = readSelect('loadSupportMode', 'uniform');
+  if (mode !== 'pallet') return null;
+  const preset = readSelect('palletPreset', 'eur1');
+  const orient = readSelect('palletOrientation', 'long_along_transport');
+  const presets = {
+    eur1: { l: 1200, w: 800 },
+    eur2: { l: 1200, w: 1000 },
+    eur6: { l: 800, w: 600 },
+    ind1000: { l: 1200, w: 1000 },
+    us48x40: { l: 1219, w: 1016 },
+  };
+  let L = 1200;
+  let W = 800;
+  if (preset === 'custom') {
+    L = readNum('palletCustomL', 1200);
+    W = readNum('palletCustomW', 800);
+  } else if (presets[preset]) {
+    L = presets[preset].l;
+    W = presets[preset].w;
+  }
+  return orient === 'short_along_transport' ? W : L;
+}
+
+function syncRollersSuggestion() {
+  const input = document.getElementById('uniformRollersOverride');
+  const hint = document.getElementById('uniformRollersSuggestion');
+  if (!(input instanceof HTMLInputElement) || !hint) return;
+  const pitch = readNum('rollerPitch', 125);
+  const palletAlong = getPalletAlongTransportMm();
+  if (!(Number.isFinite(pitch) && pitch > 0 && Number.isFinite(palletAlong) && palletAlong > 0)) {
+    hint.textContent = '';
+    return;
+  }
+  const suggested = Math.max(1, Math.floor(palletAlong / pitch) + 1);
+  const en = getCurrentLang() === 'en';
+  hint.textContent = en
+    ? `Suggested from pallet length/pitch: ${suggested} rollers.`
+    : `Sugerido por longitud de paleta/paso: ${suggested} rodillos.`;
+  if (input.value.trim() === '' || input.dataset.autoSuggestion === '1') {
+    input.value = String(suggested);
+    input.dataset.autoSuggestion = '1';
+  }
+}
+
 function getEls() {
   return {
     diagram: /** @type {SVGSVGElement | null} */ (document.getElementById('diagramRoller')),
@@ -310,6 +355,11 @@ function localizeRollerStaticContent() {
   );
   const refImg = document.querySelector('.diagram-duo__real img');
   if (refImg) refImg.setAttribute('alt', 'Roller conveyor reference photo');
+  setHtml(
+    '.diagram-duo__real figcaption',
+    `Roller conveyor on site.
+    <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.`,
+  );
   const pdfH2 = document.querySelector('#premiumPdfExportMount')?.closest('section.panel')?.querySelector('h2');
   if (pdfH2) pdfH2.innerHTML = '<span class="panel-icon">PDF</span> Export report';
   setHtml(
@@ -561,7 +611,10 @@ function refresh() {
   }
 
   if (els.assumptions) {
-    els.assumptions.innerHTML = (r.assumptions || []).map((a) => `<li>${a}</li>`).join('');
+    const extra = en
+      ? ['This model does not verify individual roller load capacity or roller shaft deflection.']
+      : ['Este modelo no verifica la capacidad de carga individual de cada rodillo ni la flecha del eje.'];
+    els.assumptions.innerHTML = [...(r.assumptions || []), ...extra].map((a) => `<li>${a}</li>`).join('');
   }
 
   if (els.premiumOpt) {
@@ -605,6 +658,7 @@ selectIds.forEach((id) => {
   document.getElementById(id)?.addEventListener('change', () => {
     syncLoadDutyUi();
     syncLoadSupportUi();
+    syncRollersSuggestion();
     refresh();
   });
 });
@@ -626,8 +680,34 @@ document.getElementById('btnCalcular')?.addEventListener('click', () => {
   openMotorsRecommendationsAndScroll('section-motores');
 });
 
+document.getElementById('uniformRollersOverride')?.addEventListener('input', (e) => {
+  const el = e.currentTarget;
+  if (el instanceof HTMLInputElement) {
+    el.dataset.autoSuggestion = el.value.trim() === '' ? '1' : '0';
+  }
+});
+
+document.querySelectorAll('[data-friction-preset-for]').forEach((wrap) => {
+  const id = wrap.getAttribute('data-friction-preset-for');
+  if (!id) return;
+  wrap.querySelectorAll('button[data-mu]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const el = document.getElementById(id);
+      const mu = btn.getAttribute('data-mu');
+      if (el instanceof HTMLInputElement && mu) {
+        el.value = mu;
+        const rId = `${id}R`;
+        const rEl = document.getElementById(rId);
+        if (rEl instanceof HTMLInputElement) rEl.value = mu;
+        refresh();
+      }
+    });
+  });
+});
+
 syncLoadDutyUi();
 syncLoadSupportUi();
+syncRollersSuggestion();
 initInfoChipPopovers(document.body);
 
 bindRollerRangeSlider('lengthR', 'length', 0.5, 80, 0.1);

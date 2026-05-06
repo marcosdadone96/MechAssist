@@ -38,6 +38,7 @@ const inputIds = [
 ];
 
 const selectIds = ['designStandard', 'loadDuty', 'carrySurface'];
+const LS_ADVANCED_OPEN = 'mdr-flat-advanced-open';
 
 /** Lectura segura: si falta un input en el HTML no rompe todo el cálculo. */
 function readNum(id, fallback) {
@@ -393,6 +394,10 @@ function localizeFlatStaticContent() {
           <td>0.40 \u2013 0.55</td>
         </tr>
         <tr>
+          <td>Wet belt with oil or greasy product</td>
+          <td>\u2265 0.55 (validate with supplier)</td>
+        </tr>
+        <tr>
           <td>Very sticky material or high drag (validate on site)</td>
           <td>\u2265 0.50</td>
         </tr>
@@ -500,12 +505,27 @@ function localizeFlatStaticContent() {
   setHtml(
     '.diagram-duo__real figcaption',
     `Reference: conveyor on site (example).
-    <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>
-    \u2014 replace with your own photo in <code>assets/conveyor-belt-reference.png</code> if you wish.`,
+    <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.`,
   );
+}
 
-  const vph = document.getElementById('verifySearch');
-  if (vph instanceof HTMLInputElement) vph.placeholder = 'e.g. R47, H 083\u2026';
+function initAdvancedDetailsPersistence() {
+  const adv = document.querySelector('.adv-details');
+  if (!(adv instanceof HTMLDetailsElement)) return;
+  try {
+    const saved = localStorage.getItem(LS_ADVANCED_OPEN);
+    if (saved === '1') adv.open = true;
+    if (saved === '0') adv.open = false;
+  } catch (_) {
+    /* ignore storage errors */
+  }
+  adv.addEventListener('toggle', () => {
+    try {
+      localStorage.setItem(LS_ADVANCED_OPEN, adv.open ? '1' : '0');
+    } catch (_) {
+      /* ignore storage errors */
+    }
+  });
 }
 
 function refresh() {
@@ -762,7 +782,10 @@ function refresh() {
     }
 
     if (els.assumptions) {
-      els.assumptions.innerHTML = (r.assumptions || []).map((a) => `<li>${a}</li>`).join('');
+      const extra = lang === 'en'
+        ? ['This model does not calculate belt tensile stress or drum structural verification.']
+        : ['Este modelo no calcula tensiones de banda ni la verificación estructural de tambores.'];
+      els.assumptions.innerHTML = [...(r.assumptions || []), ...extra].map((a) => `<li>${a}</li>`).join('');
     }
 
     if (els.premiumOpt) {
@@ -834,6 +857,7 @@ try {
 document.getElementById('btnCalcular')?.addEventListener('click', () => {
   refresh();
   openMotorsRecommendationsAndScroll('section-motores');
+  document.getElementById('section-motores')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
 document.querySelectorAll('[data-friction-preset-for]').forEach((wrap) => {
@@ -847,6 +871,8 @@ document.querySelectorAll('[data-friction-preset-for]').forEach((wrap) => {
         el.value = mu;
         const r = document.getElementById('frictionR');
         if (r instanceof HTMLInputElement) r.value = mu;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
         refresh();
       }
     });
@@ -861,6 +887,7 @@ MOUNTING_INPUT_IDS.forEach((id) => {
 
 syncLoadDutyUi();
 localizeFlatStaticContent();
+initAdvancedDetailsPersistence();
 initInfoChipPopovers(document.body);
 
 bindFlatRangeSlider('beltLengthR', 'beltLength', 2, 80, 0.1);

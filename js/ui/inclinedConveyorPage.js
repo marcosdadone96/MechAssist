@@ -399,6 +399,42 @@ function clearRuntimeError() {
   box.textContent = '';
 }
 
+function syncAnglePriorityUi() {
+  const angleEl = document.getElementById('incAngle');
+  const hEl = document.getElementById('incHeight');
+  const hRange = document.getElementById('incHeightR');
+  if (!(angleEl instanceof HTMLInputElement) || !(hEl instanceof HTMLInputElement) || !(hRange instanceof HTMLInputElement)) return;
+  const hasAngle = angleEl.value.trim() !== '';
+  hEl.disabled = hasAngle;
+  hRange.disabled = hasAngle;
+  hEl.classList.toggle('input-disabled-priority', hasAngle);
+  hRange.classList.toggle('input-disabled-priority', hasAngle);
+}
+
+function syncAngleLimitWarning(angleDeg) {
+  const warn = document.getElementById('incAngleWarn');
+  if (!warn) return;
+  const en = getCurrentLang() === 'en';
+  warn.textContent = en
+    ? '⚠ θ > 18°: use special belts with cleats/anti-slip profiles.'
+    : '⚠ θ > 18°: usar banda con perfiles/nervios antideslizantes.';
+  warn.hidden = !(Number.isFinite(angleDeg) && angleDeg > 18);
+}
+
+function initInclinedReferenceFallback() {
+  const img = document.getElementById('incReferenceImage');
+  const ph = document.getElementById('incReferencePlaceholder');
+  if (!(img instanceof HTMLImageElement) || !(ph instanceof HTMLElement)) return;
+  img.addEventListener('error', () => {
+    img.hidden = true;
+    ph.hidden = false;
+  });
+  img.addEventListener('load', () => {
+    img.hidden = false;
+    ph.hidden = true;
+  });
+}
+
 function localizeInclinedStaticContent() {
   const lang = getCurrentLang();
   if (lang !== 'en') return;
@@ -431,6 +467,7 @@ function localizeInclinedStaticContent() {
     <ul>
       <li><strong>L</strong>: length along slope; <strong>H</strong>: lift. If theta is empty, theta = arcsin(H/L).</li>
       <li>If you enter <strong>theta</strong>, it overrides H in the angle calculation.</li>
+      <li>Typical maximum angles by material: dry grains ~20°, wet sand ~15°, fine materials ~12°.</li>
       <li>Resistance combines slope weight and friction; P and T at the drum follow.</li>
       <li><strong>Standard</strong>: ISO/DIN or CEMA (+6% on steady traction only, not the acceleration term).</li>
       <li><strong>Service factor</strong>: set by load duty; use Custom for a manual SF.</li>
@@ -483,6 +520,11 @@ function localizeInclinedStaticContent() {
     if (h) h.textContent = 'Expand for intermediate calculations and rationale';
     if (lead) lead.textContent = 'Gearbox, motor strategies, and step-by-step detail.';
   }
+  setHtml(
+    '.diagram-duo__real figcaption',
+    `Inclined conveyor on site.
+    <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.`,
+  );
 }
 
 function refresh() {
@@ -560,6 +602,8 @@ function refresh() {
     normalizePhysicalInputs();
     const raw = readInputs();
     const r = computeInclinedConveyor(raw);
+    syncAnglePriorityUi();
+    syncAngleLimitWarning(r.angle_deg);
     const d = r.detail || {};
     const liftForDiagram_m = raw.length_m * Math.sin(r.angle_rad);
 
@@ -722,7 +766,10 @@ function refresh() {
     }
 
     if (els.assumptions) {
-      els.assumptions.innerHTML = (r.assumptions || []).map((a) => `<li>${a}</li>`).join('');
+      const extra = en
+        ? ['This model does not calculate load backsliding risk during stop (requires brake or backstop drum strategy).']
+        : ['Este modelo no calcula el riesgo de retroceso de carga al parar (requiere freno o estrategia con tambor/autobloqueo).'];
+      els.assumptions.innerHTML = [...(r.assumptions || []), ...extra].map((a) => `<li>${a}</li>`).join('');
     }
 
     if (els.premiumOpt) {
@@ -803,6 +850,7 @@ applyPhysicalLimitsToInputs();
 syncIncLoadDutyUi();
 localizeInclinedStaticContent();
 initInfoChipPopovers(document.body);
+initInclinedReferenceFallback();
 
 bindIncRangeSlider('incLengthR', 'incLength', 2, 120, 0.1);
 bindIncRangeSlider('incHeightR', 'incHeight', 0, 40, 0.05);

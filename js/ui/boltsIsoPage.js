@@ -20,6 +20,7 @@ function render() {
   const d = parseInt(document.getElementById('blD')?.value || '12', 10);
   const grade = document.getElementById('blGrade')?.value || '10.9';
   const F_kN = parseFloat(document.getElementById('blF')?.value || '0');
+  const mu = parseFloat(document.getElementById('blMu')?.value || '0.12');
   const out = document.getElementById('blOut');
   const tbl = document.getElementById('blTable');
   if (!out || !tbl) return;
@@ -36,12 +37,24 @@ function render() {
   const F_cap_N = row.Ft_Rd_kN * 1000;
   const SF = F_N > 0 ? F_cap_N / F_N : Infinity;
   const ok = F_N <= 0 || SF >= 1;
+  const preloadN = row.F_preload_N;
+  const ratioVsPreload = preloadN > 0 ? F_N / preloadN : 0;
+  const K_mu = 0.9 * mu + 0.092; // aproxima K para cambiar sensible con μ
+  const T_mu_Nm = (K_mu * preloadN * d) / 1000;
 
   if (F_N <= 0) {
     out.innerHTML = `<p class="lab-verdict lab-verdict--muted">Introduzca la fuerza de tracción de cálculo en la unión (kN).</p>`;
+  } else if (ratioVsPreload > 1) {
+    out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>Riesgo de apertura de junta:</strong> F = ${F_kN.toFixed(
+      2,
+    )} kN supera la precarga orientativa F<sub>V</sub> = ${(preloadN / 1000).toFixed(2)} kN.</p>`;
+  } else if (ratioVsPreload > 0.9) {
+    out.innerHTML = `<p class="lab-verdict lab-verdict--warn"><strong>Margen bajo:</strong> F = ${F_kN.toFixed(
+      2,
+    )} kN supera el 90% de la precarga (F/F<sub>V</sub> = ${ratioVsPreload.toFixed(2)}).</p>`;
   } else if (ok) {
     out.innerHTML = `<p class="lab-verdict lab-verdict--ok">El tornillo <strong>M${d} grado ${grade}</strong> es <strong>APTO</strong> frente a ${F_kN.toFixed(2)} kN con factor de seguridad <strong>≈ ${SF.toFixed(2)}</strong> (resistencia cálculo simplificada).<br/>
-      <strong>Torque de apriete recomendado (catálogo genérico):</strong> ${row.T_tighten_Nm.toFixed(1)} N·m (precarga ≈ 75% Rp·A<sub>s</sub>).</p>`;
+      <strong>Torque de apriete (con μ seleccionado):</strong> ${T_mu_Nm.toFixed(1)} N·m (precarga ≈ 75% Rp·A<sub>s</sub>).</p>`;
   } else {
     out.innerHTML = `<p class="lab-verdict lab-verdict--err">El tornillo M${d} grado ${grade} <strong>no</strong> cumple: F<sub>req</sub> = ${F_kN.toFixed(2)} kN &gt; F<sub>Rd</sub> ≈ ${row.Ft_Rd_kN.toFixed(2)} kN. Suba diámetro o grado.</p>`;
   }
@@ -53,17 +66,22 @@ function render() {
         <tr><td>Paso P</td><td>${row.pitch_mm} mm</td></tr>
         <tr><td>A<sub>s</sub></td><td>${row.As_mm2.toFixed(1)} mm²</td></tr>
         <tr><td>Rp (ISO 898-1)</td><td>${row.Rp_MPa} MPa</td></tr>
+        <tr><td>μ (seleccionado)</td><td>${mu.toFixed(2)}</td></tr>
         <tr><td>Precarga orientativa F<sub>V</sub></td><td>${(row.F_preload_N / 1000).toFixed(2)} kN</td></tr>
-        <tr><td>T apriete (K≈0,2)</td><td>${row.T_tighten_Nm.toFixed(1)} N·m</td></tr>
+        <tr><td>T apriete (μ sel.)</td><td>${T_mu_Nm.toFixed(1)} N·m</td></tr>
+        <tr><td>T apriete (ref. K≈0,2)</td><td>${row.T_tighten_Nm.toFixed(1)} N·m</td></tr>
         <tr><td>F<sub>Rd</sub> (simpl.)</td><td>${row.Ft_Rd_kN.toFixed(2)} kN</td></tr>
         <tr><td>F requerida</td><td>${F_kN.toFixed(2)} kN</td></tr>
+        <tr><td>F/F<sub>V</sub></td><td>${F_N > 0 ? ratioVsPreload.toFixed(2) : '—'}</td></tr>
       </tbody>
     </table>
     <p class="lab-small-print">No sustituye EN 1993-1-8 ni instrucciones Würth/Bossard; valores de precarga/par son orientativos.</p>`;
 }
 
 fillSelects();
-['blD', 'blGrade', 'blF'].forEach((id) => document.getElementById(id)?.addEventListener('input', render));
-document.getElementById('blGrade')?.addEventListener('change', render);
+['blD', 'blGrade', 'blF', 'blMu'].forEach((id) => {
+  document.getElementById(id)?.addEventListener('input', render);
+  document.getElementById(id)?.addEventListener('change', render);
+});
 
 render();
