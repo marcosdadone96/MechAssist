@@ -1,5 +1,5 @@
 /**
- * Plan de acceso — gratuito vs Pro (sin backend; listo para enlazar a pagos más adelante).
+ * Plan de acceso — gratuito vs Pro (webhook Lemon + JWT en produccion; atajos locales solo en desarrollo).
  *
  * Cintas plana e inclinada: siempre desbloqueadas en `conveyorAppEntry`. `whichCalculatorIsFree` / `?freeTool=` quedan para pruebas o copy legacy.
  * Pro efectivo (por orden):
@@ -8,10 +8,11 @@
  * - Licencia Pro en localStorage (clave opaca v2; ver `getProPersistentStorageKey`), ignorada si `proClientPolicy === 'production'`
  * - Usos de prueba gratuitos si `FEATURES.allowFreeProTrialUses` (`mdr-free-pro-uses`, tope 5)
  *
- * `proClientPolicy: 'production'` bloquea licencia y URL en cliente hasta integrar validación servidor (p. ej. Netlify Function + Stripe).
+ * Produccion: Pro via JWT (`proEntitlement.js`) tras webhook Lemon + claim; cache verificada con pro-verify.
  */
 
 import { FEATURES } from '../config/features.js';
+import { hasProductionProSessionCache } from './proEntitlement.js';
 
 /** Atajos Pro solo-navegador desactivados (licencia local, URL, usos prueba). */
 function clientProShortcutsDisabled() {
@@ -188,6 +189,9 @@ export function isPremiumEffective() {
  */
 export function isPremiumForMachineForm() {
   if (FEATURES.devSimulatePremium) return true;
+  if (FEATURES.proClientPolicy === 'production') {
+    return hasProductionProSessionCache();
+  }
   if (clientProShortcutsDisabled()) return false;
   if (FEATURES.allowPremiumViaQueryPro) {
     try {
@@ -260,4 +264,12 @@ export function getFreeProRemainingUses() {
 
 export function getFreeProUsageLimit() {
   return MAX_FREE_PRO_USES;
+}
+
+if (typeof window !== 'undefined' && FEATURES.proClientPolicy === 'production') {
+  queueMicrotask(() => {
+    import('./proEntitlement.js').then((m) => {
+      void m.refreshProEntitlementIfNeeded();
+    });
+  });
 }

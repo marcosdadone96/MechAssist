@@ -17,29 +17,46 @@ import {
   MAX_USER_GEARMOTORS,
 } from '../services/userGearmotorLibrary.js';
 import { isPremiumEffective } from '../services/accessTier.js';
-import { FEATURES, isPremiumViaQueryProUiAllowed } from '../config/features.js';
+import { isPremiumViaQueryProUiAllowed } from '../config/features.js';
 import { startProCheckoutFlow, buildRegisterUrlWithNextCheckout } from '../services/proCheckoutFlow.js';
 
 const GM_IMPORT_MAX_BYTES = 512 * 1024;
 
-/** @type {Record<'es'|'en', { docTitle: string; h1: string; lead: string; cta: string; plans: string; back: string }>} */
+const LEMON_CHECKOUT_MONTHLY_URL =
+  'https://mechassist.lemonsqueezy.com/checkout/buy/acd30d30-72e7-4434-827e-e51487e492ca';
+const LEMON_CHECKOUT_ANNUAL_URL =
+  'https://mechassist.lemonsqueezy.com/checkout/buy/bfd83e87-ac81-46ad-a5cf-2c2c94b1d70d';
+
+/** Textos del paywall (solo visitantes sin Pro). */
 const PAYWALL = {
   es: {
     docTitle: 'Mis motorreductores (Pro) \u2014 MechAssist',
+    eyebrow: 'Plan Pro',
     h1: 'Biblioteca de motorreductores',
     lead:
-      'Guarde datos de placa, importe o exporte JSON y reutilice sus equipos en las calculadoras. Incluido en el plan Pro.',
-    cta: 'Obtener acceso Pro',
-    plans: 'Ver planes y precios',
+      'Guarde datos de placa, importe o exporte JSON y reutilice sus equipos en todas las calculadoras. Funci\u00f3n incluida en MechAssist Pro.',
+    unlockHint: 'Elija una suscripci\u00f3n mensual o anual para desbloquear esta biblioteca en su navegador.',
+    monthlyPlan: 'Plan mensual \u2014 9 \u20ac/mes',
+    annualPlan: 'Plan anual \u2014 79 \u20ac/a\u00f1o',
+    secureNote: 'Pago seguro procesado por Lemon Squeezy.',
+    cta: 'Checkout MechAssist',
+    plans: 'Ver precios en inicio',
+    footnote: 'O bien registro y pago en el flujo de la web:',
     back: 'Volver al inicio',
   },
   en: {
     docTitle: 'My gearmotors (Pro) \u2014 MechAssist',
+    eyebrow: 'Pro plan',
     h1: 'Gearmotor library',
     lead:
-      'Save nameplate data, import/export JSON and reuse units on calculators. Included with the Pro plan.',
-    cta: 'Get Pro access',
-    plans: 'Plans & pricing',
+      'Save nameplate data, import/export JSON and reuse units on every calculator. Included with MechAssist Pro.',
+    unlockHint: 'Choose monthly or yearly billing to unlock this library in your browser.',
+    monthlyPlan: 'Monthly plan \u2014 \u20ac9/month',
+    annualPlan: 'Annual plan \u2014 \u20ac79/year',
+    secureNote: 'Secure checkout powered by Lemon Squeezy.',
+    cta: 'MechAssist checkout',
+    plans: 'Pricing on home',
+    footnote: 'Or register and pay through the site flow:',
     back: 'Back to home',
   },
 };
@@ -508,20 +525,38 @@ function mountGearmotorsPaywall() {
   document.documentElement.lang = payLang() === 'en' ? 'en' : 'es';
   document.title = pw('docTitle');
   const regLabel = payLang() === 'en' ? 'Register & checkout' : 'Registro y pago';
+
+  const navMach = document.querySelector('.app-header__nav-start a[href="machines-hub.html"]');
+  if (navMach) navMach.textContent = payLang() === 'en' ? 'Machines' : 'M\u00e1quinas';
+  const navSelf = document.querySelector('.mygm-nav-txt[data-gm-nav-title]');
+  if (navSelf) navSelf.textContent = payLang() === 'en' ? 'My gearmotors' : 'Mis motorreductores';
+
   panel.innerHTML = `
-    <header class="gearmotor-db__head">
-      <p class="flat-sidebar__eyebrow">MechAssist</p>
-      <h1 class="flat-sidebar__title" id="gmPageTitle"><span class="premium-flag">Pro</span> ${escapeHtml(pw('h1'))}</h1>
+    <header class="gearmotor-db__head gm-paywall-head">
+      <p class="flat-sidebar__eyebrow gm-paywall-head__eyebrow">${escapeHtml(pw('eyebrow'))}</p>
+      <h1 class="flat-sidebar__title" id="gmPageTitle">${escapeHtml(pw('h1'))}</h1>
       <p class="flat-sidebar__lead muted" id="gmPageLead">${escapeHtml(pw('lead'))}</p>
     </header>
-    <div class="premium-export premium-export--teaser" style="max-width:40rem;margin:0 auto;padding:0.35rem 0 1.25rem">
-      <span class="premium-export__badge premium-export__badge--muted">Pro</span>
-      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.85rem;align-items:center">
+    <div class="gm-paywall-card">
+      <p class="gm-paywall-card__hint">${escapeHtml(pw('unlockHint'))}</p>
+      <div class="gm-paywall-card__buttons">
+        <a href="${escapeAttr(LEMON_CHECKOUT_MONTHLY_URL)}" class="button button--accent gm-paywall-card__plan" data-lemon-squeezy>${escapeHtml(
+          pw('monthlyPlan'),
+        )}</a>
+        <a href="${escapeAttr(LEMON_CHECKOUT_ANNUAL_URL)}" class="button button--accent gm-paywall-card__plan" data-lemon-squeezy>${escapeHtml(
+          pw('annualPlan'),
+        )}</a>
+      </div>
+      <p class="gm-paywall-card__secure">${escapeHtml(pw('secureNote'))}</p>
+      <div class="gm-paywall-card__secondary">
         <button type="button" class="button button--primary" data-gm-pro-upgrade>${escapeHtml(pw('cta'))}</button>
         <a class="button button--ghost" href="index.html#hub-pricing">${escapeHtml(pw('plans'))}</a>
-        <a class="premium-export__link" href="${escapeAttr(proHref)}">${escapeHtml(regLabel)}</a>
       </div>
-      <p style="margin:1rem 0 0"><a href="index.html">${escapeHtml(pw('back'))}</a></p>
+      <p class="gm-paywall-card__footnote">
+        <span class="gm-paywall-card__footnote-label">${escapeHtml(pw('footnote'))}</span>
+        <a class="gm-paywall-card__inline-link" href="${escapeAttr(proHref)}">${escapeHtml(regLabel)}</a>
+      </p>
+      <p class="gm-paywall-back"><a href="index.html">${escapeHtml(pw('back'))}</a></p>
     </div>`;
   panel.querySelector('[data-gm-pro-upgrade]')?.addEventListener('click', () => startProCheckoutFlow());
 }

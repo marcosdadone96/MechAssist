@@ -499,6 +499,7 @@
                 class="hub-pricing-card__cta hub-pricing-card__cta--pro"
                 data-ma-modal-open="auth"
                 data-auth-tab="register"
+                data-auth-next="checkout.html"
                 data-i18n="pricing.pro.cta"
               >
                 Empezar con Pro
@@ -530,7 +531,7 @@
         <div class="ma-modal__head">
           <h2 id="ma-auth-title" class="ma-modal__title" data-i18n="auth.headline">Tu cuenta MechAssist</h2>
           <p class="ma-modal__sub" data-i18n="auth.sub">
-            El registro completo llegará en breve. Esta vista adelanta el flujo para alinear diseño y mensajes.
+            Cuenta local en este navegador: sirve para continuar al checkout y personalizar la cabecera. No hay servidor todavía.
           </p>
         </div>
         <div class="ma-auth__tabs" role="tablist">
@@ -571,7 +572,10 @@
             <button type="button" class="ma-auth__submit" data-i18n="auth.submitRegister">Crear cuenta</button>
           </form>
         </div>
-        <p class="ma-modal__note" data-i18n="auth.backendNote">Backend pendiente: estos botones no envían datos todavía.</p>
+        <p id="ma-auth-error" class="ma-modal__error" role="alert" hidden></p>
+        <p class="ma-modal__note" data-i18n="auth.backendNote">
+          Los datos se guardan solo en este dispositivo (localStorage). Sin cuenta en servidor por ahora.
+        </p>
       </div>
     </div>
 

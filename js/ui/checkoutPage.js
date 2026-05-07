@@ -5,6 +5,7 @@
 import { FEATURES } from '../config/features.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { grantProLicensePersistent, isPremiumEffective } from '../services/accessTier.js';
+import { claimAndVerifyProAfterCheckout } from '../services/proEntitlement.js';
 import { buildRegisterUrlWithNextCheckout, getHomeLang } from '../services/proCheckoutFlow.js';
 
 function getLang() {
@@ -236,7 +237,7 @@ function assertWithdrawalOrShowError(t) {
   return false;
 }
 
-export function mountCheckoutPage() {
+export async function mountCheckoutPage() {
   const lang = getLang();
   const t = TX[lang];
 
@@ -249,7 +250,12 @@ export function mountCheckoutPage() {
   try {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('paid') === '1') {
-      grantProLicensePersistent();
+      const user = getCurrentUser();
+      if (FEATURES.proClientPolicy === 'production') {
+        await claimAndVerifyProAfterCheckout(user?.email);
+      } else {
+        grantProLicensePersistent();
+      }
       const path = window.location.pathname || '/checkout.html';
       history.replaceState({}, '', path);
       paidReturnWelcome = true;

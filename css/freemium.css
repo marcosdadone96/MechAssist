@@ -562,6 +562,21 @@
   line-height: 1.45;
 }
 
+.ma-modal__error {
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 0.65rem;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.ma-modal__error[hidden] {
+  display: none !important;
+}
+
 /* Auth tabs + form */
 .ma-auth__tabs {
   display: flex;

@@ -3,6 +3,7 @@
  */
 
 import { getCurrentUser, clearLocalUser } from '../services/localAuth.js';
+import { clearProEntitlementClient } from '../services/proEntitlement.js';
 import { isProCalculatorPath } from '../config/freemium.js';
 
 function lang() {
@@ -73,6 +74,7 @@ function mountHomeAccountControls() {
     out.textContent = t('auth.logout', lang() === 'en' ? 'Log out' : 'Cerrar sesi\u00f3n');
     out.addEventListener('click', () => {
       clearLocalUser();
+      clearProEntitlementClient();
       window.location.reload();
     });
     wrap.appendChild(userEl);

@@ -1,3 +1,3 @@
 import { mountCheckoutPage } from './checkoutPage.js';
 
-mountCheckoutPage();
+mountCheckoutPage().catch(() => {});

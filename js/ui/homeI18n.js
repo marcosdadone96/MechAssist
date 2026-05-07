@@ -153,7 +153,7 @@ const dict = {
     'auth.close': 'Cerrar',
     'auth.headline': 'Tu cuenta MechAssist',
     'auth.sub':
-      'El registro completo llegar\u00e1 en breve. Esta vista adelanta el flujo para alinear dise\u00f1o y mensajes.',
+      'Cuenta local en este navegador: sirve para continuar al checkout y personalizar la cabecera. No hay servidor todav\u00eda.',
     'auth.tabLogin': 'Iniciar sesi\u00f3n',
     'auth.tabRegister': 'Registrarse',
     'auth.email': 'Correo',
@@ -162,7 +162,8 @@ const dict = {
     'auth.name': 'Nombre',
     'auth.submitLogin': 'Entrar',
     'auth.submitRegister': 'Crear cuenta',
-    'auth.backendNote': 'Backend pendiente: estos botones no env\u00edan datos todav\u00eda.',
+    'auth.backendNote':
+      'Los datos se guardan solo en este dispositivo (localStorage). Sin cuenta en servidor por ahora.',
     'footer.privacy': 'Privacidad',
     'footer.terms': 'T\u00e9rminos',
     'footer.cookies': 'Cookies',
@@ -314,7 +315,7 @@ const dict = {
     'auth.close': 'Close',
     'auth.headline': 'Your MechAssist account',
     'auth.sub':
-      'Full sign-up is coming soon. This preview aligns UX and messaging ahead of backend work.',
+      'Local account in this browser: unlock checkout flow and header greeting. No cloud server yet.',
     'auth.tabLogin': 'Log in',
     'auth.tabRegister': 'Sign up',
     'auth.email': 'Email',
@@ -323,7 +324,8 @@ const dict = {
     'auth.name': 'Name',
     'auth.submitLogin': 'Sign in',
     'auth.submitRegister': 'Create account',
-    'auth.backendNote': 'Backend pending: buttons do not submit data yet.',
+    'auth.backendNote':
+      'Data stays on this device only (localStorage). No server-side account yet.',
     'footer.privacy': 'Privacy',
     'footer.terms': 'Terms',
     'footer.cookies': 'Cookies',

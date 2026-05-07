@@ -1,7 +1,12 @@
 /**
  * Feature flags — MechAssist
  * ---------------------------------------------------------------------------
- * CHECKLIST PUBLICACION (revise antes de abrir el sitio al publico):
+ * CHECKLIST NETLIFY (antes de cobrar):
+ * - PRO_JWT_SECRET: secreto largo (firma JWT pro-claim / pro-verify).
+ * - LEMON_SQUEEZY_WEBHOOK_SECRET: signing secret del webhook en Lemon.
+ * - LEMON_PRO_VARIANT_IDS: UUIDs variant MechAssist separados por coma (los mismos que /checkout/buy/{uuid}).
+ * - Webhook URL en Lemon: https://SU-DOMINIO/.netlify/functions/ls-webhook (eventos order_* y subscription_*).
+ * - URL exito checkout Lemon: https://SU-DOMINIO/checkout.html?paid=1
  * - publicSiteBaseUrl: URL del sitio sin barra final; luego `node scripts/generate-sitemap.mjs`
  *   y descomente Sitemap en robots.txt con la misma base.
  * - proClientPolicy: 'production' en Netlify antes de cobrar (bloquea ?pro=1, localStorage Pro demo, usos prueba).
@@ -9,7 +14,7 @@
  * - allowFreeProTrialUses: false si no ofrece prueba Pro en cliente.
  * - showDemoCheckoutCompleteButton: false cuando el pago sea real (Stripe u otro).
  * - legalContactEmail, legalEntityName, legalEntityAddress: datos del responsable RGPD.
- * - subscriptionManageUrl: enlace al portal de gestion de suscripcion (p. ej. Stripe Customer Portal).
+ * - subscriptionManageUrl: portal de gestion Lemon `https://TU-TIENDA.lemonsqueezy.com/billing` (o dominio custom + `/billing`).
  * - cookiesAndAnalyticsBoot.js: confirme el ID de Google Analytics si cambia de propiedad.
  *
  * Freemium: cinta plana e inclinada accesibles sin Pro; `whichCalculatorIsFree` afecta sobre todo mensajes legacy / pruebas.
@@ -127,11 +132,11 @@ export const FEATURES = Object.freeze({
   stripeCheckoutSessionUrl: '',
 
   /**
-   * URL para que el usuario gestione la suscripcion (portal de facturacion).
-   * Suele ser una sesion del Stripe Customer Portal generada en su backend; tambien puede ser
-   * una pagina propia con instrucciones. Cadena vacia: en la UI solo correo / terminos.
+   * Portal de facturacion del cliente (Lemon Squeezy: `/billing` en la tienda).
+   * Mismo subdominio que los enlaces `checkout/buy/...` en checkout.html.
+   * Vacio: checkout solo muestra correo legal / terminos para gestionar la suscripcion.
    */
-  subscriptionManageUrl: '',
+  subscriptionManageUrl: 'https://mechassist.lemonsqueezy.com/billing',
 
   /**
    * URL de donacion (Ko-fi, PayPal.me, enlace Stripe, etc.) para el pie de las calculadoras gratuitas del laboratorio.
