@@ -2,7 +2,7 @@
  * Página bomba centrífuga — mismo patrón que cintas: resultados, informe, motorreductores, PDF Pro.
  */
 
-import { FEATURES } from '../config/features.js';
+import { FEATURES, isPremiumViaQueryProUiAllowed } from '../config/features.js';
 import { isPremiumEffective } from '../services/accessTier.js';
 import { buildRegisterUrlWithNextCheckout } from '../services/proCheckoutFlow.js';
 import {
@@ -165,7 +165,7 @@ function patchProInstallTeaserCheckoutLink() {
   if (!t) return;
   const a = t.querySelector('a');
   if (!(a instanceof HTMLAnchorElement)) return;
-  if (!FEATURES.allowPremiumViaQueryPro) {
+  if (!isPremiumViaQueryProUiAllowed()) {
     a.href = buildRegisterUrlWithNextCheckout();
   }
   if (getCurrentLang() === 'en') {
@@ -265,10 +265,11 @@ function localizePumpStaticContent() {
   );
   setText('.flat-accordion:nth-of-type(1) .flat-accordion__label', 'Operating parameters');
   setText('.flat-accordion:nth-of-type(2) .flat-accordion__label', 'Fluid properties');
+  const ctaHref = isPremiumViaQueryProUiAllowed() ? '?pro=1' : buildRegisterUrlWithNextCheckout();
   setHtml(
     '#proInstallTeaser',
     `Enable <strong>Pro</strong> to enter suction, line and daily hours; you get <strong>installation alerts</strong> and a more realistic <strong>service factor</strong> for continuous duty.
-            <a class="pro-install-teaser__cta" href="?pro=1">Enable Pro</a>`,
+            <a class="pro-install-teaser__cta" href="${ctaHref}">Enable Pro</a>`,
   );
   setHtml(
     '.flat-accordion:nth-of-type(3) .flat-accordion__label',

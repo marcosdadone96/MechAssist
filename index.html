@@ -19,6 +19,7 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="MechAssist" />
     <meta name="theme-color" content="#0f172a" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -35,6 +36,9 @@
       <div class="hub-header__right">
         <span class="hub-header__tag" data-i18n="header.tag">Transmisión</span>
         <a class="hub-header__plans" href="#hub-pricing" data-i18n="nav.plans">Planes</a>
+        <a class="hub-header__plans" href="my-gearmotors.html"
+          ><span data-i18n="nav.myGearmotors">Mis motorreductores</span>&nbsp;<span class="premium-flag">Pro</span></a
+        >
         <div class="hub-header__auth-slot" id="hub-header-auth-slot"></div>
         <div class="hub-lang" role="group" aria-label="Language selector" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
           <button type="button" class="hub-lang__btn" data-lang="es">ES</button>
@@ -448,14 +452,16 @@
         <div class="hub-pricing__inner">
           <header class="hub-pricing__head">
             <h2 id="hub-pricing-heading" class="hub-pricing__title" data-i18n="pricing.title">Elige tu plan</h2>
-            <p class="hub-pricing__lead" data-i18n="pricing.lead">Empiece en minutos con el plan gratuito; pase a Pro cuando necesite informes y módulos premium.</p>
+            <p class="hub-pricing__lead" data-i18n="pricing.lead">
+              Empiece gratis y pase a Pro cuando PDF, Excel y el catálogo completo pasen a ser imprescindibles en su oficina técnica.
+            </p>
           </header>
           <div class="hub-pricing__grid">
             <article class="hub-pricing-card hub-pricing-card--free">
               <div class="hub-pricing-card__top">
                 <h3 class="hub-pricing-card__name" data-i18n="pricing.free.name">Gratuito</h3>
                 <p class="hub-pricing-card__tagline hub-pricing-card__tagline--muted" data-i18n="pricing.free.tagline">Núcleo amplio de calculadoras listas para dimensionar hoy.</p>
-                <p class="hub-pricing-card__price" data-i18n="pricing.free.price">$0</p>
+                <p class="hub-pricing-card__price" data-i18n="pricing.free.price">0 €</p>
                 <p class="hub-pricing-card__price-hint" data-i18n="pricing.free.hint">Sin tarjeta · para siempre</p>
               </div>
               <ul class="hub-pricing-card__list hub-pricing-card__list--check">
@@ -467,11 +473,18 @@
               <a class="hub-pricing-card__cta hub-pricing-card__cta--free" href="transmission-lab.html" data-i18n="pricing.free.cta">Empezar gratis</a>
             </article>
             <article class="hub-pricing-card hub-pricing-card--pro">
-              <span class="hub-pricing-card__ribbon" data-i18n="pricing.pro.ribbon">Más popular</span>
+              <span class="hub-pricing-card__ribbon" data-i18n="pricing.pro.ribbon">Mejor valor</span>
               <div class="hub-pricing-card__top">
                 <h3 class="hub-pricing-card__name" data-i18n="pricing.pro.name">Pro</h3>
                 <p class="hub-pricing-card__tagline" data-i18n="pricing.pro.tagline">Para equipos de planta, informes y módulos avanzados.</p>
-                <p class="hub-pricing-card__price hub-pricing-card__price--pro" data-i18n="pricing.pro.priceFull">$9/mes o $79/año (ahorra 27%)</p>
+                <div class="hub-pricing-card__price-stack hub-pricing-card__price-stack--pro" aria-label="Precios Pro">
+                  <div class="hub-pricing-card__price-row">
+                    <span class="hub-pricing-card__price-mega hub-pricing-card__price--pro" data-i18n="pricing.pro.priceBig">9 €</span>
+                    <span class="hub-pricing-card__price-unit" data-i18n="pricing.pro.perMonth">/mes</span>
+                  </div>
+                  <p class="hub-pricing-card__annual" data-i18n="pricing.pro.annualLine">o 79 €/año facturado una vez</p>
+                  <p class="hub-pricing-card__eq" data-i18n="pricing.pro.eqLine">≈ 6,58 €/mes de media · ~27% menos que 12 × mensual</p>
+                </div>
               </div>
               <ul class="hub-pricing-card__list hub-pricing-card__list--check hub-pricing-card__list--pro">
                 <li data-i18n="pricing.pro.b1">Todo el catálogo, incluidos módulos Pro y lienzo multieje</li>
@@ -493,7 +506,7 @@
             </article>
           </div>
           <p class="hub-pricing__footnote" data-i18n="pricing.footnote">
-            Precios orientativos en USD. El cobro definitivo se confirmará antes del lanzamiento del checkout.
+            Precios orientativos en euros; IVA o impuestos aplicables según país. Importe final en checkout.
           </p>
         </div>
       </section>

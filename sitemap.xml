@@ -8,7 +8,6 @@
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/calc-chains.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/calc-compression-spring.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/calc-couplings.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/calc-gearmotor-inertia.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/calc-gears.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/calc-hydraulic-cylinder.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/calc-hydraulic-press.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -23,8 +22,11 @@
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/cookie-preferences.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/cookies.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/flat-conveyor.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/fluids-hub.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/inclined-conveyor.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/index.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/machines-hub.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/my-gearmotors.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/privacy.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/roller-conveyor.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/screw-conveyor.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>

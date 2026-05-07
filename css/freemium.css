@@ -32,6 +32,20 @@
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
 }
 
+.premium-flag {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  background: #fef08a;
+  color: #713f12;
+  margin-left: 0.2rem;
+  vertical-align: middle;
+}
+
 /* --- Header: planes + auth --- */
 .hub-header__plans {
   font-size: 0.72rem;
@@ -288,6 +302,63 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Pro precio en EUR: bloque ùhero + anual + equivalenciaù */
+.hub-pricing-card__price-stack {
+  margin: 0;
+}
+
+.hub-pricing-card__price-stack--pro {
+  margin-top: 0.15rem;
+}
+
+.hub-pricing-card__price-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.35rem;
+  margin: 0 0 0.35rem;
+}
+
+.hub-pricing-card__price-mega {
+  font-size: clamp(2.35rem, 5.5vw, 2.85rem);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 1;
+  background: linear-gradient(118deg, #312e81 0%, #4f46e5 38%, #7c3aed 72%, #a855f7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 14px rgba(79, 70, 229, 0.22));
+}
+
+.hub-pricing-card__price-unit {
+  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: -0.02em;
+}
+
+.hub-pricing-card__annual {
+  margin: 0 0 0.35rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #4338ca;
+  letter-spacing: -0.015em;
+}
+
+.hub-pricing-card__eq {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #475569;
+  padding: 0.45rem 0.55rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(238, 242, 255, 0.95) 0%, rgba(250, 245, 255, 0.85) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.22);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset;
 }
 
 .hub-pricing-card__price-hint {

@@ -927,6 +927,17 @@
   box-shadow: 0 8px 28px rgba(13, 148, 136, 0.12);
 }
 
+.lab-card--soon {
+  opacity: 0.72;
+  cursor: default;
+  pointer-events: none;
+}
+
+.lab-card--soon:hover {
+  border-color: #cbd5e1;
+  box-shadow: none;
+}
+
 .lab-card h3 {
   margin: 0 0 0.4rem;
   font-size: 0.95rem;

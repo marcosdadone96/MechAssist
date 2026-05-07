@@ -282,7 +282,8 @@ function localizeFlatStaticContent() {
   const pdfSection = document.querySelector('#premiumPdfExportMount')?.closest('section.panel');
   const pdfH2 = pdfSection?.querySelector('h2');
   if (pdfH2) {
-    pdfH2.innerHTML = '<span class="panel-icon">PDF</span> Export report';
+    pdfH2.innerHTML =
+      '<span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Export report';
   }
 
   if (location.protocol === 'file:') {
@@ -531,6 +532,7 @@ function initAdvancedDetailsPersistence() {
 
 function refresh() {
   const conveyorExtrasUnlocked = isPremiumEffective() || isFreeMachineFullAccess();
+  const pdfReportUnlocked = isPremiumEffective();
   const LBL = getI18nLabels();
   const lang = getCurrentLang();
   const TX = lang === 'en'
@@ -776,7 +778,7 @@ function refresh() {
 
     if (els.premiumPdfMount) {
       mountPremiumPdfExportBar(els.premiumPdfMount, {
-        isPremium: conveyorExtrasUnlocked,
+        isPremium: pdfReportUnlocked,
         getPayload: () => buildFlatPdfPayload(raw, r),
         getDiagramElement: () => els.diagram,
         diagramTitle: TX.machineDiagram,

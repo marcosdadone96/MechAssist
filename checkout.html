@@ -3,8 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MechAssist</title>
+    <title>Checkout Pro &#8212; MechAssist</title>
+    <meta name="description" content="Contratar el plan Pro MechAssist (Lemon Squeezy, no indexado)." />
     <meta name="robots" content="noindex" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="" id="mdr-canonical" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="" id="mdr-og-url" />
+    <meta property="og:title" content="Checkout Pro &#8212; MechAssist" />
+    <meta property="og:description" content="Contratar el plan Pro MechAssist (Lemon Squeezy, no indexado)." />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Checkout Pro &#8212; MechAssist" />
     <link rel="stylesheet" href="css/app.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
@@ -45,6 +54,8 @@
         <p class="register-card__lead" id="coLead"></p>
         <p class="checkout-user" id="coUserLine"></p>
 
+        <p id="coProWelcome" class="checkout-pro-welcome" role="status" hidden></p>
+
         <p id="coCheckoutBlocked" class="register-error" hidden role="alert"></p>
 
         <div id="coWithdrawalWrap" class="checkout-withdrawal" hidden>
@@ -58,9 +69,34 @@
 
         <div class="checkout-actions">
           <button type="button" class="button button--accent" id="coPayStripe" hidden>Pagar</button>
-          <button type="button" class="button button--primary" id="coDemoComplete">Demo</button>
+          <a
+            id="coLemonMonthly"
+            href="https://mechassist.lemonsqueezy.com/checkout/buy/acd30d30-72e7-4434-827e-e51487e492ca"
+            class="button button--accent"
+            data-lemon-squeezy
+            >Plan mensual &#8212; 9 &#8364;/mes</a>
+          <a
+            id="coLemonAnnual"
+            href="https://mechassist.lemonsqueezy.com/checkout/buy/bfd83e87-ac81-46ad-a5cf-2c2c94b1d70d"
+            class="button button--accent"
+            data-lemon-squeezy
+            >Plan anual &#8212; 79 &#8364;/a&#241;o</a>
         </div>
         <p class="register-card__terms" id="coLegalLinks"></p>
+        <section id="coManageSub" class="checkout-manage" aria-labelledby="coManageTitle" hidden>
+          <h2 id="coManageTitle" class="checkout-manage__title"></h2>
+          <p id="coManageLead" class="checkout-manage__lead"></p>
+          <a
+            id="coManageLink"
+            class="button button--ghost checkout-manage__btn"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            hidden
+          ></a>
+          <p id="coManageMail" class="checkout-manage__mail"></p>
+          <p id="coManageTermsRef" class="register-card__terms checkout-manage__terms"></p>
+        </section>
         <p class="register-card__terms checkout-demo-note" id="coDemoNote"></p>
         <div class="register-card__actions">
           <a class="button button--ghost" href="index.html" id="coBackHome">Inicio</a>
@@ -71,12 +107,13 @@
     <footer class="app-legal-foot">
       <nav class="app-legal-foot__links" aria-label="Legal">
         <a href="privacy.html" id="coFootPrivacy">Privacidad</a>
-        <a href="terms.html" id="coFootTerms">Tùrminos</a>
+        <a href="terms.html" id="coFootTerms">T&eacute;rminos</a>
         <a href="cookies.html" id="coFootCookies">Cookies</a>
         <a href="cookie-preferences.html" id="coFootCookiePrefs">Preferencias cookies</a>
       </nav>
     </footer>
 
+    <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
     <script type="module" src="js/ui/checkoutPageEntry.js"></script>
   </body>
 </html>

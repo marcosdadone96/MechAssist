@@ -1,20 +1,21 @@
 /**
  * Freemium policy: which calculator pages require Pro vs Free.
- * Mùquinas: cinta plana, inclinada y rodillos gratis; el resto del hub mùquinas es Pro.
+ * Mùquinas: cinta plana, inclinada y rodillos con cùlculo completo sin Pro; el resto del hub mùquinas es Pro.
+ * En esas 3, guardar configuraciùn e informe PDF siguen siendo Pro (ver machineConfigMount, reportPdfExport).
  * Laboratorio (transmission-canvas) sigue en Pro. El resto del sitio no listado aquù se trata como gratis.
  */
 
-/** Mùdulos de mùquinas con acceso completo sin Pro (sin bloqueo de acordeones). */
+/** Mùdulos con cùlculo y acordeones abiertos sin Pro (no aplican `applyMachinePremiumGates` de acordeùn). */
 export const FREE_MACHINE_FULL_ACCESS_PATHS = new Set([
   'flat-conveyor.html',
   'inclined-conveyor.html',
   'roller-conveyor.html',
 ]);
 
-/** Mismas rutas sin extensiùn (pretty URLs, rewrites). */
+/** Mismas rutas sin extensiÛn (pretty URLs, rewrites). */
 const FREE_MACHINE_PATH_SLUGS = new Set(['flat-conveyor', 'inclined-conveyor', 'roller-conveyor']);
 
-/** Calculadoras de m\u00e1quinas con paywall de app (el lienzo usa su propia UI). */
+/** Calculadoras de m\u00e1quinas Pro (UI restringida v\u00eda `applyMachinePremiumGates`; el lienzo usa su propia UI). */
 export const PRO_MACHINE_APP_PATHS = new Set([
   'centrifugal-pump.html',
   'bucket-elevator.html',
@@ -25,6 +26,14 @@ export const PRO_MACHINE_APP_PATHS = new Set([
 
 /** Pro en hubs y badges: m\u00e1quinas Pro + lienzo. */
 export const PRO_CALCULATOR_PATHS = new Set([...PRO_MACHINE_APP_PATHS, 'transmission-canvas.html']);
+
+/** Slugs sin extensi\u00f3n (pretty URLs / rewrites), derivados de los mismos conjuntos .html. */
+const PRO_MACHINE_APP_SLUGS = new Set(
+  [...PRO_MACHINE_APP_PATHS].map((f) => f.replace(/\.html?$/i, '')),
+);
+const PRO_CALCULATOR_SLUGS = new Set(
+  [...PRO_CALCULATOR_PATHS].map((f) => f.replace(/\.html?$/i, '')),
+);
 
 /**
  * @param {string} hrefOrPath filename or full URL/path ending in .html
@@ -38,8 +47,14 @@ function pathToFile(hrefOrPath) {
   return last || clean;
 }
 
+function pathMatchesSet(file, htmlSet, slugSet) {
+  if (htmlSet.has(file)) return true;
+  const slug = file.replace(/\.html?$/i, '');
+  return slugSet.has(slug);
+}
+
 export function isProCalculatorPath(hrefOrPath) {
-  return PRO_CALCULATOR_PATHS.has(pathToFile(hrefOrPath));
+  return pathMatchesSet(pathToFile(hrefOrPath), PRO_CALCULATOR_PATHS, PRO_CALCULATOR_SLUGS);
 }
 
 /**
@@ -47,11 +62,12 @@ export function isProCalculatorPath(hrefOrPath) {
  * @returns {boolean}
  */
 export function isProMachineAppPath(hrefOrPath) {
-  return PRO_MACHINE_APP_PATHS.has(pathToFile(hrefOrPath));
+  return pathMatchesSet(pathToFile(hrefOrPath), PRO_MACHINE_APP_PATHS, PRO_MACHINE_APP_SLUGS);
 }
 
 /**
- * Cinta plana y rodillos: sin paywall de acordeones ni (en UI) PDF/config como Pro.
+ * Cinta plana, inclinada, rodillos: sin paywall de acordeones (bloques extra).
+ * Configuraciùn guardada e informe PDF no dependen de esta funciùn; requieren `isPremiumEffective()`.
  * Acepta pathname, URL completa o se evalùa `window.location` si existe.
  *
  * @param {string} [hrefOrPath]

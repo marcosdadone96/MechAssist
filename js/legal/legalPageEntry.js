@@ -46,11 +46,15 @@ function render(doc) {
     lang === 'en' ? 'Last updated: set a firm date before launch.' : '\u00daltima actualizaci\u00f3n: fije una fecha firme antes del lanzamiento.';
 
   const sectionsHtml = doc.sections
-    .map(
-      (s) =>
+    .map((s) => {
+      if (s.htmlBody) {
+        return `<h2>${escapeHtml(s.title)}</h2>${s.htmlBody}`;
+      }
+      return (
         `<h2>${escapeHtml(s.title)}</h2>` +
-        s.paragraphs.map((p) => `<p>${linkifyPrivacyTerms(p)}</p>`).join(''),
-    )
+        s.paragraphs.map((p) => `<p>${linkifyPrivacyTerms(p)}</p>`).join('')
+      );
+    })
     .join('');
 
   root.innerHTML =

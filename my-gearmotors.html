@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mis motorreductores ù MechAssist</title>
+    <meta name="description" content="Biblioteca local: guarde placas, exporte JSON y use los datos en las calculadoras de mùquinas." />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="" id="mdr-canonical" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="" id="mdr-og-url" />
+    <meta property="og:title" content="Mis motorreductores ù MechAssist" />
+    <meta property="og:description" content="Biblioteca local: guarde placas, exporte JSON y use los datos en las calculadoras de mùquinas." />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Mis motorreductores ù MechAssist" />
+    <link rel="stylesheet" href="css/app.css" />
+    <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
+  </head>
+  <body>
+    <div id="fileProtoWarn" class="runtime-error" hidden role="alert"></div>
+    <script>
+      (function () {
+        if (location.protocol === 'file:') {
+          var el = document.getElementById('fileProtoWarn');
+          if (el) {
+            el.hidden = false;
+            el.textContent =
+              'Use un servidor HTTP (npx --yes serve .). Con file:// los modulos pueden no cargar.';
+          }
+        }
+      })();
+    </script>
+
+    <header class="app-header">
+      <a class="app-header__brand" href="index.html">Mech<span>Assist</span></a>
+      <nav aria-label="Navegacion principal">
+        <div class="app-header__nav-start">
+          <a href="index.html">Inicio</a>
+          <a href="machines-hub.html">Mùquinas</a>
+          <a href="my-gearmotors.html" aria-current="page"
+            ><span class="mygm-nav-txt" data-gm-nav-title>Mis motorreductores</span> <span class="premium-flag">Pro</span></a
+          >
+        </div>
+        <div class="app-header__nav-end">
+          <span id="gmLangHost" class="app-header__lang-host"></span>
+          <a href="transmission-lab.html" class="lab-header__nav-cta">Laboratorio</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="app-main app-main--flat-wb gearmotor-db-main">
+      <div class="panel gearmotor-db">
+        <header class="gearmotor-db__head">
+          <p class="flat-sidebar__eyebrow">MechAssist</p>
+          <h1 class="flat-sidebar__title" id="gmPageTitle">Mis motorreductores</h1>
+          <p class="flat-sidebar__lead muted" id="gmPageLead"></p>
+          <div id="gmStatusHost" class="gearmotor-db__status-host" aria-live="polite"></div>
+        </header>
+
+        <div class="gearmotor-db__grid">
+          <div class="gearmotor-db__col gearmotor-db__col--form">
+            <section class="gearmotor-db__section" aria-labelledby="gmFormHeading">
+              <h2 id="gmFormHeading" class="gearmotor-db__h2"></h2>
+              <form id="gmForm" class="field-grid field-grid--essential gearmotor-db__form-grid">
+                <input type="hidden" id="gmEditId" value="" />
+                <div class="field" style="grid-column: 1 / -1">
+                  <label for="gmLabel" id="gmLabelLbl"></label>
+                  <input id="gmLabel" type="text" maxlength="160" autocomplete="off" placeholder="" />
+                  <span class="field-hint" id="gmLabelHint"></span>
+                </div>
+                <div class="field">
+                  <label for="gmMotorKw" id="gmMotorKwLbl"></label>
+                  <input id="gmMotorKw" type="number" step="any" min="0.01" required />
+                </div>
+                <div class="field">
+                  <label for="gmN2" id="gmN2Lbl"></label>
+                  <input id="gmN2" type="number" step="any" min="0.01" required />
+                </div>
+                <div class="field">
+                  <label for="gmT2" id="gmT2Lbl"></label>
+                  <input id="gmT2" type="number" step="any" min="0.01" required />
+                </div>
+                <div class="field">
+                  <label for="gmT2peak" id="gmT2peakLbl"></label>
+                  <input id="gmT2peak" type="number" step="any" min="0" />
+                  <span class="field-hint" id="gmT2peakHint"></span>
+                </div>
+                <div class="field">
+                  <label for="gmNmotor" id="gmNmotorLbl"></label>
+                  <input id="gmNmotor" type="number" step="1" min="1" placeholder="1400" />
+                  <span class="field-hint" id="gmNmotorHint"></span>
+                </div>
+                <div class="field">
+                  <label for="gmEta" id="gmEtaLbl"></label>
+                  <input id="gmEta" type="number" step="0.01" min="0.5" max="1" placeholder="0.92" />
+                  <span class="field-hint" id="gmEtaHint"></span>
+                </div>
+                <div class="field" style="grid-column: 1 / -1">
+                  <label for="gmNotes" id="gmNotesLbl"></label>
+                  <textarea id="gmNotes" rows="2" maxlength="500" autocomplete="off"></textarea>
+                  <span class="field-hint" id="gmNotesHint"></span>
+                </div>
+                <div class="field gearmotor-db__form-actions" style="grid-column: 1 / -1">
+                  <button type="submit" class="btn-calc" id="gmSubmitBtn"></button>
+                  <button type="button" class="button button--ghost" id="gmCancelBtn" hidden></button>
+                </div>
+              </form>
+            </section>
+          </div>
+
+          <div class="gearmotor-db__col gearmotor-db__col--list">
+            <section class="gearmotor-db__section" aria-labelledby="gmListHeading">
+              <div class="gearmotor-db__toolbar">
+                <h2 id="gmListHeading" class="gearmotor-db__h2"></h2>
+                <div class="gearmotor-db__io">
+                  <button type="button" class="button button--ghost" id="gmExportBtn"></button>
+                  <label class="button button--ghost gearmotor-db__file-label">
+                    <span id="gmImportLbl"></span>
+                    <input id="gmImportInput" type="file" accept=".json,application/json" hidden />
+                  </label>
+                </div>
+              </div>
+              <p class="muted gearmotor-db__import-note" id="gmImportNote"></p>
+              <p class="muted gearmotor-db__import-merge">
+                <label class="gearmotor-db__merge-label">
+                  <input type="checkbox" id="gmImportMerge" />
+                  <span id="gmImportMergeText"></span>
+                </label>
+              </p>
+              <p class="muted" id="gmCount"></p>
+              <div class="gearmotor-db__table-wrap">
+                <table class="gearmotor-db__table" id="gmTable">
+                  <thead>
+                    <tr>
+                      <th id="gmThRef">Ref.</th>
+                      <th id="gmThPkW"><em>P</em> kW</th>
+                      <th id="gmThN2">n<sub>2</sub></th>
+                      <th id="gmThT2">T<sub>2</sub></th>
+                      <th id="gmThAct">Acc.</th>
+                    </tr>
+                  </thead>
+                  <tbody id="gmTableBody"></tbody>
+                </table>
+              </div>
+              <p class="muted gearmotor-db__empty" id="gmEmpty" hidden></p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-legal-foot">
+      <nav class="app-legal-foot__links" aria-label="Legal">
+        <a href="privacy.html">Privacidad</a>
+        <a href="terms.html">Terminos</a>
+      </nav>
+    </footer>
+
+    <script type="module" src="js/ui/myGearmotorsPage.js"></script>
+  </body>
+</html>

@@ -504,7 +504,10 @@ function localizeInclinedStaticContent() {
   setText('#inclined-conveyor-assumptions .motors-details__hint', 'Assumptions and limits');
   const pdfSection = document.querySelector('#premiumPdfExportMount')?.closest('section.panel');
   const pdfH2 = pdfSection?.querySelector('h2');
-  if (pdfH2) pdfH2.innerHTML = '<span class="panel-icon">PDF</span> Export report';
+  if (pdfH2) {
+    pdfH2.innerHTML =
+      '<span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Export report';
+  }
   if (location.protocol === 'file:') {
     const fpw = document.getElementById('fileProtoWarn');
     if (fpw) {
@@ -530,6 +533,7 @@ function localizeInclinedStaticContent() {
 
 function refresh() {
   const conveyorExtrasUnlocked = isPremiumEffective() || isFreeMachineFullAccess();
+  const pdfReportUnlocked = isPremiumEffective();
   const LBL = getI18nLabels();
   const lang = getCurrentLang();
   const en = lang === 'en';
@@ -770,7 +774,7 @@ function refresh() {
 
     if (els.premiumPdfMount) {
       mountPremiumPdfExportBar(els.premiumPdfMount, {
-        isPremium: conveyorExtrasUnlocked,
+        isPremium: pdfReportUnlocked,
         getPayload: () => buildInclinedPdfPayload(raw, r),
         getDiagramElement: () => els.diagram,
         diagramTitle: TX.machineDiagram,

@@ -21,8 +21,18 @@ import {
   MOUNTING_GUIDE,
   MOUNTING_GUIDE_EN,
 } from '../modules/mountingPreferences.js';
-import { FEATURES } from '../config/features.js';
+import { FEATURES, isPremiumViaQueryProUiAllowed } from '../config/features.js';
+import { buildRegisterUrlWithNextCheckout, startProCheckoutFlow } from '../services/proCheckoutFlow.js';
 import { isPremiumEffective } from '../services/accessTier.js';
+import {
+  USER_SAVED_BRAND_VALUE,
+  listUserGearmotors,
+  getUserGearmotor,
+  addUserGearmotor,
+  removeUserGearmotor,
+  buildSavedGearmotorModel,
+  MAX_USER_GEARMOTORS,
+} from '../services/userGearmotorLibrary.js';
 import { shaftSizingFromDrive } from '../modules/shaftSizing.js';
 import { getCurrentLang } from '../config/locales.js';
 
@@ -364,6 +374,63 @@ export function renderBrandRecommendationCards(req, copyOpts) {
   `;
 }
 
+function getVerifySaveToolbarHtml() {
+  const en = getCurrentLang() === 'en';
+  const proHref = isPremiumViaQueryProUiAllowed() ? '?pro=1' : buildRegisterUrlWithNextCheckout();
+  if (isPremiumEffective()) {
+    return en
+      ? `<div class="verify-save-toolbar">
+    <button type="button" class="button button--ghost" data-verify-save-user-gearmotor>Save to my list</button>
+    <p class="muted verify-save-toolbar__hint">Stores these values in this browser so you can pick them under <strong>My saved gearmotors</strong> on any machine page.</p>
+    <p class="muted verify-save-toolbar__hint" style="margin-top:0.35rem"><a href="my-gearmotors.html">Manage library</a> \u2014 edit, import/export.</p>
+  </div>`
+      : `<div class="verify-save-toolbar">
+    <button type="button" class="button button--ghost" data-verify-save-user-gearmotor>Guardar en mi lista</button>
+    <p class="muted verify-save-toolbar__hint">Guarda estos datos en este navegador para elegirlos en <strong>Mis motorreductores guardados</strong> en cualquier m\u00e1quina.</p>
+    <p class="muted verify-save-toolbar__hint" style="margin-top:0.35rem"><a href="my-gearmotors.html">Gestionar biblioteca</a> \u2014 edici\u00f3n, importaci\u00f3n/exportaci\u00f3n.</p>
+  </div>`;
+  }
+  return en
+    ? `<div class="verify-save-toolbar verify-save-toolbar--pro-only">
+    <div class="premium-export premium-export--teaser" style="margin:0">
+      <span class="premium-export__badge premium-export__badge--muted">Pro</span>
+      <p class="premium-export__teaser-text">Personal <strong>gearmotor library</strong>, saved picks and the <strong>My gearmotors</strong> page are Pro features.</p>
+      <a class="premium-export__link" href="${proHref}">Get Pro</a>
+    </div>
+  </div>`
+    : `<div class="verify-save-toolbar verify-save-toolbar--pro-only">
+    <div class="premium-export premium-export--teaser" style="margin:0">
+      <span class="premium-export__badge premium-export__badge--muted">Pro</span>
+      <p class="premium-export__teaser-text">Biblioteca personal, guardados en m\u00e1quinas y la p\u00e1gina <strong>Mis motorreductores</strong> completos son funciones Pro.</p>
+      <a class="premium-export__link" href="${proHref}">Obtener Pro</a>
+    </div>
+  </div>`;
+}
+
+function ensureUserBrandOption(brandEl) {
+  if (!brandEl) return;
+  const existing = brandEl.querySelector(`option[value="${USER_SAVED_BRAND_VALUE}"]`);
+  if (!isPremiumEffective()) {
+    if (existing) {
+      if (brandEl.value === USER_SAVED_BRAND_VALUE) {
+        const firstOther = Array.from(brandEl.options).find((o) => o.value && o.value !== USER_SAVED_BRAND_VALUE);
+        brandEl.value = firstOther ? firstOther.value : '';
+      }
+      existing.remove();
+    }
+    return;
+  }
+  let opt = brandEl.querySelector(`option[value="${USER_SAVED_BRAND_VALUE}"]`);
+  const en = getCurrentLang() === 'en';
+  const label = en ? 'My saved gearmotors' : 'Mis motorreductores guardados';
+  if (!opt) {
+    opt = document.createElement('option');
+    opt.value = USER_SAVED_BRAND_VALUE;
+    brandEl.insertBefore(opt, brandEl.firstChild);
+  }
+  opt.textContent = label;
+}
+
 /**
  * @param {HTMLElement} root
  */
@@ -419,7 +486,8 @@ function injectManualMotorVerifyBlock(root) {
       <input type="number" data-verify-manual-eta step="0.01" min="0.5" max="1" placeholder="0-1" />
       <span class="field-hint">opt.</span>
     </div>
-  </div>
+    </div>
+  ${getVerifySaveToolbarHtml()}
   <button type="button" data-verify-run-manual style="margin-top: 1rem; width: 100%" class="button button--ghost">Check with these values</button>
 </details>`
     : `
@@ -465,7 +533,8 @@ function injectManualMotorVerifyBlock(root) {
       <input type="number" data-verify-manual-eta step="0.01" min="0.5" max="1" placeholder="0\u20131" />
       <span class="field-hint">opc.</span>
     </div>
-  </div>
+    </div>
+  ${getVerifySaveToolbarHtml()}
   <button type="button" data-verify-run-manual style="margin-top: 1rem; width: 100%" class="button button--ghost">Comprobar con estos datos</button>
 </details>`;
   btn.parentNode.insertBefore(wrap, btn);
@@ -481,8 +550,19 @@ export function refreshMotorVerificationManual(root, getRequirements) {
   const out = root.querySelector('[data-verify-out]');
   if (!out) return;
   root.querySelector('[data-verify-manual-wrap]')?.remove();
+  const brandEl = root.querySelector('[data-verify-brand]');
+  if (brandEl instanceof HTMLSelectElement) ensureUserBrandOption(brandEl);
   injectManualMotorVerifyBlock(root);
   wireManualVerifyButton(root, getRequirements, out);
+  ensureUserGearmotorDeleteRow(root);
+  const delBtn = root.querySelector('[data-user-gearmotor-delete]');
+  if (delBtn instanceof HTMLButtonElement) {
+    delBtn.textContent =
+      getCurrentLang() === 'en'
+        ? 'Remove selected from saved list'
+        : 'Eliminar seleccionado de la lista guardada';
+  }
+  root._mdrRefillVerifyModels?.();
 }
 
 /**
@@ -490,6 +570,121 @@ export function refreshMotorVerificationManual(root, getRequirements) {
  * @param {() => DriveRequirement} getRequirements
  * @param {Element} out
  */
+/**
+ * @param {HTMLElement} root
+ */
+function wireUserGearmotorDelegation(root) {
+  if (root.dataset.mdrUserGearmotorDelegation === '1') return;
+  root.dataset.mdrUserGearmotorDelegation = '1';
+
+  root.addEventListener('click', (e) => {
+    const saveBtn = /** @type {HTMLElement | null} */ (e.target.closest('[data-verify-save-user-gearmotor]'));
+    if (saveBtn && root.contains(saveBtn)) {
+      e.preventDefault();
+      if (!isPremiumEffective()) {
+        startProCheckoutFlow();
+        return;
+      }
+      const out = root.querySelector('[data-verify-out]');
+      const raw = readManualMotorFieldsFromDom(root);
+      const en = getCurrentLang() === 'en';
+      if (!raw) {
+        if (out) {
+          out.innerHTML = en
+            ? `<p class="verify-result verify-result--warn">Enter <strong>kW</strong>, <strong>output rpm</strong>, and <strong>rated T\u2082</strong> before saving.</p>`
+            : `<p class="verify-result verify-result--warn">Rellene <strong>kW</strong>, <strong>rpm salida</strong> y <strong>T\u2082 nominal</strong> antes de guardar.</p>`;
+        }
+        return;
+      }
+      const labelEl = root.querySelector('[data-verify-manual-label]');
+      const label =
+        labelEl instanceof HTMLInputElement ? String(labelEl.value || '').trim().slice(0, 160) : '';
+      const rec = addUserGearmotor({
+        motor_kW: raw.motor_kW,
+        n2_rpm: raw.n2_rpm,
+        T2_nom_Nm: raw.T2_nom_Nm,
+        T2_peak_Nm: raw.T2_peak_Nm,
+        motor_rpm_nom: raw.motor_rpm_nom,
+        eta_g: raw.eta_g,
+        label: label || undefined,
+      });
+      if (!rec) {
+        if (out) {
+          const atCap = listUserGearmotors().length >= MAX_USER_GEARMOTORS;
+          out.innerHTML = atCap
+            ? en
+              ? `<p class="verify-result verify-result--warn">Saved list is full (${MAX_USER_GEARMOTORS} entries). Remove one in <a href="my-gearmotors.html">My gearmotors</a> or delete from the list here.</p>`
+              : `<p class="verify-result verify-result--warn">La lista guardada est\u00e1 llena (${MAX_USER_GEARMOTORS} entradas). Elimine una en <a href="my-gearmotors.html">Mis motorreductores</a> o desde la lista aqu\u00ed.</p>`
+            : en
+              ? `<p class="verify-result verify-result--warn">Could not save (storage blocked or unavailable).</p>`
+              : `<p class="verify-result verify-result--warn">No se pudo guardar (almacenamiento bloqueado o no disponible).</p>`;
+        }
+        return;
+      }
+      if (out) {
+        out.innerHTML = en
+          ? `<p class="verify-result verify-result--ok"><strong>Saved.</strong> Choose <em>My saved gearmotors</em> in the brand list and select your entry.</p>`
+          : `<p class="verify-result verify-result--ok"><strong>Guardado.</strong> Elija <em>Mis motorreductores guardados</em> en la marca y seleccione su equipo.</p>`;
+      }
+      const refill = root._mdrRefillVerifyModels;
+      if (typeof refill === 'function') refill();
+      const brandEl = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-brand]'));
+      const modelSelect = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-model]'));
+      if (brandEl && modelSelect && brandEl.value === USER_SAVED_BRAND_VALUE) {
+        modelSelect.value = `ug:${rec.id}`;
+      }
+      return;
+    }
+
+    const delBtn = /** @type {HTMLElement | null} */ (e.target.closest('[data-user-gearmotor-delete]'));
+    if (delBtn && root.contains(delBtn)) {
+      e.preventDefault();
+      if (!isPremiumEffective()) {
+        startProCheckoutFlow();
+        return;
+      }
+      const modelSelect = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-model]'));
+      const v = modelSelect instanceof HTMLSelectElement ? modelSelect.value : '';
+      if (!v.startsWith('ug:')) return;
+      const id = v.slice(3);
+      const enDel = getCurrentLang() === 'en';
+      const okDel = enDel
+        ? window.confirm('Remove this saved gearmotor from your list?')
+        : window.confirm('\u00bfEliminar este motorreductor guardado de la lista?');
+      if (!okDel) return;
+      removeUserGearmotor(id);
+      const refill = root._mdrRefillVerifyModels;
+      if (typeof refill === 'function') refill();
+      const out = root.querySelector('[data-verify-out]');
+      if (out) {
+        out.innerHTML =
+          getCurrentLang() === 'en'
+            ? `<p class="muted">Removed from saved list.</p>`
+            : `<p class="muted">Eliminado de la lista guardada.</p>`;
+      }
+    }
+  });
+}
+
+/**
+ * @param {HTMLElement} root
+ */
+function ensureUserGearmotorDeleteRow(root) {
+  if (root.querySelector('[data-user-gearmotor-delete-row]')) return;
+  const grid = root.querySelector('.verify-grid');
+  if (!grid) return;
+  const en = getCurrentLang() === 'en';
+  const row = document.createElement('div');
+  row.dataset.userGearmotorDeleteRow = '';
+  row.className = 'field verify-user-delete-row';
+  row.style.gridColumn = '1 / -1';
+  row.hidden = true;
+  row.innerHTML = en
+    ? `<button type="button" class="button button--ghost" data-user-gearmotor-delete>Remove selected from saved list</button>`
+    : `<button type="button" class="button button--ghost" data-user-gearmotor-delete>Eliminar seleccionado de la lista guardada</button>`;
+  grid.appendChild(row);
+}
+
 function wireManualVerifyButton(root, getRequirements, out) {
   const btnManual = /** @type {HTMLButtonElement | null} */ (root.querySelector('[data-verify-run-manual]'));
   btnManual?.addEventListener('click', () => {
@@ -625,13 +820,48 @@ export function initMotorVerification(root, getRequirements) {
 
   if (!brandEl || !modelSelect || !btn || !out) return;
 
+  ensureUserBrandOption(brandEl);
   injectManualMotorVerifyBlock(root);
   wireManualVerifyButton(root, getRequirements, out);
+  wireUserGearmotorDelegation(root);
+  ensureUserGearmotorDeleteRow(root);
+
+  function updateUserGearmotorDeleteRowVisibility() {
+    const row = root.querySelector('[data-user-gearmotor-delete-row]');
+    if (!(row instanceof HTMLElement)) return;
+    const show =
+      brandEl.value === USER_SAVED_BRAND_VALUE &&
+      typeof modelSelect.value === 'string' &&
+      modelSelect.value.startsWith('ug:');
+    row.hidden = !show;
+  }
 
   function refillModels() {
     const en = getCurrentLang() === 'en';
     const bid = brandEl.value;
-    const q = modelSearch ? modelSearch.value : '';
+    const qRaw = modelSearch ? modelSearch.value : '';
+    const q = typeof qRaw === 'string' ? qRaw.trim() : '';
+
+    if (bid === USER_SAVED_BRAND_VALUE) {
+      let saved = listUserGearmotors();
+      if (q) {
+        const ql = q.toLowerCase();
+        saved = saved.filter((s) => s.label.toLowerCase().includes(ql));
+      }
+      modelSelect.innerHTML =
+        (en
+          ? '<option value="">\u2014 Select a saved gearmotor \u2014</option>'
+          : '<option value="">\u2014 Elija un motorreductor guardado \u2014</option>') +
+        saved
+          .map(
+            (s) =>
+              `<option value="ug:${escapeAttr(s.id)}">${escapeHtml(s.label)} · ${s.motor_kW} kW · ${Number(s.n2_rpm).toFixed(0)} min\u207b\u00b9</option>`,
+          )
+          .join('');
+      updateUserGearmotorDeleteRowVisibility();
+      return;
+    }
+
     const list = searchModels(bid, q);
     modelSelect.innerHTML =
       (en
@@ -640,22 +870,34 @@ export function initMotorVerification(root, getRequirements) {
       list
         .map(
           (m) =>
-            `<option value="${escapeAttr(m.id)}">${escapeHtml(m.code)} · ${m.motor_kW} kW · ${m.n2_rpm.toFixed(0)} min⁻¹</option>`,
+            `<option value="${escapeAttr(m.id)}">${escapeHtml(m.code)} · ${m.motor_kW} kW · ${m.n2_rpm.toFixed(0)} min\u207b\u00b9</option>`,
         )
         .join('');
+    updateUserGearmotorDeleteRowVisibility();
   }
+
+  root._mdrRefillVerifyModels = refillModels;
 
   brandEl.addEventListener('change', refillModels);
   modelSearch?.addEventListener('input', refillModels);
+  modelSelect.addEventListener('change', updateUserGearmotorDeleteRowVisibility);
+
   btn.addEventListener('click', () => {
     const id = modelSelect.value;
-    const model = getModelById(id);
     const req = normalizeDriveRequirement(getRequirements());
+    /** @type {import('../modules/motorVerify.js').GearmotorModel | null} */
+    let model = null;
+    if (id.startsWith('ug:')) {
+      const rec = getUserGearmotor(id.slice(3));
+      model = rec ? buildSavedGearmotorModel(rec) : null;
+    } else {
+      model = getModelById(id);
+    }
     if (!model) {
-      out.innerHTML =
-        getCurrentLang() === 'en'
-          ? `<p class="verify-result verify-result--warn">Select a model from the list (demo catalog).</p>`
-          : `<p class="verify-result verify-result--warn">Seleccione un modelo de la lista (cat\u00e1logo de demostraci\u00f3n).</p>`;
+      const en = getCurrentLang() === 'en';
+      out.innerHTML = en
+        ? `<p class="verify-result verify-result--warn">Select a catalog model or a saved gearmotor from the lists.</p>`
+        : `<p class="verify-result verify-result--warn">Seleccione un modelo del cat\u00e1logo o un motorreductor guardado.</p>`;
       return;
     }
     const r = verifyGearmotorAgainstRequirement(req, model);

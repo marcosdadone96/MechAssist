@@ -1,8 +1,19 @@
 /**
  * Feature flags — MechAssist
  * ---------------------------------------------------------------------------
+ * CHECKLIST PUBLICACION (revise antes de abrir el sitio al publico):
+ * - publicSiteBaseUrl: URL del sitio sin barra final; luego `node scripts/generate-sitemap.mjs`
+ *   y descomente Sitemap en robots.txt con la misma base.
+ * - proClientPolicy: 'production' en Netlify antes de cobrar (bloquea ?pro=1, localStorage Pro demo, usos prueba).
+ * - allowPremiumViaQueryPro: false en produccion (no activar Pro por ?pro=1).
+ * - allowFreeProTrialUses: false si no ofrece prueba Pro en cliente.
+ * - showDemoCheckoutCompleteButton: false cuando el pago sea real (Stripe u otro).
+ * - legalContactEmail, legalEntityName, legalEntityAddress: datos del responsable RGPD.
+ * - subscriptionManageUrl: enlace al portal de gestion de suscripcion (p. ej. Stripe Customer Portal).
+ * - cookiesAndAnalyticsBoot.js: confirme el ID de Google Analytics si cambia de propiedad.
+ *
  * Freemium: cinta plana e inclinada accesibles sin Pro; `whichCalculatorIsFree` afecta sobre todo mensajes legacy / pruebas.
- * Pruebas: `?freeTool=flat|inclined`, sesión Pro `?pro=1`, botón «Activar Pro» (guarda `mdr-pro-persistent-v1` en localStorage) o barra dev en cabecera.
+ * Pruebas locales: ponga `proClientPolicy: 'development'`, `allowPremiumViaQueryPro: true`, etc.; `?freeTool=flat|inclined`, sesion Pro `?pro=1`, boton «Activar Pro» (licencia: clave v2 vía `getProPersistentStorageKey` en `accessTier.js`) o barra dev en cabecera.
  * Ver `js/services/accessTier.js` y `js/ui/conveyorAppEntry.js`.
  *
  * Futuro (placeholders):
@@ -18,6 +29,14 @@ export const FEATURES = Object.freeze({
   /** Si true, toda la app se comporta como Pro (solo desarrollo). */
   devSimulatePremium: false,
 
+  /**
+   * Politica de acceso Pro solo en el navegador (sin backend).
+   * - 'development': aplican allowPremiumViaQueryPro, localStorage (clave v2, ver `getProPersistentStorageKey`), usos prueba.
+   * - 'production': desactiva esos atajos; la app no concedera Pro hasta que integre validacion servidor (p. ej. Netlify Function + Stripe).
+   *   La licencia por localStorage puede ser falsificada: en produccion debe usar 'production' hasta tener endpoint seguro.
+   */
+  proClientPolicy: 'production',
+
   /** Barra en cabecera de calculadoras: plan, estrategia y enlaces ?pro=1 / ?freeTool= (desactivar en producción). */
   showTierSwitcherInDev: false,
 
@@ -25,15 +44,15 @@ export const FEATURES = Object.freeze({
    * Correo público para solicitudes RGPD / privacidad (se muestra en textos legales).
    * Ej.: 'privacy@su-dominio.com'
    */
-  legalContactEmail: '',
+  legalContactEmail: 'marcosdadone96@gmail.com',
 
   /**
    * Identificacion del responsable (RGPD / transparencia). Si rellena legalEntityName,
    * la politica de privacidad muestra estos datos en lugar del texto generico.
    */
-  legalEntityName: '',
+  legalEntityName: 'Marcos',
   /** Direccion postal; puede usar varias lineas separadas por \n */
-  legalEntityAddress: '',
+  legalEntityAddress: 'Pol\u00edgono 16, Parcela 86 (C\u00e1lig)',
   /** Opcional: NIF-IVA, registro mercantil, nota de representante, etc. */
   legalRegistrationNote: '',
 
@@ -42,7 +61,7 @@ export const FEATURES = Object.freeze({
    * y debe coincidir con la linea Sitemap en robots.txt.
    * Ej.: 'https://www.mechassist.com'. Vacio: el script escribe el marcador REPLACE-WITH-YOUR-DOMAIN.
    */
-  publicSiteBaseUrl: '',
+  publicSiteBaseUrl: 'https://mechassist.netlify.app',
 
   /**
    * Atajos "demo" de Pro. En produccion suele ir todo false y showDemoCheckoutCompleteButton
@@ -50,11 +69,11 @@ export const FEATURES = Object.freeze({
    * Ejemplo produccion: allowPremiumViaQueryPro false, allowFreeProTrialUses false,
    * showDemoCheckoutCompleteButton false, stripePayments true + stripeCheckoutSessionUrl.
    */
-  allowPremiumViaQueryPro: true,
+  allowPremiumViaQueryPro: false,
   /** Los N usos gratis de Pro (barra dev / accessTier) no aplican si false. */
-  allowFreeProTrialUses: true,
+  allowFreeProTrialUses: false,
   /** Boton "Simular pago" en checkout.html. Desactive cuando cobre con pasarela real. */
-  showDemoCheckoutCompleteButton: true,
+  showDemoCheckoutCompleteButton: false,
 
   /**
    * Consumidor UE: exige casilla de renuncia al desistimiento para suministro inmediato
@@ -94,7 +113,7 @@ export const FEATURES = Object.freeze({
 
   /**
    * Placeholder: Stripe — solo clave publicable en cliente; Checkout y webhook en backend.
-   * Tras pago válido, el servidor puede fijar la misma clave que `grantProLicensePersistent()` (`mdr-pro-persistent-v1`).
+   * Tras pago válido, el servidor puede fijar la misma entrada que `grantProLicensePersistent()` (nombre de clave: `getProPersistentStorageKey()` en cliente).
    */
   stripePayments: false,
 
@@ -108,10 +127,23 @@ export const FEATURES = Object.freeze({
   stripeCheckoutSessionUrl: '',
 
   /**
+   * URL para que el usuario gestione la suscripcion (portal de facturacion).
+   * Suele ser una sesion del Stripe Customer Portal generada en su backend; tambien puede ser
+   * una pagina propia con instrucciones. Cadena vacia: en la UI solo correo / terminos.
+   */
+  subscriptionManageUrl: '',
+
+  /**
    * URL de donacion (Ko-fi, PayPal.me, enlace Stripe, etc.) para el pie de las calculadoras gratuitas del laboratorio.
    * Cadena vacia: se muestra el texto de apoyo sin boton externo.
    */
   labDonationUrl: '',
+
+  /**
+   * Cartel inferior "Laboratorio gratuito" / donaci\u00f3n en calculadoras del laboratorio (labDonationFooter.js).
+   * false: no se muestra (recomendado si no usa labDonationUrl o prefiere UI limpia).
+   */
+  showLabDonationBanner: false,
 
   /**
    * Enlaces de compra Amazon / panel laboratorio: ver `js/config/labAffiliate.js` (tag Associates, dominio).
@@ -152,4 +184,13 @@ export const FEATURES = Object.freeze({
  */
 export function isFeatureEnabled(key) {
   return FEATURES[key] === true;
+}
+
+/**
+ * Atajo ?pro=1 en URL y textos asociados (solo pestaña). Desactivado en produccion o si allowPremiumViaQueryPro es false.
+ */
+export function isPremiumViaQueryProUiAllowed() {
+  return (
+    FEATURES.allowPremiumViaQueryPro === true && FEATURES.proClientPolicy !== 'production'
+  );
 }

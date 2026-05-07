@@ -586,6 +586,212 @@ body {
   font-weight: 600;
 }
 
+.verify-save-toolbar {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.verify-save-toolbar__hint {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.verify-user-delete-row {
+  margin-top: 0.35rem;
+}
+
+/* Pagina my-gearmotors: una columna a nivel app-main (evita hueco vacio del layout 2-col) */
+.gearmotor-db-main.app-main,
+.gearmotor-db-main.app-main--flat-wb {
+  grid-template-columns: 1fr;
+  max-width: 1280px;
+}
+
+.gearmotor-db-main {
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+
+.gearmotor-db {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.gearmotor-db__head {
+  margin-bottom: 1.5rem;
+  max-width: 72ch;
+}
+
+.gearmotor-db__grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.35fr);
+  gap: 1.75rem 2.25rem;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .gearmotor-db__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 961px) {
+  .gearmotor-db__col--list {
+    position: sticky;
+    top: 1rem;
+    align-self: start;
+  }
+}
+
+.gearmotor-db__col--form .gearmotor-db__section,
+.gearmotor-db__col--list .gearmotor-db__section {
+  margin-bottom: 0;
+}
+
+.gearmotor-db .gearmotor-db__form-grid.field-grid {
+  display: grid;
+  flex-direction: unset;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+@media (min-width: 420px) {
+  .gearmotor-db .gearmotor-db__form-grid.field-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.gearmotor-db__section {
+  margin-bottom: 1.75rem;
+}
+
+.gearmotor-db__h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--flat-navy);
+  margin: 0 0 0.75rem;
+}
+
+.gearmotor-db__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.gearmotor-db__io {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.gearmotor-db__file-label {
+  cursor: pointer;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.gearmotor-db__import-note {
+  font-size: 0.82rem;
+  margin: 0 0 0.65rem;
+}
+
+.gearmotor-db__import-merge {
+  font-size: 0.82rem;
+  margin: 0 0 0.5rem;
+}
+
+.gearmotor-db__merge-label {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  cursor: pointer;
+  line-height: 1.45;
+}
+
+.gearmotor-db__merge-label input {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+.gearmotor-db__status-host {
+  margin-top: 0.75rem;
+  min-height: 0;
+}
+
+.gearmotor-db__status-host [role='status'] {
+  margin: 0;
+}
+
+#gmCount {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+}
+
+.gearmotor-db__table-wrap {
+  overflow-x: auto;
+  border: 1px solid rgba(51, 65, 85, 0.12);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.gearmotor-db__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.gearmotor-db__table th,
+.gearmotor-db__table td {
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.08);
+  text-align: left;
+  vertical-align: top;
+}
+
+.gearmotor-db__table th {
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: 0.72rem;
+}
+
+.gearmotor-db__form-grid .field > label {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: 0.74rem;
+}
+
+.gearmotor-db__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.gearmotor-db__actions {
+  white-space: nowrap;
+}
+
+.gearmotor-db__btn-icon {
+  padding: 0.35rem 0.55rem;
+  font-size: 0.78rem;
+}
+
+.gearmotor-db__form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -3716,6 +3922,29 @@ html[data-conveyor-tool='screw'] #screwMotorBlock .motor-card-grid {
   font-weight: 600;
 }
 
+.checkout-pro-welcome {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.checkout-pro-welcome strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 800;
+}
+
+.checkout-pro-welcome__sub {
+  display: block;
+  margin-top: 0.35rem;
+  font-weight: 600;
+}
+
 .register-panel--success .register-card__title {
   color: var(--accent-dark);
 }
@@ -3881,5 +4110,39 @@ html[data-conveyor-tool='screw'] #screwMotorBlock .motor-card-grid {
 
 .checkout-demo-note {
   margin-top: 0.5rem;
+}
+
+.checkout-manage {
+  margin-top: 1.15rem;
+  padding-top: 1.05rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.checkout-manage__title {
+  font-size: 1.02rem;
+  font-weight: 800;
+  margin: 0 0 0.4rem;
+  color: var(--text, #0f172a);
+}
+
+.checkout-manage__lead {
+  margin: 0 0 0.65rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--muted, #64748b);
+}
+
+.checkout-manage__btn {
+  margin-bottom: 0.55rem;
+}
+
+.checkout-manage__mail {
+  margin: 0 0 0.45rem;
+  font-size: 0.86rem;
+}
+
+.checkout-manage__terms {
+  margin-top: 0.35rem;
+  margin-bottom: 0;
 }
 

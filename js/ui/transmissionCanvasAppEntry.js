@@ -3,10 +3,12 @@
  */
 
 import { mountTierStatusBar } from './paywallMount.js';
+import { patchLabPaywallQueryProLink } from './patchLabPaywallQueryProLink.js';
 import { isPremiumEffective } from '../services/accessTier.js';
 import { startProCheckoutFlow } from '../services/proCheckoutFlow.js';
 
 mountTierStatusBar();
+patchLabPaywallQueryProLink('txPaywall');
 
 const app = document.getElementById('txApp');
 const pay = document.getElementById('txPaywall');

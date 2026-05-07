@@ -4,7 +4,7 @@
 
 import { FEATURES } from '../config/features.js';
 import { getCurrentUser } from '../services/localAuth.js';
-import { grantProLicensePersistent } from '../services/accessTier.js';
+import { grantProLicensePersistent, isPremiumEffective } from '../services/accessTier.js';
 import { buildRegisterUrlWithNextCheckout, getHomeLang } from '../services/proCheckoutFlow.js';
 
 function getLang() {
@@ -19,19 +19,20 @@ const TX = {
     eyebrow: 'MechAssist',
     title: 'Plan Pro',
     lead:
-      'Acceso completo a modulos Pro en este navegador. En produccion aqui se cargaria Stripe Checkout u otro proveedor; el webhook confirmaria el pago y activaria la licencia.',
+      'Elija facturacion mensual o anual. El pago lo procesa Lemon Squeezy; tras completarlo recibira confirmacion y podra gestionar la suscripcion desde su correo o panel del proveedor.',
     signedAs: (name, email) => `Sesion: ${name} (${email})`,
     stripeBtn: 'Pagar con tarjeta (Stripe)',
-    demoBtn: 'Simular pago completado (demo)',
-    demoNote:
-      'En desarrollo use el boton de simulacion para otorgar Pro sin pasarela. No introduzca datos reales de pago en esta demo.',
+    monthlyPlan: 'Plan mensual \u2014 9 \u20ac/mes',
+    annualPlan: 'Plan anual \u2014 79 \u20ac/a\u00f1o',
+    checkoutPayNote:
+      'El cobro lo gestiona Lemon Squeezy (checkout seguro). Use uno de los planes anteriores; si tambien ve la opcion Stripe, sera alternativa segun configuracion.',
     withdrawalLabelHtml:
       'Solicito el <strong>suministro inmediato</strong> del contenido digital (acceso Pro en este navegador) y, cuando act\u00fae como consumidor en la UE, <strong>renuncio expresamente</strong> al derecho de desistimiento respecto de ese suministro inmediato, en los t\u00e9rminos previstos por la normativa aplicable. He le\u00eddo los <a href="terms.html" target="_blank" rel="noopener">T\u00e9rminos</a>.',
     withdrawalHelp:
       'Si no marca esta casilla no puede completar la compra con entrega digital inmediata. Para otro modo de contrataci\u00f3n, contacte antes de pagar.',
     withdrawalRequired: 'Debe aceptar la renuncia al desistimiento para continuar.',
     paymentNotConfigured:
-      'El pago en l\u00ednea no est\u00e1 configurado y la simulaci\u00f3n est\u00e1 desactivada. Configure Stripe en la aplicaci\u00f3n o active temporalmente el bot\u00f3n de simulaci\u00f3n en desarrollo.',
+      'No hay enlaces de pago en esta pagina. Configure Stripe o Lemon Squeezy en la aplicacion.',
     backHome: 'Volver al inicio',
     legalLinks:
       'Al pagar acepta los <a href="terms.html" target="_blank" rel="noopener">T\u00e9rminos</a> y la <a href="privacy.html" target="_blank" rel="noopener">Pol\u00edtica de privacidad</a>.',
@@ -39,6 +40,20 @@ const TX = {
     footTerms: 'T\u00e9rminos',
     footCookies: 'Cookies',
     footCookiePrefs: 'Preferencias cookies',
+    manageTitle: 'Gestionar o cancelar la suscripci\u00f3n Pro',
+    manageLeadPortal:
+      'Si ya paga MechAssist Pro, puede abrir el portal de facturaci\u00f3n para renovaci\u00f3n autom\u00e1tica, facturas, m\u00e9todo de pago o baja del plan.',
+    manageLeadNoPortal:
+      'Para cancelar la renovaci\u00f3n o cambiar datos de cobro, use el enlace que env\u00eda su pasarela por correo o escr\u00edbanos.',
+    manageBtn: 'Abrir gesti\u00f3n de suscripci\u00f3n',
+    manageMailPrefix: 'Contacto facturaci\u00f3n:',
+    manageTermsRef:
+      'Detalle jur\u00eddico: secci\u00f3n <strong>Renovaci\u00f3n y cancelaci\u00f3n</strong> en los <a href="terms.html" target="_blank" rel="noopener">T\u00e9rminos de uso</a>.',
+    proWelcomeTitle: '\u00a1Gracias! Acceso Pro activado en este navegador.',
+    proWelcomeBody:
+      'Ya puede usar las calculadoras y modulos Pro. Si no ve el plan actualizado, abra el inicio o recargue la pesta\u00f1a.',
+    proWelcomePending:
+      'Pago registrado en la URL. Si no tiene Pro a\u00fan (pol\u00edtica del sitio o modo producci\u00f3n), espere la confirmaci\u00f3n por correo o contacte soporte.',
   },
   en: {
     docTitle: 'Pro checkout \u2014 MechAssist',
@@ -47,19 +62,20 @@ const TX = {
     eyebrow: 'MechAssist',
     title: 'Pro plan',
     lead:
-      'Full Pro access in this browser. In production, Stripe Checkout (or your provider) would load here; your webhook would confirm payment and enable the license.',
+      'Choose monthly or yearly billing. Payment is processed by Lemon Squeezy; after checkout you will receive confirmation and can manage the subscription via email or the provider dashboard.',
     signedAs: (name, email) => `Signed in: ${name} (${email})`,
     stripeBtn: 'Pay with card (Stripe)',
-    demoBtn: 'Simulate successful payment (demo)',
-    demoNote:
-      'In development, use the demo button to grant Pro without a gateway. Do not enter real card data in this demo.',
+    monthlyPlan: 'Monthly plan \u2014 \u20ac9/month',
+    annualPlan: 'Annual plan \u2014 \u20ac79/year',
+    checkoutPayNote:
+      'Checkout is handled by Lemon Squeezy (secure). Use one of the plan buttons above; if a Stripe option appears, it is an alternative depending on configuration.',
     withdrawalLabelHtml:
       'I request <strong>immediate supply</strong> of the digital content (Pro access in this browser) and, where I qualify as an EU consumer, I <strong>expressly waive</strong> the 14-day right of withdrawal once access is activated, as permitted for digital content (see your Terms). I have read the <a href="terms.html" target="_blank" rel="noopener">Terms</a>.',
     withdrawalHelp:
       'If you do not tick this box you cannot complete immediate digital delivery. Contact us before paying for other arrangements.',
     withdrawalRequired: 'You must accept the withdrawal waiver to continue.',
     paymentNotConfigured:
-      'Online payment is not configured and the demo completion button is off. Enable Stripe in settings or turn the demo button on for internal testing.',
+      'No payment links on this page. Configure Stripe or Lemon Squeezy in the app.',
     backHome: 'Back to home',
     legalLinks:
       'By paying you accept the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a>.',
@@ -67,8 +83,98 @@ const TX = {
     footTerms: 'Terms',
     footCookies: 'Cookies',
     footCookiePrefs: 'Cookie settings',
+    manageTitle: 'Manage or cancel Pro subscription',
+    manageLeadPortal:
+      'If you already pay for MechAssist Pro, open your billing portal to manage auto-renewal, invoices, payment method or cancel renewal.',
+    manageLeadNoPortal:
+      'To cancel renewal or change billing details, use the link from your payment provider emails or contact us.',
+    manageBtn: 'Open subscription management',
+    manageMailPrefix: 'Billing contact:',
+    manageTermsRef:
+      'Legal detail: <strong>Renewal and cancellation</strong> in the <a href="terms.html" target="_blank" rel="noopener">Terms of use</a>.',
+    proWelcomeTitle: 'Thank you! Pro access is enabled in this browser.',
+    proWelcomeBody: 'You can use Pro calculators and modules. If your plan does not update, open home or reload this tab.',
+    proWelcomePending:
+      'Payment flag received. If Pro is not active yet (site policy or production mode), wait for your confirmation email or contact support.',
   },
 };
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/**
+ * @param {typeof TX.es} t
+ * @param {boolean} premiumEffective
+ */
+function showProWelcomeMessage(t, premiumEffective) {
+  const el = document.getElementById('coProWelcome');
+  if (!el) return;
+  el.hidden = false;
+  if (premiumEffective) {
+    el.innerHTML = `<strong>${escapeHtml(t.proWelcomeTitle)}</strong><span class="checkout-pro-welcome__sub">${escapeHtml(
+      t.proWelcomeBody,
+    )}</span>`;
+  } else {
+    el.textContent = t.proWelcomePending;
+  }
+}
+
+function applyManageSubscriptionBlock(t) {
+  const url =
+    typeof FEATURES.subscriptionManageUrl === 'string' && FEATURES.subscriptionManageUrl.trim().length > 0
+      ? FEATURES.subscriptionManageUrl.trim()
+      : '';
+  const em =
+    typeof FEATURES.legalContactEmail === 'string' && FEATURES.legalContactEmail.trim().length > 0
+      ? FEATURES.legalContactEmail.trim()
+      : '';
+
+  const wrap = document.getElementById('coManageSub');
+  if (!wrap) return;
+  wrap.hidden = false;
+
+  const set = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
+  set('coManageTitle', t.manageTitle);
+  const lead = document.getElementById('coManageLead');
+  if (lead) lead.textContent = url ? t.manageLeadPortal : t.manageLeadNoPortal;
+
+  const link = document.getElementById('coManageLink');
+  if (link) {
+    if (url) {
+      link.href = url;
+      link.textContent = t.manageBtn;
+      link.hidden = false;
+    } else {
+      link.hidden = true;
+      link.removeAttribute('href');
+    }
+  }
+
+  const mailP = document.getElementById('coManageMail');
+  if (mailP) {
+    mailP.hidden = true;
+    mailP.replaceChildren();
+    if (em) {
+      mailP.hidden = false;
+      mailP.append(document.createTextNode(`${t.manageMailPrefix} `));
+      const a = document.createElement('a');
+      a.href = `mailto:${em}`;
+      a.textContent = em;
+      mailP.appendChild(a);
+    }
+  }
+
+  const tr = document.getElementById('coManageTermsRef');
+  if (tr && t.manageTermsRef) tr.innerHTML = t.manageTermsRef;
+}
 
 function applyTx(t) {
   document.documentElement.lang = getLang() === 'en' ? 'en' : 'es';
@@ -92,7 +198,11 @@ function applyTx(t) {
   set('coEyebrow', t.eyebrow);
   set('coTitle', t.title);
   set('coLead', t.lead);
-  set('coDemoNote', t.demoNote);
+  set('coDemoNote', t.checkoutPayNote);
+  const m = document.getElementById('coLemonMonthly');
+  const ann = document.getElementById('coLemonAnnual');
+  if (m) m.textContent = t.monthlyPlan;
+  if (ann) ann.textContent = t.annualPlan;
   const bh = document.getElementById('coBackHome');
   if (bh) bh.textContent = t.backHome;
   const legal = document.getElementById('coLegalLinks');
@@ -107,8 +217,6 @@ function applyTx(t) {
   if (f4) f4.textContent = t.footCookiePrefs;
   const stripeBtn = document.getElementById('coPayStripe');
   if (stripeBtn) stripeBtn.textContent = t.stripeBtn;
-  const demoBtn = document.getElementById('coDemoComplete');
-  if (demoBtn) demoBtn.textContent = t.demoBtn;
 }
 
 function assertWithdrawalOrShowError(t) {
@@ -137,23 +245,36 @@ export function mountCheckoutPage() {
     return;
   }
 
+  let paidReturnWelcome = false;
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('paid') === '1') {
+      grantProLicensePersistent();
+      const path = window.location.pathname || '/checkout.html';
+      history.replaceState({}, '', path);
+      paidReturnWelcome = true;
+    }
+  } catch (_) {
+    /* ignore */
+  }
+
   applyTx(t);
+  applyManageSubscriptionBlock(t);
+
   const user = getCurrentUser();
   const line = document.getElementById('coUserLine');
   if (line && user) line.textContent = t.signedAs(user.name, user.email);
 
   const stripeBtn = document.getElementById('coPayStripe');
-  const demoBtn = document.getElementById('coDemoComplete');
   const blockedEl = document.getElementById('coCheckoutBlocked');
   const useStripe =
     FEATURES.stripePayments === true &&
     typeof FEATURES.stripeCheckoutSessionUrl === 'string' &&
     FEATURES.stripeCheckoutSessionUrl.length > 0;
 
-  const showDemo = FEATURES.showDemoCheckoutCompleteButton === true;
-  if (demoBtn) demoBtn.hidden = !showDemo;
+  const hasLemonSqueezy = Boolean(document.getElementById('coLemonMonthly'));
 
-  if (!useStripe && !showDemo && blockedEl) {
+  if (!useStripe && !hasLemonSqueezy && blockedEl) {
     blockedEl.hidden = false;
     blockedEl.textContent = t.paymentNotConfigured;
   } else if (blockedEl) {
@@ -175,10 +296,12 @@ export function mountCheckoutPage() {
     }
   }
 
-  demoBtn?.addEventListener('click', () => {
-    if (!assertWithdrawalOrShowError(t)) return;
-    grantProLicensePersistent();
-    window.location.href = 'index.html';
+  ['coLemonMonthly', 'coLemonAnnual'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('click', (ev) => {
+      if (!assertWithdrawalOrShowError(t)) ev.preventDefault();
+    });
   });
 
   document.querySelectorAll('[data-co-lang]').forEach((btn) => {
@@ -193,4 +316,8 @@ export function mountCheckoutPage() {
     });
     btn.classList.toggle('hub-lang__btn--active', btn.getAttribute('data-co-lang') === lang);
   });
+
+  if (paidReturnWelcome) {
+    showProWelcomeMessage(t, isPremiumEffective());
+  }
 }

@@ -252,26 +252,26 @@ function applyNav(lang) {
 
 /** @type {Record<string, { es: string; en: string }>} */
 const LBL = {
-  lblCap: { es: 'Capacidad requerida', en: 'Required capacity' },
-  lblCapUnit: { es: 'Unidad capacidad', en: 'Capacity unit' },
-  lblDiam: { es: 'Di\u00e1metro tornillo', en: 'Screw diameter' },
-  lblDiamUnit: { es: 'Unidad \u00d8', en: 'Diameter unit' },
-  lblPitch: { es: 'Paso', en: 'Pitch' },
-  lblPitchUnit: { es: 'Unidad paso', en: 'Pitch unit' },
-  lblLength: { es: 'Longitud transporte', en: 'Conveying length' },
-  lblAngle: { es: 'Inclinaci\u00f3n \u03b8', en: 'Inclination \u03b8' },
-  lblRho: { es: 'Densidad aparente', en: 'Bulk density' },
-  lblTrough: { es: 'Trough loading', en: 'Trough loading' },
+  lblCap: { es: 'Capacidad Q', en: 'Capacity Q' },
+  lblCapUnit: { es: 'Unidad de caudal (m\u00b3/h o t/h)', en: 'Flow unit (m\u00b3/h or t/h)' },
+  lblDiam: { es: 'Di\u00e1metro helicoide D', en: 'Helix diameter D' },
+  lblDiamUnit: { es: 'Unidad de D', en: 'Unit for D' },
+  lblPitch: { es: 'Paso del helicoide p', en: 'Helix pitch p' },
+  lblPitchUnit: { es: 'Unidad de p', en: 'Unit for p' },
+  lblLength: { es: 'Longitud del transportador L', en: 'Conveyor length L' },
+  lblAngle: { es: '\u00c1ngulo de inclinaci\u00f3n \u03b8', en: 'Incline angle \u03b8' },
+  lblRho: { es: 'Densidad del material \u03c1 (kg/m\u00b3)', en: 'Material density \u03c1 (kg/m\u00b3)' },
+  lblTrough: { es: 'Factor de llenado del trough \u03c6 (%)', en: 'Trough fill \u03c6 (%)' },
   lblAbrasive: { es: 'Abrasividad', en: 'Abrasiveness' },
   lblCorrosive: { es: 'Corrosividad', en: 'Corrosiveness' },
-  lblMu: { es: '\u03bc material\u2013acero', en: '\u03bc material\u2013steel' },
-  lblBearingEta: { es: 'Rend. mec\u00e1nico (apoyos)', en: 'Mech. efficiency (bearings)' },
+  lblMu: { es: 'Coeficiente de rozamiento \u03bc', en: 'Friction coefficient \u03bc' },
+  lblBearingEta: { es: 'Rendimiento del accionamiento \u03b7 (%)', en: 'Drive efficiency \u03b7 (%)' },
   lblLoadDuty: { es: 'Tipo de carga', en: 'Load duty' },
   lblSf: { es: 'Factor de servicio SF', en: 'Service factor SF' },
   lblVBrand: { es: 'Marca', en: 'Brand' },
   lblVSearch: { es: 'Filtrar modelo', en: 'Filter model' },
   lblVModel: { es: 'Modelo', en: 'Model' },
-  accGeom: { es: 'Geometr\u00eda y capacidad', en: 'Geometry and capacity' },
+  accGeom: { es: 'Geometr\u00eda y cinem\u00e1tica', en: 'Geometry and kinematics' },
   accMat: { es: 'Material y llenado', en: 'Material and fill' },
   accFriction: { es: 'Rozamiento y servicio', en: 'Friction and service' },
 };
@@ -293,7 +293,9 @@ function applyLabelsAndRanges(lang) {
   const t = en ? 'en' : 'es';
   document.querySelectorAll('[data-sc-for]').forEach((el) => {
     const k = el.getAttribute('data-sc-for');
-    if (k && LBL[k]) el.textContent = LBL[k][t];
+    if (!k || !LBL[k]) return;
+    const text = LBL[k][t];
+    if (typeof text === 'string' && text.length > 0) el.textContent = text;
   });
   document.querySelectorAll('[data-sc-aria-for]').forEach((el) => {
     const k = el.getAttribute('data-sc-aria-for');

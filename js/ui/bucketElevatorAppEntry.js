@@ -4,8 +4,8 @@ import { initBucketElevatorLangChrome } from './bucketElevatorStaticI18n.js';
 import { runProMachineEntryGuard } from './proMachineEntryGuard.js';
 
 mountTierStatusBar();
+initBucketElevatorLangChrome();
 if (runProMachineEntryGuard()) {
-  initBucketElevatorLangChrome();
   await import('./bucketElevatorPage.js');
   mountMachineConfigBar();
 }

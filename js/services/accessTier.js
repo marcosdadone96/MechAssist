@@ -4,26 +4,74 @@
  * Cintas plana e inclinada: siempre desbloqueadas en `conveyorAppEntry`. `whichCalculatorIsFree` / `?freeTool=` quedan para pruebas o copy legacy.
  * Pro efectivo (por orden):
  * - `FEATURES.devSimulatePremium`
- * - `?pro=1` en la URL si `FEATURES.allowPremiumViaQueryPro`
- * - `mdr-pro-persistent-v1` en localStorage (pago o demo)
+ * - `?pro=1` en la URL si `allowPremiumViaQueryPro` y `proClientPolicy !== 'production'`
+ * - Licencia Pro en localStorage (clave opaca v2; ver `getProPersistentStorageKey`), ignorada si `proClientPolicy === 'production'`
  * - Usos de prueba gratuitos si `FEATURES.allowFreeProTrialUses` (`mdr-free-pro-uses`, tope 5)
+ *
+ * `proClientPolicy: 'production'` bloquea licencia y URL en cliente hasta integrar validación servidor (p. ej. Netlify Function + Stripe).
  */
 
 import { FEATURES } from '../config/features.js';
 
+/** Atajos Pro solo-navegador desactivados (licencia local, URL, usos prueba). */
+function clientProShortcutsDisabled() {
+  if (FEATURES.devSimulatePremium) return false;
+  return FEATURES.proClientPolicy === 'production';
+}
+
 const LS_FREE_PRO_USES = 'mdr-free-pro-uses';
-const LS_PRO_PERSISTENT = 'mdr-pro-persistent-v1';
 const SS_FREE_PRO_PAGE_MARK = 'mdr-free-pro-page-mark';
 const MAX_FREE_PRO_USES = 5;
 
+/** Semilla ASCII para derivar el nombre de la entrada en `localStorage` (v2). */
+const PRO_LICENSE_STORAGE_SEED = 'pro-v2';
+
+const PRO_LICENSE_KEY_PREFIX = '_mdr_';
+
+/**
+ * Base64 de `PRO_LICENSE_STORAGE_SEED` sin `=`; debe coincidir con `btoa` en el navegador.
+ * Solo se usa si no existe `globalThis.btoa` (p. ej. tests Node sin jsdom).
+ */
+const PRO_LICENSE_KEY_SUFFIX_FALLBACK = 'cHJvLXYy';
+
+const PRO_LICENSE_KEY_SUFFIX =
+  typeof globalThis.btoa === 'function'
+    ? globalThis.btoa(PRO_LICENSE_STORAGE_SEED).replace(/=/g, '')
+    : PRO_LICENSE_KEY_SUFFIX_FALLBACK;
+
+/** Clave v2: lectura/escritura de licencia Pro; unica fuente para este string en el bundle. */
+const PRO_LICENSE_LOCAL_STORAGE_KEY = PRO_LICENSE_KEY_PREFIX + PRO_LICENSE_KEY_SUFFIX;
+
+/** Clave v1 (migracion); unica aparicion del literal legado. */
+const PRO_LICENSE_LOCAL_STORAGE_KEY_LEGACY = 'mdr-pro-persistent-v1';
+
+/**
+ * Nombre de clave en `localStorage` para licencia Pro (mismo string que el bundle; backend puede replicar la formula).
+ * @returns {string}
+ */
 export function getProPersistentStorageKey() {
-  return LS_PRO_PERSISTENT;
+  return PRO_LICENSE_LOCAL_STORAGE_KEY;
+}
+
+/**
+ * Nombre de la clave legada (solo migracion / compatibilidad).
+ * @returns {string}
+ */
+export function getProPersistentLegacyStorageKey() {
+  return PRO_LICENSE_LOCAL_STORAGE_KEY_LEGACY;
 }
 
 /** Pro demo / licencia guardada en este navegador (sin depender de la URL). */
 export function hasPersistentProEnabled() {
+  if (clientProShortcutsDisabled()) return false;
   try {
-    return localStorage.getItem(LS_PRO_PERSISTENT) === '1';
+    if (localStorage.getItem(PRO_LICENSE_LOCAL_STORAGE_KEY) === '1') return true;
+    if (localStorage.getItem(PRO_LICENSE_LOCAL_STORAGE_KEY_LEGACY) === '1') {
+      localStorage.setItem(PRO_LICENSE_LOCAL_STORAGE_KEY, '1');
+      localStorage.removeItem(PRO_LICENSE_LOCAL_STORAGE_KEY_LEGACY);
+      return true;
+    }
+    return false;
   } catch (_) {
     return false;
   }
@@ -44,13 +92,14 @@ export function getFreemiumStrategy() {
 /** @returns {'free'|'premium'} */
 export function getEffectiveTier() {
   if (FEATURES.devSimulatePremium) return 'premium';
-  try {
-    const q = new URLSearchParams(window.location.search);
-    if (q.get('pro') === '1') {
-      return 'premium';
+  if (clientProShortcutsDisabled()) return 'free';
+  if (FEATURES.allowPremiumViaQueryPro) {
+    try {
+      const q = new URLSearchParams(window.location.search);
+      if (q.get('pro') === '1') return 'premium';
+    } catch (_) {
+      /* ignore */
     }
-  } catch (_) {
-    /* ignore */
   }
   if (hasPersistentProEnabled()) return 'premium';
   if (getFreeProRemainingUses() > 0) return 'premium';
@@ -66,8 +115,10 @@ export function isToolUnlocked(tool) {
 
 /** Marca licencia Pro persistente sin navegar (p. ej. tras confirmar pago en checkout). */
 export function grantProLicensePersistent() {
+  if (clientProShortcutsDisabled()) return;
   try {
-    localStorage.setItem(LS_PRO_PERSISTENT, '1');
+    localStorage.setItem(PRO_LICENSE_LOCAL_STORAGE_KEY, '1');
+    localStorage.removeItem(PRO_LICENSE_LOCAL_STORAGE_KEY_LEGACY);
   } catch (_) {
     /* ignore */
   }
@@ -95,6 +146,7 @@ export function setPremiumPersistent() {
  * Preferir `setPremiumPersistent()` para «Activar Pro» en UI.
  */
 export function activateProDemoInBrowser() {
+  if (clientProShortcutsDisabled()) return;
   if (!FEATURES.allowPremiumViaQueryPro) return;
   try {
     const u = new URL(window.location.href);
@@ -108,7 +160,8 @@ export function activateProDemoInBrowser() {
 
 export function clearPremiumPersistent() {
   try {
-    localStorage.removeItem(LS_PRO_PERSISTENT);
+    localStorage.removeItem(PRO_LICENSE_LOCAL_STORAGE_KEY);
+    localStorage.removeItem(PRO_LICENSE_LOCAL_STORAGE_KEY_LEGACY);
   } catch (_) {
     /* ignore */
   }
@@ -124,6 +177,27 @@ export function clearPremiumPersistent() {
 
 export function isPremiumEffective() {
   return getEffectiveTier() === 'premium';
+}
+
+/**
+ * Pro suficiente para desbloquear formularios y acordeones en calculadoras m\u00e1quinas Pro.
+ * No incluye el margen de \u00abusos Pro gratuitos\u00bb del contador local (sigue reservado para
+ * otras partes de la app); exige `?pro=1`, licencia persistida o flag de desarrollo.
+ *
+ * @returns {boolean}
+ */
+export function isPremiumForMachineForm() {
+  if (FEATURES.devSimulatePremium) return true;
+  if (clientProShortcutsDisabled()) return false;
+  if (FEATURES.allowPremiumViaQueryPro) {
+    try {
+      if (new URLSearchParams(window.location.search).get('pro') === '1') return true;
+    } catch (_) {
+      /* ignore */
+    }
+  }
+  if (hasPersistentProEnabled()) return true;
+  return false;
 }
 
 function getUsageCounterRaw() {
@@ -149,11 +223,14 @@ function setUsageCounterRaw(v) {
  */
 export function consumeFreeProUseIfNeeded() {
   if (FEATURES.devSimulatePremium) return;
-  try {
-    const q = new URLSearchParams(window.location.search);
-    if (q.get('pro') === '1') return;
-  } catch (_) {
-    /* ignore */
+  if (clientProShortcutsDisabled()) return;
+  if (FEATURES.allowPremiumViaQueryPro) {
+    try {
+      const q = new URLSearchParams(window.location.search);
+      if (q.get('pro') === '1') return;
+    } catch (_) {
+      /* ignore */
+    }
   }
   if (hasPersistentProEnabled()) return;
 
@@ -176,6 +253,7 @@ export function getFreeProUsageCount() {
 
 export function getFreeProRemainingUses() {
   if (!FEATURES.allowFreeProTrialUses) return 0;
+  if (FEATURES.proClientPolicy === 'production' && !FEATURES.devSimulatePremium) return 0;
   const left = MAX_FREE_PRO_USES - getUsageCounterRaw();
   return left > 0 ? left : 0;
 }

@@ -5,7 +5,7 @@
 import { BRANDS } from '../data/gearmotorCatalog.js';
 import { getBestCatalogPick } from '../ui/driveSelection.js';
 import { getCurrentLang, t, formatNumberLocale, formatDateTimeLocale } from '../config/locales.js';
-import { FEATURES } from '../config/features.js';
+import { FEATURES, isPremiumViaQueryProUiAllowed } from '../config/features.js';
 import { buildRegisterUrlWithNextCheckout } from './proCheckoutFlow.js';
 import { LOAD_DUTY_OPTIONS, LOAD_DUTY_OPTIONS_EN } from '../modules/serviceFactorByDuty.js';
 
@@ -1235,9 +1235,9 @@ export function mountPremiumPdfExportBar(el, opts) {
     });
   } else {
     el.hidden = false;
-    const proHref = FEATURES.allowPremiumViaQueryPro ? '?pro=1' : buildRegisterUrlWithNextCheckout();
-    const proLabelEn = FEATURES.allowPremiumViaQueryPro ? 'Try Pro access' : 'Get Pro';
-    const proLabelEs = FEATURES.allowPremiumViaQueryPro ? 'Probar acceso Pro' : 'Obtener Pro';
+    const proHref = isPremiumViaQueryProUiAllowed() ? '?pro=1' : buildRegisterUrlWithNextCheckout();
+    const proLabelEn = isPremiumViaQueryProUiAllowed() ? 'Try Pro access' : 'Get Pro';
+    const proLabelEs = isPremiumViaQueryProUiAllowed() ? 'Probar acceso Pro' : 'Obtener Pro';
     el.innerHTML = en
       ? `
       <div class="premium-export premium-export--teaser">

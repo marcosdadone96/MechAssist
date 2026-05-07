@@ -9,6 +9,7 @@ function escapeAttr(s) {
 }
 
 export function mountLabDonationFooter() {
+  if (!FEATURES.showLabDonationBanner) return;
   const main = document.querySelector('main.lab-main');
   if (!main || document.getElementById('lab-donation-footer')) return;
 

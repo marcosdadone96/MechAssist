@@ -1,10 +1,12 @@
 User-agent: *
 Allow: /
 
-# Internal flow pages use noindex in HTML: register.html, checkout.html
+# Paginas con noindex en HTML: register.html, checkout.html, calc-gearmotor-inertia.html (beta).
+# calc-gearmotor-inertia.html no se incluye en sitemap.xml (ver scripts/generate-sitemap.mjs).
 #
-# After setting FEATURES.publicSiteBaseUrl and running: node scripts/generate-sitemap.mjs
-# uncomment and set your domain:
-# Sitemap: https://your-domain.com/sitemap.xml
-
-Sitemap: https://REPLACE-WITH-YOUR-DOMAIN/sitemap.xml
+# Sitemap (URL absoluta obligatoria):
+#   1) Rellene publicSiteBaseUrl en js/config/features.js (sin barra final).
+#   2) Ejecute: node scripts/generate-sitemap.mjs
+#   3) Descomente la linea siguiente con su dominio y despliegue sitemap.xml junto al sitio.
+#
+# Sitemap: https://www.example.com/sitemap.xml

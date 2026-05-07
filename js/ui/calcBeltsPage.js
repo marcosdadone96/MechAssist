@@ -22,7 +22,6 @@ import {
   metricHtml,
   renderResultHero,
   runCalcWithIndustrialFeedback,
-  uxCopy,
 } from './labCalcUx.js';
 import { commerceIdForBeltSelection } from '../data/commerceCatalog.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
@@ -193,7 +192,7 @@ function refreshCore() {
   if (heroEl) {
     const hint2 =
       bt === 'synchronous'
-        ? 'Engrane de dientes: misma velocidad de correa, sin deslizamiento cinemático (modelo ideal).'
+        ? 'Engranaje de dientes: misma velocidad de correa, sin deslizamiento cinemático (modelo ideal).'
         : 'Incluye modelo de deslizamiento en la polea conducida (V / plana / Poly-V).';
     heroEl.innerHTML = renderResultHero([
       {
@@ -263,12 +262,12 @@ function refreshCore() {
     if (bt === 'synchronous' && r.Z1 != null && r.Z2 != null) {
       cells.push(
         metricHtml(
-          'Z₁ — teeth · pulley 1 (driver)',
+          'Z₁ · dientes · polea 1 (motriz)',
           String(r.Z1),
           `Diámetro primitivo D₁ = p·Z₁/π = ${formatLength(r.d1, u.length)}.`,
         ),
         metricHtml(
-          'Z₂ — teeth · pulley 2 (driven)',
+          'Z₂ · dientes · polea 2 (conducida)',
           String(r.Z2),
           `D₂ = p·Z₂/π = ${formatLength(r.d2, u.length)}.`,
         ),
@@ -276,12 +275,12 @@ function refreshCore() {
     } else {
       cells.push(
         metricHtml(
-          'd₁ — primitive · pulley 1 (driver)',
+          'd₁ · primitivo · polea 1 (motriz)',
           formatLength(r.d1, u.length),
           'Referencia de velocidad periférica.',
         ),
         metricHtml(
-          'd₂ — primitive · pulley 2 (driven)',
+          'd₂ · primitivo · polea 2 (conducida)',
           formatLength(r.d2, u.length),
           'Salida cinemática antes/después del deslizamiento según tipo de correa.',
         ),
@@ -326,13 +325,13 @@ function refreshCore() {
         'Ángulo de abrazamiento · polea menor',
         `${r.wrapAngle_deg_small.toFixed(2)}°`,
         bt === 'flat' || bt === 'poly_v'
-          ? 'Traction and power capacity depend strongly on wrap (flat / Poly-V).'
+          ? 'La tracción y la capacidad de potencia dependen fuertemente del abrazamiento (plana / Poly-V).'
           : 'Suele ser la polea más exigente para tracción (correa flexible).',
       ),
       metricHtml(
         'Ángulo de abrazamiento · polea mayor',
         `${r.wrapAngle_deg_large.toFixed(2)}°`,
-        'Belt contact on the larger pulley.',
+        'Contacto de correa en la polea mayor.',
       ),
       metricHtml(
         'ω₁ — polea 1 (motriz)',
@@ -376,36 +375,27 @@ function refreshCore() {
       }),
     );
     if (r.geometryValid === false) {
-      parts.push(labAlert('danger', `${esc(r.geometryNote)} ${uxCopy('Ajuste C o diámetros antes de usar el resultado.', 'Adjust C or diameters before using the result.')}`));
+      parts.push(labAlert('danger', `${esc(r.geometryNote)} Ajuste C o diámetros antes de usar el resultado.`));
     } else {
       if (hasCriticalSpeed) {
         parts.push(
           labAlert(
             'warn',
-            uxCopy(
-              'Velocidad de correa alta: revisar vibración, balanceo y límites del perfil.',
-              'High belt speed: review vibration, balance, and profile limits.',
-            ),
+            'Velocidad de correa alta: revisar vibración, balanceo y límites del perfil.',
           ),
         );
       } else if (hasLowSpeed) {
         parts.push(
           labAlert(
             'info',
-            uxCopy(
-              'Velocidad de correa fuera de banda recomendada: validar con fabricante.',
-              'Belt speed outside recommended band: validate with supplier.',
-            ),
+            'Velocidad de correa fuera de banda recomendada: validar con fabricante.',
           ),
         );
       }
       parts.push(
         labAlert(
           'info',
-          `${esc(r.profileNote)} · ${uxCopy(
-            'Compruebe tensión, alineación y datos de catálogo para dimensionado final.',
-            'Check tension, alignment, and catalogue data for final sizing.',
-          )}`,
+          `${esc(r.profileNote)} · Compruebe tensión, alineación y datos de catálogo para dimensionado final.`,
         ),
       );
     }
@@ -452,7 +442,7 @@ function refreshCore() {
       const n2r = r.n2_rpm;
       body = `
         <p class="calc-substitution__step">
-          Angular speed: <code>ω₁ = 2π n₁/60 = ${w1.toFixed(2)} rad/s</code>
+          Velocidad angular: <code>ω₁ = 2π n₁/60 = ${w1.toFixed(2)} rad/s</code>
         </p>
         <p class="calc-substitution__step">
           Velocidad lineal en el primitivo motriz: <code>v = ω₁ · (d₁/2000) = ${r.beltSpeed_m_s.toFixed(2)} m/s</code> → <strong>${vDisp}</strong>
@@ -464,7 +454,7 @@ function refreshCore() {
         ${
           r.slipApplied
             ? `<p class="calc-substitution__step">
-          Slip: <code>s = ${r.slip_pct.toFixed(2)} %</code> → <code>n₂,real = n₂,th · (1−s) = ${n2r != null ? n2r.toFixed(2) : '—'} RPM</code> → <strong>${formatRotation(n2r, u.rotation)}</strong>
+          Deslizamiento: <code>s = ${r.slip_pct.toFixed(2)} %</code> → <code>n₂,real = n₂,th · (1−s) = ${n2r != null ? n2r.toFixed(2) : '—'} RPM</code> → <strong>${formatRotation(n2r, u.rotation)}</strong>
         </p>`
             : ''
         }`;
@@ -507,8 +497,8 @@ function refreshCore() {
     title: 'Ideas de compra (orientativas)',
     linkLabel: 'Buscar en Amazon',
     disclosure: amzTag
-      ? 'MechAssist is a participant in the Amazon EU Associates Programme: links may earn the site a commission at no extra cost to you. Always verify part numbers and seller.'
-      : 'Amazon search links for information only. You can configure an associate ID in site settings.',
+      ? 'MechAssist participa en el programa de afiliados de Amazon EU: los enlaces pueden generar una comisión sin coste adicional. Verifique siempre referencias de pieza y vendedor.'
+      : 'Enlaces de búsqueda a Amazon solo con fines informativos. Puede configurar un ID de afiliado en los ajustes del sitio.',
   });
 }
 

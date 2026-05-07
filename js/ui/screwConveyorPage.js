@@ -293,15 +293,16 @@ function refresh() {
         torqueHint: 'With service factor and material margins',
         motorPower: 'Motor power',
         motorPowerHint: 'Sized at the motor shaft',
-        screwRegime: 'Screw speed',
-        screwRegimeHint: 'Calculated n · validate with OEM',
+        screwRegime: 'Helix speed n',
+        screwRegimeHint: '(min\u207b\u00b9) · validate with OEM',
+        screwRpmUnit: 'min\u207b\u00b9',
         serviceFactor: 'Service factor',
         mountingType: 'Mounting type',
         speed: 'Speed',
         mechanicalDetails: 'Mechanical details',
         pitchWord: 'pitch',
         shaftWord: 'shaft',
-        screwRpmLine: 'screw rpm',
+        screwRpmLine: 'min\u207b\u00b9 · screw',
         fullResult: 'Full result',
         fullResultHint: 'Forces, partial powers and extended metrics',
         hpDesign: 'Power (HP, design)',
@@ -321,15 +322,16 @@ function refresh() {
         torqueHint: 'Con factor de servicio y márgenes material',
         motorPower: 'Potencia motor',
         motorPowerHint: 'Dimensionamiento al eje del motor',
-        screwRegime: 'Régimen tornillo',
-        screwRegimeHint: 'n calculada · valide con fabricante',
+        screwRegime: 'RPM del helicoide n',
+        screwRegimeHint: '(min\u207b\u00b9) · valide con fabricante',
+        screwRpmUnit: 'min\u207b\u00b9',
         serviceFactor: 'Factor de servicio',
         mountingType: 'Tipo de montaje',
         speed: 'Velocidad',
         mechanicalDetails: 'Detalles mecánicos',
         pitchWord: 'paso',
         shaftWord: 'eje',
-        screwRpmLine: 'rpm tornillo',
+        screwRpmLine: 'min\u207b\u00b9 · tornillo',
         fullResult: 'Resultado completo',
         fullResultHint: 'Fuerzas, potencias parciales y métricas extendidas',
         hpDesign: 'Potencia (HP, diseño)',
@@ -426,7 +428,7 @@ function refresh() {
       </article>
       <article class="flat-kpi flat-kpi--speed">
         <span class="flat-kpi__eyebrow">${TX.screwRegime}</span>
-        <p class="flat-kpi__value">${formatNum(r.screwRpm, 2)}<span class="flat-kpi__unit">rpm</span></p>
+        <p class="flat-kpi__value">${formatNum(r.screwRpm, 2)}<span class="flat-kpi__unit">${TX.screwRpmUnit}</span></p>
         <p class="flat-kpi__hint">${TX.screwRegimeHint}</p>
       </article>
     </div>

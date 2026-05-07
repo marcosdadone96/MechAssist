@@ -19,7 +19,7 @@ if (!base) {
   console.warn('[sitemap] publicSiteBaseUrl vacio: usando marcador REPLACE-WITH-YOUR-DOMAIN');
 }
 
-const exclude = new Set(['register.html', 'checkout.html']);
+const exclude = new Set(['register.html', 'checkout.html', 'calc-gearmotor-inertia.html']);
 const files = fs
   .readdirSync(root)
   .filter((f) => f.endsWith('.html') && !exclude.has(f))
@@ -35,7 +35,13 @@ const xml =
 
 fs.writeFileSync(path.join(root, 'sitemap.xml'), xml, 'utf8');
 console.log('Wrote sitemap.xml with', urls.length, 'URLs');
-console.log('Añada en robots.txt: Sitemap:', base + '/sitemap.xml');
+if (base.includes('REPLACE')) {
+  console.warn(
+    '[sitemap] Configure FEATURES.publicSiteBaseUrl y vuelva a ejecutar antes de desplegar. robots.txt: descomente la linea Sitemap con su dominio.',
+  );
+} else {
+  console.log('[sitemap] En robots.txt descomente y fije: Sitemap:', base + '/sitemap.xml');
+}
 
 function escapeXml(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');

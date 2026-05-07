@@ -2,7 +2,7 @@
  * Pantalla de módulo Pro cuando el usuario está en plan gratuito.
  */
 
-import { FEATURES } from '../config/features.js';
+import { FEATURES, isPremiumViaQueryProUiAllowed } from '../config/features.js';
 import {
   clearPremiumPersistent,
   consumeFreeProUseIfNeeded,
@@ -24,10 +24,10 @@ function getLang() {
 }
 
 function getPaywallTx(lang, freeLabel, lockedLabel, freeHref) {
-  const tryProEn = FEATURES.allowPremiumViaQueryPro
+  const tryProEn = isPremiumViaQueryProUiAllowed()
     ? 'Add <span class="paywall-screen__code">?pro=1</span> to the URL for Pro in this tab only (not saved).'
     : 'Pro access is available after purchase through the checkout flow.';
-  const tryProEs = FEATURES.allowPremiumViaQueryPro
+  const tryProEs = isPremiumViaQueryProUiAllowed()
     ? 'A\u00f1ada <span class="paywall-screen__code">?pro=1</span> a la URL para Pro solo en esta pesta\u00f1a (no se guarda).'
     : 'El acceso Pro est\u00e1 disponible tras la compra en el flujo de pago.';
   if (lang === 'en') {
@@ -147,7 +147,7 @@ export function mountProMachinePaywall() {
           liRoller: '<a href="roller-conveyor.html">Roller conveyor</a>',
           liHub: '<a href="machines-hub.html">All machine calculators</a>',
           liHome: '<a href="index.html">Home</a>',
-          tryPro: FEATURES.allowPremiumViaQueryPro
+          tryPro: isPremiumViaQueryProUiAllowed()
             ? 'Tip: add <span class="paywall-screen__code">?pro=1</span> to the URL for Pro in this tab only (demo).'
             : 'Pro access will be available after purchase.',
           demoTitle: 'Unlock Pro',
@@ -164,7 +164,7 @@ export function mountProMachinePaywall() {
           liRoller: '<a href="roller-conveyor.html">Transportador de rodillos</a>',
           liHub: '<a href="machines-hub.html">Ver todas las m\u00e1quinas</a>',
           liHome: '<a href="index.html">Inicio</a>',
-          tryPro: FEATURES.allowPremiumViaQueryPro
+          tryPro: isPremiumViaQueryProUiAllowed()
             ? 'Tip: a\u00f1ada <span class="paywall-screen__code">?pro=1</span> a la URL para Pro solo en esta pesta\u00f1a (demo).'
             : 'El acceso Pro estar\u00e1 disponible tras la compra.',
           demoTitle: 'Desbloquear Pro',
@@ -242,7 +242,7 @@ export function mountTierStatusBar() {
   let canClearPro = false;
   try {
     if (
-      FEATURES.allowPremiumViaQueryPro &&
+      isPremiumViaQueryProUiAllowed() &&
       new URLSearchParams(window.location.search).get('pro') === '1'
     ) {
       canClearPro = true;
@@ -274,7 +274,7 @@ export function mountTierStatusBar() {
         logoutAsk: '\u00bfCerrar sesi\u00f3n local de esta cuenta?',
       };
 
-  const proLinkHref = FEATURES.allowPremiumViaQueryPro ? '?pro=1' : '#';
+  const proLinkHref = isPremiumViaQueryProUiAllowed() ? '?pro=1' : '#';
   const freeUsesBlock = FEATURES.allowFreeProTrialUses
     ? `<span aria-hidden="true">·</span><span title="${lang === 'en' ? 'Free Pro uses' : 'Usos Pro gratis'}">${TX.freeUses}</span>`
     : '';

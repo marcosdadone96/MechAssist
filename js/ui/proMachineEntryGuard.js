@@ -1,18 +1,13 @@
 /**
- * Bloqueo de pùgina completa para calculadoras listadas en PRO_CALCULATOR_PATHS
- * (excepto lienzo, que tiene su propio paywall en el DOM).
+ * Entrada de calculadoras de m\u00e1quinas catalogadas como Pro.
+ *
+ * El m\u00f3dulo siempre se carga; en plan gratuito el bloqueo de formulario lo aplica
+ * `applyMachinePremiumGates` (acordeones / bloques `<details>`) en cada p\u00e1gina.
  */
-
-import { isProMachineAppPath } from '../config/freemium.js';
-import { isPremiumEffective } from '../services/accessTier.js';
-import { mountProMachinePaywall } from './paywallMount.js';
 
 /**
- * @returns {boolean} true si debe cargarse el mùdulo de cùlculo
+ * @returns {boolean} siempre true: cargar el bundle de la calculadora
  */
 export function runProMachineEntryGuard() {
-  if (!isProMachineAppPath(window.location.pathname)) return true;
-  if (isPremiumEffective()) return true;
-  mountProMachinePaywall();
-  return false;
+  return true;
 }

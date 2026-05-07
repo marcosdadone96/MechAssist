@@ -8,8 +8,8 @@ import { initScrewConveyorLangChrome } from './screwConveyorStaticI18n.js';
 import { runProMachineEntryGuard } from './proMachineEntryGuard.js';
 
 mountTierStatusBar();
+initScrewConveyorLangChrome();
 if (runProMachineEntryGuard()) {
-  initScrewConveyorLangChrome();
   await import('./screwConveyorPage.js');
   mountMachineConfigBar();
 }

@@ -2,7 +2,6 @@
  * Guardado/carga local de configuraciones por maquina.
  */
 
-import { isFreeMachineFullAccess } from '../config/freemium.js';
 import { isPremiumEffective } from '../services/accessTier.js';
 
 const LS_KEY = 'mdr-machine-configs-v1';
@@ -18,7 +17,7 @@ function getLang() {
 function getTx(lang, isPro) {
   if (lang === 'en') {
     return {
-      panelTitle: `Machine Configuration ${isPro ? '<span class="premium-flag">Pro</span>' : ''}`,
+      panelTitle: '<span class="premium-flag">Pro</span> Machine Configuration',
       namePlaceholder: 'Name (e.g. Production 1)',
       saveCurrent: 'Save Current',
       savedConfigs: 'Saved Configurations',
@@ -38,7 +37,7 @@ function getTx(lang, isPro) {
     };
   }
   return {
-    panelTitle: `Configuraci\u00f3n de la m\u00e1quina ${isPro ? '<span class="premium-flag">Pro</span>' : ''}`,
+    panelTitle: '<span class="premium-flag">Pro</span> Configuraci\u00f3n de la m\u00e1quina',
     namePlaceholder: 'Nombre (ej. Producci\u00f3n 1)',
     saveCurrent: 'Guardar actual',
     savedConfigs: 'Configuraciones guardadas',
@@ -158,7 +157,7 @@ export function mountMachineConfigBar() {
   if (document.getElementById('machineConfigBar')) return;
 
   const tool = getToolKey();
-  const isPro = isPremiumEffective() || isFreeMachineFullAccess();
+  const isPro = isPremiumEffective();
   const tx = getTx(getLang(), isPro);
   const host = document.createElement('section');
   host.className = 'panel machine-config-panel';

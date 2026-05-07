@@ -362,7 +362,10 @@ function localizeRollerStaticContent() {
     <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.`,
   );
   const pdfH2 = document.querySelector('#premiumPdfExportMount')?.closest('section.panel')?.querySelector('h2');
-  if (pdfH2) pdfH2.innerHTML = '<span class="panel-icon">PDF</span> Export report';
+  if (pdfH2) {
+    pdfH2.innerHTML =
+      '<span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Export report';
+  }
   setHtml(
     '#verifyPanel h2',
     '<span class="panel-icon">\u2713</span> Check a gearmotor I already have',
@@ -417,6 +420,7 @@ function localizeRollerStaticContent() {
 
 function refresh() {
   const conveyorExtrasUnlocked = isPremiumEffective() || isFreeMachineFullAccess();
+  const pdfReportUnlocked = isPremiumEffective();
   const LBL = getI18nLabels();
   const lang = getCurrentLang();
   const en = lang === 'en';
@@ -642,7 +646,7 @@ function refresh() {
 
   if (els.premiumPdfMount) {
     mountPremiumPdfExportBar(els.premiumPdfMount, {
-      isPremium: conveyorExtrasUnlocked,
+      isPremium: pdfReportUnlocked,
       getPayload: () => buildRollerPdfPayload(raw, r),
       getDiagramElement: () => els.diagram,
       diagramTitle: TX.machineDiagram,
