@@ -78,6 +78,14 @@ export const FEATURES = Object.freeze({
   publicSiteBaseUrl: 'https://www.themechassist.com',
 
   /**
+   * Sugerencias (feedback.html): clave de https://web3forms.com (gratis).
+   * Con una clave configurada, el envío funciona aunque el sitio no use Netlify Forms
+   * (p. ej. solo hosting estático o dominio sin formularios Netlify).
+   * Dejar vacío para usar solo la función Netlify (Resend) + Netlify Forms.
+   */
+  feedbackWeb3FormsAccessKey: '',
+
+  /**
    * Atajos "demo" de Pro. En produccion suele ir todo false y showDemoCheckoutCompleteButton
    * solo true mientras prueba sin Stripe.
    * Ejemplo produccion: allowPremiumViaQueryPro false, allowFreeProTrialUses false,

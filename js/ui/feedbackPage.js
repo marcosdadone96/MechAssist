@@ -1,9 +1,10 @@
 /**
- * Sugerencias: intento vía función Netlify `email-feedback` (Resend) si está configurada;
- * si no, Netlify Forms (POST a la página del formulario).
+ * Sugerencias: 1) función Netlify email-feedback (Resend), 2) Web3Forms si hay clave en features,
+ * 3) Netlify Forms (POST a /feedback.html y, si falla, a /).
  */
 
 import { HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
+import { FEATURES } from '../config/features.js';
 
 function syncDocTitle() {
   const t = window.__t;
@@ -48,17 +49,53 @@ async function submitViaEmailFunction(form) {
 }
 
 /**
+ * Envío independiente del hosting (requiere clave en features.js).
+ * @param {HTMLFormElement} form
+ * @param {string} accessKey
+ */
+async function submitViaWeb3Forms(form, accessKey) {
+  const fd = new FormData(form);
+  const message = String(fd.get('message') || '').trim();
+  const name = String(fd.get('name') || '').trim();
+  const email = String(fd.get('email') || '').trim();
+  const context = String(fd.get('context') || '').trim();
+  const lines = [message];
+  if (context) lines.push('', `Contexto / referrer: ${context}`);
+  const payload = {
+    access_key: accessKey,
+    subject: '[TheMechAssist] Sugerencia',
+    message: lines.join('\n'),
+    from_name: name || 'Anónimo',
+  };
+  if (email) payload.email = email;
+
+  const res = await fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  return res.ok && data.success === true;
+}
+
+/**
+ * Netlify Forms: mismo cuerpo en la acción del form y, si falla, en la raíz del sitio.
  * @param {HTMLFormElement} form
  */
 async function submitViaNetlifyForms(form) {
   const fd = new FormData(form);
-  const body = new URLSearchParams(fd);
-  const postUrl = resolveFormsPostUrl(form);
-  return fetch(postUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString(),
-  });
+  const body = new URLSearchParams(fd).toString();
+  const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+  const primary = resolveFormsPostUrl(form);
+  const fallbackRoot = new URL('/', window.location.origin).href;
+
+  let res = await fetch(primary, { method: 'POST', headers, body });
+  if (res.ok) return res;
+
+  if (primary !== fallbackRoot) {
+    res = await fetch(fallbackRoot, { method: 'POST', headers, body });
+  }
+  return res;
 }
 
 function mountFeedbackPage() {
@@ -109,11 +146,17 @@ function mountFeedbackPage() {
 
       try {
         const fnRes = await submitViaEmailFunction(form);
-        if (fnRes.ok) {
-          sent = true;
-        }
+        if (fnRes.ok) sent = true;
       } catch (_) {
-        /* red o función no desplegada: seguir con Forms */
+        /* función no desplegada o red */
+      }
+
+      const w3key =
+        typeof FEATURES.feedbackWeb3FormsAccessKey === 'string'
+          ? FEATURES.feedbackWeb3FormsAccessKey.trim()
+          : '';
+      if (!sent && w3key) {
+        sent = await submitViaWeb3Forms(form, w3key);
       }
 
       if (!sent) {
