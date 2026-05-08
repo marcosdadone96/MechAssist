@@ -1,9 +1,9 @@
 /**
- * Pagina de registro local (demo): formulario accesible, ES/EN.
+ * Registro: cuenta local (demo) o servidor Netlify según FEATURES.useServerAuth.
  */
 
-import { getCurrentUser, registerLocalUser, clearLocalUser } from '../services/localAuth.js';
 import { FEATURES } from '../config/features.js';
+import { registerAccount, getCurrentUser, clearLocalUser } from '../services/accountAuth.js';
 import { getRegisterNextPath } from '../services/proCheckoutFlow.js';
 
 function getLang() {
@@ -30,8 +30,12 @@ const TX = {
         title: 'Solo para la demo local; no se env\u00eda a ning\u00fan servidor.',
         aria: 'Ayuda: email.',
       },
+      emailChipServer: {
+        title: 'Recibir\u00e1s un enlace de verificaci\u00f3n en este correo.',
+        aria: 'Ayuda: email.',
+      },
       pwChip: {
-        title: 'M\u00ednimo 6 caracteres. No se almacena en el dispositivo.',
+        title: 'M\u00ednimo 8 caracteres.',
         aria: 'Ayuda: contrase\u00f1a.',
       },
       pw2Chip: {
@@ -41,18 +45,22 @@ const TX = {
     },
     heading: 'Crear cuenta',
     lead:
-      'Registro de demostraci\u00f3n en este navegador. No se env\u00edan datos a ning\u00fan servidor; la contrase\u00f1a no se guarda, solo se comprueba su longitud.',
+      'Registro de demostraci\u00f3n en este navegador. No se env\u00edan datos a ning\u00fan servidor; la contrase\u00f1a no se guarda en claro, solo se usa para comprobar la sesi\u00f3n local.',
+    leadServer:
+      'Te enviaremos un correo con un enlace para confirmar tu direcci\u00f3n. Despu\u00e9s podr\u00e1s iniciar sesi\u00f3n desde cualquier p\u00e1gina.',
     nameLabel: 'Nombre completo',
     namePh: 'Ej. Ana Garc\u00eda',
     emailLabel: 'Correo electr\u00f3nico',
     emailPh: 'correo@ejemplo.com',
     pwLabel: 'Contrase\u00f1a',
-    pwPh: 'M\u00ednimo 6 caracteres',
+    pwPh: 'M\u00ednimo 8 caracteres',
     pw2Label: 'Confirmar contrase\u00f1a',
     pw2Ph: 'Repita la contrase\u00f1a',
     submit: 'Crear cuenta',
     terms:
       'Esta cuenta es solo local (demo) y puede perderse al limpiar el almacenamiento del navegador o usar otro dispositivo.',
+    termsServer:
+      'La contrase\u00f1a se guarda de forma segura en el servidor (hash). Al iniciar sesi\u00f3n se emite una sesi\u00f3n en este navegador.',
     acceptLegalHtml:
       'He le\u00eddo y acepto los <a href="terms.html" target="_blank" rel="noopener">T\u00e9rminos</a> y la <a href="privacy.html" target="_blank" rel="noopener">Pol\u00edtica de privacidad</a>.',
     footerPrivacy: 'Privacidad',
@@ -65,6 +73,12 @@ const TX = {
     successTitle: 'Cuenta creada',
     successLead:
       'Ya puede usar las funciones que requieran identificaci\u00f3n en este navegador.',
+    verifiedTitle: 'Correo verificado',
+    verifiedLead:
+      'Ya puede iniciar sesi\u00f3n con su correo y contrase\u00f1a desde el men\u00fa de la web.',
+    pendingTitle: 'Revisa tu correo',
+    pendingLead:
+      'Te hemos enviado un enlace para confirmar tu cuenta. Caduca en 48 horas.',
     successBtn: 'Ir al inicio',
     signedInTitle: 'Ya tiene una sesi\u00f3n activa',
     signedInLead: (name) =>
@@ -72,6 +86,9 @@ const TX = {
     logout: 'Cerrar sesi\u00f3n',
     goRegister: 'Usar otra cuenta',
     continueCheckout: 'Continuar al pago',
+    verifyInvalid: 'El enlace de verificaci\u00f3n no es v\u00e1lido o ya se us\u00f3.',
+    verifyExpired: 'El enlace ha caducado. Vuelva a registrarse.',
+    verifyMissing: 'Falta el token de verificaci\u00f3n.',
   },
   en: {
     docTitle: 'Register \u2014 TheMechAssist',
@@ -88,8 +105,12 @@ const TX = {
         title: 'For local demo only; nothing is sent to any server.',
         aria: 'Help: email.',
       },
+      emailChipServer: {
+        title: 'You will receive a verification link at this address.',
+        aria: 'Help: email.',
+      },
       pwChip: {
-        title: 'At least 6 characters. It is not stored on the device.',
+        title: 'At least 8 characters.',
         aria: 'Help: password.',
       },
       pw2Chip: {
@@ -99,18 +120,22 @@ const TX = {
     },
     heading: 'Create account',
     lead:
-      'Local demo sign-up in this browser only. Nothing is sent to a server; your password is not stored\u2014only its length is checked.',
+      'Local demo sign-up in this browser only. Nothing is sent to a server; your password is not stored in plain text locally.',
+    leadServer:
+      'We will email you a link to confirm your address. You can then sign in from any page.',
     nameLabel: 'Full name',
     namePh: 'e.g. Jane Smith',
     emailLabel: 'Email',
     emailPh: 'you@example.com',
     pwLabel: 'Password',
-    pwPh: 'At least 6 characters',
+    pwPh: 'At least 8 characters',
     pw2Label: 'Confirm password',
     pw2Ph: 'Re-enter password',
     submit: 'Create account',
     terms:
       'This account is local (demo) only and may be lost if you clear browser storage or use another device.',
+    termsServer:
+      'Your password is stored securely on the server (hash). Signing in keeps a session in this browser.',
     acceptLegalHtml:
       'I have read and accept the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a>.',
     footerPrivacy: 'Privacy',
@@ -121,6 +146,10 @@ const TX = {
     errLegal: 'You must accept the terms and privacy policy.',
     successTitle: 'Account created',
     successLead: 'You can now use features that require a local identity in this browser.',
+    verifiedTitle: 'Email verified',
+    verifiedLead: 'You can now sign in with your email and password from the site menu.',
+    pendingTitle: 'Check your inbox',
+    pendingLead: 'We sent you a link to confirm your account. It expires in 48 hours.',
     successBtn: 'Go to home',
     signedInTitle: 'You are already signed in',
     signedInLead: (name) =>
@@ -128,6 +157,9 @@ const TX = {
     logout: 'Log out',
     goRegister: 'Use another account',
     continueCheckout: 'Continue to payment',
+    verifyInvalid: 'This verification link is invalid or was already used.',
+    verifyExpired: 'This link has expired. Please register again.',
+    verifyMissing: 'Verification token is missing.',
   },
 };
 
@@ -143,11 +175,13 @@ function applyTx() {
     });
   };
 
+  const server = FEATURES.useServerAuth === true;
+
   setTx('navHome', t.navHome);
   setTx('navLab', t.navLab);
   setTx('heading', t.heading);
-  setTx('lead', t.lead);
-  setTx('terms', t.terms);
+  setTx('lead', server ? t.leadServer : t.lead);
+  setTx('terms', server ? t.termsServer : t.terms);
   setTx('linkHome', t.linkHome);
   setTx('submit', t.submit);
   setTx('successTitle', t.successTitle);
@@ -157,6 +191,8 @@ function applyTx() {
   setTx('logout', t.logout);
   setTx('goRegister', t.goRegister);
   setTx('continueCheckout', t.continueCheckout);
+  setTx('pendingTitle', t.pendingTitle);
+  setTx('pendingLead', t.pendingLead);
 
   document.querySelectorAll('[data-reg-part]').forEach((el) => {
     const key = el.getAttribute('data-reg-part');
@@ -178,7 +214,9 @@ function applyTx() {
 
   document.querySelectorAll('[data-reg-tip]').forEach((el) => {
     const id = el.getAttribute('data-reg-tip');
-    const chip = id && t.chips && t.chips[id];
+    let chip =
+      id === 'emailChip' && server ? t.chips?.emailChipServer : id && t.chips && t.chips[id];
+    if (id === 'emailChip' && !server) chip = t.chips?.emailChip;
     if (chip) {
       el.title = chip.title;
       el.setAttribute('aria-label', chip.aria);
@@ -234,13 +272,22 @@ export function mountRegisterPage() {
   const form = document.getElementById('registerForm');
   const signedIn = document.getElementById('registerSignedIn');
   const success = document.getElementById('registerSuccess');
-  const user = getCurrentUser();
+  const pending = document.getElementById('registerPending');
   const lang = getLang();
   const t = TX[lang];
+  const params = new URLSearchParams(window.location.search);
+
+  const verifyParam = params.get('verify');
+  if (verifyParam === 'invalid') showError(t.verifyInvalid);
+  else if (verifyParam === 'expired') showError(t.verifyExpired);
+  else if (verifyParam === 'missing') showError(t.verifyMissing);
+
+  const user = getCurrentUser();
 
   if (user) {
     if (form) form.hidden = true;
     if (success) success.hidden = true;
+    if (pending) pending.hidden = true;
     if (signedIn) signedIn.hidden = false;
     document.getElementById('btnLogoutSignedIn')?.addEventListener('click', () => {
       clearLocalUser();
@@ -249,10 +296,25 @@ export function mountRegisterPage() {
     return;
   }
 
+  if (params.get('verified') === '1') {
+    if (form) form.hidden = true;
+    if (pending) pending.hidden = true;
+    if (signedIn) signedIn.hidden = true;
+    if (success) {
+      success.hidden = false;
+      const st = success.querySelector('[data-reg-tx="successTitle"]');
+      const sl = success.querySelector('[data-reg-tx="successLead"]');
+      if (st) st.textContent = t.verifiedTitle;
+      if (sl) sl.textContent = t.verifiedLead;
+    }
+    return;
+  }
+
   if (signedIn) signedIn.hidden = true;
   if (success) success.hidden = true;
+  if (pending) pending.hidden = true;
 
-  form?.addEventListener('submit', (ev) => {
+  form?.addEventListener('submit', async (ev) => {
     ev.preventDefault();
     showError('');
     const name = document.getElementById('regName')?.value ?? '';
@@ -272,13 +334,22 @@ export function mountRegisterPage() {
     }
 
     try {
-      registerLocalUser({ name, email, password }, { lang });
+      const result = await registerAccount({ name, email, password }, { lang });
+
+      if (result && result.pendingVerification) {
+        if (form) form.hidden = true;
+        if (success) success.hidden = true;
+        if (pending) pending.hidden = false;
+        return;
+      }
+
       const nextPath = getRegisterNextPath();
       if (nextPath === 'checkout.html') {
         window.location.href = FEATURES.publicFreeRelease ? 'transmission-lab.html' : nextPath;
         return;
       }
       if (form) form.hidden = true;
+      if (pending) pending.hidden = true;
       if (success) success.hidden = false;
       try {
         window.history.replaceState({}, '', `${window.location.pathname}?registered=1`);

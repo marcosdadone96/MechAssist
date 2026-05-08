@@ -575,7 +575,13 @@
             </div>
             <div class="ma-field">
               <label for="ma-auth-login-pass" data-i18n="auth.password">Contraseña</label>
-              <input id="ma-auth-login-pass" name="password" type="password" autocomplete="current-password" />
+              <input
+                id="ma-auth-login-pass"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                minlength="8"
+              />
             </div>
             <button type="button" class="ma-auth__submit" data-i18n="auth.submitLogin">Entrar</button>
           </form>
@@ -592,7 +598,13 @@
             </div>
             <div class="ma-field">
               <label for="ma-auth-reg-pass" data-i18n="auth.password">Contraseña</label>
-              <input id="ma-auth-reg-pass" name="password" type="password" autocomplete="new-password" />
+              <input
+                id="ma-auth-reg-pass"
+                name="password"
+                type="password"
+                autocomplete="new-password"
+                minlength="8"
+              />
             </div>
             <button type="button" class="ma-auth__submit" data-i18n="auth.submitRegister">Crear cuenta</button>
           </form>

@@ -2,7 +2,8 @@
  * Freemium UI: auth modal, tab switching, Escape, local register/login.
  */
 
-import { registerLocalUser, loginLocalUser } from '../services/localAuth.js';
+import { registerAccount, loginAccount } from '../services/accountAuth.js';
+import { FEATURES } from '../config/features.js';
 
 const AUTH_TAB_LOGIN = 'login';
 const AUTH_TAB_REGISTER = 'register';
@@ -153,35 +154,47 @@ document.addEventListener('click', (e) => {
     const panel = authSubmit.closest('.ma-auth__panel');
     const panelKind = panel instanceof HTMLElement ? panel.getAttribute('data-panel') : null;
     const lang = modalLang();
-    try {
-      if (panelKind === AUTH_TAB_REGISTER) {
-        const nameEl = document.getElementById('ma-auth-reg-name');
-        const emailEl = document.getElementById('ma-auth-reg-email');
-        const passEl = document.getElementById('ma-auth-reg-pass');
-        registerLocalUser(
-          {
-            name: nameEl instanceof HTMLInputElement ? nameEl.value : '',
-            email: emailEl instanceof HTMLInputElement ? emailEl.value : '',
-            password: passEl instanceof HTMLInputElement ? passEl.value : '',
-          },
-          { lang },
-        );
-      } else {
-        const emailEl = document.getElementById('ma-auth-login-email');
-        const passEl = document.getElementById('ma-auth-login-pass');
-        loginLocalUser(
-          {
-            email: emailEl instanceof HTMLInputElement ? emailEl.value : '',
-            password: passEl instanceof HTMLInputElement ? passEl.value : '',
-          },
-          { lang },
-        );
+    void (async () => {
+      try {
+        if (panelKind === AUTH_TAB_REGISTER) {
+          const nameEl = document.getElementById('ma-auth-reg-name');
+          const emailEl = document.getElementById('ma-auth-reg-email');
+          const passEl = document.getElementById('ma-auth-reg-pass');
+          const result = await registerAccount(
+            {
+              name: nameEl instanceof HTMLInputElement ? nameEl.value : '',
+              email: emailEl instanceof HTMLInputElement ? emailEl.value : '',
+              password: passEl instanceof HTMLInputElement ? passEl.value : '',
+            },
+            { lang },
+          );
+          if (FEATURES.useServerAuth && result && result.pendingVerification) {
+            const pendingMsg =
+              typeof window.__t === 'function'
+                ? window.__t('auth.pendingVerify')
+                : lang === 'en'
+                  ? 'Check your inbox and click the verification link to activate your account.'
+                  : 'Revisa tu correo y pulsa el enlace para activar la cuenta.';
+            showAuthFormError(pendingMsg);
+            return;
+          }
+        } else {
+          const emailEl = document.getElementById('ma-auth-login-email');
+          const passEl = document.getElementById('ma-auth-login-pass');
+          await loginAccount(
+            {
+              email: emailEl instanceof HTMLInputElement ? emailEl.value : '',
+              password: passEl instanceof HTMLInputElement ? passEl.value : '',
+            },
+            { lang },
+          );
+        }
+        finishAuthSuccess();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        showAuthFormError(msg);
       }
-      finishAuthSuccess();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      showAuthFormError(msg);
-    }
+    })();
     return;
   }
 

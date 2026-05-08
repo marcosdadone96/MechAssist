@@ -2,7 +2,7 @@
  * Hub (home): cuenta en cabecera + badges si existiera el aro radial (legacy).
  */
 
-import { getCurrentUser, clearLocalUser } from '../services/localAuth.js';
+import { getCurrentUser, clearLocalUser } from '../services/accountAuth.js';
 import { clearProEntitlementClient } from '../services/proEntitlement.js';
 import { FEATURES } from '../config/features.js';
 import { isProCalculatorPath } from '../config/freemium.js';

@@ -86,6 +86,13 @@ export const FEATURES = Object.freeze({
   feedbackWeb3FormsAccessKey: 'e6895fd1-92f4-4a29-a1a9-0dd3b80f2ccd',
 
   /**
+   * Registro e inicio de sesión con servidor Netlify (correo de verificación + Blobs + JWT).
+   * Requiere RESEND_API_KEY, AUTH_MAIL_FROM o FEEDBACK_FROM_EMAIL, AUTH_JWT_SECRET o PRO_JWT_SECRET.
+   * Si false: comportamiento anterior solo en localStorage (demo en este navegador).
+   */
+  useServerAuth: true,
+
+  /**
    * Atajos "demo" de Pro. En produccion suele ir todo false y showDemoCheckoutCompleteButton
    * solo true mientras prueba sin Stripe.
    * Ejemplo produccion: allowPremiumViaQueryPro false, allowFreeProTrialUses false,

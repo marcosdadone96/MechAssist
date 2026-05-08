@@ -71,6 +71,14 @@
           </div>
         </div>
 
+        <div id="registerPending" class="register-panel register-panel--pending" hidden>
+          <h1 class="register-card__title" data-reg-tx="pendingTitle">Revisa tu correo</h1>
+          <p class="register-card__lead" data-reg-tx="pendingLead"></p>
+          <div class="register-card__actions">
+            <a class="button button--primary" href="index.html" data-reg-tx="linkHome">Inicio</a>
+          </div>
+        </div>
+
         <div id="registerSuccess" class="register-panel register-panel--success" hidden>
           <h1 class="register-card__title" data-reg-tx="successTitle">Listo</h1>
           <p class="register-card__lead" data-reg-tx="successLead"></p>
@@ -111,7 +119,7 @@
                 type="password"
                 autocomplete="new-password"
                 required
-                minlength="6"
+                minlength="8"
                 maxlength="128"
               />
             </div>
@@ -126,7 +134,7 @@
                 type="password"
                 autocomplete="new-password"
                 required
-                minlength="6"
+                minlength="8"
                 maxlength="128"
               />
             </div>

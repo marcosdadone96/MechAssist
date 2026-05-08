@@ -163,7 +163,9 @@ const dict = {
     'auth.submitLogin': 'Entrar',
     'auth.submitRegister': 'Crear cuenta',
     'auth.backendNote':
-      'Los datos se guardan solo en este dispositivo (localStorage). Sin cuenta en servidor por ahora.',
+      'Si el sitio usa cuenta en servidor, recibir\u00e1s un correo para verificar el email antes de iniciar sesi\u00f3n; si no, los datos quedan solo en este dispositivo (demo).',
+    'auth.pendingVerify':
+      'Revisa tu correo y pulsa el enlace de verificaci\u00f3n para activar la cuenta. Despu\u00e9s podr\u00e1s iniciar sesi\u00f3n.',
     'nav.feedback': 'Sugerencias',
     'feedback.navHome': 'Inicio',
     'feedback.docTitle': 'Sugerencias \u2014 TheMechAssist',
@@ -347,7 +349,9 @@ const dict = {
     'auth.submitLogin': 'Sign in',
     'auth.submitRegister': 'Create account',
     'auth.backendNote':
-      'Data stays on this device only (localStorage). No server-side account yet.',
+      'If the site uses server accounts, you will receive an email to verify before signing in; otherwise data stays on this device only (demo).',
+    'auth.pendingVerify':
+      'Check your inbox and click the verification link to activate your account. You can then sign in.',
     'nav.feedback': 'Feedback',
     'feedback.navHome': 'Home',
     'feedback.docTitle': 'Feedback \u2014 TheMechAssist',

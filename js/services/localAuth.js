@@ -36,8 +36,8 @@ export function registerLocalUser({ name, email, password }, opts = {}) {
     email: lang === 'en' ? 'Invalid email address.' : 'Email inv\u00e1lido.',
     pw:
       lang === 'en'
-        ? 'Password must be at least 6 characters.'
-        : 'La contrase\u00f1a debe tener al menos 6 caracteres.',
+        ? 'Password must be at least 8 characters.'
+        : 'La contrase\u00f1a debe tener al menos 8 caracteres.',
   };
 
   const nm = String(name || '').trim();
@@ -45,7 +45,7 @@ export function registerLocalUser({ name, email, password }, opts = {}) {
   const pw = String(password || '');
   if (!nm || !em || !pw) throw new Error(msg.incomplete);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) throw new Error(msg.email);
-  if (pw.length < 6) throw new Error(msg.pw);
+  if (pw.length < 8) throw new Error(msg.pw);
   const user = {
     id: `u_${Date.now()}`,
     name: nm,
@@ -77,15 +77,15 @@ export function loginLocalUser({ email, password }, opts = {}) {
     email: lang === 'en' ? 'Email does not match this account.' : 'El correo no coincide con la cuenta guardada.',
     pw:
       lang === 'en'
-        ? 'Password must be at least 6 characters.'
-        : 'La contrase\u00f1a debe tener al menos 6 caracteres.',
+        ? 'Password must be at least 8 characters.'
+        : 'La contrase\u00f1a debe tener al menos 8 caracteres.',
     badPw: lang === 'en' ? 'Incorrect password.' : 'Contrase\u00f1a incorrecta.',
   };
 
   const em = String(email || '').trim().toLowerCase();
   const pw = String(password || '');
   if (!em || !pw) throw new Error(msg.incomplete);
-  if (pw.length < 6) throw new Error(msg.pw);
+  if (pw.length < 8) throw new Error(msg.pw);
 
   const user = getCurrentUser();
   if (!user || !user.email) throw new Error(msg.none);
@@ -101,6 +101,28 @@ export function loginLocalUser({ email, password }, opts = {}) {
     } catch (_) {
       /* ignore */
     }
+  }
+  return user;
+}
+
+export function persistServerSession({ name, email, authToken }) {
+  const nm = String(name || '').trim();
+  const em = String(email || '').trim().toLowerCase();
+  const tok = String(authToken || '').trim();
+  if (!nm || !em || !tok) return null;
+  const user = {
+    id: 'srv',
+    name: nm,
+    email: em,
+    serverAuth: true,
+    authToken: tok,
+    verified: true,
+    createdAt: new Date().toISOString(),
+  };
+  try {
+    localStorage.setItem(LS_USER, JSON.stringify(user));
+  } catch (_) {
+    /* ignore */
   }
   return user;
 }
