@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sugerencias &#8212; TheMechAssist</title>
+    <meta
+      name="description"
+      content="Envía mejoras o funciones que echas en falta en TheMechAssist."
+    />
+    <meta name="robots" content="index,follow" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="" id="mdr-canonical" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="" id="mdr-og-url" />
+    <meta property="og:title" content="Sugerencias &#8212; TheMechAssist" />
+    <meta
+      property="og:description"
+      content="Tu opinión ayuda a mejorar las calculadoras y la web."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Sugerencias &#8212; TheMechAssist" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/home.css" />
+    <link rel="stylesheet" href="css/freemium.css" />
+    <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
+  </head>
+  <body class="hub-body">
+    <header class="hub-header">
+      <a class="hub-header__title hub-header__title--link" href="index.html">The<em>MechAssist</em></a>
+      <div class="hub-header__right">
+        <a class="hub-header__plans" href="index.html" data-i18n="feedback.navHome">Inicio</a>
+        <div class="hub-lang" role="group" aria-label="Language selector" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn" data-lang="es">ES</button>
+          <button type="button" class="hub-lang__btn" data-lang="en">EN</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="hub-main hub-feedback-main">
+      <section class="hub-feedback" aria-labelledby="feedback-heading">
+        <p class="hub-feedback__eyebrow" data-i18n="feedback.eyebrow">Tu opinión</p>
+        <h1 id="feedback-heading" class="hub-feedback__title" data-i18n="feedback.title">Sugerencias y mejoras</h1>
+        <p class="hub-feedback__lead" data-i18n="feedback.lead">
+          Describe qué te gustaría mejorar, qué calculadora falta o qué no queda claro. Lo revisamos para priorizar el roadmap.
+        </p>
+
+        <div id="feedback-thanks" class="hub-feedback__thanks" role="status" hidden data-i18n="feedback.thanks">
+          Gracias. Hemos recibido tu mensaje.
+        </div>
+        <div id="feedback-error" class="hub-feedback__error" role="alert" hidden data-i18n="feedback.error">
+          No se pudo enviar desde este entorno. Prueba en la web publicada o más tarde.
+        </div>
+
+        <form
+          id="feedback-form"
+          class="hub-feedback__form"
+          name="site-feedback"
+          method="POST"
+          action="/"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+        >
+          <input type="hidden" name="form-name" value="site-feedback" />
+          <input type="hidden" name="context" value="" />
+
+          <p class="ma-field ma-field--honeypot">
+            <label>
+              <span data-i18n="feedback.honeypotLabel">No rellenar si eres humano</span>
+              <input name="bot-field" type="text" tabindex="-1" autocomplete="off" />
+            </label>
+          </p>
+
+          <div class="ma-field">
+            <label for="fb-message" data-i18n="feedback.labelMessage">Mensaje</label>
+            <textarea
+              id="fb-message"
+              name="message"
+              required
+              maxlength="6000"
+              rows="8"
+              data-i18n="feedback.placeholderMessage"
+              data-i18n-attr="placeholder"
+              placeholder="Ej.: falta una calculadora de poleas; exportar la bomba a PDF..."
+            ></textarea>
+          </div>
+
+          <div class="ma-field">
+            <label for="fb-name" data-i18n="feedback.labelName">Nombre (opcional)</label>
+            <input id="fb-name" name="name" type="text" maxlength="120" autocomplete="name" />
+          </div>
+
+          <div class="ma-field">
+            <label for="fb-email" data-i18n="feedback.labelEmail">Correo (opcional, si quieres respuesta)</label>
+            <input id="fb-email" name="email" type="email" maxlength="120" autocomplete="email" />
+          </div>
+
+          <p class="hub-feedback__note" data-i18n="feedback.note">
+            El mensaje se envía de forma segura al servicio del sitio solo para mejorar TheMechAssist, según la política de privacidad.
+          </p>
+
+          <button type="submit" class="ma-auth__submit" data-i18n="feedback.submit">Enviar sugerencia</button>
+        </form>
+      </section>
+    </main>
+
+    <footer class="hub-footer-legal hub-footer-legal--narrow">
+      <nav class="hub-footer-legal__links" aria-label="Legal">
+        <a href="privacy.html" data-i18n="footer.privacy">Privacidad</a>
+        <a href="terms.html" data-i18n="footer.terms">Términos</a>
+        <a href="cookies.html" data-i18n="footer.cookies">Cookies</a>
+      </nav>
+    </footer>
+
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/feedbackPage.js"></script>
+  </body>
+</html>

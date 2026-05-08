@@ -1,0 +1,9 @@
+# Ver sugerencias enviadas por visitantes (solo en tu cuenta Netlify)
+#
+# El formulario HTML se llama "site-feedback". Los mensajes NO aparecen en la web pública;
+# solo en el panel de Netlify del sitio desplegado.
+#
+# Pasos: Netlify Dashboard ? tu sitio ? Forms ? "site-feedback" ? ver envíos.
+# Opcional: Forms ? Form notifications ? email en cada envío (solo a tu correo).
+#
+# Nota: con "npx serve" en local, el POST puede fallar; prueba en la URL de Netlify.

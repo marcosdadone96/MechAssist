@@ -4,7 +4,7 @@
 
 import { FEATURES } from '../config/features.js';
 import { getCurrentUser } from '../services/localAuth.js';
-import { grantProLicensePersistent, isPremiumEffective } from '../services/accessTier.js';
+import { grantProLicensePersistent } from '../services/accessTier.js';
 import { claimAndVerifyProAfterCheckout } from '../services/proEntitlement.js';
 import { buildRegisterUrlWithNextCheckout, getHomeLang } from '../services/proCheckoutFlow.js';
 
@@ -14,10 +14,10 @@ function getLang() {
 
 const TX = {
   es: {
-    docTitle: 'Pago Pro \u2014 MechAssist',
+    docTitle: 'Pago Pro \u2014 TheMechAssist',
     navHome: 'Inicio',
     navRegister: 'Registro',
-    eyebrow: 'MechAssist',
+    eyebrow: 'TheMechAssist',
     title: 'Plan Pro',
     lead:
       'Elija facturacion mensual o anual. El pago lo procesa Lemon Squeezy; tras completarlo recibira confirmacion y podra gestionar la suscripcion desde su correo o panel del proveedor.',
@@ -43,24 +43,22 @@ const TX = {
     footCookiePrefs: 'Preferencias cookies',
     manageTitle: 'Gestionar o cancelar la suscripci\u00f3n Pro',
     manageLeadPortal:
-      'Si ya paga MechAssist Pro, puede abrir el portal de facturaci\u00f3n para renovaci\u00f3n autom\u00e1tica, facturas, m\u00e9todo de pago o baja del plan.',
+      'Si ya paga TheMechAssist Pro, puede abrir el portal de facturaci\u00f3n para renovaci\u00f3n autom\u00e1tica, facturas, m\u00e9todo de pago o baja del plan.',
     manageLeadNoPortal:
       'Para cancelar la renovaci\u00f3n o cambiar datos de cobro, use el enlace que env\u00eda su pasarela por correo o escr\u00edbanos.',
     manageBtn: 'Abrir gesti\u00f3n de suscripci\u00f3n',
     manageMailPrefix: 'Contacto facturaci\u00f3n:',
     manageTermsRef:
       'Detalle jur\u00eddico: secci\u00f3n <strong>Renovaci\u00f3n y cancelaci\u00f3n</strong> en los <a href="terms.html" target="_blank" rel="noopener">T\u00e9rminos de uso</a>.',
-    proWelcomeTitle: '\u00a1Gracias! Acceso Pro activado en este navegador.',
-    proWelcomeBody:
-      'Ya puede usar las calculadoras y modulos Pro. Si no ve el plan actualizado, abra el inicio o recargue la pesta\u00f1a.',
-    proWelcomePending:
-      'Pago registrado en la URL. Si no tiene Pro a\u00fan (pol\u00edtica del sitio o modo producci\u00f3n), espere la confirmaci\u00f3n por correo o contacte soporte.',
+    paidWelcomeLine:
+      '\u00a1Ya eres Pro! Todas las funciones est\u00e1n desbloqueadas en este navegador.',
+    manageTitlePaidReturn: 'Tu plan Pro est\u00e1 activo',
   },
   en: {
-    docTitle: 'Pro checkout \u2014 MechAssist',
+    docTitle: 'Pro checkout \u2014 TheMechAssist',
     navHome: 'Home',
     navRegister: 'Register',
-    eyebrow: 'MechAssist',
+    eyebrow: 'TheMechAssist',
     title: 'Pro plan',
     lead:
       'Choose monthly or yearly billing. Payment is processed by Lemon Squeezy; after checkout you will receive confirmation and can manage the subscription via email or the provider dashboard.',
@@ -86,44 +84,17 @@ const TX = {
     footCookiePrefs: 'Cookie settings',
     manageTitle: 'Manage or cancel Pro subscription',
     manageLeadPortal:
-      'If you already pay for MechAssist Pro, open your billing portal to manage auto-renewal, invoices, payment method or cancel renewal.',
+      'If you already pay for TheMechAssist Pro, open your billing portal to manage auto-renewal, invoices, payment method or cancel renewal.',
     manageLeadNoPortal:
       'To cancel renewal or change billing details, use the link from your payment provider emails or contact us.',
     manageBtn: 'Open subscription management',
     manageMailPrefix: 'Billing contact:',
     manageTermsRef:
       'Legal detail: <strong>Renewal and cancellation</strong> in the <a href="terms.html" target="_blank" rel="noopener">Terms of use</a>.',
-    proWelcomeTitle: 'Thank you! Pro access is enabled in this browser.',
-    proWelcomeBody: 'You can use Pro calculators and modules. If your plan does not update, open home or reload this tab.',
-    proWelcomePending:
-      'Payment flag received. If Pro is not active yet (site policy or production mode), wait for your confirmation email or contact support.',
+    paidWelcomeLine: "You're Pro now! All features are unlocked in this browser.",
+    manageTitlePaidReturn: 'Your Pro plan is active',
   },
 };
-
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-/**
- * @param {typeof TX.es} t
- * @param {boolean} premiumEffective
- */
-function showProWelcomeMessage(t, premiumEffective) {
-  const el = document.getElementById('coProWelcome');
-  if (!el) return;
-  el.hidden = false;
-  if (premiumEffective) {
-    el.innerHTML = `<strong>${escapeHtml(t.proWelcomeTitle)}</strong><span class="checkout-pro-welcome__sub">${escapeHtml(
-      t.proWelcomeBody,
-    )}</span>`;
-  } else {
-    el.textContent = t.proWelcomePending;
-  }
-}
 
 function applyManageSubscriptionBlock(t) {
   const url =
@@ -238,6 +209,10 @@ function assertWithdrawalOrShowError(t) {
 }
 
 export async function mountCheckoutPage() {
+  if (FEATURES.publicFreeRelease) {
+    window.location.replace('index.html');
+    return;
+  }
   const lang = getLang();
   const t = TX[lang];
 
@@ -246,19 +221,18 @@ export async function mountCheckoutPage() {
     return;
   }
 
-  let paidReturnWelcome = false;
+  let paidCheckoutComplete = false;
   try {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('paid') === '1') {
+      grantProLicensePersistent();
       const user = getCurrentUser();
       if (FEATURES.proClientPolicy === 'production') {
         await claimAndVerifyProAfterCheckout(user?.email);
-      } else {
-        grantProLicensePersistent();
       }
       const path = window.location.pathname || '/checkout.html';
       history.replaceState({}, '', path);
-      paidReturnWelcome = true;
+      paidCheckoutComplete = true;
     }
   } catch (_) {
     /* ignore */
@@ -266,6 +240,22 @@ export async function mountCheckoutPage() {
 
   applyTx(t);
   applyManageSubscriptionBlock(t);
+
+  if (paidCheckoutComplete) {
+    const welcomeEl = document.getElementById('coProWelcome');
+    if (welcomeEl) {
+      welcomeEl.hidden = false;
+      welcomeEl.textContent = t.paidWelcomeLine;
+    }
+    const lemonM = document.getElementById('coLemonMonthly');
+    const lemonA = document.getElementById('coLemonAnnual');
+    if (lemonM instanceof HTMLElement) lemonM.hidden = true;
+    if (lemonA instanceof HTMLElement) lemonA.hidden = true;
+    const manageWrap = document.getElementById('coManageSub');
+    if (manageWrap instanceof HTMLElement) manageWrap.hidden = false;
+    const manageTitleEl = document.getElementById('coManageTitle');
+    if (manageTitleEl) manageTitleEl.textContent = t.manageTitlePaidReturn;
+  }
 
   const user = getCurrentUser();
   const line = document.getElementById('coUserLine');
@@ -278,9 +268,11 @@ export async function mountCheckoutPage() {
     typeof FEATURES.stripeCheckoutSessionUrl === 'string' &&
     FEATURES.stripeCheckoutSessionUrl.length > 0;
 
-  const hasLemonSqueezy = Boolean(document.getElementById('coLemonMonthly'));
+  const lemonMonthlyEl = document.getElementById('coLemonMonthly');
+  const hasLemonSqueezy =
+    lemonMonthlyEl instanceof HTMLElement && !lemonMonthlyEl.hidden;
 
-  if (!useStripe && !hasLemonSqueezy && blockedEl) {
+  if (!useStripe && !hasLemonSqueezy && blockedEl && !paidCheckoutComplete) {
     blockedEl.hidden = false;
     blockedEl.textContent = t.paymentNotConfigured;
   } else if (blockedEl) {
@@ -322,8 +314,4 @@ export async function mountCheckoutPage() {
     });
     btn.classList.toggle('hub-lang__btn--active', btn.getAttribute('data-co-lang') === lang);
   });
-
-  if (paidReturnWelcome) {
-    showProWelcomeMessage(t, isPremiumEffective());
-  }
 }

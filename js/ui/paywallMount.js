@@ -86,7 +86,7 @@ export function mountPaywall(lockedTool) {
   wrap.setAttribute('aria-labelledby', 'paywall-title');
   wrap.innerHTML = `
     <div class="paywall-screen__card">
-      <p class="paywall-screen__eyebrow">MechAssist</p>
+      <p class="paywall-screen__eyebrow">TheMechAssist</p>
       <h1 id="paywall-title" class="paywall-screen__title">${tx.title}</h1>
       <p class="paywall-screen__lead">${tx.lead}</p>
       <ul class="paywall-screen__list">
@@ -142,7 +142,7 @@ export function mountProMachinePaywall() {
       ? {
           title: 'Pro calculator',
           lead:
-            'This machine module is part of <strong>MechAssist Pro</strong>. Without Pro you can still use the <strong>flat belt conveyor</strong> and <strong>roller conveyor</strong> with full technical content.',
+            'This machine module is part of <strong>TheMechAssist Pro</strong>. Without Pro you can still use the <strong>flat belt conveyor</strong> and <strong>roller conveyor</strong> with full technical content.',
           liFlat: '<a href="flat-conveyor.html">Flat belt conveyor</a>',
           liRoller: '<a href="roller-conveyor.html">Roller conveyor</a>',
           liHub: '<a href="machines-hub.html">All machine calculators</a>',
@@ -159,7 +159,7 @@ export function mountProMachinePaywall() {
       : {
           title: 'Calculadora Pro',
           lead:
-            'Este m\u00f3dulo de m\u00e1quinas forma parte de <strong>MechAssist Pro</strong>. Sin Pro puede usar la <strong>cinta transportadora plana</strong> y el <strong>transportador de rodillos</strong> con todo el contenido t\u00e9cnico.',
+            'Este m\u00f3dulo de m\u00e1quinas forma parte de <strong>TheMechAssist Pro</strong>. Sin Pro puede usar la <strong>cinta transportadora plana</strong> y el <strong>transportador de rodillos</strong> con todo el contenido t\u00e9cnico.',
           liFlat: '<a href="flat-conveyor.html">Cinta transportadora plana</a>',
           liRoller: '<a href="roller-conveyor.html">Transportador de rodillos</a>',
           liHub: '<a href="machines-hub.html">Ver todas las m\u00e1quinas</a>',
@@ -181,7 +181,7 @@ export function mountProMachinePaywall() {
   wrap.setAttribute('aria-labelledby', 'paywall-machine-title');
   wrap.innerHTML = `
     <div class="paywall-screen__card">
-      <p class="paywall-screen__eyebrow">MechAssist</p>
+      <p class="paywall-screen__eyebrow">TheMechAssist</p>
       <h1 id="paywall-machine-title" class="paywall-screen__title">${tx.title}</h1>
       <p class="paywall-screen__lead">${tx.lead}</p>
       <ul class="paywall-screen__list">

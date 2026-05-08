@@ -4,6 +4,7 @@
 
 import { getCurrentUser, clearLocalUser } from '../services/localAuth.js';
 import { clearProEntitlementClient } from '../services/proEntitlement.js';
+import { FEATURES } from '../config/features.js';
 import { isProCalculatorPath } from '../config/freemium.js';
 
 function lang() {
@@ -35,6 +36,15 @@ function isProNode(anchor) {
   return isProCalculatorPath(href);
 }
 
+function applyPublicFreeReleaseHomeUi() {
+  if (!FEATURES.publicFreeRelease) return;
+  document.documentElement.setAttribute('data-public-free-release', '1');
+  document.getElementById('hub-pricing')?.setAttribute('hidden', '');
+  document.querySelector('a.hub-header__plans[href="#hub-pricing"]')?.setAttribute('hidden', '');
+  document.querySelector('p.hub-footnote--detail')?.setAttribute('hidden', '');
+  document.querySelector('a[href="my-gearmotors.html"] .premium-flag')?.remove();
+}
+
 function renderHubProBadges() {
   if (!document.querySelector('.hub-rim')) return;
   document.querySelectorAll('.hub-rim a.hub-node--go[href]').forEach((a) => {
@@ -42,7 +52,10 @@ function renderHubProBadges() {
     if (current instanceof HTMLElement) current.remove();
 
     const badge = document.createElement('span');
-    if (isProNode(a)) {
+    if (FEATURES.publicFreeRelease) {
+      badge.className = 'hub-badge hub-badge--free';
+      badge.textContent = freeBadgeText();
+    } else if (isProNode(a)) {
       badge.className = 'hub-badge hub-badge--pro';
       badge.textContent = badgeText();
     } else {
@@ -105,10 +118,12 @@ function mountHomeAccountControls() {
   slot.appendChild(wrap);
 }
 
+applyPublicFreeReleaseHomeUi();
 renderHubProBadges();
 mountHomeAccountControls();
 
 window.addEventListener('home-language-changed', () => {
+  applyPublicFreeReleaseHomeUi();
   renderHubProBadges();
   mountHomeAccountControls();
 });

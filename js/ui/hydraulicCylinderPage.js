@@ -34,7 +34,7 @@ const LANG = (() => {
 })();
 const I18N = {
   es: {
-    pageTitle: 'Cilindro hidráulico — MechAssist',
+    pageTitle: 'Cilindro hidráulico — TheMechAssist',
     title: 'Cilindro hidráulico — fuerza, caudal y seguridad estructural',
     lead: 'Valida fuerza de empuje/tracción, caudal requerido, pandeo del vástago (Euler) y espesor mínimo de tubo para operar con seguridad a presión nominal.',
     verdictOk: 'SISTEMA APTO',
@@ -119,7 +119,7 @@ const I18N = {
     vsTubeBad: 'Insuficiente — espesor por debajo del mínimo calculado.',
   },
   en: {
-    pageTitle: 'Hydraulic cylinder — MechAssist',
+    pageTitle: 'Hydraulic cylinder — TheMechAssist',
     title: 'Hydraulic cylinder — force, flow and structural safety',
     lead: 'Validate push/pull force, required flow, rod buckling (Euler) and minimum tube wall thickness for safe operation at nominal pressure.',
     verdictOk: 'SYSTEM SUITABLE',

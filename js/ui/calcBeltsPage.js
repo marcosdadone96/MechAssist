@@ -497,7 +497,7 @@ function refreshCore() {
     title: 'Ideas de compra (orientativas)',
     linkLabel: 'Buscar en Amazon',
     disclosure: amzTag
-      ? 'MechAssist participa en el programa de afiliados de Amazon EU: los enlaces pueden generar una comisión sin coste adicional. Verifique siempre referencias de pieza y vendedor.'
+      ? 'TheMechAssist participa en el programa de afiliados de Amazon EU: los enlaces pueden generar una comisión sin coste adicional. Verifique siempre referencias de pieza y vendedor.'
       : 'Enlaces de búsqueda a Amazon solo con fines informativos. Puede configurar un ID de afiliado en los ajustes del sitio.',
   });
 }

@@ -1,0 +1,14 @@
+# Restaurar cobros / Pro de pago (referencia manual)
+# Cuando quiera volver a monetizar: ponga `publicFreeRelease: false` en js/config/features.js
+# y restaure valores como los siguientes (revise tambien Netlify env y Lemon).
+
+publicFreeRelease: false
+devSimulatePremium: false
+proClientPolicy: production
+allowPremiumViaQueryPro: false
+allowFreeProTrialUses: false
+subscriptionManageUrl: https://mechassist.lemonsqueezy.com/billing
+showDemoCheckoutCompleteButton: false
+
+# Funciones Netlify (no borrar del repo): netlify/functions/ls-webhook.js, pro-claim.js, pro-verify.js
+# Cliente: js/services/proEntitlement.js, checkoutPage.js, proCheckoutFlow.js

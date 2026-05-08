@@ -19,7 +19,7 @@ export function mountLabDonationFooter() {
   const aside = document.createElement('aside');
   aside.id = 'lab-donation-footer';
   aside.className = 'lab-donate';
-  aside.setAttribute('aria-label', en ? 'Support the MechAssist project' : 'Apoyar el proyecto MechAssist');
+  aside.setAttribute('aria-label', en ? 'Support TheMechAssist' : 'Apoyar el proyecto TheMechAssist');
 
   const cta = url
     ? en
@@ -34,7 +34,7 @@ export function mountLabDonationFooter() {
       <p class="lab-donate__text">
         These tools are <strong>free for the community</strong>.
         The <a href="transmission-canvas.html">Pro technical canvas</a> remains on a separate paid plan.
-        If MechAssist helps your work or studies, a <strong>voluntary donation</strong> helps keep hosting, improvements, and new calculators coming.
+        If TheMechAssist helps your work or studies, a <strong>voluntary donation</strong> helps keep hosting, improvements, and new calculators coming.
       </p>
       ${cta ? `<p class="lab-donate__actions">${cta}</p>` : ''}
     </div>
@@ -45,7 +45,7 @@ export function mountLabDonationFooter() {
       <p class="lab-donate__text">
         Estas herramientas son <strong>gratuitas para la comunidad</strong>.
         El <a href="transmission-canvas.html">lienzo t&eacute;cnico Pro</a> sigue en un plan de pago aparte.
-        Si MechAssist le resulta &uacute;til en su trabajo o estudio, puede ayudar con una <strong>donaci&oacute;n voluntaria</strong>
+        Si TheMechAssist le resulta &uacute;til en su trabajo o estudio, puede ayudar con una <strong>donaci&oacute;n voluntaria</strong>
         para mantener servidores, mejoras y nuevas calculadoras.
       </p>
       ${cta ? `<p class="lab-donate__actions">${cta}</p>` : ''}

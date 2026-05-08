@@ -3,6 +3,7 @@
  */
 
 import { getCurrentUser, registerLocalUser, clearLocalUser } from '../services/localAuth.js';
+import { FEATURES } from '../config/features.js';
 import { getRegisterNextPath } from '../services/proCheckoutFlow.js';
 
 function getLang() {
@@ -15,7 +16,7 @@ function getLang() {
 
 const TX = {
   es: {
-    docTitle: 'Registro \u2014 MechAssist',
+    docTitle: 'Registro \u2014 TheMechAssist',
     ariaLang: 'Selector de idioma',
     navAria: 'Navegaci\u00f3n principal',
     navHome: 'Inicio',
@@ -73,7 +74,7 @@ const TX = {
     continueCheckout: 'Continuar al pago',
   },
   en: {
-    docTitle: 'Register \u2014 MechAssist',
+    docTitle: 'Register \u2014 TheMechAssist',
     ariaLang: 'Language selector',
     navAria: 'Main navigation',
     navHome: 'Home',
@@ -274,7 +275,7 @@ export function mountRegisterPage() {
       registerLocalUser({ name, email, password }, { lang });
       const nextPath = getRegisterNextPath();
       if (nextPath === 'checkout.html') {
-        window.location.href = nextPath;
+        window.location.href = FEATURES.publicFreeRelease ? 'transmission-lab.html' : nextPath;
         return;
       }
       if (form) form.hidden = true;

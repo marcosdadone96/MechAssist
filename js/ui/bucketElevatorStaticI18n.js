@@ -307,7 +307,7 @@ export function applyBucketElevatorStaticI18n(lang = getCurrentLang()) {
   if (vSearch && vSearch.dataset.bePlaceholderEs) {
     vSearch.placeholder = en ? vSearch.dataset.bePlaceholderEn || '' : vSearch.dataset.bePlaceholderEs;
   }
-  document.title = en ? 'Bucket elevator \u2014 MechAssist' : 'Elevador de cangilones \u2014 MechAssist';
+  document.title = en ? 'Bucket elevator \u2014 TheMechAssist' : 'Elevador de cangilones \u2014 TheMechAssist';
 
   const fpw = document.getElementById('fileProtoWarn');
   if (fpw) {

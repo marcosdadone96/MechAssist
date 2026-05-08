@@ -392,7 +392,7 @@ function buildCopyResultsText() {
   };
   const r = computeSpurGearPair(p);
   const rows = [
-    'MechAssist - Engranajes cilindricos',
+    'TheMechAssist - Engranajes cilindricos',
     `i real (z2/z1): ${r.ratio_transmission.toFixed(4)}`,
     `Distancia entre ejes a: ${formatLength(r.centerDistance_mm, u.length)}`,
     `d1: ${formatLength(r.d1, u.length)} | d2: ${formatLength(r.d2, u.length)}`,

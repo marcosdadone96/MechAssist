@@ -1,10 +1,10 @@
 /**
- * Feature flags — MechAssist
+ * Feature flags — TheMechAssist
  * ---------------------------------------------------------------------------
  * CHECKLIST NETLIFY (antes de cobrar):
  * - PRO_JWT_SECRET: secreto largo (firma JWT pro-claim / pro-verify).
  * - LEMON_SQUEEZY_WEBHOOK_SECRET: signing secret del webhook en Lemon.
- * - LEMON_PRO_VARIANT_IDS: UUIDs variant MechAssist separados por coma (los mismos que /checkout/buy/{uuid}).
+ * - LEMON_PRO_VARIANT_IDS: UUIDs variant TheMechAssist separados por coma (los mismos que /checkout/buy/{uuid}).
  * - Webhook URL en Lemon: https://SU-DOMINIO/.netlify/functions/ls-webhook (eventos order_* y subscription_*).
  * - URL exito checkout Lemon: https://SU-DOMINIO/checkout.html?paid=1
  * - publicSiteBaseUrl: URL del sitio sin barra final; luego `node scripts/generate-sitemap.mjs`
@@ -23,6 +23,9 @@
  *
  * Futuro (placeholders):
  * - gearmotorDatabase, pdfExport, userAuth, stripePayments (Checkout solo servidor)
+ *
+ * Modo publico gratuito (`publicFreeRelease: true`): todo desbloqueado, sin UI de planes/pago.
+ * Restauracion de billing: ver `js/config/BILLING_RESTORE.txt`.
  */
 export const FEATURES = Object.freeze({
   /**
@@ -30,6 +33,12 @@ export const FEATURES = Object.freeze({
    * Pruebe la otra asignación con `?freeTool=flat` o `?freeTool=inclined` en la URL.
    */
   whichCalculatorIsFree: 'flat',
+
+  /**
+   * Si true: mismo efecto que Pro para todos los usuarios y se oculta la UI comercial (home, checkout…).
+   * El codigo de Lemon/Netlify y checkout.html permanece en el repo para reactivar.
+   */
+  publicFreeRelease: true,
 
   /** Si true, toda la app se comporta como Pro (solo desarrollo). */
   devSimulatePremium: false,
@@ -198,4 +207,9 @@ export function isPremiumViaQueryProUiAllowed() {
   return (
     FEATURES.allowPremiumViaQueryPro === true && FEATURES.proClientPolicy !== 'production'
   );
+}
+
+/** Sitio en modo gratuito total (sin mostrar planes ni checkout). */
+export function isPublicFreeRelease() {
+  return FEATURES.publicFreeRelease === true;
 }

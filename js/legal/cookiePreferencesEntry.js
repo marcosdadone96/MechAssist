@@ -70,7 +70,7 @@ function render() {
   if (consent === 'analytics') stateLabel = t.stateAnalytics;
   else if (consent === 'essential') stateLabel = t.stateEssential;
 
-  document.title = t.title + ' \u2014 MechAssist';
+  document.title = t.title + ' \u2014 TheMechAssist';
   document.querySelectorAll('[data-cookie-prefs-nav]').forEach((el) => {
     const k = el.getAttribute('data-cookie-prefs-nav');
     if (k === 'home') el.textContent = n.home;

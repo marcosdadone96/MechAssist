@@ -233,7 +233,7 @@ function localizeCarLiftStaticContent() {
   const lang = getCurrentLang();
   if (lang !== 'en') return;
   document.documentElement.lang = 'en';
-  document.title = 'Screw Car Lift - MechAssist';
+  document.title = 'Screw Car Lift - TheMechAssist';
   const setText = (sel, t) => {
     const el = document.querySelector(sel);
     if (el) el.textContent = t;

@@ -16,7 +16,7 @@ import { hasProductionProSessionCache } from './proEntitlement.js';
 
 /** Atajos Pro solo-navegador desactivados (licencia local, URL, usos prueba). */
 function clientProShortcutsDisabled() {
-  if (FEATURES.devSimulatePremium) return false;
+  if (FEATURES.devSimulatePremium || FEATURES.publicFreeRelease) return false;
   return FEATURES.proClientPolicy === 'production';
 }
 
@@ -92,6 +92,7 @@ export function getFreemiumStrategy() {
 
 /** @returns {'free'|'premium'} */
 export function getEffectiveTier() {
+  if (FEATURES.publicFreeRelease === true) return 'premium';
   if (FEATURES.devSimulatePremium) return 'premium';
   if (clientProShortcutsDisabled()) return 'free';
   if (FEATURES.allowPremiumViaQueryPro) {
@@ -188,6 +189,7 @@ export function isPremiumEffective() {
  * @returns {boolean}
  */
 export function isPremiumForMachineForm() {
+  if (FEATURES.publicFreeRelease === true) return true;
   if (FEATURES.devSimulatePremium) return true;
   if (FEATURES.proClientPolicy === 'production') {
     return hasProductionProSessionCache();
@@ -226,6 +228,7 @@ function setUsageCounterRaw(v) {
  * No aplica si ya es Pro por URL, persistencia o flag de desarrollo.
  */
 export function consumeFreeProUseIfNeeded() {
+  if (FEATURES.publicFreeRelease) return;
   if (FEATURES.devSimulatePremium) return;
   if (clientProShortcutsDisabled()) return;
   if (FEATURES.allowPremiumViaQueryPro) {
@@ -266,7 +269,7 @@ export function getFreeProUsageLimit() {
   return MAX_FREE_PRO_USES;
 }
 
-if (typeof window !== 'undefined' && FEATURES.proClientPolicy === 'production') {
+if (typeof window !== 'undefined' && FEATURES.proClientPolicy === 'production' && !FEATURES.publicFreeRelease) {
   queueMicrotask(() => {
     import('./proEntitlement.js').then((m) => {
       void m.refreshProEntitlementIfNeeded();

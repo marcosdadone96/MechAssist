@@ -440,7 +440,7 @@ function localizeInclinedStaticContent() {
   const lang = getCurrentLang();
   if (lang !== 'en') return;
   document.documentElement.lang = 'en';
-  document.title = 'Inclined Conveyor - MechAssist';
+  document.title = 'Inclined Conveyor - TheMechAssist';
   const setText = (selector, text) => {
     const el = document.querySelector(selector);
     if (el) el.textContent = text;

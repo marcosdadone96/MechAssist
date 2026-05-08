@@ -30,31 +30,31 @@ const LEMON_CHECKOUT_ANNUAL_URL =
 /** Textos del paywall (solo visitantes sin Pro). */
 const PAYWALL = {
   es: {
-    docTitle: 'Mis motorreductores (Pro) \u2014 MechAssist',
+    docTitle: 'Mis motorreductores (Pro) \u2014 TheMechAssist',
     eyebrow: 'Plan Pro',
     h1: 'Biblioteca de motorreductores',
     lead:
-      'Guarde datos de placa, importe o exporte JSON y reutilice sus equipos en todas las calculadoras. Funci\u00f3n incluida en MechAssist Pro.',
+      'Guarde datos de placa, importe o exporte JSON y reutilice sus equipos en todas las calculadoras. Funci\u00f3n incluida en TheMechAssist Pro.',
     unlockHint: 'Elija una suscripci\u00f3n mensual o anual para desbloquear esta biblioteca en su navegador.',
     monthlyPlan: 'Plan mensual \u2014 9 \u20ac/mes',
     annualPlan: 'Plan anual \u2014 79 \u20ac/a\u00f1o',
     secureNote: 'Pago seguro procesado por Lemon Squeezy.',
-    cta: 'Checkout MechAssist',
+    cta: 'Checkout TheMechAssist',
     plans: 'Ver precios en inicio',
     footnote: 'O bien registro y pago en el flujo de la web:',
     back: 'Volver al inicio',
   },
   en: {
-    docTitle: 'My gearmotors (Pro) \u2014 MechAssist',
+    docTitle: 'My gearmotors (Pro) \u2014 TheMechAssist',
     eyebrow: 'Pro plan',
     h1: 'Gearmotor library',
     lead:
-      'Save nameplate data, import/export JSON and reuse units on every calculator. Included with MechAssist Pro.',
+      'Save nameplate data, import/export JSON and reuse units on every calculator. Included with TheMechAssist Pro.',
     unlockHint: 'Choose monthly or yearly billing to unlock this library in your browser.',
     monthlyPlan: 'Monthly plan \u2014 \u20ac9/month',
     annualPlan: 'Annual plan \u2014 \u20ac79/year',
     secureNote: 'Secure checkout powered by Lemon Squeezy.',
-    cta: 'MechAssist checkout',
+    cta: 'TheMechAssist checkout',
     plans: 'Pricing on home',
     footnote: 'Or register and pay through the site flow:',
     back: 'Back to home',
@@ -117,7 +117,7 @@ const TX = {
     confirmImportMerge:
       '\u00bfFusionar? Se actualizar\u00e1n entradas con el mismo id y se a\u00f1adir\u00e1n nuevas. El total se limita a {max}.',
     confirmDelete: '\u00bfEliminar este motorreductor de la lista?',
-    docTitle: 'Mis motorreductores \u2014 MechAssist',
+    docTitle: 'Mis motorreductores \u2014 TheMechAssist',
     ariaLang: 'Selector de idioma',
     errMotorKw: 'Indique una potencia de motor v\u00e1lida (kW &gt; 0).',
     errN2: 'Indique una velocidad de salida v\u00e1lida (min\u207b\u00b9 &gt; 0).',
@@ -181,7 +181,7 @@ const TX = {
     confirmImportMerge:
       'Merge? Entries with the same id will update; new ids will be added. Total is capped at {max}.',
     confirmDelete: 'Remove this gearmotor from the list?',
-    docTitle: 'My gearmotors \u2014 MechAssist',
+    docTitle: 'My gearmotors \u2014 TheMechAssist',
     ariaLang: 'Language selector',
     errMotorKw: 'Enter a valid motor power (kW &gt; 0).',
     errN2: 'Enter a valid output speed (rpm &gt; 0).',

@@ -107,6 +107,10 @@ function openProGateModal(lang) {
  * Si hay sesion local, abre la pagina de pago. Si no, muestra aviso y ofrece ir al registro (con retorno a checkout).
  */
 export function startProCheckoutFlow() {
+  if (FEATURES.publicFreeRelease) {
+    window.location.href = 'transmission-lab.html';
+    return;
+  }
   if (getCurrentUser()) {
     window.location.href = getCheckoutPageHref();
     return;

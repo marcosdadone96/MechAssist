@@ -480,7 +480,7 @@ function applyBlocks(lang) {
 export function applyScrewConveyorStaticI18n(lang = getCurrentLang()) {
   const en = lang === 'en';
   document.documentElement.lang = en ? 'en' : 'es';
-  document.title = en ? 'Screw conveyor \u2014 MechAssist' : 'Tornillo helicoidal \u2014 MechAssist';
+  document.title = en ? 'Screw conveyor \u2014 TheMechAssist' : 'Tornillo helicoidal \u2014 TheMechAssist';
 
   const fpw = document.getElementById('fileProtoWarn');
   if (fpw) {

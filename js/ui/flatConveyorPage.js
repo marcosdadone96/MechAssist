@@ -230,7 +230,7 @@ function localizeFlatStaticContent() {
   const lang = getCurrentLang();
   if (lang !== 'en') return;
   document.documentElement.lang = 'en';
-  document.title = 'Flat Conveyor - MechAssist';
+  document.title = 'Flat Conveyor - TheMechAssist';
   const setText = (selector, text) => {
     const el = document.querySelector(selector);
     if (el) el.textContent = text;

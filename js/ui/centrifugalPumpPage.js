@@ -235,7 +235,7 @@ function normalizePhysicalInputs() {
 function localizePumpStaticContent() {
   if (getCurrentLang() !== 'en') return;
   document.documentElement.lang = 'en';
-  document.title = 'Centrifugal pump — MechAssist';
+  document.title = 'Centrifugal pump — TheMechAssist';
   const fp = document.getElementById('fileProtoWarn');
   if (fp) {
     fp.textContent =

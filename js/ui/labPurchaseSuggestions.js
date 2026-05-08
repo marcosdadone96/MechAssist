@@ -43,7 +43,7 @@ export function setLabPurchaseSuggestions(mountEl, opts = {}) {
   const disclosure =
     opts.disclosure ||
     (hasTag
-      ? 'MechAssist participa en el Programa de Afiliados de Amazon EU: enlaces que pueden generar una comision para el sitio sin coste adicional para usted. Verifique siempre referencia y vendedor.'
+      ? 'TheMechAssist participa en el Programa de Afiliados de Amazon EU: enlaces que pueden generar una comision para el sitio sin coste adicional para usted. Verifique siempre referencia y vendedor.'
       : 'Enlaces de busqueda a Amazon a titulo informativo. Puede configurar un ID de afiliado en la configuracion del sitio.');
 
   const list = rows

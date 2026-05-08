@@ -18,7 +18,7 @@ const LANG = (() => {
 })();
 const TXT = {
   es: {
-    pageTitle: 'Cilindro neumático — MechAssist',
+    pageTitle: 'Cilindro neumático — TheMechAssist',
     title: 'Cilindro neumático — fuerza, consumo y estabilidad',
     lead: 'Calcula fuerza real, consumo de aire libre, chequeo de pandeo y margen de seguridad para validar si el cilindro es apto para la carga y la carrera.',
     details: 'Ver datos técnicos secundarios',
@@ -140,7 +140,7 @@ const TXT = {
     vsAirSub: '<strong>{q}</strong> Nl/min · <strong>{c}</strong> Nl/ciclo',
   },
   en: {
-    pageTitle: 'Pneumatic cylinder — MechAssist',
+    pageTitle: 'Pneumatic cylinder — TheMechAssist',
     title: 'Pneumatic cylinder — force, consumption and stability',
     lead: 'Calculate real force, free air consumption, buckling check and safety margin to validate if the cylinder is suitable for load and stroke.',
     details: 'View Secondary Technical Data',

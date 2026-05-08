@@ -37,6 +37,11 @@ function contactLine(lang) {
  * @param {'en'|'es'} lang
  */
 function subscriptionCancellationHtml(lang) {
+  if (FEATURES.publicFreeRelease) {
+    return lang === 'en'
+      ? `<p>${escHtml('TheMechAssist is currently distributed without paid subscriptions. This section will be updated if paid plans return.')}</p>`
+      : `<p>${escHtml('TheMechAssist se ofrece actualmente sin suscripciones de pago. Esta secci\u00f3n se actualizar\u00e1 si en el futuro se reactivan planes de pago.')}</p>`;
+  }
   const url =
     typeof FEATURES.subscriptionManageUrl === 'string' && FEATURES.subscriptionManageUrl.trim().length > 0
       ? FEATURES.subscriptionManageUrl.trim()
@@ -132,8 +137,8 @@ function responsibleParagraphs(lang) {
     const out = [];
     out.push(
       lang === 'en'
-        ? `${name} operates this website and the MechAssist application (the "service") and, as described here, acts as the data controller for the processing involved.`
-        : `${name} opera este sitio web y la aplicaci\u00f3n MechAssist (el "servicio") y, en los t\u00e9rminos aqu\u00ed descritos, act\u00faa como responsable del tratamiento de los datos.`,
+        ? `${name} operates this website and TheMechAssist (the "service") and, as described here, acts as the data controller for the processing involved.`
+        : `${name} opera este sitio web y la aplicaci\u00f3n TheMechAssist (el "servicio") y, en los t\u00e9rminos aqu\u00ed descritos, act\u00faa como responsable del tratamiento de los datos.`,
     );
     const addrRaw =
       typeof FEATURES.legalEntityAddress === 'string' ? FEATURES.legalEntityAddress.trim() : '';
@@ -152,8 +157,8 @@ function responsibleParagraphs(lang) {
   }
   return [
     lang === 'en'
-      ? 'The party operating this website and the MechAssist application (the "service") is responsible for processing under applicable data protection law. Fill in legalEntityName, legalEntityAddress and legalRegistrationNote in site settings when you publish.'
-      : 'La entidad que opera este sitio web y la aplicaci\u00f3n MechAssist (el "servicio") es responsable del tratamiento seg\u00fan la normativa de protecci\u00f3n de datos aplicable. Rellene legalEntityName, legalEntityAddress y legalRegistrationNote en la configuraci\u00f3n del sitio al publicar.',
+      ? 'The party operating this website and TheMechAssist (the "service") is responsible for processing under applicable data protection law. Fill in legalEntityName, legalEntityAddress and legalRegistrationNote in site settings when you publish.'
+      : 'La entidad que opera este sitio web y la aplicaci\u00f3n TheMechAssist (el "servicio") es responsable del tratamiento seg\u00fan la normativa de protecci\u00f3n de datos aplicable. Rellene legalEntityName, legalEntityAddress y legalRegistrationNote en la configuraci\u00f3n del sitio al publicar.',
   ];
 }
 
@@ -240,7 +245,7 @@ export function getCookiesDoc(lang) {
         ],
       },
       {
-        title: l === 'en' ? 'What we use on MechAssist' : 'Qu? usamos en MechAssist',
+        title: l === 'en' ? 'What we use on TheMechAssist' : 'Qu? usamos en TheMechAssist',
         paragraphs: [
           l === 'en'
             ? 'Strictly necessary: storing your cookie choice (e.g. mdr-cookie-consent-v1) and language preference (e.g. mdr-home-lang) in localStorage where applicable. Optional: Google Analytics 4 if you click ?Accept analytics?.'
@@ -275,8 +280,8 @@ export function getTermsDoc(lang) {
         title: l === 'en' ? 'Service' : 'Servicio',
         paragraphs: [
           l === 'en'
-            ? 'MechAssist provides engineering calculators, diagrams and related tools for information and education. Outputs are not a substitute for professional engineering judgement, applicable standards, or manufacturer data.'
-            : 'MechAssist ofrece calculadoras de ingenier?a, diagramas y herramientas afines con fines informativos y educativos. Los resultados no sustituyen el criterio profesional, las normas aplicables ni los datos del fabricante.',
+            ? 'TheMechAssist provides engineering calculators, diagrams and related tools for information and education. Outputs are not a substitute for professional engineering judgement, applicable standards, or manufacturer data.'
+            : 'TheMechAssist ofrece calculadoras de ingenier?a, diagramas y herramientas afines con fines informativos y educativos. Los resultados no sustituyen el criterio profesional, las normas aplicables ni los datos del fabricante.',
         ],
       },
       {

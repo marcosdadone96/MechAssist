@@ -74,7 +74,7 @@ function tr(k, vars = {}) {
 function applyStaticI18n() {
   document.documentElement.setAttribute('lang', LANG);
   if (LANG !== 'en') return;
-  document.title = 'Hydraulic Pump — MechAssist';
+  document.title = 'Hydraulic Pump — TheMechAssist';
   const map = {
     Inicio: 'Home',
     Laboratorio: 'Laboratory',

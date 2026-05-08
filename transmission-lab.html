@@ -3,22 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Laboratorio de transmisi&#243;n &#8212; MechAssist</title>
+    <title>Laboratorio de transmisi&#243;n &#8212; TheMechAssist</title>
     <meta
       name="description"
-      content="Engranajes, correas, cadenas, rodamientos, ejes, chavetas, ajustes ISO, Seeger, acoplamientos y torniller&#237;a: calculadoras con diagramas. MechAssist."
+      content="Engranajes, correas, cadenas, rodamientos, ejes, chavetas, ajustes ISO, Seeger, acoplamientos y torniller&#237;a: calculadoras con diagramas. TheMechAssist."
     />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href="" id="mdr-canonical" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="" id="mdr-og-url" />
-    <meta property="og:title" content="Laboratorio de transmisi&#243;n &#8212; MechAssist" />
+    <meta property="og:title" content="Laboratorio de transmisi&#243;n &#8212; TheMechAssist" />
     <meta
       property="og:description"
       content="Calculadoras r&#225;pidas de elementos de m&#225;quina con esquemas t&#233;cnicos y textos de alcance normativo."
     />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Laboratorio de transmisi&#243;n &#8212; MechAssist" />
+    <meta name="twitter:title" content="Laboratorio de transmisi&#243;n &#8212; TheMechAssist" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -28,7 +28,7 @@
   </head>
   <body class="lab-body">
     <header class="lab-header" role="banner">
-      <a class="lab-header__brand" href="index.html">Mech<span>Assist</span></a>
+      <a class="lab-header__brand" href="index.html">The<span>MechAssist</span></a>
       <nav class="lab-header__nav" aria-label="Navegaci&#243;n laboratorio">
         <div class="lab-header__nav-start">
           <a href="index.html">Inicio</a>
@@ -36,7 +36,7 @@
         </div>
         <div class="lab-header__nav-end">
           <a href="transmission-lab.html" class="lab-header__nav-pill" aria-current="page">Laboratorio</a>
-          <a href="transmission-canvas.html" title="Lienzo t&#233;cnico multieje (Pro)">Lienzo Pro</a>
+          <a href="transmission-canvas.html" title="Lienzo t&#233;cnico multieje">Lienzo multieje</a>
         </div>
       </nav>
     </header>
@@ -46,7 +46,7 @@
         <p class="lab-start-hint">&#191;No sabes por d&#243;nde empezar? Si tienes un motor y una carga, empieza por Engranajes o Correas.</p>
         <p class="lab-lead">
           Calculadoras r&#225;pidas con <strong>diagramas t&#233;cnicos</strong>. Pensadas para dimensionar o verificar transmisiones habituales antes de abrir el cat&#225;logo. El
-          <a href="transmission-canvas.html">lienzo t&#233;cnico</a> (Pro) permite multieje con arrastre y validaciones en vivo.
+          <a href="transmission-canvas.html">lienzo t&#233;cnico</a> permite multieje con arrastre y validaciones en vivo.
         </p>
         <h2 class="lab-index-section">Transmisi&#243;n cinem&#225;tica</h2>
         <div class="lab-index-grid">
@@ -117,11 +117,11 @@
 
         <h2 class="lab-index-section">Din&#225;mica</h2>
         <div class="lab-index-grid">
-          <div class="lab-card lab-card--soon" aria-label="Pr&#243;ximamente: motor e inercia">
-            <span class="lab-badge lab-badge--beta">Pr&#243;ximamente</span>
+          <a class="lab-card" href="calc-gearmotor-inertia.html">
+            <span class="lab-badge lab-badge--free">GRATIS</span>
             <h3>Motor &#183; inercia J</h3>
-            <p>Cat&#225;logo demo, relaci&#243;n de inercias y gr&#225;fico par motor vs carga (m&#243;dulo en preparaci&#243;n).</p>
-          </div>
+            <p>Cat&#225;logo demo de motorreductores, relaci&#243;n J<sub>ext</sub>/J<sub>mot</sub> y gr&#225;fico par motor vs carga.</p>
+          </a>
           <a class="lab-card" href="calc-compression-spring.html">
             <span class="lab-badge lab-badge--free">GRATIS</span>
             <h3>Muelle helicoidal compresi&#243;n &#183; DIN 2089</h3>
@@ -129,12 +129,16 @@
           </a>
         </div>
 
-        <section class="lab-pro-card">
-          <span class="lab-badge lab-badge--pro">PRO</span>
-          <h2>Lienzo t&#233;cnico multieje</h2>
-          <p>Construye transmisiones multieje con arrastre directo de elementos, propagaci&#243;n autom&#225;tica de n/T y veredictos en vivo mientras editas.</p>
-          <a class="lab-pro-card__cta" href="transmission-canvas.html">Ver Lienzo Pro &#8594;</a>
-        </section>
+        <h2 class="lab-index-section">Lienzo multieje</h2>
+        <div class="lab-index-grid">
+          <a class="lab-card" href="transmission-canvas.html">
+            <span class="lab-badge lab-badge--free">GRATIS</span>
+            <h3>Lienzo t&#233;cnico multieje</h3>
+            <p>
+              Construye transmisiones multieje con arrastre directo de elementos, propagaci&#243;n autom&#225;tica de n/T y veredictos en vivo mientras editas.
+            </p>
+          </a>
+        </div>
       </section>
     </main>
     <script type="module" src="js/ui/labDonationFooter.js"></script>

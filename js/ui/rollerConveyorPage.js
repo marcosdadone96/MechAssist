@@ -291,7 +291,7 @@ function localizeRollerStaticContent() {
   const lang = getCurrentLang();
   if (lang !== 'en') return;
   document.documentElement.lang = 'en';
-  document.title = 'Roller Conveyor - MechAssist';
+  document.title = 'Roller Conveyor - TheMechAssist';
   const setText = (sel, t) => {
     const el = document.querySelector(sel);
     if (el) el.textContent = t;

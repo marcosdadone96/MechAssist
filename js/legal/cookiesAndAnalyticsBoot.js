@@ -5,6 +5,8 @@
 (function () {
   var LS_KEY = 'mdr-cookie-consent-v1';
   var GA_ID = 'G-43E5C8TB38';
+  /** Sincronizar con `publicSiteBaseUrl` en `js/config/features.js` (sin barra final). */
+  var PUBLIC_SITE_BASE = 'https://mechassist.netlify.app';
 
   function getConsent() {
     try {
@@ -45,7 +47,13 @@
 
   function refreshCanonicalAndOg() {
     try {
-      var url = window.location.href.split('#')[0];
+      var path = window.location.pathname || '/';
+      path = path.replace(/\/index\.html?$/i, '/');
+      if (!path) path = '/';
+      var base = PUBLIC_SITE_BASE.replace(/\/$/, '');
+      var url = base + (path.indexOf('/') === 0 ? path : '/' + path);
+      var q = window.location.search || '';
+      url = url + q;
       var link = document.getElementById('mdr-canonical');
       if (link) link.setAttribute('href', url);
       var og = document.getElementById('mdr-og-url') || document.querySelector('meta[property="og:url"]');

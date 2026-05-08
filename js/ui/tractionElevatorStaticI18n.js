@@ -390,7 +390,7 @@ function applyBlocks(lang) {
 export function applyTractionElevatorStaticI18n(lang = getCurrentLang()) {
   const en = lang === 'en';
   document.documentElement.lang = en ? 'en' : 'es';
-  document.title = en ? 'Traction elevator \u2014 MechAssist' : 'Ascensor de tracci\u00f3n \u2014 MechAssist';
+  document.title = en ? 'Traction elevator \u2014 TheMechAssist' : 'Ascensor de tracci\u00f3n \u2014 TheMechAssist';
 
   const fpw = document.getElementById('fileProtoWarn');
   if (fpw) {

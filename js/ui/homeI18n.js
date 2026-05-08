@@ -17,7 +17,7 @@ const dict = {
     'hero.desc2':
       'Herramientas t\u00e9cnicas confiables basadas en normas, la mayor\u00eda gratuitas.',
     'hero.mockupTitle': 'Calculadora de correas',
-    'hero.mockup.url': 'mechassist.app/calc-belts',
+    'hero.mockup.url': 'themechassist.app/calc-belts',
     'hero.mockup.live': 'En vivo',
     'hero.mockup.pill': 'ISO / AGMA orientativo',
     'hero.mockup.hint': 'Actualizado al cambiar entradas',
@@ -68,7 +68,7 @@ const dict = {
     'zone.machines': 'M\u00e1quinas',
     'zone.machinesIntro':
       'Transporte, elevaci\u00f3n y bombas: potencias y fuerzas para validar concepto antes del detalle CAD.',
-    'zone.machines.peek': 'Cinta plana \u00b7 Rodillos (gratis) \u00b7 resto Pro',
+    'zone.machines.peek': 'Cinta plana \u00b7 Rodillos \u00b7 bombas y elevaci\u00f3n',
     'zone.lab.peek': 'Engranajes \u00b7 Correas \u00b7 Rodamientos \u00b7 ISO',
     'zone.fluids.peek': 'Bombas \u00b7 Cilindros \u00b7 Prensa \u00b7 Neum\u00e1tica',
     'zone.lab': 'Laboratorio',
@@ -151,7 +151,7 @@ const dict = {
     'auth.register': 'Registrarse',
     'auth.logout': 'Cerrar sesi\u00f3n',
     'auth.close': 'Cerrar',
-    'auth.headline': 'Tu cuenta MechAssist',
+    'auth.headline': 'Tu cuenta TheMechAssist',
     'auth.sub':
       'Cuenta local en este navegador: sirve para continuar al checkout y personalizar la cabecera. No hay servidor todav\u00eda.',
     'auth.tabLogin': 'Iniciar sesi\u00f3n',
@@ -164,6 +164,26 @@ const dict = {
     'auth.submitRegister': 'Crear cuenta',
     'auth.backendNote':
       'Los datos se guardan solo en este dispositivo (localStorage). Sin cuenta en servidor por ahora.',
+    'nav.feedback': 'Sugerencias',
+    'feedback.navHome': 'Inicio',
+    'feedback.docTitle': 'Sugerencias \u2014 TheMechAssist',
+    'feedback.eyebrow': 'Tu opini\u00f3n',
+    'feedback.title': 'Sugerencias y mejoras',
+    'feedback.lead':
+      'Describe qu\u00e9 te gustar\u00eda mejorar, qu\u00e9 calculadora falta o qu\u00e9 no queda claro. Lo revisamos para priorizar el roadmap.',
+    'feedback.thanks': 'Gracias. Hemos recibido tu mensaje.',
+    'feedback.error':
+      'No se pudo enviar desde este entorno. Prueba en la web publicada o m\u00e1s tarde.',
+    'feedback.honeypotLabel': 'No rellenar si eres humano',
+    'feedback.labelMessage': 'Mensaje',
+    'feedback.placeholderMessage':
+      'Ej.: falta una calculadora de poleas; en la bomba me gustar\u00eda exportar a PDF...',
+    'feedback.labelName': 'Nombre (opcional)',
+    'feedback.labelEmail': 'Correo (opcional, si quieres respuesta)',
+    'feedback.note':
+      'El mensaje se env\u00eda de forma segura al servicio del sitio solo para mejorar TheMechAssist, seg\u00fan la pol\u00edtica de privacidad.',
+    'feedback.submit': 'Enviar sugerencia',
+    'footer.feedback': 'Sugerencias',
     'footer.privacy': 'Privacidad',
     'footer.terms': 'T\u00e9rminos',
     'footer.cookies': 'Cookies',
@@ -179,7 +199,7 @@ const dict = {
     'hero.desc2':
       'Reliable, standards-grounded technical tools \u2014 most of them free.',
     'hero.mockupTitle': 'Belt calculator',
-    'hero.mockup.url': 'mechassist.app/calc-belts',
+    'hero.mockup.url': 'themechassist.app/calc-belts',
     'hero.mockup.live': 'Live',
     'hero.mockup.pill': 'ISO / AGMA (indicative)',
     'hero.mockup.hint': 'Updates as inputs change',
@@ -230,7 +250,7 @@ const dict = {
     'zone.machines': 'Machines',
     'zone.machinesIntro':
       'Conveying, lifting and pumps: powers and forces to validate a concept before deep CAD work.',
-    'zone.machines.peek': 'Flat belt \u00b7 Rollers (free) \u00b7 rest Pro',
+    'zone.machines.peek': 'Flat belt \u00b7 Rollers \u00b7 pumps and lifts',
     'zone.lab.peek': 'Gears \u00b7 Belts \u00b7 Bearings \u00b7 ISO',
     'zone.fluids.peek': 'Pumps \u00b7 Cylinders \u00b7 Press \u00b7 Pneumatics',
     'zone.lab': 'Laboratory',
@@ -313,7 +333,7 @@ const dict = {
     'auth.register': 'Sign up',
     'auth.logout': 'Log out',
     'auth.close': 'Close',
-    'auth.headline': 'Your MechAssist account',
+    'auth.headline': 'Your account on TheMechAssist',
     'auth.sub':
       'Local account in this browser: unlock checkout flow and header greeting. No cloud server yet.',
     'auth.tabLogin': 'Log in',
@@ -326,6 +346,26 @@ const dict = {
     'auth.submitRegister': 'Create account',
     'auth.backendNote':
       'Data stays on this device only (localStorage). No server-side account yet.',
+    'nav.feedback': 'Feedback',
+    'feedback.navHome': 'Home',
+    'feedback.docTitle': 'Feedback \u2014 TheMechAssist',
+    'feedback.eyebrow': 'Your feedback',
+    'feedback.title': 'Suggestions & improvements',
+    'feedback.lead':
+      'Tell us what to improve, which calculator is missing, or what feels unclear. We use this to prioritize the roadmap.',
+    'feedback.thanks': 'Thank you \u2014 we received your message.',
+    'feedback.error':
+      'Could not send from this environment. Try the live site or again later.',
+    'feedback.honeypotLabel': 'Leave blank if you are human',
+    'feedback.labelMessage': 'Message',
+    'feedback.placeholderMessage':
+      'e.g. need a sheave calculator; pump page should export PDF...',
+    'feedback.labelName': 'Name (optional)',
+    'feedback.labelEmail': 'Email (optional, if you want a reply)',
+    'feedback.note':
+      'Your message is sent securely to site operators only to improve TheMechAssist, as described in the privacy policy.',
+    'feedback.submit': 'Send feedback',
+    'footer.feedback': 'Feedback',
     'footer.privacy': 'Privacy',
     'footer.terms': 'Terms',
     'footer.cookies': 'Cookies',
