@@ -29,7 +29,9 @@
       <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" flood-color="#020617" flood-opacity="0.55"/>
     </filter>
   </defs>
+  <!-- App tile -->
   <rect width="128" height="128" rx="28" fill="url(#tma-bg)"/>
+  <!-- 12-tooth gear silhouette -->
   <path
     fill="url(#tma-metal)"
     filter="url(#tma-soft)"
@@ -37,12 +39,15 @@
     stroke-width="0.75"
     d="M 64.00 18.00 L 73.32 29.23 L 87.00 24.16 L 89.46 38.54 L 103.84 41.00 L 98.77 54.68 L 110.00 64.00 L 98.77 73.32 L 103.84 87.00 L 89.46 89.46 L 87.00 103.84 L 73.32 98.77 L 64.00 110.00 L 54.68 98.77 L 41.00 103.84 L 38.54 89.46 L 24.16 87.00 L 29.23 73.32 L 18.00 64.00 L 29.23 54.68 L 24.16 41.00 L 38.54 38.54 L 41.00 24.16 L 54.68 29.23 Z"
   />
+  <!-- Central hub (bore + frames monogram) -->
   <circle cx="64" cy="64" r="27.5" fill="#020617"/>
   <circle cx="64" cy="64" r="27.5" fill="url(#tma-inner-glow)"/>
+  <!-- M -->
   <path
     fill="url(#tma-metal-dark)"
     d="M 46 86 L 46 46 L 54 46 L 64 62 L 74 46 L 82 46 L 82 86 L 76 86 L 76 56 L 64 72 L 52 56 L 52 86 Z"
   />
+  <!-- A (with counter) -->
   <path
     fill="url(#tma-metal-dark)"
     d="M 58.5 84 L 64 54 L 69.5 84 Z M 62.4 78 L 64 62.8 L 65.6 78 Z"

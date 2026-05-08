@@ -1,5 +1,6 @@
 /**
- * Formulario de sugerencias (Netlify Forms). Envo por fetch para mostrar gracias sin salir de la pgina.
+ * Sugerencias: intento vía función Netlify `email-feedback` (Resend) si está configurada;
+ * si no, Netlify Forms (POST a la página del formulario).
  */
 
 import { HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
@@ -10,6 +11,54 @@ function syncDocTitle() {
     const title = t('feedback.docTitle');
     if (title && title !== 'feedback.docTitle') document.title = title;
   }
+}
+
+/**
+ * @param {HTMLFormElement} form
+ */
+function resolveFormsPostUrl(form) {
+  const raw = (form.getAttribute('action') || '/feedback.html').trim();
+  if (/^https?:\/\//i.test(raw)) return raw;
+  try {
+    return new URL(raw, window.location.origin).href;
+  } catch {
+    return raw;
+  }
+}
+
+/**
+ * @param {HTMLFormElement} form
+ */
+async function submitViaEmailFunction(form) {
+  const fd = new FormData(form);
+  const payload = {
+    message: fd.get('message'),
+    name: fd.get('name'),
+    email: fd.get('email'),
+    context: fd.get('context'),
+    botField: fd.get('bot-field'),
+  };
+  const url = `${window.location.origin}/.netlify/functions/email-feedback`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return res;
+}
+
+/**
+ * @param {HTMLFormElement} form
+ */
+async function submitViaNetlifyForms(form) {
+  const fd = new FormData(form);
+  const body = new URLSearchParams(fd);
+  const postUrl = resolveFormsPostUrl(form);
+  return fetch(postUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString(),
+  });
 }
 
 function mountFeedbackPage() {
@@ -37,16 +86,40 @@ function mountFeedbackPage() {
     const btn = form.querySelector('[type="submit"]');
     if (btn instanceof HTMLButtonElement) btn.disabled = true;
 
+    const showFileProtocolError = () => {
+      const t = typeof window.__t === 'function' ? window.__t : () => '';
+      const msg = t('feedback.errorFile');
+      if (errBox instanceof HTMLElement) {
+        errBox.textContent =
+          msg && msg !== 'feedback.errorFile'
+            ? msg
+            : 'Abre esta página desde la web publicada (no desde un archivo local).';
+        errBox.hidden = false;
+      }
+    };
+
+    if (window.location.protocol === 'file:') {
+      showFileProtocolError();
+      if (btn instanceof HTMLButtonElement) btn.disabled = false;
+      return;
+    }
+
     try {
-      const fd = new FormData(form);
-      const body = new URLSearchParams(fd);
-      const action = form.getAttribute('action') || '/';
-      const res = await fetch(action, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: body.toString(),
-      });
-      if (!res.ok) throw new Error('bad status');
+      let sent = false;
+
+      try {
+        const fnRes = await submitViaEmailFunction(form);
+        if (fnRes.ok) {
+          sent = true;
+        }
+      } catch (_) {
+        /* red o función no desplegada: seguir con Forms */
+      }
+
+      if (!sent) {
+        const res = await submitViaNetlifyForms(form);
+        if (!res.ok) throw new Error('bad status');
+      }
 
       if (thanks instanceof HTMLElement) thanks.hidden = false;
       form.reset();

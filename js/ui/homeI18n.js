@@ -173,7 +173,9 @@ const dict = {
       'Describe qu\u00e9 te gustar\u00eda mejorar, qu\u00e9 calculadora falta o qu\u00e9 no queda claro. Lo revisamos para priorizar el roadmap.',
     'feedback.thanks': 'Gracias. Hemos recibido tu mensaje.',
     'feedback.error':
-      'No se pudo enviar desde este entorno. Prueba en la web publicada o m\u00e1s tarde.',
+      'No se pudo enviar. Abre el sitio publicado (no el archivo local) o int\u00e9ntalo m\u00e1s tarde.',
+    'feedback.errorFile':
+      'Abre esta p\u00e1gina desde la web publicada; desde un archivo .html en tu equipo no hay servidor que reciba el env\u00edo.',
     'feedback.honeypotLabel': 'No rellenar si eres humano',
     'feedback.labelMessage': 'Mensaje',
     'feedback.placeholderMessage':
@@ -355,7 +357,9 @@ const dict = {
       'Tell us what to improve, which calculator is missing, or what feels unclear. We use this to prioritize the roadmap.',
     'feedback.thanks': 'Thank you \u2014 we received your message.',
     'feedback.error':
-      'Could not send from this environment. Try the live site or again later.',
+      'Could not send. Open the published site (not a local file) or try again later.',
+    'feedback.errorFile':
+      'Open this page from the published website; opening a local .html file cannot submit feedback.',
     'feedback.honeypotLabel': 'Leave blank if you are human',
     'feedback.labelMessage': 'Message',
     'feedback.placeholderMessage':

@@ -6,7 +6,7 @@
   var LS_KEY = 'mdr-cookie-consent-v1';
   var GA_ID = 'G-43E5C8TB38';
   /** Sincronizar con `publicSiteBaseUrl` en `js/config/features.js` (sin barra final). */
-  var PUBLIC_SITE_BASE = 'https://mechassist.netlify.app';
+  var PUBLIC_SITE_BASE = 'https://www.themechassist.com';
 
   function getConsent() {
     try {

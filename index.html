@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EX3Z5HVGJV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-EX3Z5HVGJV');
+</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TheMechAssist</title>
@@ -8,9 +17,9 @@
       name="description"
       content="TheMechAssist: calculadoras profesionales de ingeniería mecánica basadas en normas. Dimensioná transmisión, máquinas e hidráulica en segundos; núcleo amplio gratis."
     />
-    <link rel="canonical" href="https://mechassist.netlify.app/" id="mdr-canonical" />
+    <link rel="canonical" href="https://www.themechassist.com/" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://mechassist.netlify.app/" id="mdr-og-url" />
+    <meta property="og:url" content="https://www.themechassist.com/" />
     <meta property="og:title" content="TheMechAssist" />
     <meta
       property="og:description"
@@ -19,7 +28,11 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="TheMechAssist" />
     <meta name="theme-color" content="#0f172a" />
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
+
+    <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
+
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -32,7 +45,17 @@
   </head>
   <body class="hub-body">
     <header class="hub-header">
-      <span class="hub-header__title">The<em>MechAssist</em></span>
+      <div class="hub-header__brand">
+        <img
+          class="hub-header__logo"
+          src="logo-themechassist.svg"
+          width="40"
+          height="40"
+          alt=""
+          decoding="async"
+        />
+        <span class="hub-header__title">The<em>MechAssist</em></span>
+      </div>
       <div class="hub-header__right">
         <span class="hub-header__tag" data-i18n="header.tag">Transmisión</span>
         <a class="hub-header__plans" href="#hub-pricing" data-i18n="nav.plans">Planes</a>

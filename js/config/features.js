@@ -75,7 +75,7 @@ export const FEATURES = Object.freeze({
    * y debe coincidir con la linea Sitemap en robots.txt.
    * Ej.: 'https://www.mechassist.com'. Vacio: el script escribe el marcador REPLACE-WITH-YOUR-DOMAIN.
    */
-  publicSiteBaseUrl: 'https://mechassist.netlify.app',
+  publicSiteBaseUrl: 'https://www.themechassist.com',
 
   /**
    * Atajos "demo" de Pro. En produccion suele ir todo false y showDemoCheckoutCompleteButton

@@ -9,7 +9,11 @@
       content="Envía mejoras o funciones que echas en falta en TheMechAssist."
     />
     <meta name="robots" content="index,follow" />
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
+
+    <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
+
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="" id="mdr-canonical" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="" id="mdr-og-url" />
@@ -32,7 +36,17 @@
   </head>
   <body class="hub-body">
     <header class="hub-header">
-      <a class="hub-header__title hub-header__title--link" href="index.html">The<em>MechAssist</em></a>
+      <a class="hub-header__brand hub-header__title--link" href="index.html">
+        <img
+          class="hub-header__logo"
+          src="logo-themechassist.svg"
+          width="40"
+          height="40"
+          alt=""
+          decoding="async"
+        />
+        <span class="hub-header__title">The<em>MechAssist</em></span>
+      </a>
       <div class="hub-header__right">
         <a class="hub-header__plans" href="index.html" data-i18n="feedback.navHome">Inicio</a>
         <div class="hub-lang" role="group" aria-label="Language selector" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
@@ -54,7 +68,7 @@
           Gracias. Hemos recibido tu mensaje.
         </div>
         <div id="feedback-error" class="hub-feedback__error" role="alert" hidden data-i18n="feedback.error">
-          No se pudo enviar desde este entorno. Prueba en la web publicada o más tarde.
+          No se pudo enviar. Abre el sitio publicado (no el archivo local) o inténtalo más tarde.
         </div>
 
         <form
@@ -62,7 +76,7 @@
           class="hub-feedback__form"
           name="site-feedback"
           method="POST"
-          action="/"
+          action="/feedback.html"
           data-netlify="true"
           netlify-honeypot="bot-field"
         >

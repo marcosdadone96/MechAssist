@@ -9,4 +9,4 @@ Allow: /
 #   2) Ejecute: node scripts/generate-sitemap.mjs
 #   3) Descomente la linea siguiente con su dominio y despliegue sitemap.xml junto al sitio.
 #
-# Sitemap: https://www.example.com/sitemap.xml
+Sitemap: https://www.themechassist.com/sitemap.xml

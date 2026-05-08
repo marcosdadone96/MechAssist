@@ -35,6 +35,21 @@
   border-bottom: 1px solid rgba(148, 163, 184, 0.28);
 }
 
+.hub-header__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.hub-header__logo {
+  width: clamp(2rem, 4.2vw, 2.45rem);
+  height: auto;
+  flex-shrink: 0;
+  display: block;
+  border-radius: 0.45rem;
+}
+
 .hub-header__right {
   display: flex;
   align-items: center;
