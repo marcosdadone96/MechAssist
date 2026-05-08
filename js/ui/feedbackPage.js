@@ -144,19 +144,23 @@ function mountFeedbackPage() {
     try {
       let sent = false;
 
-      try {
-        const fnRes = await submitViaEmailFunction(form);
-        if (fnRes.ok) sent = true;
-      } catch (_) {
-        /* función no desplegada o red */
-      }
-
       const w3key =
         typeof FEATURES.feedbackWeb3FormsAccessKey === 'string'
           ? FEATURES.feedbackWeb3FormsAccessKey.trim()
           : '';
-      if (!sent && w3key) {
+
+      /** Si hay clave Web3Forms, enviar primero (evita esperar a Netlify/Resend). */
+      if (w3key) {
         sent = await submitViaWeb3Forms(form, w3key);
+      }
+
+      if (!sent) {
+        try {
+          const fnRes = await submitViaEmailFunction(form);
+          if (fnRes.ok) sent = true;
+        } catch (_) {
+          /* función no desplegada o red */
+        }
       }
 
       if (!sent) {

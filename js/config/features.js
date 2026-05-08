@@ -81,9 +81,9 @@ export const FEATURES = Object.freeze({
    * Sugerencias (feedback.html): clave de https://web3forms.com (gratis).
    * Con una clave configurada, el envío funciona aunque el sitio no use Netlify Forms
    * (p. ej. solo hosting estático o dominio sin formularios Netlify).
-   * Dejar vacío para usar solo la función Netlify (Resend) + Netlify Forms.
+   * Vacío: solo función Netlify (Resend) + Netlify Forms. Con clave: envío principal vía Web3Forms.
    */
-  feedbackWeb3FormsAccessKey: '',
+  feedbackWeb3FormsAccessKey: 'e6895fd1-92f4-4a29-a1a9-0dd3b80f2ccd',
 
   /**
    * Atajos "demo" de Pro. En produccion suele ir todo false y showDemoCheckoutCompleteButton
