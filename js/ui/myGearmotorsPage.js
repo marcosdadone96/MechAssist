@@ -3,6 +3,7 @@
  */
 
 import { getCurrentLang, setCurrentLang } from '../config/locales.js';
+import { supabase } from '@/lib/supabaseClient';
 import {
   listUserGearmotors,
   addUserGearmotor,
@@ -79,6 +80,7 @@ const TX = {
     etaHint: 'Opcional. Vac\u00edo: se usa 0,92 en verificaci\u00f3n. Puede escribir 0\u20131 o porcentaje (p. ej. 92).',
     submitAdd: 'Guardar en mi base',
     submitEdit: 'Actualizar',
+    saveCloud: 'Guardar actual',
     cancelEdit: 'Cancelar edici\u00f3n',
     listH: 'Lista guardada',
     countLine: 'Entradas: {n} / {max}',
@@ -143,6 +145,7 @@ const TX = {
     etaHint: 'Optional. Empty defaults to 0.92 in verification. Enter 0\u20131 or percent (e.g. 92).',
     submitAdd: 'Save to my library',
     submitEdit: 'Update',
+    saveCloud: 'Save current (cloud)',
     cancelEdit: 'Cancel edit',
     listH: 'Saved list',
     countLine: 'Entries: {n} / {max}',
@@ -265,6 +268,7 @@ function applyStaticCopy() {
   if (navSelf) navSelf.textContent = t('title');
 
   document.getElementById('gmCancelBtn')?.replaceChildren(document.createTextNode(t('cancelEdit')));
+  document.getElementById('gmSaveCloudBtn')?.replaceChildren(document.createTextNode(t('saveCloud')));
   syncSubmitLabel();
 
   const host = document.getElementById('gmLangHost');
@@ -326,6 +330,68 @@ function readFormRaw() {
   if (Number.isFinite(etaRaw) && etaRaw > 0) o.eta_g = etaRaw;
   if (notes) o.notes = notes.slice(0, 500);
   return o;
+}
+/**
+ * Env\u00eda el estado actual del formulario a Supabase (tabla proyectos_transmision).
+ */
+async function handleGuardarEnSupabase() {
+  const v = validateForm();
+  if (!v.ok) {
+    flashStatus(t(v.key), 'warn');
+    return;
+  }
+  const datos = v.payload;
+
+  const {
+    data: { user },
+    error: authErr,
+  } = await supabase.auth.getUser();
+
+  if (authErr || !user) {
+    flashStatus(
+      lang() === 'en' ? 'Sign in to save to the cloud.' : 'Inicie sesi\u00f3n para guardar en la nube.',
+      'warn',
+    );
+    return;
+  }
+
+  let eta = datos.eta_g;
+  if (eta != null && Number.isFinite(eta) && eta > 1 && eta <= 100) eta /= 100;
+
+  const row = {
+    user_id: user.id,
+    referencia: datos.label ?? null,
+    p_motor: datos.motor_kW,
+    n2_salida: datos.n2_rpm,
+    t2_nominal: datos.T2_nom_Nm,
+    n_motor: datos.motor_rpm_nom ?? null,
+    eficiencia_reductor: eta != null && Number.isFinite(eta) ? eta : null,
+    notas: datos.notes ?? null,
+  };
+
+  const { error } = await supabase.from('proyectos_transmision').insert(row);
+
+  if (error) {
+    flashStatus((lang() === 'en' ? 'Cloud save failed: ' : 'Error al guardar: ') + error.message, 'warn');
+    return;
+  }
+
+  const added = addUserGearmotor(datos);
+  if (added) {
+    clearForm();
+    renderTable();
+  }
+
+  flashStatus(
+    added
+      ? lang() === 'en'
+        ? 'Saved to cloud and library.'
+        : 'Guardado en la nube y en la lista.'
+      : lang() === 'en'
+        ? 'Saved to cloud (library full — export or remove entries).'
+        : 'Guardado en la nube (lista local llena — exporte o elimine entradas).',
+    'info',
+  );
 }
 
 function clearForm() {
@@ -589,6 +655,8 @@ function wireGearmotorPageHandlers() {
   });
 
   document.getElementById('gmCancelBtn')?.addEventListener('click', () => clearForm());
+
+  document.getElementById('gmSaveCloudBtn')?.addEventListener('click', () => void handleGuardarEnSupabase());
 
   document.getElementById('gmExportBtn')?.addEventListener('click', () => {
     const blob = new Blob([exportUserGearmotorsJson()], { type: 'application/json;charset=utf-8' });

@@ -20,6 +20,7 @@
   "homepage": "https://github.com/marcosdadone96/MechAssist#readme",
   "dependencies": {
     "@netlify/blobs": "^10.7.4",
+    "@supabase/supabase-js": "^2.105.4",
     "bcryptjs": "^2.4.3",
     "resend": "^6.12.3"
   }

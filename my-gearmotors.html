@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mis motorreductores &#8212; MechAssist</title>
-    <meta name="description" content="Biblioteca local: guarde placas, exporte JSON y use los datos en las calculadoras de mÔøΩquinas." />
+    <meta name="description" content="Biblioteca local: guarde placas, exporte JSON y use los datos en las calculadoras de mùquinas." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -14,10 +14,21 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="" id="mdr-og-url" />
     <meta property="og:title" content="Mis motorreductores &#8212; MechAssist" />
-    <meta property="og:description" content="Biblioteca local: guarde placas, exporte JSON y use los datos en las calculadoras de mÔøΩquinas." />
+    <meta property="og:description" content="Biblioteca local: guarde placas, exporte JSON y use los datos en las calculadoras de mùquinas." />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Mis motorreductores &#8212; MechAssist" />
     <link rel="stylesheet" href="css/app.css" />
+    <!-- Import map: alias @/ ? js/ (Supabase y otros mùdulos) -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@/lib/supabaseClient": "./js/lib/supabaseClient.js"
+        }
+      }
+    </script>
+    <!-- Opcional: URL y anon key de Supabase (o defina window.__SUPABASE_URL__ / __SUPABASE_ANON_KEY__ antes de los mùdulos) -->
+    <!-- <meta name="supabase-url" content="https://YOUR_PROJECT.supabase.co" /> -->
+    <!-- <meta name="supabase-anon-key" content="YOUR_ANON_KEY" /> -->
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
   <body>
@@ -41,7 +52,7 @@
         <span class="site-nav__title">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">M√°quinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">M·quinas</a>
         <a class="site-nav__link" href="my-gearmotors.html" aria-current="page"><span class="mygm-nav-txt" data-gm-nav-title data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -106,6 +117,7 @@
                 </div>
                 <div class="field gearmotor-db__form-actions" style="grid-column: 1 / -1">
                   <button type="submit" class="btn-calc" id="gmSubmitBtn"></button>
+                  <button type="button" class="btn-calc button--ghost" id="gmSaveCloudBtn">Guardar actual</button>
                   <button type="button" class="button button--ghost" id="gmCancelBtn" hidden></button>
                 </div>
               </form>
@@ -156,7 +168,7 @@
     <footer class="app-legal-foot">
       <nav class="app-legal-foot__links" aria-label="Legal">
         <a href="privacy.html">Privacidad</a>
-        <a href="terms.html">TÔøΩrminos</a>
+        <a href="terms.html">Tùrminos</a>
       </nav>
     </footer>
 

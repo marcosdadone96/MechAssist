@@ -17,7 +17,7 @@ const dict = {
     'hero.desc2':
       'Herramientas t\u00e9cnicas confiables basadas en normas, la mayor\u00eda gratuitas.',
     'hero.mockupTitle': 'Calculadora de correas',
-    'hero.mockup.url': 'themechassist.app/calc-belts',
+    'hero.mockup.url': 'www.themechassist.com/calc-belts.html',
     'hero.mockup.live': 'En vivo',
     'hero.mockup.pill': 'ISO / AGMA orientativo',
     'hero.mockup.hint': 'Actualizado al cambiar entradas',
@@ -208,7 +208,7 @@ const dict = {
     'hero.desc2':
       'Reliable, standards-grounded technical tools \u2014 most of them free.',
     'hero.mockupTitle': 'Belt calculator',
-    'hero.mockup.url': 'themechassist.app/calc-belts',
+    'hero.mockup.url': 'www.themechassist.com/calc-belts.html',
     'hero.mockup.live': 'Live',
     'hero.mockup.pill': 'ISO / AGMA (indicative)',
     'hero.mockup.hint': 'Updates as inputs change',
