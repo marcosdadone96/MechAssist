@@ -2,6 +2,8 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { HYDRAULIC_CYLINDER_EN } from '../lab/i18n/pages/hydCylEn.js';
 
 const G = 9.81;
 /** @type {object | null} */
@@ -24,14 +26,15 @@ const ISO_3320_RODS_BY_BORE = {
   160: [70, 90, 110],
 };
 const LANG_KEY = 'mdr-home-lang';
-const LANG = (() => {
+
+function getLang() {
   try {
     const v = localStorage.getItem(LANG_KEY);
     return v === 'en' ? 'en' : 'es';
   } catch (_) {
     return 'es';
   }
-})();
+}
 const I18N = {
   es: {
     pageTitle: 'Cilindro hidráulico — TheMechAssist',
@@ -205,12 +208,13 @@ const I18N = {
   },
 };
 function t(key, vars = {}) {
-  const str = (I18N[LANG] && I18N[LANG][key]) || (I18N.es[key] || key);
+  const lg = getLang();
+  const str = (I18N[lg] && I18N[lg][key]) || (I18N.es[key] || key);
   return str.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? `{${k}}`));
 }
 
 function applyStaticI18n() {
-  document.documentElement.setAttribute('lang', LANG);
+  document.documentElement.setAttribute('lang', getLang());
   document.title = t('pageTitle');
   const h2 = document.querySelector('.lab-panel h2');
   const lead = document.querySelector('.lab-lead');
@@ -330,7 +334,7 @@ function applyStaticI18n() {
     'Memoria de cálculo, fórmulas y supuestos': 'Calculation memory, formulas and assumptions',
     'SISTEMA APTO': 'SYSTEM SUITABLE',
   };
-  if (LANG === 'en') {
+  if (getLang() === 'en') {
     document.querySelectorAll(
       'label, span.hint, p.lab-field-help, p.lab-diagram-wrap__title, p.lab-diagram-caption, option, #hcVerdict, .hc-mini-table th, .hc-mini-table td, summary',
     ).forEach((el) => {
@@ -340,7 +344,7 @@ function applyStaticI18n() {
   }
   document.querySelector('.site-nav__center')?.setAttribute(
     'aria-label',
-    LANG === 'en' ? 'Main navigation' : 'Navegaci\u00f3n principal',
+    getLang() === 'en' ? 'Main navigation' : 'Navegaci\u00f3n principal',
   );
   if (h2) h2.textContent = t('title');
   if (lead) lead.textContent = t('lead');
@@ -384,7 +388,7 @@ function syncHcWallSelectOptions(boreMm) {
   sel.innerHTML = WALL_COMMERCIAL_MM.map((w) => {
     const pmax = maxPressureBarForWallMm(boreMm, w);
     const label =
-      LANG === 'en'
+      getLang() === 'en'
         ? `${w} mm (~${fmt(pmax, 0)} bar max, indicative)`
         : `${w} mm (~${fmt(pmax, 0)} bar máx. orient.)`;
     return `<option value="${w}">${label}</option>`;
@@ -418,15 +422,15 @@ function renderCylinderDiagram(svg, strokeMm, rodMm, boreMm) {
   const rodStart = pistonX + 12;
   const rodEnd = tubeX + bodyW + 180;
   const midY = y0 + h / 2;
-  const txtPortA = LANG === 'en' ? 'Port A' : 'Puerto A';
-  const txtPortB = LANG === 'en' ? 'Port B' : 'Puerto B';
-  const txtPush = LANG === 'en' ? 'Push chamber (extend)' : 'Cámara de empuje (avance)';
-  const txtPull = LANG === 'en' ? 'Annular chamber (retract)' : 'Cámara de tracción (retorno)';
-  const txtSeals = LANG === 'en' ? 'High-pressure seals' : 'Sellos alta presión';
-  const txtRod = LANG === 'en' ? 'Rod' : 'Vástago';
-  const txtStroke = LANG === 'en' ? 'Stroke' : 'Carrera';
+  const txtPortA = getLang() === 'en' ? 'Port A' : 'Puerto A';
+  const txtPortB = getLang() === 'en' ? 'Port B' : 'Puerto B';
+  const txtPush = getLang() === 'en' ? 'Push chamber (extend)' : 'Cámara de empuje (avance)';
+  const txtPull = getLang() === 'en' ? 'Annular chamber (retract)' : 'Cámara de tracción (retorno)';
+  const txtSeals = getLang() === 'en' ? 'High-pressure seals' : 'Sellos alta presión';
+  const txtRod = getLang() === 'en' ? 'Rod' : 'Vástago';
+  const txtStroke = getLang() === 'en' ? 'Stroke' : 'Carrera';
   const dimHint =
-    LANG === 'en'
+    getLang() === 'en'
       ? `${txtStroke} ${fmt(strokeMm, 0)} mm · Ø rod ${fmt(rodMm, 0)} / Ø bore ${fmt(boreMm, 0)}`
       : `${txtStroke} ${fmt(strokeMm, 0)} mm · Ø vástago ${fmt(rodMm, 0)} / Ø pistón ${fmt(boreMm, 0)}`;
 
@@ -666,7 +670,7 @@ function computeAndRender() {
     </details>
   `;
 
-  const formulaLines = LANG === 'en'
+  const formulaLines = getLang() === 'en'
     ? [
         'Push force: F = p * A_piston with p in Pa (bar * 1e5). Pull: F = p * A_annular.',
         'Areas: A_piston = pi*D^2/4, A_rod = pi*d^2/4, A_ann = A_piston - A_rod.',
@@ -686,7 +690,7 @@ function computeAndRender() {
         labTierHc === 'project' ? `Nota temperatura aceite: ${fmt(oilTempC, 0)} C a efectos de trazabilidad (sin recalcular viscosidad).` : 'Modo aula: factor L_eff 1.2 salvo modo proyecto.',
       ];
 
-  const assumptionsHc = LANG === 'en'
+  const assumptionsHc = getLang() === 'en'
     ? [
         'E_steel = 210 GPa for rod buckling.',
         `Buckling uses stroke (${fmt(strokeMm, 0)} mm) * factor ${fmt(eulerLengthFactor, 2)} as unsupported length proxy.`,
@@ -704,9 +708,9 @@ function computeAndRender() {
 
   if (formulaBody instanceof HTMLElement) {
     formulaBody.innerHTML = `
-      <p class="lab-fluid-formulas__lead">${labTierHc === 'project' ? (LANG === 'en' ? 'Project mode: adjustable Euler length factor and oil temperature note.' : 'Modo proyecto: factor de pandeo y nota de temperatura.') : (LANG === 'en' ? 'Classroom mode: standard formulas.' : 'Modo aula: formulas estandar.')}</p>
+      <p class="lab-fluid-formulas__lead">${labTierHc === 'project' ? (getLang() === 'en' ? 'Project mode: adjustable Euler length factor and oil temperature note.' : 'Modo proyecto: factor de pandeo y nota de temperatura.') : (getLang() === 'en' ? 'Classroom mode: standard formulas.' : 'Modo aula: formulas estandar.')}</p>
       <ol class="lab-fluid-formulas__list">${formulaLines.map((x) => `<li>${x}</li>`).join('')}</ol>
-      <p class="lab-fluid-formulas__sub"><strong>${LANG === 'en' ? 'Assumptions' : 'Supuestos'}</strong></p>
+      <p class="lab-fluid-formulas__sub"><strong>${getLang() === 'en' ? 'Assumptions' : 'Supuestos'}</strong></p>
       <ul class="lab-fluid-formulas__list">${assumptionsHc.map((x) => `<li>${x}</li>`).join('')}</ul>
     `;
   }
@@ -863,15 +867,15 @@ function syncModeUi() {
     const help = loadField.querySelector('.lab-field-help');
     if (hint) {
       hint.textContent = mode === 'diagnostic'
-        ? (LANG === 'en' ? 'Calculated automatically' : 'Calculado automáticamente')
-        : (LANG === 'en' ? 'External mechanical load' : 'Carga mecánica externa');
+        ? (getLang() === 'en' ? 'Calculated automatically' : 'Calculado automáticamente')
+        : (getLang() === 'en' ? 'External mechanical load' : 'Carga mecánica externa');
     }
     if (help) {
       help.textContent = mode === 'diagnostic'
-        ? (LANG === 'en'
+        ? (getLang() === 'en'
           ? 'In diagnostic mode, load is computed as maximum cylinder capacity for current pressure and diameter.'
           : 'En modo diagnóstico se calcula como capacidad máxima del cilindro para la presión y diámetro actuales.')
-        : (LANG === 'en'
+        : (getLang() === 'en'
           ? 'Converted to N to compare against available force and safety factor.'
           : 'Se convierte a N para comparar con fuerza disponible y factor de seguridad.');
     }
@@ -931,6 +935,15 @@ syncHcLabTierUi();
 syncModeUi();
 mountCompactLabFieldHelp();
 computeAndRender();
+
+watchLangAndApply(HYDRAULIC_CYLINDER_EN, {
+  onEnApplied: () => {
+    applyStaticI18n();
+    syncHcLabTierUi();
+    syncModeUi();
+    computeAndRender();
+  },
+});
 
 mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountHc'), {
   getPayload: () => cylinderPdfSnapshot,

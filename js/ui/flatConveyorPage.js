@@ -14,12 +14,18 @@ import { renderBrandRecommendationCards, initMotorVerification } from './driveSe
 import { renderFullEngineeringAside } from './engineeringReport.js';
 import { mountPremiumPdfExportBar, buildFlatPdfPayload } from '../services/reportPdfExport.js';
 import { readMountingPreferences } from '../modules/mountingPreferences.js';
-import { injectMountingConfigSection, MOUNTING_INPUT_IDS } from './mountingConfigSection.js';
+import {
+  injectMountingConfigSection,
+  refreshMountingConfigSection,
+  MOUNTING_INPUT_IDS,
+} from './mountingConfigSection.js';
 import { openMotorsRecommendationsAndScroll } from './motorsCollapsible.js';
 import { applyMachinePremiumGates } from './machinePremiumGates.js';
 import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
-import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
+import { getCurrentLang } from '../config/locales.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { FLAT_CONVEYOR_EN } from '../lab/i18n/pages/flatConvEn.js';
 
 const inputIds = [
   'beltLength',
@@ -90,12 +96,6 @@ function syncLoadDutyUi() {
 
   const lang = getCurrentLang();
   const en = lang === 'en';
-  LOAD_DUTY_OPTIONS.forEach((optRow) => {
-    const opt = dutyEl.querySelector(`option[value="${optRow.id}"]`);
-    if (opt) {
-      opt.textContent = en ? LOAD_DUTY_OPTIONS_EN[optRow.id].label : optRow.label;
-    }
-  });
 
   const duty = dutyEl.value;
   const row = LOAD_DUTY_OPTIONS.find((o) => o.id === duty);
@@ -224,298 +224,6 @@ function clearRuntimeError() {
   if (!box) return;
   box.hidden = true;
   box.textContent = '';
-}
-
-function localizeFlatStaticContent() {
-  const lang = getCurrentLang();
-  if (lang !== 'en') return;
-  document.documentElement.lang = 'en';
-  document.title = 'Flat Conveyor - TheMechAssist';
-  const setText = (selector, text) => {
-    const el = document.querySelector(selector);
-    if (el) el.textContent = text;
-  };
-  const setHtml = (selector, html) => {
-    const el = document.querySelector(selector);
-    if (el) el.innerHTML = html;
-  };
-
-  setText('.flat-sidebar__title', 'Flat Conveyor');
-  setText(
-    '.flat-sidebar__lead',
-    'Consistent torque and power at the drive drum. Data updates instantly; use the right panel for the schematic and result dashboard.',
-  );
-  setText('.help-details.flat-help > summary', 'Quick Guide for Each Parameter');
-  setText('.flat-accordion:nth-of-type(1) .flat-accordion__label', 'Geometry and Kinematics');
-  setText('.flat-accordion:nth-of-type(2) .flat-accordion__label', 'Load');
-  setText('.flat-accordion:nth-of-type(3) .flat-accordion__label', 'Friction and Efficiency');
-  setText('.flat-accordion:nth-of-type(4) .flat-accordion__label', 'Standard and Service Factor');
-  setText('.adv-details > summary', 'Advanced Options - Belt, Load, Startup, and Extras');
-  setText('#btnCalcular', 'View Suggested Gearmotors');
-  setText('.flat-calc-hint', 'Results and diagram update automatically. This button expands suggested gearmotors.');
-  setText('.flat-dashboard__title', 'Sizing Dashboard');
-  setHtml(
-    '.flat-dashboard__lead',
-    'Design Torque = max(steady, startup) x SF. Power <strong>(T<sub>design</sub> x omega) / eta</strong>. <a href="#flat-conveyor-assumptions">Assumptions</a> · hover <strong>L, D, F, v</strong> in the schematic.',
-  );
-  setText('#flatDiagramTipsTitle', 'Technical notes');
-  setHtml(
-    '#flatDiagramTip1',
-    '<strong>Top of the schematic:</strong> compares <strong>steady-state</strong> (without service factor) versus <strong>design</strong> (with SF and &eta; applied).',
-  );
-  setHtml(
-    '#flatDiagramTip2',
-    '<strong>Carrying strand:</strong> <strong>L</strong> and <strong>D</strong> match your form inputs; the drawing is <strong>qualitative</strong>.',
-  );
-  setHtml(
-    '#flatDiagramTip3',
-    '<strong>Bottom boxes:</strong> repeat steady-state values (left) and motor sizing (right), aligned with <strong>Final Results</strong>.',
-  );
-  setText('.flat-visual__photo-block figcaption', 'Reference: real conveyor installation (example).');
-  setHtml(
-    '#verifyPanel h2',
-    '<span class="panel-icon">\u2713</span> Check a gearmotor I already have',
-  );
-  setText(
-    '#verifyPanel .panel-lead',
-    'Two methods: (1) pick brand/model from the sample catalog and click "Check for this machine". (2) If your unit is not listed, open manual entry, fill nameplate/spec data and click "Check with these values". Both methods validate motor power, output torque, and output rpm against the computed duty point.',
-  );
-  setText('[for="verifyBrand"]', 'Brand');
-  setText('[for="verifySearch"]', 'Filter model');
-  setText('[for="verifyModel"]', 'Catalog Model');
-  setText('[data-verify-run]', 'Check for this machine');
-  setText('#section-motores .motors-details__title', 'Gearmotors (SEW-Eurodrive, Siemens Simogear, Nord, Bonfiglioli, Motovario)');
-  setText('#flat-conveyor-assumptions .motors-details__title', 'Model Assumptions');
-  const pdfSection = document.querySelector('#premiumPdfExportMount')?.closest('section.panel');
-  const pdfH2 = pdfSection?.querySelector('h2');
-  if (pdfH2) {
-    pdfH2.innerHTML =
-      '<span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Export report';
-  }
-
-  if (location.protocol === 'file:') {
-    const fpw = document.getElementById('fileProtoWarn');
-    if (fpw) {
-      fpw.textContent =
-        'Recommendation: use a local HTTP server (from the project folder run npx --yes serve . and open the URL shown, e.g. http://localhost:3000). Opening the HTML file directly may block JavaScript and hide results and diagrams.';
-    }
-  }
-
-  setHtml(
-    '.help-details.flat-help .help-details__body',
-    `<p class="help-details__lead muted">
-      Almost every label has a <span class="info-chip info-chip--static" aria-hidden="true">?</span>: on desktop, hover; on touch, <strong>tap</strong> the same symbol to read help without lengthening the form.
-    </p>
-    <ul>
-      <li><strong>L</strong>: length of the <strong>loaded run</strong> the model uses to spread nominal mass (mass flow \u2248 (m/L)\u00b7v). It need not match total belt length on site.</li>
-      <li><strong>m</strong>: nominal load mass associated with that run L (uniform spread model).</li>
-      <li>
-        <strong>v, D, \u03bc, \u03b7</strong>: speed, drive drum diameter, equivalent friction, and efficiency <strong>from motor to drum</strong> (one chain; typically 85\u201392% if it lumps motor+gearbox+coupling).
-      </li>
-      <li>
-        <strong>Standard</strong>: declared framework in reports \u2014 <strong>ISO/DIN</strong> uses a simplified analytic approach (not a full DIN 22101 memo); <strong>CEMA</strong> applies +6% on steady traction (not the full CEMA manual).
-      </li>
-      <li><strong>Load duty</strong>: sets the service factor (AGMA/ISO-oriented); \u201cCustom\u201d unlocks the numeric field.</li>
-      <li><strong>\u03b7</strong>: if it exceeds 100%, the app warns and caps the calculation at 99%.</li>
-    </ul>`,
-  );
-
-  const carryOpt0 = document.querySelector('#carrySurface option[value="rollers"]');
-  const carryOpt1 = document.querySelector('#carrySurface option[value="slide_plate"]');
-  if (carryOpt0) carryOpt0.textContent = 'Rollers (rolling support)';
-  if (carryOpt1)
-    carryOpt1.textContent = 'Slide plate (boxes, steel, UHMW\u2026)';
-
-  setHtml(
-    'label[for="carrySurface"]',
-    `Carrying surface <span class="info-chip" title="Rollers: load on idlers (\u03bc usually lower). Slide plate: belt on sheet/UHMW (\u03bc often higher; D is still the drive drum for torque and rpm)." aria-label="Help: rollers vs slide plate and \u03bc.">?</span>`,
-  );
-  setHtml(
-    'label[for="beltLength"]',
-    `Length L <span class="info-chip" title="Loaded run: the model spreads mass m over L giving mass flow \u2248 (m/L)\u00b7v. Not necessarily total belt length on site." aria-label="Help: loaded run L.">?</span>`,
-  );
-  setHtml(
-    'label[for="rollerD"]',
-    `Drive drum diameter D <span class="info-chip" title="Drive drum diameter (T = F\u00d7R, R = D/2). Light lines often use smaller drums; always validate belt minimum diameter with the belt vendor." aria-label="Help: drum diameter.">?</span>`,
-  );
-  setHtml(
-    'label[for="beltSpeed"]',
-    `Speed v <span class="info-chip" title="Belt line speed at steady state. Enters power (F\u00b7v) and drum rpm from v and D." aria-label="Help: belt speed.">?</span>`,
-  );
-  setHtml(
-    'label[for="loadMass"]',
-    `Load mass m <span class="info-chip" title="Nominal mass on run L; model assumes uniform distribution." aria-label="Help: load mass.">?</span>`,
-  );
-  setHtml(
-    'label[for="friction"]',
-    `Coefficient \u03bc <span class="info-chip" title="Global Coulomb friction: on rollers, belt\u2013roller; on slide, belt\u2013plate/liner (\u03bc often higher). When unsure, pick a slightly higher value (more conservative power). Use the table below." aria-label="Help: friction coefficient.">?</span>`,
-  );
-  setHtml(
-    'label[for="efficiency"]',
-    `Efficiency \u03b7 <span class="info-chip" title="From electric motor power to drum: gearbox, coupling, and whatever is in between, as one value. E.g. ~88% if ~12% losses. Do not discount motor efficiency again. If \u03b7 &gt; 100% the app warns." aria-label="Help: efficiency to drum.">?</span>`,
-  );
-  setHtml(
-    'label[for="serviceFactor"]',
-    `Service factor (number) <span class="info-chip" title="Synced with Load duty below (read-only here except Custom). Same factor applied to design torque." aria-label="Help: service factor field.">?</span>`,
-  );
-  setHtml(
-    'label[for="designStandard"]',
-    `Reference standard <span class="info-chip" title="For reports. ISO/DIN: simplified analytic model here (not full DIN 22101). CEMA: +6% on steady traction only. Limits: see Model assumptions at page end." aria-label="Help: design standard.">?</span>`,
-  );
-  setHtml(
-    'label[for="loadDuty"]',
-    `Load duty (sets SF) <span class="info-chip" title="Service class (AGMA/ISO oriented). Sets the numeric factor above except Custom, where you edit the number." aria-label="Help: load duty.">?</span>`,
-  );
-
-  const dsIso = document.querySelector('#designStandard option[value="ISO5048"]');
-  const dsCema = document.querySelector('#designStandard option[value="CEMA"]');
-  if (dsIso)
-    dsIso.textContent = 'ISO 5048 / DIN 22101 \u2014 analytic approach (default)';
-  if (dsCema) dsCema.textContent = 'CEMA \u2014 +6% margin on steady traction';
-
-  setText('.friction-guide > summary', 'Typical \u03bc table');
-  const fgBody = document.querySelector('.friction-guide__body');
-  if (fgBody) {
-    const presets = fgBody.querySelector('.friction-presets');
-    presets?.remove();
-    fgBody.innerHTML = `<p>
-      \u03bc here is a <strong>global indicative coefficient</strong>: it lumps roller friction, belt bending, and material. When unsure, pick a value
-      <strong>slightly above</strong> your best estimate (more conservative = more power).
-    </p>
-    <table>
-      <thead>
-        <tr>
-          <th>Typical situation</th>
-          <th>Indicative \u03bc</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Free rollers, dry rubber belt, good maintenance</td>
-          <td>0.22 \u2013 0.30</td>
-        </tr>
-        <tr>
-          <td>General industrial (light dust, standard rollers)</td>
-          <td>0.30 \u2013 0.40</td>
-        </tr>
-        <tr>
-          <td>Wet, mud, or irregular maintenance</td>
-          <td>0.40 \u2013 0.55</td>
-        </tr>
-        <tr>
-          <td>Wet belt with oil or greasy product</td>
-          <td>\u2265 0.55 (validate with supplier)</td>
-        </tr>
-        <tr>
-          <td>Very sticky material or high drag (validate on site)</td>
-          <td>\u2265 0.50</td>
-        </tr>
-      </tbody>
-    </table>`;
-    if (presets) {
-      fgBody.appendChild(presets);
-      const plab = presets.querySelector('.friction-presets__label');
-      if (plab) plab.textContent = 'Apply to \u03bc:';
-    }
-  }
-
-  setHtml(
-    '.flat-model-scope',
-    `<strong>Model:</strong> horizontal \u00b7 Coulomb \u00b7 no Euler.
-    <a href="#flat-conveyor-assumptions">Assumptions and exclusions</a>`,
-  );
-
-  setHtml(
-    '.adv-details > summary',
-    `Advanced options \u2014 belt fine-tuning, load, startup, extras <span class="field-badge field-badge--optional">Advanced</span>`,
-  );
-  setHtml(
-    '.adv-details__note',
-    `<strong>When to open this:</strong> to include <strong>belt weight</strong>, part of the load off idlers, <strong>scrapers/guides</strong> as extra force, or refine <strong>startup</strong> (time to reach v and rotational inertia).
-    If you lack data, keep defaults: <strong>0</strong> belt mass excludes it; <strong>1</strong> active fraction = all load on idlers. Each field has <strong>?</strong> with an explanation.`,
-  );
-
-  const advLabels = [
-    [
-      'label[for="beltWidth"]',
-      `Belt width B <span class="info-chip" title="Geometric reference for reports/PDF. This calculator\u2019s \u03bc does not use B." aria-label="Help: belt width.">?</span>`,
-    ],
-    [
-      'label[for="beltMass"]',
-      `Belt mass m_b <span class="info-chip" title="Total belt mass. Adds friction from dead load (carry + return) and mass accelerated at startup. 0 = ignored." aria-label="Help: belt mass.">?</span>`,
-    ],
-    [
-      'label[for="loadDistribution"]',
-      `Active load fraction f_dist <span class="info-chip" title="Share of mass m that creates normal on idlers (0.05\u20131). 1 = all load on idlers; lower if weight goes to structure, hopper, etc." aria-label="Help: load fraction.">?</span>`,
-    ],
-    [
-      'label[for="beltCarryFraction"]',
-      `Belt on carry strand <span class="info-chip" title="Share of belt mass on the top strand; remainder on return. Affects normals and belt friction." aria-label="Help: belt carry fraction.">?</span>`,
-    ],
-    [
-      'label[for="additionalResistance"]',
-      `Additional resistance F_ad <span class="info-chip" title="Sum of constant resisting forces in N not in \u03bc: scrapers, guides, cleaners, etc." aria-label="Help: extra resistance.">?</span>`,
-    ],
-    [
-      'label[for="accelTime"]',
-      `Acceleration time t_ac <span class="info-chip" title="Time to reach speed v from standstill. Shorter \u21d2 higher acceleration force on load + belt." aria-label="Help: accel time.">?</span>`,
-    ],
-    [
-      'label[for="inertiaFactor"]',
-      `Inertia factor k_in <span class="info-chip" title="\u22651 scales startup force beyond mass\u00d7acceleration: simplified drums, couplings, rotating mass." aria-label="Help: inertia factor.">?</span>`,
-    ],
-  ];
-  advLabels.forEach(([sel, html]) => setHtml(sel, html));
-
-  document.getElementById('btnCalcular')?.setAttribute(
-    'title',
-    'Scrolls to suggested gearmotors (calculation is already live)',
-  );
-
-  document.getElementById('beltLengthR')?.setAttribute('aria-label', 'L (slider)');
-  document.getElementById('loadMassR')?.setAttribute('aria-label', 'm (slider)');
-  document.getElementById('beltSpeedR')?.setAttribute('aria-label', 'v (slider)');
-  document.getElementById('rollerDR')?.setAttribute('aria-label', 'D (slider)');
-  document.getElementById('frictionR')?.setAttribute('aria-label', '\u03bc (slider)');
-
-  document.getElementById('diagramFlat')?.setAttribute(
-    'aria-label',
-    'Qualitative flat belt schematic',
-  );
-
-  const engWrap = document.querySelector('#engineeringReport')?.closest('.panel');
-  if (engWrap) {
-    const t = engWrap.querySelector('.motors-details__title');
-    const h = engWrap.querySelector('.motors-details__hint');
-    const lead = engWrap.querySelector('.panel-lead');
-    if (t) t.textContent = 'Engineering breakdown';
-    if (h)
-      h.textContent =
-        'Collapsed by default \u2014 expand for intermediate calculations and rationale';
-    if (lead)
-      lead.textContent =
-        'Intermediate math, gearbox summary, three motor strategies, and engineering rationale.';
-  }
-
-  const motHint = document.querySelector('#section-motores .motors-details__hint');
-  if (motHint)
-    motHint.textContent =
-      'Collapsed by default \u2014 expand for recommendations, export, and verification';
-
-  const asmHint = document.querySelector('#flat-conveyor-assumptions .motors-details__hint');
-  if (asmHint)
-    asmHint.textContent =
-      'Assumptions and limits used in the calculation (horizontal, Coulomb, no Euler\u2026)';
-
-  const fig = document.querySelector('.flat-visual__photo-block img');
-  if (fig) {
-    fig.alt = 'Real conveyor installation with belt and structure (example)';
-  }
-  setHtml(
-    '.flat-visual__photo-block figcaption',
-    `Reference: conveyor on site (example).
-    <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.`,
-  );
 }
 
 function initAdvancedDetailsPersistence() {
@@ -897,7 +605,6 @@ MOUNTING_INPUT_IDS.forEach((id) => {
 });
 
 syncLoadDutyUi();
-localizeFlatStaticContent();
 initAdvancedDetailsPersistence();
 initInfoChipPopovers(document.body);
 
@@ -907,7 +614,19 @@ bindFlatRangeSlider('beltSpeedR', 'beltSpeed', 0.05, 5, 0.01);
 bindFlatRangeSlider('rollerDR', 'rollerD', 50, 1200, 1);
 bindFlatRangeSlider('frictionR', 'friction', 0.15, 0.65, 0.01);
 
-refresh();
+watchLangAndApply(FLAT_CONVEYOR_EN, {
+  onEnApplied: () => {
+    document.documentElement.lang = 'en';
+    refreshMountingConfigSection();
+    syncLoadDutyUi();
+    initInfoChipPopovers(document.body);
+    refresh();
+  },
+});
+
+if (getCurrentLang() !== 'en') {
+  refresh();
+}
 
 if (location.hash === '#flat-conveyor-assumptions') {
   const assumptionsSection = document.getElementById('flat-conveyor-assumptions');
@@ -920,10 +639,3 @@ window.addEventListener('hashchange', () => {
   const details = assumptionsSection?.querySelector('details');
   if (details) details.open = true;
 });
-
-window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
-  location.reload();
-});
-
-
-

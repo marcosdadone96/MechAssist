@@ -3,6 +3,7 @@
  */
 
 import { isPremiumEffective } from '../services/accessTier.js';
+import { getCurrentUser } from '../services/localAuth.js';
 
 function touchMachineConfigCloudSync() {
   import('../services/userCloudSync.js')
@@ -20,7 +21,7 @@ function getLang() {
   }
 }
 
-function getTx(lang, isPro) {
+function getTx(lang, isPro, hasAccount) {
   if (lang === 'en') {
     return {
       panelTitle: '<span class="premium-flag">Pro</span> Machine Configuration',
@@ -29,9 +30,11 @@ function getTx(lang, isPro) {
       savedConfigs: 'Saved Configurations',
       load: 'Load',
       remove: 'Delete',
-      hint: isPro
-        ? 'Saved in this browser (localStorage).'
-        : 'Pro feature: activate Pro version to save and load configurations.',
+      hint: !isPro
+        ? 'Pro feature: activate Pro version to save and load configurations.'
+        : !hasAccount
+          ? 'Sign in to save and load configurations in this browser.'
+          : 'Saved in this browser (localStorage) for your signed-in account.',
       promptName: 'Enter a name to save.',
       saved: (name) => `Configuration "${name}" saved.`,
       pickToLoad: 'Select a configuration to load.',
@@ -49,9 +52,11 @@ function getTx(lang, isPro) {
     savedConfigs: 'Configuraciones guardadas',
     load: 'Cargar',
     remove: 'Eliminar',
-    hint: isPro
-      ? 'Se guardan en este navegador (localStorage).'
-      : 'Funci\u00f3n Pro: active la versi\u00f3n Pro para guardar y cargar configuraciones.',
+    hint: !isPro
+      ? 'Funci\u00f3n Pro: active la versi\u00f3n Pro para guardar y cargar configuraciones.'
+      : !hasAccount
+        ? 'Inicie sesi\u00f3n para guardar y cargar configuraciones en este navegador.'
+        : 'Se guardan en este navegador (localStorage) asociadas a su cuenta.',
     promptName: 'Indique un nombre para guardar.',
     saved: (name) => `Configuraci\u00f3n "${name}" guardada.`,
     pickToLoad: 'Seleccione una configuraci\u00f3n para cargar.',
@@ -82,9 +87,29 @@ function getToolKey() {
   return 'machine';
 }
 
-function readStore() {
+function accountEmail() {
+  const u = getCurrentUser();
+  return u?.email ? String(u.email).trim().toLowerCase() : '';
+}
+
+function migrateMachineLegacy(email) {
+  const nk = `${LS_KEY}::${email}`;
   try {
-    const raw = localStorage.getItem(LS_KEY);
+    if (localStorage.getItem(nk)) return;
+    const legacy = localStorage.getItem(LS_KEY);
+    if (!legacy) return;
+    localStorage.setItem(nk, legacy);
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+function readStore() {
+  const em = accountEmail();
+  if (!em) return {};
+  migrateMachineLegacy(em);
+  try {
+    const raw = localStorage.getItem(`${LS_KEY}::${em}`);
     if (!raw) return {};
     const parsed = JSON.parse(raw);
     return parsed && typeof parsed === 'object' ? parsed : {};
@@ -94,8 +119,10 @@ function readStore() {
 }
 
 function writeStore(v) {
+  const em = accountEmail();
+  if (!em) return;
   try {
-    localStorage.setItem(LS_KEY, JSON.stringify(v));
+    localStorage.setItem(`${LS_KEY}::${em}`, JSON.stringify(v));
   } catch (_) {
     /* ignore */
   }
@@ -164,18 +191,20 @@ export function mountMachineConfigBar() {
 
   const tool = getToolKey();
   const isPro = isPremiumEffective();
-  const tx = getTx(getLang(), isPro);
+  const hasAccount = Boolean(accountEmail());
+  const controlsEnabled = isPro && hasAccount;
+  const tx = getTx(getLang(), isPro, hasAccount);
   const host = document.createElement('section');
   host.className = 'panel machine-config-panel';
   host.id = 'machineConfigBar';
   host.innerHTML = `
     <h2><span class="panel-icon">CFG</span> ${tx.panelTitle}</h2>
     <div class="machine-config-row">
-      <input id="mcName" type="text" placeholder="${tx.namePlaceholder}" ${isPro ? '' : 'disabled'} />
-      <button type="button" id="mcSave" class="button button--ghost" ${isPro ? '' : 'disabled'}>${tx.saveCurrent}</button>
-      <select id="mcSelect" aria-label="${tx.savedConfigs}" ${isPro ? '' : 'disabled'}></select>
-      <button type="button" id="mcLoad" class="button button--ghost" ${isPro ? '' : 'disabled'}>${tx.load}</button>
-      <button type="button" id="mcDelete" class="button button--ghost" ${isPro ? '' : 'disabled'}>${tx.remove}</button>
+      <input id="mcName" type="text" placeholder="${tx.namePlaceholder}" ${controlsEnabled ? '' : 'disabled'} />
+      <button type="button" id="mcSave" class="button button--ghost" ${controlsEnabled ? '' : 'disabled'}>${tx.saveCurrent}</button>
+      <select id="mcSelect" aria-label="${tx.savedConfigs}" ${controlsEnabled ? '' : 'disabled'}></select>
+      <button type="button" id="mcLoad" class="button button--ghost" ${controlsEnabled ? '' : 'disabled'}>${tx.load}</button>
+      <button type="button" id="mcDelete" class="button button--ghost" ${controlsEnabled ? '' : 'disabled'}>${tx.remove}</button>
     </div>
     <p class="field-hint" id="mcMsg">${tx.hint}</p>
   `;
@@ -199,6 +228,11 @@ export function mountMachineConfigBar() {
   const delBtn = host.querySelector('#mcDelete');
   if (!nameIn || !select || !msg || !saveBtn || !loadBtn || !delBtn) return;
   if (!isPro) return;
+
+  if (!hasAccount) {
+    refreshSelect(select, {}, tx);
+    return;
+  }
 
   const getToolConfigs = () => {
     const store = readStore();

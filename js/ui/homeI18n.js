@@ -3,6 +3,7 @@
  * valid UTF-8 even if the server omits charset on *.js (avoids mojibake).
  */
 import { HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
+import { LAB_LANG_EVENT } from '../lab/i18n/labLang.js';
 
 const LS_LANG = 'mdr-home-lang';
 
@@ -431,6 +432,7 @@ function setLang(lang) {
   window.__t = (k) => dict[l][k] || k;
   window.dispatchEvent(new CustomEvent('home-language-changed', { detail: { lang: l } }));
   window.dispatchEvent(new CustomEvent(HOME_LANG_CHANGED_EVENT, { detail: { lang: l } }));
+  window.dispatchEvent(new CustomEvent(LAB_LANG_EVENT, { detail: { lang: l } }));
 }
 
 document.querySelectorAll('.hub-lang__btn[data-lang]').forEach((btn) => {

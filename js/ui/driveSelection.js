@@ -34,7 +34,7 @@ import {
   MAX_USER_GEARMOTORS,
 } from '../services/userGearmotorLibrary.js';
 import { shaftSizingFromDrive } from '../modules/shaftSizing.js';
-import { getCurrentLang } from '../config/locales.js';
+import { getCurrentUser } from '../services/localAuth.js';
 
 /**
  * @typedef {import('../modules/motorVerify.js').DriveRequirement} DriveRequirement
@@ -610,6 +610,13 @@ function wireUserGearmotorDelegation(root) {
       });
       if (!rec) {
         if (out) {
+          const signedIn = Boolean(String(getCurrentUser()?.email || '').trim());
+          if (!signedIn) {
+            out.innerHTML = en
+              ? `<p class="verify-result verify-result--warn">Sign in to save gearmotors to your library.</p>`
+              : `<p class="verify-result verify-result--warn">Inicie sesi\u00f3n para guardar motorreductores en su lista.</p>`;
+            return;
+          }
           const atCap = listUserGearmotors().length >= MAX_USER_GEARMOTORS;
           out.innerHTML = atCap
             ? en

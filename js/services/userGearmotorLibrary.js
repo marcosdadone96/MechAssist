@@ -1,11 +1,48 @@
 /**
  * Motorreductores guardados por el usuario (localStorage) para reutilizarlos
  * en la comprobacion frente al punto calculado de cada maquina.
+ * Persistencia solo si hay sesión en este navegador (véase getCurrentUser en localAuth).
  */
 
 import { buildManualGearmotorModel } from '../modules/motorVerify.js';
+import { getCurrentUser } from './localAuth.js';
 
 const LS_KEY = 'mdr-user-gearmotors-v1';
+
+/** @returns {string|null} */
+function scopedStorageKey() {
+  const u = getCurrentUser();
+  const em = u && typeof u.email === 'string' ? String(u.email).trim().toLowerCase() : '';
+  return em ? `${LS_KEY}::${em}` : null;
+}
+
+/** Copia datos legacy (clave sin email) la primera vez que hay cuenta. */
+function migrateLegacyGearmotors(email) {
+  const nk = `${LS_KEY}::${email}`;
+  try {
+    if (localStorage.getItem(nk)) return;
+    const legacy = localStorage.getItem(LS_KEY);
+    if (!legacy) return;
+    localStorage.setItem(nk, legacy);
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+/**
+ * @param {UserGearmotorRecord[]} list
+ * @returns {boolean}
+ */
+function persistList(list) {
+  const key = scopedStorageKey();
+  if (!key) return false;
+  try {
+    localStorage.setItem(key, JSON.stringify(list));
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
 
 /** Maximo de registros (localStorage y rendimiento del desplegable). */
 export const MAX_USER_GEARMOTORS = 200;
@@ -49,8 +86,12 @@ function newId() {
  * @returns {UserGearmotorRecord[]}
  */
 export function listUserGearmotors() {
+  const u = getCurrentUser();
+  const em = u?.email ? String(u.email).trim().toLowerCase() : '';
+  if (!em) return [];
+  migrateLegacyGearmotors(em);
   try {
-    const raw = localStorage.getItem(LS_KEY);
+    const raw = localStorage.getItem(`${LS_KEY}::${em}`);
     if (!raw) return [];
     const arr = JSON.parse(raw);
     if (!Array.isArray(arr)) return [];
@@ -156,6 +197,7 @@ export function extractGearmotorImportItems(data) {
  * @returns {UserGearmotorRecord | null}
  */
 export function addUserGearmotor(p) {
+  if (!scopedStorageKey()) return null;
   const motor_kW = Number(p.motor_kW);
   const n2_rpm = Number(p.n2_rpm);
   const T2_nom_Nm = Number(p.T2_nom_Nm);
@@ -190,11 +232,7 @@ export function addUserGearmotor(p) {
   if (notes) rec.notes = notes;
 
   list.push(rec);
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify(clampGearmotorList(list)));
-  } catch (_) {
-    return null;
-  }
+  if (!persistList(clampGearmotorList(list))) return null;
   notifyCloudSync();
   try {
     window.dispatchEvent(new CustomEvent(USER_GEARMOTOR_CHANGED_EVENT, { detail: { id: rec.id } }));
@@ -209,15 +247,11 @@ export function addUserGearmotor(p) {
  * @returns {boolean}
  */
 export function removeUserGearmotor(id) {
-  if (!id) return false;
+  if (!id || !scopedStorageKey()) return false;
   const prev = listUserGearmotors();
   const list = prev.filter((r) => r.id !== id);
   if (list.length === prev.length) return false;
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify(list));
-  } catch (_) {
-    return false;
-  }
+  if (!persistList(list)) return false;
   notifyCloudSync();
   try {
     window.dispatchEvent(new CustomEvent(USER_GEARMOTOR_CHANGED_EVENT, { detail: { id } }));
@@ -233,7 +267,7 @@ export function removeUserGearmotor(id) {
  * @returns {UserGearmotorRecord | null}
  */
 export function updateUserGearmotor(id, p) {
-  if (!id) return null;
+  if (!id || !scopedStorageKey()) return null;
   const prev = listUserGearmotors();
   const idx = prev.findIndex((r) => r.id === id);
   if (idx < 0) return null;
@@ -277,11 +311,7 @@ export function updateUserGearmotor(id, p) {
 
   const list = [...prev];
   list[idx] = rec;
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify(list));
-  } catch (_) {
-    return null;
-  }
+  if (!persistList(list)) return null;
   notifyCloudSync();
   try {
     window.dispatchEvent(new CustomEvent(USER_GEARMOTOR_CHANGED_EVENT, { detail: { id } }));
@@ -298,13 +328,9 @@ export function updateUserGearmotor(id, p) {
  * @returns {boolean}
  */
 export function replaceUserGearmotorsList(rows, opts = {}) {
-  if (!Array.isArray(rows)) return false;
+  if (!Array.isArray(rows) || !scopedStorageKey()) return false;
   const out = clampGearmotorList(normalizeImportRows(rows));
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify(out));
-  } catch (_) {
-    return false;
-  }
+  if (!persistList(out)) return false;
   if (!opts.skipCloudSync) notifyCloudSync();
   try {
     window.dispatchEvent(new CustomEvent(USER_GEARMOTOR_CHANGED_EVENT, { detail: { replace: true } }));
@@ -320,18 +346,14 @@ export function replaceUserGearmotorsList(rows, opts = {}) {
  * @returns {boolean}
  */
 export function mergeUserGearmotorsList(rows) {
-  if (!Array.isArray(rows)) return false;
+  if (!Array.isArray(rows) || !scopedStorageKey()) return false;
   const incoming = normalizeImportRows(rows);
   const byId = new Map(listUserGearmotors().map((r) => [r.id, { ...r }]));
   for (const rec of incoming) {
     byId.set(rec.id, rec);
   }
   const merged = clampGearmotorList(Array.from(byId.values()));
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify(merged));
-  } catch (_) {
-    return false;
-  }
+  if (!persistList(merged)) return false;
   notifyCloudSync();
   try {
     window.dispatchEvent(new CustomEvent(USER_GEARMOTOR_CHANGED_EVENT, { detail: { merge: true } }));

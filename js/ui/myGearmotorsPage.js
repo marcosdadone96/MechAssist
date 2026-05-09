@@ -19,6 +19,7 @@ import {
 } from '../services/userGearmotorLibrary.js';
 import { isPremiumEffective } from '../services/accessTier.js';
 import { isPremiumViaQueryProUiAllowed } from '../config/features.js';
+import { getCurrentUser } from '../services/localAuth.js';
 import { startProCheckoutFlow, buildRegisterUrlWithNextCheckout } from '../services/proCheckoutFlow.js';
 
 const GM_IMPORT_MAX_BYTES = 512 * 1024;
@@ -129,6 +130,8 @@ const TX = {
     errEta: 'Si rellena \u03b7, use un valor entre 0 y 1 (o porcentaje 1\u2013100).',
     maxListReached:
       'La lista est\u00e1 llena ({max} entradas). Elimine o exporte antes de a\u00f1adir m\u00e1s.',
+    signInToSave:
+      'Inicie sesi\u00f3n para guardar o importar motorreductores en este navegador.',
   },
   en: {
     title: 'My gearmotors',
@@ -193,6 +196,7 @@ const TX = {
     errNmotor: 'If motor speed is filled, use at least 1 min\u207b\u00b9.',
     errEta: 'If efficiency is filled, use 0\u20131 or a percent between 1 and 100.',
     maxListReached: 'The list is full ({max} entries). Remove or export before adding more.',
+    signInToSave: 'Sign in to save or import gearmotors in this browser.',
   },
 };
 
@@ -376,20 +380,28 @@ async function handleGuardarEnSupabase() {
     return;
   }
 
-  const added = addUserGearmotor(datos);
+  const added =
+    String(getCurrentUser()?.email || '').trim() ? addUserGearmotor(datos) : null;
+
   if (added) {
     clearForm();
     renderTable();
   }
+
+  const hasLocal = Boolean(String(getCurrentUser()?.email || '').trim());
 
   flashStatus(
     added
       ? lang() === 'en'
         ? 'Saved to cloud and library.'
         : 'Guardado en la nube y en la lista.'
-      : lang() === 'en'
-        ? 'Saved to cloud (library full — export or remove entries).'
-        : 'Guardado en la nube (lista local llena — exporte o elimine entradas).',
+      : hasLocal
+        ? lang() === 'en'
+          ? 'Saved to cloud (library full - export or remove entries).'
+          : 'Guardado en la nube (lista local llena - exporte o elimine entradas).'
+        : lang() === 'en'
+          ? 'Saved to cloud. Sign in on this site to add entries to your local library.'
+          : 'Guardado en la nube. Inicie sesi\u00f3n en esta web para a\u00f1adir entradas a la lista local.',
     'info',
   );
 }
@@ -627,6 +639,10 @@ function mountGearmotorsPaywall() {
 function wireGearmotorPageHandlers() {
   document.getElementById('gmForm')?.addEventListener('submit', (ev) => {
     ev.preventDefault();
+    if (!String(getCurrentUser()?.email || '').trim()) {
+      flashStatus(t('signInToSave'), 'warn');
+      return;
+    }
     const v = validateForm();
     if (!v.ok) {
       flashStatus(t(v.key), 'warn');
@@ -673,6 +689,10 @@ function wireGearmotorPageHandlers() {
     const file = input.files?.[0];
     input.value = '';
     if (!file) return;
+    if (!String(getCurrentUser()?.email || '').trim()) {
+      flashStatus(t('signInToSave'), 'warn');
+      return;
+    }
     if (file.size > GM_IMPORT_MAX_BYTES) {
       flashStatus(t('importFileTooLarge'), 'warn');
       return;

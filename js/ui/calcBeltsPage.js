@@ -30,6 +30,52 @@ import { metricsFromBeltType } from '../services/iaAdvisor.js';
 import { bindCommerceFilteredSelect } from './commerceSelectBind.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { LAB_AFFILIATE } from '../config/labAffiliate.js';
+import { getLabLang } from '../lab/i18n/labLang.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { BELTS_PAGE_EN } from '../lab/i18n/pages/beltsEn.js';
+
+function bx(es, en) {
+  return getLabLang() === 'en' ? en : es;
+}
+
+/** Mirrors `beltLinearSpeedVerdict` bands with EN copy for the UI. */
+function beltSpeedVerdictUi(r) {
+  const sv = r.speedVerdict;
+  if (!sv || sv.key === 'unknown') return null;
+  if (getLabLang() !== 'en') return { title: sv.title, detail: sv.detail };
+  const bt = r.beltType;
+  const bands =
+    bt === 'synchronous'
+      ? { min: 5, maxRec: 40, max: 50, label: 'Synchronous' }
+      : bt === 'poly_v'
+        ? { min: 10, maxRec: 40, max: 60, label: 'Poly-V' }
+        : bt === 'flat'
+          ? { min: 5, maxRec: 30, max: 50, label: 'Flat' }
+          : { min: 10, maxRec: 25, max: 30, label: 'Trapezoidal (V)' };
+  const v = r.beltSpeed_m_s;
+  if (v == null || !Number.isFinite(v)) {
+    return {
+      title: 'No data',
+      detail: 'Enter n\u2081 > 0 and diameters to estimate v.',
+    };
+  }
+  if (v > bands.max) {
+    return {
+      title: `Exceeds ${bands.label} limit`,
+      detail: `v > ${bands.max} m/s. Above the indicative maximum for ${bands.label}; validate with manufacturer data.`,
+    };
+  }
+  if (v < bands.min || v > bands.maxRec) {
+    return {
+      title: 'Outside recommended band',
+      detail: `Recommended band for ${bands.label}: ${bands.min}\u2013${bands.maxRec} m/s.`,
+    };
+  }
+  return {
+    title: 'Recommended band',
+    detail: `${bands.min} m/s \u2264 v \u2264 ${bands.maxRec} m/s for ${bands.label}.`,
+  };
+}
 
 mountTierStatusBar();
 bootSmartDashboardIfEnabled('Correas · laboratorio');
@@ -162,21 +208,24 @@ function buildParams() {
 function renderSpeedVerdictEl(r) {
   const wrap = document.getElementById('bSpeedVerdict');
   if (!wrap) return;
-  const sv = r.speedVerdict;
-  if (!sv || sv.key === 'unknown') {
+  const svIn = r.speedVerdict;
+  if (!svIn || svIn.key === 'unknown') {
     wrap.innerHTML = '';
     return;
   }
+  const ui = beltSpeedVerdictUi(r);
+  const title = ui ? ui.title : svIn.title;
+  const detail = ui ? ui.detail : svIn.detail;
   const level =
-    sv.key === 'optimal' ? 'optimal' : sv.key === 'low' ? 'low' : sv.key === 'critical' ? 'critical' : 'info';
+    svIn.key === 'optimal' ? 'optimal' : svIn.key === 'low' ? 'low' : svIn.key === 'critical' ? 'critical' : 'info';
   wrap.innerHTML = `
     <div class="lab-belt-speed-verdict lab-belt-speed-verdict--${level}" role="status">
       <span class="lab-belt-speed-verdict__badge" aria-hidden="true">${
         level === 'optimal' ? '✓' : level === 'low' ? '!' : level === 'critical' ? '⚠' : '·'
       }</span>
       <div class="lab-belt-speed-verdict__text">
-        <strong class="lab-belt-speed-verdict__title">${esc(sv.title)}</strong>
-        <span class="lab-belt-speed-verdict__detail">${esc(sv.detail)}</span>
+        <strong class="lab-belt-speed-verdict__title">${esc(title)}</strong>
+        <span class="lab-belt-speed-verdict__detail">${esc(detail)}</span>
       </div>
       <span class="lab-belt-speed-verdict__v">v ≈ ${r.beltSpeed_m_s != null && Number.isFinite(r.beltSpeed_m_s) ? `${r.beltSpeed_m_s.toFixed(2)} m/s` : '—'}</span>
     </div>`;
@@ -192,18 +241,33 @@ function refreshCore() {
   if (heroEl) {
     const hint2 =
       bt === 'synchronous'
-        ? 'Engranaje de dientes: misma velocidad de correa, sin deslizamiento cinemático (modelo ideal).'
-        : 'Incluye modelo de deslizamiento en la polea conducida (V / plana / Poly-V).';
+        ? bx(
+            'Engranaje de dientes: misma velocidad de correa, sin deslizamiento cinemático (modelo ideal).',
+            'Tooth meshing: same belt speed, no kinematic slip (ideal model).',
+          )
+        : bx(
+            'Incluye modelo de deslizamiento en la polea conducida (V / plana / Poly-V).',
+            'Includes slip model on the driven pulley (V / flat / Poly-V).',
+          );
     heroEl.innerHTML = renderResultHero([
       {
-        label: 'ω₂ — velocidad angular · polea 2 (conducida)',
+        label: bx(
+          'ω₂ — velocidad angular · polea 2 (conducida)',
+          '\u03c9\u2082 — angular speed · pulley 2 (driven)',
+        ),
         display: r.n2_rpm != null ? formatRotation(r.n2_rpm, u.rotation) : '—',
         hint: hint2,
       },
       {
-        label: 'Velocidad lineal de correa (primitivo · polea 1)',
+        label: bx(
+          'Velocidad lineal de correa (primitivo · polea 1)',
+          'Belt linear speed (pitch circle · pulley 1)',
+        ),
         display: formatLinearSpeed(r.beltSpeed_m_s, u.linear),
-        hint: 'v = ω₁ · r₁ = π d₁ n₁ / 60 000 (d₁ en mm, n₁ en RPM → m/s).',
+        hint: bx(
+          'v = ω₁ · r₁ = π d₁ n₁ / 60 000 (d₁ en mm, n₁ en RPM → m/s).',
+          'v = \u03c9\u2081 · r\u2081 = \u03c0 d\u2081 n\u2081 / 60 000 (d\u2081 in mm, n\u2081 in RPM \u2192 m/s).',
+        ),
       },
     ]);
   }
@@ -213,24 +277,24 @@ function refreshCore() {
   const elementBox = document.getElementById('bElementResults');
   if (elementBox) {
     const p1Rows = [
-      ['Diam. primitivo (d₁)', formatLength(r.d1, u.length)],
-      ['Velocidad (n₁)', formatRotation(r.n1_rpm, u.rotation)],
-      ['Velocidad correa (v)', formatLinearSpeed(r.beltSpeed_m_s, u.linear)],
+      [bx('Diam. primitivo (d₁)', 'Prim. dia. (d\u2081)'), formatLength(r.d1, u.length)],
+      [bx('Velocidad (n₁)', 'Speed (n\u2081)'), formatRotation(r.n1_rpm, u.rotation)],
+      [bx('Velocidad correa (v)', 'Belt speed (v)'), formatLinearSpeed(r.beltSpeed_m_s, u.linear)],
     ];
     const p2Rows = [
-      ['Diam. primitivo (d₂)', formatLength(r.d2, u.length)],
-      ['Velocidad (n₂)', r.n2_rpm != null ? formatRotation(r.n2_rpm, u.rotation) : '—'],
-      ['Relación (i)', r.ratio_i.toFixed(2)],
+      [bx('Diam. primitivo (d₂)', 'Prim. dia. (d\u2082)'), formatLength(r.d2, u.length)],
+      [bx('Velocidad (n₂)', 'Speed (n\u2082)'), r.n2_rpm != null ? formatRotation(r.n2_rpm, u.rotation) : '—'],
+      [bx('Relación (i)', 'Ratio (i)'), r.ratio_i.toFixed(2)],
     ];
     if (bt === 'synchronous' && r.Z1 != null && r.Z2 != null) {
-      p1Rows.unshift(['Dientes (Z₁)', String(r.Z1)]);
-      p2Rows.unshift(['Dientes (Z₂)', String(r.Z2)]);
+      p1Rows.unshift([bx('Dientes (Z₁)', 'Teeth (Z\u2081)'), String(r.Z1)]);
+      p2Rows.unshift([bx('Dientes (Z₂)', 'Teeth (Z\u2082)'), String(r.Z2)]);
     } else {
-      p2Rows.push(['Deslizamiento (s)', `${r.slip_pct.toFixed(2)} %`]);
+      p2Rows.push([bx('Deslizamiento (s)', 'Slip (s)'), `${r.slip_pct.toFixed(2)} %`]);
     }
     elementBox.innerHTML = [
-      elementCardHtml('Polea 1 · Motriz', p1Rows),
-      elementCardHtml('Polea 2 · Conducida', p2Rows),
+      elementCardHtml(bx('Polea 1 · Motriz', 'Pulley 1 · Driving'), p1Rows),
+      elementCardHtml(bx('Polea 2 · Conducida', 'Pulley 2 · Driven'), p2Rows),
     ].join('');
   }
 
@@ -238,51 +302,72 @@ function refreshCore() {
   if (box) {
     const cells = [
       metricHtml(
-        'Tipo y referencia',
+        bx('Tipo y referencia', 'Type & reference'),
         esc(r.profileNote),
-        'Identificador de perfil o paso; la selección de servicio sigue catálogo y norma citada.',
+        bx(
+          'Identificador de perfil o paso; la selección de servicio sigue catálogo y norma citada.',
+          'Profile or pitch identifier; service selection follows catalogue and cited standard.',
+        ),
       ),
       metricHtml(
-        'Relación de transmisión i (≈ d₂/d₁ o Z₂/Z₁)',
+        bx('Relación de transmisión i (≈ d₂/d₁ o Z₂/Z₁)', 'Transmission ratio i (\u2248 d\u2082/d\u2081 or Z\u2082/Z\u2081)'),
         r.ratio_i.toFixed(2),
-        'Reductor si i &gt; 1 (salida más lenta que entrada en el esquema habitual).',
+        bx(
+          'Reductor si i > 1 (salida más lenta que entrada en el esquema habitual).',
+          'Reducer if i > 1 (output slower than input in the usual layout).',
+        ),
       ),
       metricHtml(
-        'Longitud primitiva de correa L (aprox.)',
+        bx('Longitud primitiva de correa L (aprox.)', 'Primitive belt length L (approx.)'),
         formatLength(r.beltLength_mm, u.length),
-        'Correa abierta: L ≈ 2C + π(d₁+d₂)/2 + (d₂−d₁)²/(4C).',
+        bx(
+          'Correa abierta: L ≈ 2C + π(d₁+d₂)/2 + (d₂−d₁)²/(4C).',
+          'Open belt: L \u2248 2C + \u03c0(d\u2081+d\u2082)/2 + (d\u2082\u2212d\u2081)\xb2/(4C).',
+        ),
       ),
       metricHtml(
-        'Distancia entre centros C',
+        bx('Distancia entre centros C', 'Centre distance C'),
         formatLength(r.center_mm, u.length),
-        'Condiciona ángulo de abrazamiento y flecha del tramo.',
+        bx(
+          'Condiciona ángulo de abrazamiento y flecha del tramo.',
+          'Sets wrap angle and span sag.',
+        ),
       ),
     ];
 
     if (bt === 'synchronous' && r.Z1 != null && r.Z2 != null) {
       cells.push(
         metricHtml(
-          'Z₁ · dientes · polea 1 (motriz)',
+          bx('Z₁ · dientes · polea 1 (motriz)', 'Z\u2081 · teeth · pulley 1 (driving)'),
           String(r.Z1),
-          `Diámetro primitivo D₁ = p·Z₁/π = ${formatLength(r.d1, u.length)}.`,
+          bx(
+            `Diámetro primitivo D₁ = p·Z₁/π = ${formatLength(r.d1, u.length)}.`,
+            `Primitive diameter D\u2081 = p\u00b7Z\u2081/\u03c0 = ${formatLength(r.d1, u.length)}.`,
+          ),
         ),
         metricHtml(
-          'Z₂ · dientes · polea 2 (conducida)',
+          bx('Z₂ · dientes · polea 2 (conducida)', 'Z\u2082 · teeth · pulley 2 (driven)'),
           String(r.Z2),
-          `D₂ = p·Z₂/π = ${formatLength(r.d2, u.length)}.`,
+          bx(
+            `D₂ = p·Z₂/π = ${formatLength(r.d2, u.length)}.`,
+            `D\u2082 = p\u00b7Z\u2082/\u03c0 = ${formatLength(r.d2, u.length)}.`,
+          ),
         ),
       );
     } else {
       cells.push(
         metricHtml(
-          'd₁ · primitivo · polea 1 (motriz)',
+          bx('d₁ · primitivo · polea 1 (motriz)', 'd\u2081 · primitive · pulley 1 (driving)'),
           formatLength(r.d1, u.length),
-          'Referencia de velocidad periférica.',
+          bx('Referencia de velocidad periférica.', 'Reference for peripheral speed.'),
         ),
         metricHtml(
-          'd₂ · primitivo · polea 2 (conducida)',
+          bx('d₂ · primitivo · polea 2 (conducida)', 'd\u2082 · primitive · pulley 2 (driven)'),
           formatLength(r.d2, u.length),
-          'Salida cinemática antes/después del deslizamiento según tipo de correa.',
+          bx(
+            'Salida cinemática antes/después del deslizamiento según tipo de correa.',
+            'Kinematic output before/after slip depending on belt type.',
+          ),
         ),
       );
     }
@@ -290,53 +375,65 @@ function refreshCore() {
     if (r.slipApplied) {
       cells.push(
         metricHtml(
-          'Deslizamiento s (modelo)',
+          bx('Deslizamiento s (modelo)', 'Slip s (model)'),
           `${r.slip_pct.toFixed(2)} %`,
-          'Aplicado al n₂ teórico en correas flexibles.',
+          bx(
+            'Aplicado al n₂ teórico en correas flexibles.',
+            'Applied to theoretical n\u2082 on flexible belts.',
+          ),
         ),
         metricHtml(
-          'ω₂,th — polea 2 (sin deslizamiento)',
+          bx('ω₂,th — polea 2 (sin deslizamiento)', '\u03c9\u2082,th — pulley 2 (no slip)'),
           r.n2_rpm_theoretical != null ? formatRotation(r.n2_rpm_theoretical, u.rotation) : '—',
-          'n₂,th = n₁ · d₁/d₂.',
+          bx('n₂,th = n₁ · d₁/d₂.', 'n\u2082,th = n\u2081 \u00b7 d\u2081/d\u2082.'),
         ),
         metricHtml(
-          'ω₂ — polea 2 (real)',
+          bx('ω₂ — polea 2 (real)', '\u03c9\u2082 — pulley 2 (actual)'),
           r.n2_rpm != null ? formatRotation(r.n2_rpm, u.rotation) : '—',
-          'n₂,real = n₂,th · (1 − s).',
+          bx('n₂,real = n₂,th · (1 − s).', 'n\u2082,real = n\u2082,th \u00b7 (1 \u2212 s).'),
         ),
       );
     } else {
       cells.push(
         metricHtml(
-          'ω₂ — polea 2 (síncrona)',
+          bx('ω₂ — polea 2 (síncrona)', '\u03c9\u2082 — pulley 2 (synchronous)'),
           r.n2_rpm != null ? formatRotation(r.n2_rpm, u.rotation) : '—',
-          'n₂ = n₁ · Z₁/Z₂ = n₁ · D₁/D₂.',
+          bx('n₂ = n₁ · Z₁/Z₂ = n₁ · D₁/D₂.', 'n\u2082 = n\u2081 \u00b7 Z\u2081/Z\u2082 = n\u2081 \u00b7 D\u2081/D\u2082.'),
         ),
       );
     }
 
     cells.push(
       metricHtml(
-        'Velocidad lineal v (primitivo motriz)',
+        bx('Velocidad lineal v (primitivo motriz)', 'Linear speed v (driving primitive)'),
         formatLinearSpeed(r.beltSpeed_m_s, u.linear),
-        'Veredicto: verde en banda recomendada; amarillo fuera de banda; rojo si supera el máximo del tipo.',
+        bx(
+          'Veredicto: verde en banda recomendada; amarillo fuera de banda; rojo si supera el máximo del tipo.',
+          'Verdict: green in recommended band; yellow outside band; red if above type maximum.',
+        ),
       ),
       metricHtml(
-        'Ángulo de abrazamiento · polea menor',
+        bx('Ángulo de abrazamiento · polea menor', 'Wrap angle · smaller pulley'),
         `${r.wrapAngle_deg_small.toFixed(2)}°`,
         bt === 'flat' || bt === 'poly_v'
-          ? 'La tracción y la capacidad de potencia dependen fuertemente del abrazamiento (plana / Poly-V).'
-          : 'Suele ser la polea más exigente para tracción (correa flexible).',
+          ? bx(
+              'La tracción y la capacidad de potencia dependen fuertemente del abrazamiento (plana / Poly-V).',
+              'Traction and power capacity depend strongly on wrap (flat / Poly-V).',
+            )
+          : bx(
+              'Suele ser la polea más exigente para tracción (correa flexible).',
+              'Often the most demanding pulley for traction (flexible belt).',
+            ),
       ),
       metricHtml(
-        'Ángulo de abrazamiento · polea mayor',
+        bx('Ángulo de abrazamiento · polea mayor', 'Wrap angle · larger pulley'),
         `${r.wrapAngle_deg_large.toFixed(2)}°`,
-        'Contacto de correa en la polea mayor.',
+        bx('Contacto de correa en la polea mayor.', 'Belt contact on the larger pulley.'),
       ),
       metricHtml(
-        'ω₁ — polea 1 (motriz)',
+        bx('ω₁ — polea 1 (motriz)', '\u03c9\u2081 — pulley 1 (driving)'),
         formatRotation(r.n1_rpm, u.rotation),
-        'Dato de entrada del formulario.',
+        bx('Dato de entrada del formulario.', 'Input from the form.'),
       ),
     );
 
@@ -375,34 +472,59 @@ function refreshCore() {
       }),
     );
     if (r.geometryValid === false) {
-      parts.push(labAlert('danger', `${esc(r.geometryNote)} Ajuste C o diámetros antes de usar el resultado.`));
+      parts.push(
+        labAlert(
+          'danger',
+          `${esc(
+            bx(
+              r.geometryNote,
+              'Non-physical geometry: centre distance C must be greater than |d\u2082\u2212d\u2081|/2.',
+            ),
+          )} ${bx(
+            'Ajuste C o diámetros antes de usar el resultado.',
+            'Adjust C or diameters before using the result.',
+          )}`,
+        ),
+      );
     } else {
       if (hasCriticalSpeed) {
         parts.push(
           labAlert(
             'warn',
-            'Velocidad de correa alta: revisar vibración, balanceo y límites del perfil.',
+            bx(
+              'Velocidad de correa alta: revisar vibración, balanceo y límites del perfil.',
+              'High belt speed: check vibration, balance and profile limits.',
+            ),
           ),
         );
       } else if (hasLowSpeed) {
         parts.push(
           labAlert(
             'info',
-            'Velocidad de correa fuera de banda recomendada: validar con fabricante.',
+            bx(
+              'Velocidad de correa fuera de banda recomendada: validar con fabricante.',
+              'Belt speed outside recommended band: validate with manufacturer.',
+            ),
           ),
         );
       }
       parts.push(
         labAlert(
           'info',
-          `${esc(r.profileNote)} · Compruebe tensión, alineación y datos de catálogo para dimensionado final.`,
+          `${esc(r.profileNote)} · ${bx(
+            'Compruebe tensión, alineación y datos de catálogo para dimensionado final.',
+            'Check tension, alignment and catalogue data for final sizing.',
+          )}`,
         ),
       );
     }
     parts.push(
       labAlert(
         'info',
-        'Hipótesis del modelo: no calcula tensiones de correa ni número de correas necesarias; requiere catálogo del fabricante para el dimensionado final.',
+        bx(
+          'Hipótesis del modelo: no calcula tensiones de correa ni número de correas necesarias; requiere catálogo del fabricante para el dimensionado final.',
+          'Model assumptions: does not compute belt tensions or number of belts; manufacturer catalogue required for final sizing.',
+        ),
       ),
     );
     alerts.innerHTML = parts.join('');
@@ -421,40 +543,42 @@ function refreshCore() {
       const n2 = r.n2_rpm;
       body = `
         <p class="calc-substitution__step">
-          Primitivos: <code>D = p·Z/π</code> →
-          <code>D₁ = ${p.toFixed(3)} × ${r.Z1} / π = ${D1.toFixed(2)} mm</code>,
-          <code>D₂ = ${p.toFixed(3)} × ${r.Z2} / π = ${D2.toFixed(2)} mm</code>
+          ${bx('Primitivos:', 'Pitch circles:')} <code>D = p\u00b7Z/\u03c0</code> \u2192
+          <code>D\u2081 = ${p.toFixed(3)} \u00d7 ${r.Z1} / \u03c0 = ${D1.toFixed(2)} mm</code>,
+          <code>D\u2082 = ${p.toFixed(3)} \u00d7 ${r.Z2} / \u03c0 = ${D2.toFixed(2)} mm</code>
         </p>
         <p class="calc-substitution__step">
-          Velocidad angular motriz: <code>ω₁ = 2π n₁/60 = ${w1.toFixed(2)} rad/s</code>
+          ${bx('Velocidad angular motriz:', 'Driving angular speed:')} <code>\u03c9\u2081 = 2\u03c0 n\u2081/60 = ${w1.toFixed(2)} rad/s</code>
         </p>
         <p class="calc-substitution__step">
-          Velocidad lineal: <code>v = ω₁ · (D₁/2000) = ${r.beltSpeed_m_s.toFixed(2)} m/s</code> → <strong>${vDisp}</strong>
+          ${bx('Velocidad lineal:', 'Linear speed:')} <code>v = \u03c9\u2081 \u00b7 (D\u2081/2000) = ${r.beltSpeed_m_s.toFixed(2)} m/s</code> \u2192 <strong>${vDisp}</strong>
         </p>
         <p class="calc-substitution__step">
-          Salida (sin deslizamiento): <code>n₂ = n₁ · D₁/D₂ = ${r.n1_rpm.toFixed(2)} × ${D1.toFixed(2)} / ${D2.toFixed(2)} = ${n2 != null ? n2.toFixed(2) : '—'} RPM</code>
+          ${bx('Salida (sin deslizamiento):', 'Output (no slip):')} <code>n\u2082 = n\u2081 \u00b7 D\u2081/D\u2082 = ${r.n1_rpm.toFixed(2)} \u00d7 ${D1.toFixed(2)} / ${D2.toFixed(2)} = ${n2 != null ? n2.toFixed(2) : '\u2014'} RPM</code>
         </p>`;
     } else {
       const d1 = r.d1;
       const d2 = r.d2;
-      const s = r.slip_pct / 100;
       const n2t = r.n2_rpm_theoretical;
       const n2r = r.n2_rpm;
       body = `
         <p class="calc-substitution__step">
-          Velocidad angular: <code>ω₁ = 2π n₁/60 = ${w1.toFixed(2)} rad/s</code>
+          ${bx('Velocidad angular:', 'Angular speed:')} <code>\u03c9\u2081 = 2\u03c0 n\u2081/60 = ${w1.toFixed(2)} rad/s</code>
         </p>
         <p class="calc-substitution__step">
-          Velocidad lineal en el primitivo motriz: <code>v = ω₁ · (d₁/2000) = ${r.beltSpeed_m_s.toFixed(2)} m/s</code> → <strong>${vDisp}</strong>
-          <span class="calc-substitution__muted">(equivalente a <code>v = π d₁ n₁ / 60 000</code> con d₁ en mm)</span>
+          ${bx('Velocidad lineal en el primitivo motriz:', 'Linear speed at driving primitive:')} <code>v = \u03c9\u2081 \u00b7 (d\u2081/2000) = ${r.beltSpeed_m_s.toFixed(2)} m/s</code> \u2192 <strong>${vDisp}</strong>
+          <span class="calc-substitution__muted">(${bx(
+            'equivalente a',
+            'same as',
+          )} <code>v = \u03c0 d\u2081 n\u2081 / 60 000</code> ${bx('con d\u2081 en mm', 'with d\u2081 in mm')})</span>
         </p>
         <p class="calc-substitution__step">
-          Velocidad de salida (teórica): <code>n₂,th = n₁ · d₁/d₂ = ${r.n1_rpm.toFixed(2)} × ${d1.toFixed(2)} / ${d2.toFixed(2)} = ${n2t != null ? n2t.toFixed(2) : '—'} RPM</code>
+          ${bx('Velocidad de salida (teórica):', 'Output speed (theoretical):')} <code>n\u2082,th = n\u2081 \u00b7 d\u2081/d\u2082 = ${r.n1_rpm.toFixed(2)} \u00d7 ${d1.toFixed(2)} / ${d2.toFixed(2)} = ${n2t != null ? n2t.toFixed(2) : '\u2014'} RPM</code>
         </p>
         ${
           r.slipApplied
             ? `<p class="calc-substitution__step">
-          Deslizamiento: <code>s = ${r.slip_pct.toFixed(2)} %</code> → <code>n₂,real = n₂,th · (1−s) = ${n2r != null ? n2r.toFixed(2) : '—'} RPM</code> → <strong>${formatRotation(n2r, u.rotation)}</strong>
+          ${bx('Deslizamiento:', 'Slip:')} <code>s = ${r.slip_pct.toFixed(2)} %</code> \u2192 <code>n\u2082,real = n\u2082,th \u00b7 (1\u2212s) = ${n2r != null ? n2r.toFixed(2) : '\u2014'} RPM</code> \u2192 <strong>${formatRotation(n2r, u.rotation)}</strong>
         </p>`
             : ''
         }`;
@@ -463,7 +587,10 @@ function refreshCore() {
     sub.innerHTML = `
       <details class="calc-substitution">
         <summary class="calc-substitution__summary">
-          <span class="calc-substitution__title">Sustitución — cinemática y velocidad</span>
+          <span class="calc-substitution__title">${bx(
+            'Sustitución — cinemática y velocidad',
+            'Substitution \u2014 kinematics & speed',
+          )}</span>
         </summary>
         <div class="calc-substitution__inner">
           ${body}
@@ -485,8 +612,8 @@ function refreshCore() {
   const amzTag = Boolean(LAB_AFFILIATE.amazonAssociateTag?.trim());
   emitEngineeringSnapshot({
     page: 'calc-belts',
-    moduleLabel: 'Correas',
-    advisorLang: 'es',
+    moduleLabel: bx('Correas', 'Belts'),
+    advisorLang: getLabLang(),
     advisorContext: {
       belt: { beltType: bt, powerKw: pKw },
     },
@@ -494,11 +621,17 @@ function refreshCore() {
     metrics: metricsFromBeltType(bt),
   });
   setLabPurchaseFromShoppingLines(document.getElementById('labPurchaseSuggestions'), shoppingLines, [], {
-    title: 'Ideas de compra (orientativas)',
-    linkLabel: 'Buscar en Amazon',
+    title: bx('Ideas de compra (orientativas)', 'Shopping ideas (indicative)'),
+    linkLabel: bx('Buscar en Amazon', 'Search on Amazon'),
     disclosure: amzTag
-      ? 'TheMechAssist participa en el programa de afiliados de Amazon EU: los enlaces pueden generar una comisión sin coste adicional. Verifique siempre referencias de pieza y vendedor.'
-      : 'Enlaces de búsqueda a Amazon solo con fines informativos. Puede configurar un ID de afiliado en los ajustes del sitio.',
+      ? bx(
+          'TheMechAssist participa en el programa de afiliados de Amazon EU: los enlaces pueden generar una comisión sin coste adicional. Verifique siempre referencias de pieza y vendedor.',
+          'TheMechAssist participates in the Amazon EU affiliate programme: links may earn a commission at no extra cost. Always verify part references and seller.',
+        )
+      : bx(
+          'Enlaces de búsqueda a Amazon solo con fines informativos. Puede configurar un ID de afiliado en los ajustes del sitio.',
+          'Amazon search links are informational only. You can configure an affiliate ID in site settings.',
+        ),
   });
 }
 
@@ -530,5 +663,7 @@ document.getElementById('bBeltType')?.addEventListener('change', () => {
   document.getElementById(id)?.addEventListener('input', debounced);
   document.getElementById(id)?.addEventListener('change', debounced);
 });
+
+watchLangAndApply(BELTS_PAGE_EN, { onEnApplied: () => debounced() });
 
 runCalcWithIndustrialFeedback(wrap, refreshCore);

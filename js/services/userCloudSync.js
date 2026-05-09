@@ -10,8 +10,25 @@ import { listUserGearmotors, replaceUserGearmotorsList } from './userGearmotorLi
 /** Mantener alineado con clearLocalUser si cambia. */
 export const USER_SYNC_META_KEY = 'mdr-user-sync-meta-v1';
 
-/** Misma clave que machineConfigMount.js (evita import UI -> accessTier). */
+/** Misma clave base que machineConfigMount.js (evita import UI -> accessTier). */
 const LS_MACHINE_CONFIGS = 'mdr-machine-configs-v1';
+
+function accountEmailForMachine() {
+  const u = getCurrentUser();
+  return u?.email ? String(u.email).trim().toLowerCase() : '';
+}
+
+function migrateMachineConfigsLegacy(email) {
+  const nk = `${LS_MACHINE_CONFIGS}::${email}`;
+  try {
+    if (localStorage.getItem(nk)) return;
+    const legacy = localStorage.getItem(LS_MACHINE_CONFIGS);
+    if (!legacy) return;
+    localStorage.setItem(nk, legacy);
+  } catch (_) {
+    /* ignore */
+  }
+}
 
 function fnBase() {
   return `${window.location.origin}/.netlify/functions`;
@@ -58,8 +75,11 @@ export function clearUserSyncMeta() {
 }
 
 function readMachineConfigRoot() {
+  const em = accountEmailForMachine();
+  if (!em) return {};
+  migrateMachineConfigsLegacy(em);
   try {
-    const raw = localStorage.getItem(LS_MACHINE_CONFIGS);
+    const raw = localStorage.getItem(`${LS_MACHINE_CONFIGS}::${em}`);
     if (!raw) return {};
     const parsed = JSON.parse(raw);
     return parsed && typeof parsed === 'object' ? parsed : {};
@@ -69,8 +89,13 @@ function readMachineConfigRoot() {
 }
 
 function replaceMachineConfigRoot(obj) {
+  const em = accountEmailForMachine();
+  if (!em) return;
   try {
-    localStorage.setItem(LS_MACHINE_CONFIGS, JSON.stringify(obj && typeof obj === 'object' ? obj : {}));
+    localStorage.setItem(
+      `${LS_MACHINE_CONFIGS}::${em}`,
+      JSON.stringify(obj && typeof obj === 'object' ? obj : {}),
+    );
   } catch (_) {
     /* ignore */
   }
