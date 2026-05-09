@@ -4,6 +4,9 @@
 
 const ES = {
   dashboardBoot: 'Engranajes - laboratorio',
+  helpSummary: 'Metodolog\u00eda y l\u00edmites del modelo',
+  helpBody:
+    'Geometr\u00eda est\u00e1ndar exterior: <strong>a = m(z\u2081+z\u2082)/2</strong>, ha = m, hf = 1,25m. Cinem\u00e1tica en el <strong>primitivo</strong>. La comprobaci\u00f3n de resistencia sigue un <strong>modelo simplificado inspirado en AGMA 2001</strong> (Lewis + contacto aproximado) \u2014 no sustituye el m\u00e9todo completo ni datos certificados del material.',
   heroOmega: '\u03c9\u2082 - velocidad angular - rueda 2 (conducida)',
   heroOmegaHintOk: 'Salida en el primitivo; \u03c9\u2082/\u03c9\u2081 = z\u2081/z\u2082.',
   heroOmegaHintNeed: 'Indique giro de entrada > 0 para obtener la salida.',
@@ -79,6 +82,9 @@ const ES = {
 
 const EN = {
   dashboardBoot: 'Spur gears - lab',
+  helpSummary: 'Methodology and model limits',
+  helpBody:
+    'Standard external geometry: <strong>a = m(z\u2081+z\u2082)/2</strong>, ha = m, hf = 1.25m. Kinematics at the <strong>pitch line</strong>. Strength checking follows a <strong>simplified model inspired by AGMA 2001</strong> (Lewis + approximate contact) \u2014 it does not replace the full method or certified material data.',
   heroOmega: '\u03c9\u2082 - angular speed - wheel 2 (driven)',
   heroOmegaHintOk: 'Output at pitch; \u03c9\u2082/\u03c9\u2081 = z\u2081/z\u2082.',
   heroOmegaHintNeed: 'Enter input speed > 0 to get output.',

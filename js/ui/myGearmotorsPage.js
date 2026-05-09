@@ -261,8 +261,6 @@ function applyStaticCopy() {
   document.getElementById('gmThAct')?.replaceChildren(document.createTextNode(t('thAct')));
   document.getElementById('gmEmpty')?.replaceChildren(document.createTextNode(t('empty')));
 
-  const navMach = document.querySelector('.app-header__nav-start a[href="machines-hub.html"]');
-  if (navMach) navMach.textContent = t('navMachines');
   const navSelf = document.querySelector('.mygm-nav-txt[data-gm-nav-title]');
   if (navSelf) navSelf.textContent = t('title');
 
@@ -271,7 +269,7 @@ function applyStaticCopy() {
 
   const host = document.getElementById('gmLangHost');
   if (host) host.setAttribute('aria-label', t('ariaLang'));
-  document.querySelector('.hub-lang')?.setAttribute('aria-label', t('ariaLang'));
+  document.querySelector('#gmLangHost .hub-lang')?.setAttribute('aria-label', t('ariaLang'));
 
   updateCountLine();
 }
@@ -478,9 +476,10 @@ function initLangChrome() {
   const host = document.getElementById('gmLangHost');
   if (!host) return;
   host.innerHTML = `
-    <div class="hub-lang" role="group">
-      <button type="button" class="hub-lang__btn" data-gm-lang="es" aria-pressed="false">ES</button>
-      <button type="button" class="hub-lang__btn" data-gm-lang="en" aria-pressed="false">EN</button>
+    <div class="hub-lang site-nav__lang" role="group">
+      <button type="button" class="hub-lang__btn site-nav__lang-btn" data-gm-lang="es" aria-pressed="false">ES</button>
+      <span class="site-nav__lang-sep" aria-hidden="true">\u00b7</span>
+      <button type="button" class="hub-lang__btn site-nav__lang-btn" data-gm-lang="en" aria-pressed="false">EN</button>
     </div>`;
   host.querySelector('.hub-lang')?.setAttribute('aria-label', t('ariaLang'));
   host.querySelectorAll('[data-gm-lang]').forEach((btn) => {
@@ -526,8 +525,6 @@ function mountGearmotorsPaywall() {
   document.title = pw('docTitle');
   const regLabel = payLang() === 'en' ? 'Register & checkout' : 'Registro y pago';
 
-  const navMach = document.querySelector('.app-header__nav-start a[href="machines-hub.html"]');
-  if (navMach) navMach.textContent = payLang() === 'en' ? 'Machines' : 'M\u00e1quinas';
   const navSelf = document.querySelector('.mygm-nav-txt[data-gm-nav-title]');
   if (navSelf) navSelf.textContent = payLang() === 'en' ? 'My gearmotors' : 'Mis motorreductores';
 

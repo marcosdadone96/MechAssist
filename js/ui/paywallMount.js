@@ -110,7 +110,7 @@ export function mountPaywall(lockedTool) {
     </div>
   `;
 
-  const header = document.querySelector('.app-header');
+  const header = document.querySelector('.site-nav');
   if (header) {
     header.insertAdjacentElement('afterend', wrap);
   } else {
@@ -202,7 +202,7 @@ export function mountProMachinePaywall() {
     </div>
   `;
 
-  const header = document.querySelector('.app-header');
+  const header = document.querySelector('.site-nav');
   if (header) {
     header.insertAdjacentElement('afterend', wrap);
   } else {
@@ -229,7 +229,7 @@ export function mountProMachinePaywall() {
 export function mountTierStatusBar() {
   if (!FEATURES.showTierSwitcherInDev) return;
 
-  const header = document.querySelector('.app-header, .lab-header');
+  const header = document.querySelector('.site-nav');
   if (!header) return;
   if (header.querySelector(':scope > .tier-status-bar')) return;
   consumeFreeProUseIfNeeded();

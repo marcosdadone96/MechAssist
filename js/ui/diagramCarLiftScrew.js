@@ -1,9 +1,22 @@
 /**
  * Diagrama: columna en seccion con husillo vertical, tuerca de bronce (carga) y tuerca de seguridad,
  * y motor electrico (arriba o abajo).
+ * Estilo alineado con el resto de maquinas: tonos claros, trazos finos, etiquetas fuera de la geometria.
  */
 
 import { getCurrentLang } from '../config/i18nLabels.js';
+
+/** Contornos y texto (como diagramScrew / roller) */
+const INK = '#334155';
+const LINE = '#475569';
+const MUTED = '#64748b';
+const ACC = '#0d9488';
+const COL_FILL = '#e8eef5';
+const COL_STROKE = '#94a3b8';
+const ARM_FILL = '#cbd5e1';
+const DECK_FILL = '#f1f5f9';
+const DECK_STROKE = ACC;
+const FLOOR_FILL = '#cbd5e1';
 
 function esc(s) {
   return String(s)
@@ -45,120 +58,110 @@ export function renderCarLiftScrewDiagram(svg, p) {
   const d = Math.max(12, Number(p.screwDiameter_mm) || 45);
   const motorPos = p.motorPosition === 'base' ? 'base' : 'top';
 
-  const vbW = 460;
-  const vbH = 360;
+  const vbW = 500;
+  const vbH = 400;
   svg.setAttribute('viewBox', `0 0 ${vbW} ${vbH}`);
 
   const floorY = 308;
-  const postLeftX = 98;
-  const postRightX = 322;
-  const postW = 28;
-  const postTop = 58;
-  const postH = 238;
+  const postLeftX = 108;
+  const postRightX = 312;
+  const postW = 26;
+  /** Bajar el conjunto respecto al titulo para que Motor (arriba) no coincida con subtitulo ni eje de sincronismo */
+  const postTop = 76;
+  const postH = 232;
   const screwX = postLeftX + postW / 2;
   const screwTop = postTop + 16;
   const screwBot = postTop + postH - 18;
-  const nutY = postTop + 128;
-  const nutH = 26;
-  const safeNutY = nutY + 40;
-  const screwR = Math.max(6, Math.min(14, d * 0.14));
+  const nutY = postTop + 118;
+  const nutH = 20;
+  const safeNutY = nutY + nutH + 14;
+  /** Tuercas a la derecha de la plataforma para no tapar texto ni cruzar el bloque central */
+  const nutBlockX = 292;
+  const nutBlockW = 42;
   const armY = nutY + 2;
-  const deckY = 198;
+  const deckY = 188;
 
+  /** Cota H: linea totalmente a la izquierda del titulo (titulo ~x 96+) para no cruzar "columnas" */
+  const dimVX = 26;
+  const titleX = 96;
+
+  const screwR = Math.max(5, Math.min(12, d * 0.12));
   const pitchLabel = pitch >= 10 ? `${pitch.toFixed(0)} mm` : `${pitch.toFixed(1)} mm`;
 
   svg.innerHTML = `
     <defs>
-      <linearGradient id="bgLift" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#f8fafc"/>
-        <stop offset="100%" stop-color="#eef2f7"/>
-      </linearGradient>
-      <linearGradient id="steelPost" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#94a3b8"/>
-        <stop offset="50%" stop-color="#cbd5e1"/>
-        <stop offset="100%" stop-color="#64748b"/>
-      </linearGradient>
-      <marker id="liftArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-        <path d="M0,0 L8,4 L0,8 Z" fill="#0f766e" />
+      <marker id="liftArrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M1 1.5 L10 6 L1 10.5" fill="none" stroke="${ACC}" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
       </marker>
-      <pattern id="hazardStripe" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <rect width="8" height="8" fill="#f8fafc"/>
-        <rect width="4" height="8" fill="#f59e0b"/>
-      </pattern>
+      <style><![CDATA[
+        .diagram-svg-num { font-family: 'Roboto Mono', ui-monospace, monospace; }
+        .lift-callout { font-family: Inter, system-ui, sans-serif; }
+      ]]></style>
     </defs>
-    <rect width="100%" height="100%" fill="url(#bgLift)"/>
-    <rect x="12" y="10" width="286" height="30" rx="8" fill="#ffffff" stroke="#dbe3ed"/>
-    <text x="22" y="23" font-size="10.5" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">
-      ${esc(T.title)}
-    </text>
-    <text x="22" y="33" font-size="7.5" fill="#64748b" font-family="Inter,system-ui,sans-serif">
-      ${esc(T.sub(d, pitchLabel, H))}
-    </text>
+    <rect width="${vbW}" height="${vbH}" fill="#f4f7fb"/>
+
+    <!-- Titulo en franja libre (sin cotas encima) -->
+    <text x="${titleX}" y="26" font-size="11" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">${esc(T.title)}</text>
+    <text x="${titleX}" y="44" font-size="8.5" fill="${MUTED}" font-family="Inter,system-ui,sans-serif">${esc(T.sub(d, pitchLabel, H))}</text>
 
     <!-- Suelo -->
-    <rect x="36" y="${floorY}" width="348" height="18" rx="6" fill="#cbd5e1" stroke="#94a3b8" />
-    <line x1="36" y1="${floorY + 3}" x2="384" y2="${floorY + 3}" stroke="#e2e8f0" />
+    <rect x="36" y="${floorY}" width="${vbW - 72}" height="12" rx="2" fill="${FLOOR_FILL}" stroke="${LINE}" stroke-width="1" />
 
-    <!-- Columnas -->
-    <rect x="${postLeftX}" y="${postTop}" width="${postW}" height="${postH}" rx="6" fill="url(#steelPost)" stroke="#475569" stroke-width="1.6"/>
-    <rect x="${postRightX}" y="${postTop}" width="${postW}" height="${postH}" rx="6" fill="url(#steelPost)" stroke="#475569" stroke-width="1.6"/>
-    <rect x="${postLeftX + 8}" y="${postTop + 16}" width="${postW - 16}" height="${postH - 36}" rx="3" fill="#1e293b" opacity="0.25"/>
-    <rect x="${postRightX + 8}" y="${postTop + 16}" width="${postW - 16}" height="${postH - 36}" rx="3" fill="#1e293b" opacity="0.25"/>
+    <!-- Columnas (relleno claro + borde) -->
+    <rect x="${postLeftX}" y="${postTop}" width="${postW}" height="${postH}" rx="4" fill="${COL_FILL}" stroke="${COL_STROKE}" stroke-width="1.15"/>
+    <rect x="${postRightX}" y="${postTop}" width="${postW}" height="${postH}" rx="4" fill="${COL_FILL}" stroke="${COL_STROKE}" stroke-width="1.15"/>
 
     <!-- Brazos -->
-    <rect x="${postLeftX + postW}" y="${armY}" width="112" height="9" rx="4" fill="#64748b"/>
-    <rect x="${postRightX - 112}" y="${armY}" width="112" height="9" rx="4" fill="#64748b"/>
-    <line x1="${postLeftX + postW + 108}" y1="${armY + 4}" x2="${postRightX - 108}" y2="${armY + 4}" stroke="#94a3b8" stroke-dasharray="4 3"/>
+    <rect x="${postLeftX + postW}" y="${armY}" width="104" height="7" rx="2" fill="${ARM_FILL}" stroke="${LINE}" stroke-width="0.9"/>
+    <rect x="${postRightX - 104}" y="${armY}" width="104" height="7" rx="2" fill="${ARM_FILL}" stroke="${LINE}" stroke-width="0.9"/>
+    <line x1="${postLeftX + postW + 100}" y1="${armY + 3.5}" x2="${postRightX - 100}" y2="${armY + 3.5}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3"/>
 
-    <!-- Plataforma/coche -->
-    <rect x="146" y="${deckY}" width="128" height="44" rx="10" fill="#334155" stroke="#0f172a"/>
-    <rect x="154" y="${deckY + 6}" width="112" height="18" rx="6" fill="#0f172a" opacity="0.35"/>
-    <circle cx="166" cy="${deckY + 42}" r="7.5" fill="#111827"/>
-    <circle cx="254" cy="${deckY + 42}" r="7.5" fill="#111827"/>
-    <rect x="150" y="${deckY + 44}" width="120" height="6" rx="2" fill="url(#hazardStripe)" />
+    <!-- Plataforma (tono claro) -->
+    <rect x="142" y="${deckY}" width="124" height="42" rx="6" fill="${DECK_FILL}" stroke="${DECK_STROKE}" stroke-width="1.1"/>
+    <rect x="150" y="${deckY + 6}" width="108" height="14" rx="3" fill="#e2e8f0" stroke="${COL_STROKE}" stroke-width="0.8"/>
+    <circle cx="162" cy="${deckY + 38}" r="5" fill="${LINE}"/>
+    <circle cx="246" cy="${deckY + 38}" r="5" fill="${LINE}"/>
+    <rect x="148" y="${deckY + 40}" width="112" height="3" rx="1" fill="#fbbf24" opacity="0.75"/>
 
-    <!-- Eje de sincronismo -->
-    <line x1="${postLeftX + postW / 2}" y1="${postTop - 8}" x2="${postRightX + postW / 2}" y2="${postTop - 8}" stroke="#64748b" stroke-width="4.2" stroke-linecap="round"/>
-    <circle cx="${postLeftX + postW / 2}" cy="${postTop - 8}" r="5.5" fill="#475569"/>
-    <circle cx="${postRightX + postW / 2}" cy="${postTop - 8}" r="5.5" fill="#475569"/>
-    <text x="${(postLeftX + postRightX) / 2 + 14}" y="${postTop - 13}" font-size="7.2" fill="#475569" font-family="Inter,system-ui,sans-serif">${esc(T.sync)}</text>
+    <!-- Eje de sincronismo (mas ligero) -->
+    <line x1="${postLeftX + postW / 2}" y1="${postTop - 10}" x2="${postRightX + postW / 2}" y2="${postTop - 10}" stroke="${LINE}" stroke-width="1.6" stroke-linecap="round"/>
+    <circle cx="${postLeftX + postW / 2}" cy="${postTop - 10}" r="3.5" fill="${LINE}"/>
+    <circle cx="${postRightX + postW / 2}" cy="${postTop - 10}" r="3.5" fill="${LINE}"/>
 
-    <!-- Husillo en columna izquierda -->
-    <line x1="${screwX}" y1="${screwTop}" x2="${screwX}" y2="${screwBot}" stroke="#0f172a" stroke-width="${screwR * 2}" stroke-linecap="round"/>
-    <line x1="${screwX}" y1="${screwTop}" x2="${screwX}" y2="${screwBot}" stroke="#94a3b8" stroke-width="${Math.max(2, screwR * 0.55)}" stroke-dasharray="4 4" stroke-linecap="round"/>
+    <!-- Tuercas: solo marcos; etiquetas a la derecha con hueco -->
+    <rect x="${nutBlockX}" y="${nutY}" width="${nutBlockW}" height="${nutH}" rx="3" fill="#fffbeb" stroke="#d97706" stroke-width="1.35"/>
+    <rect x="${nutBlockX}" y="${safeNutY}" width="${nutBlockW - 2}" height="16" rx="3" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.35"/>
+    <text x="${nutBlockX + nutBlockW + 10}" y="${nutY + 14}" class="lift-callout diagram-svg-label--on-drawing" font-size="8" font-weight="700" fill="#9a3412">${esc(T.loadNut)}</text>
+    <text x="${nutBlockX + nutBlockW + 10}" y="${safeNutY + 12}" class="lift-callout diagram-svg-label--on-drawing" font-size="7.8" font-weight="700" fill="#0369a1">${esc(T.safety)}</text>
 
-    <!-- Tuerca principal -->
-    <rect x="${screwX - 28}" y="${nutY}" width="56" height="${nutH}" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
-    <text x="${screwX + 40}" y="${nutY + 11}" font-size="7.4" font-weight="800" fill="#78350f" font-family="Inter,system-ui,sans-serif">${esc(T.loadNut)}</text>
+    <!-- Flecha elevacion (alejada del borde del poste) -->
+    <line x1="${postRightX + postW + 26}" y1="${nutY + 36}" x2="${postRightX + postW + 26}" y2="${postTop + 70}" stroke="${ACC}" stroke-width="1.25" marker-end="url(#liftArrow)"/>
+    <text x="${postRightX + postW + 34}" y="${postTop + 62}" class="lift-callout" font-size="7.8" fill="#0f766e">${esc(T.liftMotion)}</text>
 
-    <!-- Tuerca de seguridad -->
-    <rect x="${screwX - 24}" y="${safeNutY}" width="48" height="20" rx="6" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/>
-    <text x="${screwX + 40}" y="${safeNutY + 12}" font-size="7.2" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">${esc(T.safety)}</text>
+    <!-- Cota H (no cruza titulo: x fijo bajo) -->
+    <line x1="${dimVX}" y1="${postTop + postH}" x2="${dimVX}" y2="${postTop}" stroke="${LINE}" stroke-width="1"/>
+    <line x1="${dimVX - 4}" y1="${postTop + postH}" x2="${dimVX + 4}" y2="${postTop + postH}" stroke="${LINE}" stroke-width="1"/>
+    <line x1="${dimVX - 4}" y1="${postTop}" x2="${dimVX + 4}" y2="${postTop}" stroke="${LINE}" stroke-width="1"/>
+    <text x="${dimVX - 10}" y="${postTop + postH / 2}" font-size="7.5" fill="${MUTED}" transform="rotate(-90 ${dimVX - 10} ${postTop + postH / 2})" font-family="Inter,system-ui,sans-serif">${esc(T.usefulH)}</text>
 
-    <!-- Flecha elevación -->
-    <line x1="${postRightX + postW + 18}" y1="${nutY + 30}" x2="${postRightX + postW + 18}" y2="${postTop + 78}" stroke="#0f766e" stroke-width="2.3" marker-end="url(#liftArrow)"/>
-    <text x="${postRightX + postW + 26}" y="${postTop + 90}" font-size="7.2" fill="#0f766e" font-family="Inter,system-ui,sans-serif">${esc(T.liftMotion)}</text>
-    <line x1="${postLeftX - 16}" y1="${postTop + postH}" x2="${postLeftX - 16}" y2="${postTop}" stroke="#94a3b8" stroke-width="1.3"/>
-    <line x1="${postLeftX - 20}" y1="${postTop + postH}" x2="${postLeftX - 12}" y2="${postTop + postH}" stroke="#94a3b8" stroke-width="1.3"/>
-    <line x1="${postLeftX - 20}" y1="${postTop}" x2="${postLeftX - 12}" y2="${postTop}" stroke="#94a3b8" stroke-width="1.3"/>
-    <text x="${postLeftX - 31}" y="${postTop + postH / 2}" font-size="7" fill="#64748b" transform="rotate(-90 ${postLeftX - 31} ${postTop + postH / 2})" font-family="Inter,system-ui,sans-serif">${esc(T.usefulH)}</text>
-
-    <!-- Motor -->
+    <!-- Motor (arriba: entre subtitulo ~y44 y eje sync ~y66) -->
     ${
       motorPos === 'top'
-        ? `<rect x="${screwX - 42}" y="${postTop - 24}" width="84" height="18" rx="6" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
-           <text x="${screwX}" y="${postTop - 11}" text-anchor="middle" font-size="8" font-weight="800" fill="#334155"
+        ? `<text x="${screwX}" y="${postTop - 20}" text-anchor="middle" font-size="8.5" font-weight="700" fill="${INK}"
             font-family="Inter,system-ui,sans-serif">${esc(T.motor)}</text>
-           <line x1="${screwX}" y1="${postTop - 6}" x2="${screwX}" y2="${screwTop}" stroke="#475569" stroke-width="2"/>`
-        : `<rect x="${screwX - 42}" y="${postTop + postH + 6}" width="84" height="18" rx="6" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
-           <text x="${screwX}" y="${postTop + postH + 19}" text-anchor="middle" font-size="8" font-weight="800" fill="#334155"
+           <line x1="${screwX}" y1="${postTop - 10}" x2="${screwX}" y2="${screwTop}" stroke="${LINE}" stroke-width="1.25"/>`
+        : `<text x="${screwX}" y="${postTop + postH + 32}" text-anchor="middle" font-size="8.5" font-weight="700" fill="${INK}"
             font-family="Inter,system-ui,sans-serif">${esc(T.motor)}</text>
-           <line x1="${screwX}" y1="${screwBot}" x2="${screwX}" y2="${postTop + postH + 6}" stroke="#475569" stroke-width="2"/>`
+           <line x1="${screwX}" y1="${screwBot}" x2="${screwX}" y2="${postTop + postH + 18}" stroke="${LINE}" stroke-width="1.25"/>`
     }
 
-    <text x="${postLeftX}" y="${postTop + postH + 18}" font-size="7.2" fill="#64748b" font-family="Inter,system-ui,sans-serif">
-      ${esc(T.colNote)}
-    </text>
+    <line x1="20" y1="${vbH - 48}" x2="${vbW - 20}" y2="${vbH - 48}" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="24" y="${vbH - 34}" font-size="7.8" fill="${MUTED}" font-family="Inter,system-ui,sans-serif">${esc(T.sync)}</text>
+    <text x="24" y="${vbH - 18}" font-size="7.8" fill="${MUTED}" font-family="Inter,system-ui,sans-serif">${esc(T.colNote)}</text>
+
+    <!-- Husillo encima del fondo de columna -->
+    <line x1="${screwX}" y1="${screwTop}" x2="${screwX}" y2="${screwBot}" stroke="#e2e8f7" stroke-width="${screwR * 2 + 4}" stroke-linecap="round" opacity="0.9"/>
+    <line x1="${screwX}" y1="${screwTop}" x2="${screwX}" y2="${screwBot}" stroke="${INK}" stroke-width="${screwR * 2 + 1}" stroke-linecap="round" opacity="0.35"/>
+    <line x1="${screwX}" y1="${screwTop}" x2="${screwX}" y2="${screwBot}" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round"/>
   `;
 }
-

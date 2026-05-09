@@ -61,41 +61,42 @@ function renderPressDiagram(svg, pistonMm, forceTon, nCols) {
   const rodH = Math.max(12, yPlaten - rodTop);
 
   const colXs = nCols === 2 ? [cx - 205, cx + 205 - colW] : [164, 236, 512, 584];
-  const colRects = colXs.map((x) => `<rect x="${x}" y="${yColTop}" width="${colW}" height="${colH}" fill="#d1d5db" stroke="#64748b" stroke-width="1.2"/>`).join('');
+  const colRects = colXs
+    .map((x) => `<rect x="${x}" y="${yColTop}" width="${colW}" height="${colH}" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>`)
+    .join('');
 
   const titleDiag = nCols === 2
     ? 'Prensa hidráulica de 2 columnas — vista funcional'
     : 'Prensa hidráulica de 4 columnas — vista funcional';
   const lblCols = nCols === 2 ? 'Columnas (laterales)' : 'Columnas';
 
-  svg.setAttribute('viewBox', '0 0 760 280');
+  svg.setAttribute('viewBox', '0 0 760 300');
   svg.innerHTML = `
     <defs>
       <marker id="hppArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-        <path d="M0,0 L8,4 L0,8 Z" fill="#0ea5e9"/>
+        <path d="M0,0 L8,4 L0,8 Z" fill="#0d9488"/>
       </marker>
-      <linearGradient id="hppSteel" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#e5e7eb"/>
-        <stop offset="100%" stop-color="#cbd5e1"/>
-      </linearGradient>
     </defs>
-    <rect width="760" height="280" fill="#f8fafc"/>
-    <text x="20" y="24" font-size="12.5" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">${titleDiag}</text>
-    <rect x="125" y="${yBeam}" width="510" height="${beamH}" rx="5" fill="url(#hppSteel)" stroke="#64748b" stroke-width="1.4"/>
-    <rect x="102" y="${yTable}" width="556" height="24" rx="5" fill="url(#hppSteel)" stroke="#64748b" stroke-width="1.4"/>
+    <rect width="760" height="300" fill="#f4f7fb"/>
+    <text x="24" y="26" font-size="12" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">${titleDiag}</text>
+
+    <rect x="125" y="${yBeam}" width="510" height="${beamH}" rx="5" fill="#e8eef5" stroke="#94a3b8" stroke-width="1.2"/>
+    <rect x="102" y="${yTable}" width="556" height="24" rx="5" fill="#e8eef5" stroke="#94a3b8" stroke-width="1.2"/>
     ${colRects}
-    <rect x="${cx - cylW / 2}" y="${yCyl}" width="${cylW}" height="${cylH}" rx="8" fill="#a7f3d0" stroke="#0f766e" stroke-width="1.4"/>
-    <rect x="${cx - rodW / 2}" y="${rodTop}" width="${rodW}" height="${rodH}" rx="4" fill="#94a3b8" stroke="#334155" stroke-width="1.2"/>
-    <rect x="244" y="${yPlaten}" width="272" height="${platenH}" rx="4" fill="#dbeafe" stroke="#0284c7" stroke-width="1.4"/>
-    <rect x="292" y="${yPlaten + platenH + 8}" width="176" height="18" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-dasharray="5 4"/>
-    <text x="306" y="${yPlaten + platenH + 20}" font-size="9.5" fill="#334155" font-family="Inter,system-ui,sans-serif">Zona de prensado</text>
-    <path d="M${cx} ${yCyl + 22} L${cx} ${yPlaten - 2}" stroke="#0ea5e9" stroke-width="2.8" marker-end="url(#hppArrow)"/>
-    <text x="398" y="${yCyl + 18}" font-size="10" fill="#0369a1" font-weight="700" font-family="Inter,system-ui,sans-serif">Presión aplicada</text>
-    <text x="398" y="${yCyl + 34}" font-size="9.8" fill="#334155" font-family="Inter,system-ui,sans-serif">F = ${fmt(forceTon, 1)} t</text>
-    <text x="${cx - cylW / 2 - 4}" y="${yCyl - 4}" font-size="9.5" fill="#334155" font-family="Inter,system-ui,sans-serif">Cilindro</text>
-    <text x="322" y="${yPlaten - 4}" font-size="9.5" fill="#334155" font-family="Inter,system-ui,sans-serif">Plato móvil</text>
-    <text x="332" y="258" font-size="9.5" fill="#334155" font-family="Inter,system-ui,sans-serif">Mesa fija</text>
-    <text x="146" y="${yColTop + 14}" font-size="9.3" fill="#334155" font-family="Inter,system-ui,sans-serif">${lblCols}</text>
+    <rect x="${cx - cylW / 2}" y="${yCyl}" width="${cylW}" height="${cylH}" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.25"/>
+    <rect x="${cx - rodW / 2}" y="${rodTop}" width="${rodW}" height="${rodH}" rx="4" fill="#d4d4d8" stroke="#64748b" stroke-width="1.1"/>
+    <rect x="244" y="${yPlaten}" width="272" height="${platenH}" rx="4" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="1.25"/>
+    <rect x="292" y="${yPlaten + platenH + 8}" width="176" height="18" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-dasharray="5 4"/>
+    <text x="380" y="${yPlaten + platenH + 20}" class="fluid-svg-lbl" font-size="9" fill="#475569" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Zona de prensado</text>
+    <path d="M${cx} ${yCyl + 22} L${cx} ${yPlaten - 2}" stroke="#0d9488" stroke-width="2.6" marker-end="url(#hppArrow)"/>
+
+    <g font-family="Inter,system-ui,sans-serif">
+      <text x="556" y="88" class="fluid-svg-lbl" font-size="9.5" font-weight="700" fill="#0369a1">Presión aplicada</text>
+      <text x="556" y="104" class="fluid-svg-lbl" font-size="9.5" fill="#334155">F ≈ ${fmt(forceTon, 1)} t</text>
+      <text x="556" y="126" class="fluid-svg-lbl" font-size="9" fill="#475569">Cilindro · vástago · plato</text>
+      <text x="556" y="142" class="fluid-svg-lbl" font-size="9" fill="#475569">Mesa fija (referencia)</text>
+      <text x="556" y="160" class="fluid-svg-lbl" font-size="8.8" fill="#64748b">${lblCols}</text>
+    </g>
   `;
 }
 

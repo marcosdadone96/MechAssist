@@ -6,7 +6,7 @@
     <title>Sugerencias &#8212; TheMechAssist</title>
     <meta
       name="description"
-      content="Enva mejoras o funciones que echas en falta en TheMechAssist."
+      content="Envï¿½a mejoras o funciones que echas en falta en TheMechAssist."
     />
     <meta name="robots" content="index,follow" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
@@ -20,7 +20,7 @@
     <meta property="og:title" content="Sugerencias &#8212; TheMechAssist" />
     <meta
       property="og:description"
-      content="Tu opinin ayuda a mejorar las calculadoras y la web."
+      content="Tu opiniï¿½n ayuda a mejorar las calculadoras y la web."
     />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Sugerencias &#8212; TheMechAssist" />
@@ -35,40 +35,39 @@
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
   <body class="hub-body">
-    <header class="hub-header">
-      <a class="hub-header__brand hub-header__title--link" href="index.html">
-        <img
-          class="hub-header__logo"
-          src="logo-themechassist.svg"
-          width="40"
-          height="40"
-          alt=""
-          decoding="async"
-        />
-        <span class="hub-header__title">The<em>MechAssist</em></span>
+        <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
+        <span class="site-nav__title">The<em>MechAssist</em></span>
       </a>
-      <div class="hub-header__right">
-        <a class="hub-header__plans" href="index.html" data-i18n="feedback.navHome">Inicio</a>
-        <div class="hub-lang" role="group" aria-label="Language selector" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
-          <button type="button" class="hub-lang__btn" data-lang="es">ES</button>
-          <button type="button" class="hub-lang__btn" data-lang="en">EN</button>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
+      </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
         </div>
       </div>
     </header>
 
     <main class="hub-main hub-feedback-main">
       <section class="hub-feedback" aria-labelledby="feedback-heading">
-        <p class="hub-feedback__eyebrow" data-i18n="feedback.eyebrow">Tu opinin</p>
+        <p class="hub-feedback__eyebrow" data-i18n="feedback.eyebrow">Tu opiniï¿½n</p>
         <h1 id="feedback-heading" class="hub-feedback__title" data-i18n="feedback.title">Sugerencias y mejoras</h1>
         <p class="hub-feedback__lead" data-i18n="feedback.lead">
-          Describe qu te gustara mejorar, qu calculadora falta o qu no queda claro. Lo revisamos para priorizar el roadmap.
+          Describe quï¿½ te gustarï¿½a mejorar, quï¿½ calculadora falta o quï¿½ no queda claro. Lo revisamos para priorizar el roadmap.
         </p>
 
         <div id="feedback-thanks" class="hub-feedback__thanks" role="status" hidden data-i18n="feedback.thanks">
           Gracias. Hemos recibido tu mensaje.
         </div>
         <div id="feedback-error" class="hub-feedback__error" role="alert" hidden data-i18n="feedback.error">
-          No se pudo enviar el mensaje. Inténtalo más tarde o usa el contacto indicado en la política de privacidad.
+          No se pudo enviar el mensaje. Intï¿½ntalo mï¿½s tarde o usa el contacto indicado en la polï¿½tica de privacidad.
         </div>
 
         <form
@@ -115,7 +114,7 @@
           </div>
 
           <p class="hub-feedback__note" data-i18n="feedback.note">
-            El mensaje se enva de forma segura al servicio del sitio solo para mejorar TheMechAssist, segn la poltica de privacidad.
+            El mensaje se envï¿½a de forma segura al servicio del sitio solo para mejorar TheMechAssist, segï¿½n la polï¿½tica de privacidad.
           </p>
 
           <button type="submit" class="ma-auth__submit" data-i18n="feedback.submit">Enviar sugerencia</button>
@@ -126,12 +125,16 @@
     <footer class="hub-footer-legal hub-footer-legal--narrow">
       <nav class="hub-footer-legal__links" aria-label="Legal">
         <a href="privacy.html" data-i18n="footer.privacy">Privacidad</a>
-        <a href="terms.html" data-i18n="footer.terms">Trminos</a>
+        <a href="terms.html" data-i18n="footer.terms">Tï¿½rminos</a>
         <a href="cookies.html" data-i18n="footer.cookies">Cookies</a>
       </nav>
     </footer>
 
+
+
+
     <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/feedbackPage.js"></script>
   </body>
 </html>

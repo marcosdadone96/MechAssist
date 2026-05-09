@@ -23,18 +23,25 @@
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
   <body class="lab-body">
-    <header class="lab-header" role="banner">
-      <a class="lab-header__brand" href="index.html">The<span>MechAssist</span></a>
-      <nav class="lab-header__nav" aria-label="Navegación laboratorio">
-        <div class="lab-header__nav-start">
-          <a href="index.html">Inicio</a>
-          <a href="transmission-studio.html">Estudio modular</a>
-        </div>
-        <div class="lab-header__nav-end">
-          <a href="transmission-lab.html" class="lab-header__nav-cta">Laboratorio</a>
-          <a href="transmission-canvas.html" class="lab-header__nav-pill" aria-current="page" title="Lienzo técnico multieje (Pro)">Lienzo Pro</a>
-        </div>
+        <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
+        <span class="site-nav__title">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
     </header>
 
     <div id="txPaywall" class="studio-paywall" hidden>
@@ -55,12 +62,12 @@
       </div>
     </div>
 
-    <main id="txApp" class="lab-main lab-main--wide" hidden>
+    <main id="txApp" class="lab-main lab-main--wide tx-app--blueprint" hidden>
       <section class="lab-panel tx-intro">
         <h1>Lienzo técnico de transmisión</h1>
         <p class="lab-lead tx-intro__lead">
-          Elija un <strong>área de trabajo</strong> abajo: cada pestaña muestra solo ese tipo de elementos en el lienzo (el modelo completo se mantiene al cambiar de pestaña). Marque el
-          <strong>motor</strong> y use <strong>rueda del ratón</strong> para zoom y <strong>flechas del teclado</strong> para desplazar la vista.
+          Elija un <strong>área de trabajo</strong> abajo: cada pestaña muestra solo ese tipo de elementos en el lienzo (el modelo completo se mantiene al cambiar de pestaña).
+          <strong>Clic</strong> para seleccionar; <strong>doble clic</strong> para abrir propiedades. Use la rueda para zoom y las flechas para desplazar la vista.
         </p>
       </section>
 
@@ -70,16 +77,39 @@
           <button type="button" class="tx-tab" role="tab" aria-selected="false" data-tx-tab="belts" id="txTabBelts">Poleas y correas</button>
           <button type="button" class="tx-tab" role="tab" aria-selected="false" data-tx-tab="chains" id="txTabChains">Piñones y cadenas</button>
         </div>
-        <div class="tx-motor-strip">
-          <div class="lab-field">
-            <label for="txN0">n motor (rpm)</label>
-            <input id="txN0" type="number" min="1" step="any" value="1455" />
+        <div class="tx-motor-dashboard">
+          <div class="tx-motor-dashboard__card">
+            <div class="tx-motor-dashboard__field">
+              <span class="tx-motor-dashboard__icon" aria-hidden="true" title="Velocidad">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" opacity="0.85"/>
+                  <path d="M12 7v3l2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  <circle cx="12" cy="12" r="1.4" fill="currentColor"/>
+                </svg>
+              </span>
+              <div class="lab-field tx-motor-dashboard__input">
+                <label for="txN0">n motor (rpm)</label>
+                <input id="txN0" type="number" min="1" step="any" value="1455" />
+              </div>
+            </div>
+            <div class="tx-motor-dashboard__field">
+              <span class="tx-motor-dashboard__icon tx-motor-dashboard__icon--torque" aria-hidden="true" title="Par">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 4v4M12 16v4M4 12h4M16 12h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.6"/>
+                  <path d="M14 10l-4 4M10 10h4v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" opacity="0.9"/>
+                </svg>
+              </span>
+              <div class="lab-field tx-motor-dashboard__input">
+                <label for="txT0">T motor (N·m)</label>
+                <input id="txT0" type="number" min="0.01" step="any" value="28" />
+              </div>
+            </div>
           </div>
-          <div class="lab-field">
-            <label for="txT0">T motor (N·m)</label>
-            <input id="txT0" type="number" min="0.01" step="any" value="28" />
+          <div class="tx-motor-dashboard__actions">
+            <button type="button" class="lab-btn tx-btn--secondary" id="txMarkMotor">Marcar motor</button>
+            <button type="button" class="lab-btn tx-btn--report" id="txSendReport">Enviar informe técnico</button>
           </div>
-          <button type="button" class="lab-btn tx-btn--secondary" id="txMarkMotor">Marcar motor</button>
         </div>
       </div>
 
@@ -87,34 +117,33 @@
         <aside class="lab-panel tx-sidebar">
           <div id="txPanelGears" class="tx-tab-panel" role="tabpanel" aria-labelledby="txTabGears">
             <h2 class="studio-aside-title">Engranajes</h2>
-            <p class="tx-muted tx-small">Mismo módulo y acercamiento → encaje teórico. Arrastre para mover.</p>
-            <div class="tx-toolbar__row">
-              <button type="button" class="lab-btn" id="txAddGear">+ Engranaje</button>
-            </div>
-            <div class="tx-toolbar__row">
-              <button type="button" class="lab-btn tx-btn--ghost" id="txClearGears">Vaciar engranajes</button>
-            </div>
+            <p class="tx-muted tx-small">Mismo módulo y acercamiento → encaje teórico. Use la barra sobre el lienzo para añadir o vaciar. Arrastre para mover.</p>
           </div>
 
           <div id="txPanelBelts" class="tx-tab-panel" hidden role="tabpanel" aria-labelledby="txTabBelts">
             <h2 class="studio-aside-title">Poleas y correas</h2>
             <p class="tx-muted tx-small">
-              <strong>Arrastre</strong> las poleas con el ratón. Con <strong>2 o más poleas</strong> verá el trazado en <strong>línea discontinua naranja</strong> (vista previa por orden de creación o por
-              «Elegir orden»). Al <strong>Cerrar correa</strong> el trazado pasa a sólido. Para definir ruta manual: «Elegir orden» y <strong>clic corto</strong> en cada polea; luego cierre V o síncrona.
+              <strong>Arrastre</strong> las poleas. Con <strong>2+ poleas</strong> el trazado (casco convexo / tangentes) envuelve todos los centros. Vista previa discontinua; al
+              <strong>Cerrar correa</strong> pasa a sólido. «Elegir orden» + <strong>clic corto</strong> por polea para secuencia manual.
             </p>
-            <div class="tx-toolbar__row">
-              <button type="button" class="lab-btn" id="txAddPulley">+ Polea</button>
-            </div>
             <div class="tx-toolbar__row tx-toolbar__row--wrap">
               <button type="button" class="lab-btn tx-btn--secondary" id="txBeltMode">Elegir orden correa</button>
               <button type="button" class="lab-btn tx-btn--secondary" id="txBeltManual">Trazado manual tangente</button>
             </div>
             <div class="tx-toolbar__row tx-toolbar__row--wrap">
-              <button type="button" class="lab-btn" id="txFinishBelt">Cerrar correa V</button>
-              <button type="button" class="lab-btn" id="txFinishSync">Cerrar correa síncrona</button>
+              <label class="tx-belt-kind-label" for="txBeltKind">Tipo de correa</label>
+              <select id="txBeltKind" class="tx-belt-kind-select">
+                <option value="v">Trapezoidal (V)</option>
+                <option value="sync">Síncrona (dentada)</option>
+                <option value="flat">Plana</option>
+              </select>
             </div>
-            <div class="tx-toolbar__row">
-              <button type="button" class="lab-btn tx-btn--ghost" id="txClearBelts">Vaciar poleas y correas</button>
+            <div class="tx-toolbar__row tx-toolbar__row--wrap" id="txSyncPitchRow">
+              <label class="tx-belt-kind-label" for="txSyncPitch">Paso síncrono p (mm)</label>
+              <input id="txSyncPitch" type="number" min="2" step="0.5" value="8" class="tx-sync-pitch-input" />
+            </div>
+            <div class="tx-toolbar__row tx-toolbar__row--wrap">
+              <button type="button" class="lab-btn" id="txFinishBelt">Cerrar correa</button>
             </div>
             <p id="txPickHint" class="tx-pick-hint"></p>
           </div>
@@ -122,30 +151,20 @@
           <div id="txPanelChains" class="tx-tab-panel" hidden role="tabpanel" aria-labelledby="txTabChains">
             <h2 class="studio-aside-title">Piñones y cadenas</h2>
             <p class="tx-muted tx-small">
-              Con <strong>2+ piñones</strong> aparece la cadena en <strong>trazo discontinuo gris</strong> (vista previa); al <strong>Cerrar cadena</strong> el trazado queda sólido. «Elegir orden cadena» +
-              <strong>clic corto</strong> define la secuencia; siempre puede arrastrar para mover.
+              Con <strong>2+ piñones</strong> la vista previa cierra el lazo por geometría exterior (como correas). «Elegir orden cadena» +
+              <strong>clic corto</strong> define la secuencia.
             </p>
-            <div class="tx-toolbar__row">
-              <button type="button" class="lab-btn" id="txAddSprocket">+ Piñón</button>
-            </div>
             <div class="tx-toolbar__row">
               <button type="button" class="lab-btn tx-btn--secondary" id="txChainMode">Elegir orden cadena</button>
               <button type="button" class="lab-btn" id="txFinishChain">Cerrar cadena</button>
             </div>
-            <div class="tx-toolbar__row">
-              <button type="button" class="lab-btn tx-btn--ghost" id="txClearChains">Vaciar piñones y cadenas</button>
-            </div>
             <p id="txPickHintChain" class="tx-pick-hint"></p>
           </div>
-
-          <hr class="tx-hr" />
-          <h3 class="tx-subtitle">Propiedades</h3>
-          <div id="txProps"></div>
         </aside>
 
         <section class="lab-panel tx-canvas-panel">
           <div class="tx-canvas-head">
-            <h2 class="studio-aside-title" style="margin: 0">Lienzo</h2>
+            <h2 class="studio-aside-title" style="margin: 0">Lienzo técnico</h2>
             <div class="tx-zoom-bar">
               <button type="button" class="tx-zoom-btn" id="txZoomOut" title="Alejar">−</button>
               <span class="tx-zoom-label" id="txZoomLabel">100%</span>
@@ -153,9 +172,18 @@
               <button type="button" class="lab-btn tx-btn--ghost tx-zoom-fit" id="txZoomFit" title="Encajar vista">Encajar</button>
             </div>
           </div>
-          <p class="tx-canvas-hint">Rueda del ratón: zoom · Flechas ←↑↓→: pan · La vista grande es de <strong>2400×1400 mm</strong> (espacio de diseño).</p>
-          <div class="tx-svg-wrap" id="txSvgWrap" tabindex="0">
-            <svg id="txSvg" xmlns="http://www.w3.org/2000/svg" aria-label="Lienzo de transmisión" class="tx-svg"></svg>
+          <p class="tx-canvas-hint">Rueda: zoom · Flechas: pan · Espacio <strong>2400×1400 mm</strong>. Clic = selección y arrastre · <strong>doble clic</strong> = panel de propiedades (no bloquea «Marcar motor»).</p>
+          <div class="tx-canvas-stack">
+            <div id="txBeltEngHud" class="tx-belt-eng-hud" hidden aria-live="polite"></div>
+            <div class="tx-float-toolbar" role="toolbar" aria-label="Herramientas del lienzo">
+              <button type="button" class="tx-float-toolbar__btn" id="txAddGear" title="Añadir engranaje">⌗</button>
+              <button type="button" class="tx-float-toolbar__btn" id="txAddPulley" title="Añadir polea">◎</button>
+              <button type="button" class="tx-float-toolbar__btn" id="txAddSprocket" title="Añadir piñón">⛓</button>
+              <button type="button" class="tx-float-toolbar__btn tx-float-toolbar__btn--wide" id="txClearActiveTab" title="Vaciar área actual">Limpiar</button>
+            </div>
+            <div class="tx-svg-wrap" id="txSvgWrap" tabindex="0">
+              <svg id="txSvg" xmlns="http://www.w3.org/2000/svg" aria-label="Lienzo de transmisión" class="tx-svg tx-svg--blueprint"></svg>
+            </div>
           </div>
         </section>
 
@@ -177,8 +205,23 @@
           </p>
         </aside>
       </div>
+
+      <div id="txDrawer" class="tx-drawer" aria-hidden="true">
+        <button type="button" class="tx-drawer__backdrop" id="txDrawerBackdrop" tabindex="-1" aria-label="Cerrar panel de propiedades"></button>
+        <aside class="tx-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="txDrawerTitle">
+          <div class="tx-drawer__head">
+            <h2 id="txDrawerTitle" class="tx-drawer__title">Propiedades del elemento</h2>
+            <button type="button" class="tx-drawer__close" id="txDrawerClose" aria-label="Cerrar">×</button>
+          </div>
+          <div id="txProps" class="tx-drawer__body"></div>
+        </aside>
+      </div>
     </main>
 
+
+
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/transmissionCanvasAppEntry.js"></script>
   </body>
 </html>

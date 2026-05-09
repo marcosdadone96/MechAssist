@@ -240,11 +240,6 @@ function localizeFlatStaticContent() {
     if (el) el.innerHTML = html;
   };
 
-  setText('.app-header nav a[href="index.html"]', 'Home');
-  setText('.app-header nav a[href="flat-conveyor.html"]', 'Flat Conveyor');
-  setText('.app-header nav a[href="inclined-conveyor.html"]', 'Inclined Conveyor');
-  setText('.app-header nav a[href="centrifugal-pump.html"]', 'Pump');
-  setText('.app-header nav a[href="screw-conveyor.html"]', 'Screw Conveyor');
   setText('.flat-sidebar__title', 'Flat Conveyor');
   setText(
     '.flat-sidebar__lead',
@@ -263,8 +258,20 @@ function localizeFlatStaticContent() {
     '.flat-dashboard__lead',
     'Design Torque = max(steady, startup) x SF. Power <strong>(T<sub>design</sub> x omega) / eta</strong>. <a href="#flat-conveyor-assumptions">Assumptions</a> · hover <strong>L, D, F, v</strong> in the schematic.',
   );
-  setText('.diagram-schematic-note', 'Quick read: top row compares steady-state (without SF) versus design (with SF and eta). Over the carrying strand, L and D match your form inputs; the drawing is qualitative. Bottom boxes repeat steady-state values (left) and motor sizing values (right), aligned with Final Results.');
-  setText('.diagram-duo__real figcaption', 'Reference: real conveyor installation (example).');
+  setText('#flatDiagramTipsTitle', 'Technical notes');
+  setHtml(
+    '#flatDiagramTip1',
+    '<strong>Top of the schematic:</strong> compares <strong>steady-state</strong> (without service factor) versus <strong>design</strong> (with SF and &eta; applied).',
+  );
+  setHtml(
+    '#flatDiagramTip2',
+    '<strong>Carrying strand:</strong> <strong>L</strong> and <strong>D</strong> match your form inputs; the drawing is <strong>qualitative</strong>.',
+  );
+  setHtml(
+    '#flatDiagramTip3',
+    '<strong>Bottom boxes:</strong> repeat steady-state values (left) and motor sizing (right), aligned with <strong>Final Results</strong>.',
+  );
+  setText('.flat-visual__photo-block figcaption', 'Reference: real conveyor installation (example).');
   setHtml(
     '#verifyPanel h2',
     '<span class="panel-icon">\u2713</span> Check a gearmotor I already have',
@@ -500,12 +507,12 @@ function localizeFlatStaticContent() {
     asmHint.textContent =
       'Assumptions and limits used in the calculation (horizontal, Coulomb, no Euler\u2026)';
 
-  const fig = document.querySelector('.diagram-duo__real img');
+  const fig = document.querySelector('.flat-visual__photo-block img');
   if (fig) {
     fig.alt = 'Real conveyor installation with belt and structure (example)';
   }
   setHtml(
-    '.diagram-duo__real figcaption',
+    '.flat-visual__photo-block figcaption',
     `Reference: conveyor on site (example).
     <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.`,
   );

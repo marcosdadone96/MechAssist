@@ -1,0 +1,250 @@
+/**
+ * Cabecera global minimalista: logo | enlaces centrados | cuenta + idioma.
+ * Importar desde home.css, app.css y lab.css.
+ */
+
+.site-nav {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) minmax(0, auto);
+  align-items: center;
+  gap: 0.65rem 1rem;
+  padding: 0.75rem max(1.25rem, env(safe-area-inset-right, 0px)) 0.65rem max(1.25rem, env(safe-area-inset-left, 0px));
+  padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+  max-width: 1200px;
+  margin: 0 auto;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.site-nav--sticky {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+}
+
+.hub-body .site-nav--home {
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.site-nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.site-nav__logo {
+  width: clamp(2rem, 4vw, 2.4rem);
+  height: auto;
+  flex-shrink: 0;
+  display: block;
+  border-radius: 0.45rem;
+}
+
+.site-nav__title {
+  font-weight: 700;
+  font-size: clamp(0.95rem, 2.2vw, 1.08rem);
+  letter-spacing: -0.03em;
+}
+
+.site-nav__title em {
+  font-style: normal;
+  color: #16a34a;
+}
+
+.site-nav__center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.15rem 1.65rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.site-nav__link {
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-nav__link:hover {
+  color: #0f172a;
+  text-decoration: underline;
+}
+
+.site-nav__link--plans {
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.site-nav__link--plans:hover {
+  color: #334155;
+}
+
+.site-nav__link--hub {
+  font-weight: 600;
+  color: #334155;
+}
+
+.site-nav__link--feedback {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.site-nav__link--feedback:hover {
+  color: #0f172a;
+}
+
+.site-nav__end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem 0.75rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.site-nav__auth {
+  display: flex;
+  align-items: center;
+  min-height: 2rem;
+}
+
+/* Cuenta (hubFreemium) */
+.site-nav__account {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.site-nav__account--anon {
+  gap: 0.35rem 0.55rem;
+}
+
+.site-nav__user {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #475569;
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.site-nav__btn {
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #334155;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.35rem 0.45rem;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-nav__btn:hover {
+  color: #0f172a;
+}
+
+a.site-nav__btn {
+  text-decoration: none;
+}
+
+.site-nav__btn--ghost {
+  padding: 0.35rem 0.5rem;
+}
+
+.site-nav__btn--register {
+  background: rgba(22, 163, 74, 0.14);
+  color: #166534;
+  font-weight: 600;
+  padding: 0.42rem 0.85rem;
+}
+
+.site-nav__btn--register:hover {
+  background: rgba(22, 163, 74, 0.22);
+  color: #14532d;
+}
+
+/* Idioma: solo texto pequeùo, sin cùpsula */
+.site-nav .site-nav__lang.hub-lang,
+.site-nav__lang.hub-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  backdrop-filter: none;
+}
+
+.site-nav .hub-lang__btn.site-nav__lang-btn,
+.site-nav__lang .hub-lang__btn {
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.12rem 0.28rem;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.site-nav .hub-lang__btn.site-nav__lang-btn:hover,
+.site-nav__lang .hub-lang__btn:hover {
+  color: #64748b;
+}
+
+.site-nav .hub-lang__btn--active,
+.site-nav__lang .hub-lang__btn--active {
+  background: transparent;
+  color: #0f172a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.site-nav__lang-sep {
+  color: #cbd5e1;
+  font-size: 0.65rem;
+  user-select: none;
+}
+
+@media (max-width: 720px) {
+  .site-nav {
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+    text-align: center;
+  }
+
+  .site-nav__center {
+    justify-content: center;
+    order: 3;
+    width: 100%;
+  }
+
+  .site-nav__brand {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .site-nav__end {
+    justify-content: center;
+    width: 100%;
+    order: 2;
+  }
+}

@@ -182,26 +182,7 @@ function applyChips(lang) {
 /** @param {'es'|'en'} lang */
 function applyNav(lang) {
   const en = lang === 'en';
-  const map = {
-    'index.html': en ? 'Home' : 'Inicio',
-    'flat-conveyor.html': en ? 'Flat belt' : 'Cinta plana',
-    'inclined-conveyor.html': en ? 'Inclined belt' : 'Cinta inclinada',
-    'bucket-elevator.html': en ? 'Bucket elevator' : 'Elevador cangilones',
-    'traction-elevator.html': en ? 'Traction elevator' : 'Ascensor tracci\u00f3n',
-    'screw-conveyor.html': en ? 'Screw conveyor' : 'Tornillo',
-    'centrifugal-pump.html': en ? 'Pump' : 'Bomba',
-    'transmission-lab.html': en ? 'Laboratory' : 'Laboratorio',
-    'transmission-canvas.html': en ? 'Pro canvas' : 'Lienzo Pro',
-  };
-  document.querySelectorAll('.app-header__nav-start a[href], .app-header__nav-end a[href]').forEach((a) => {
-    const href = a.getAttribute('href') || '';
-    if (map[href]) a.textContent = map[href];
-  });
-  const canvas = document.querySelector('.app-header__nav-end a[href="transmission-canvas.html"]');
-  if (canvas) {
-    canvas.setAttribute('title', en ? 'Multi-shaft technical canvas (Pro)' : 'Lienzo t\u00e9cnico multieje (Pro)');
-  }
-  const nav = document.querySelector('header nav[aria-label]');
+  const nav = document.querySelector('.site-nav__center');
   if (nav) nav.setAttribute('aria-label', en ? 'Main navigation' : 'Navegaci\u00f3n principal');
 }
 

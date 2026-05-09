@@ -30,6 +30,7 @@ const dict = {
     'hero.mockup.tabResults': 'Resultados',
     'hero.mockup.tabNorm': 'Norma',
     'hero.mockup.service': 'Factor servicio',
+    'hero.mockup.diagramPanelTitle': 'Esquema de Transmisi\u00f3n',
     'hero.mockup.diagramTitle': 'Esquema \u00b7 polea motriz / conducida',
     'hero.mockup.svgCaption': 'Vista orientativa \u00b7 no escala',
     'hero.mockup.kpiTorque': 'Par eje',
@@ -64,6 +65,9 @@ const dict = {
     'hero.tier':
       'Gratis: calculadoras b\u00e1sicas de transmisi\u00f3n, ISO, torniller\u00eda y la mayor\u00eda de m\u00e1quinas fluidos. Pro: PDF/Excel, proyectos guardados, historial sin l\u00edmites diarios, lienzo multieje y calculadoras premium se\u00f1aladas con badge.',
     'nav.plans': 'Planes',
+    'nav.hubLab': 'Laboratorio',
+    'nav.hubMachines': 'M\u00e1quinas',
+    'nav.hubFluids': 'Hidr\u00e1ulica',
     'nav.myGearmotors': 'Mis motorreductores',
     'zone.machines': 'M\u00e1quinas',
     'zone.machinesIntro':
@@ -107,6 +111,7 @@ const dict = {
     'lab.bearings': 'Rodamientos',
     'lab.shaft': 'Eje',
     'lab.more': 'M\u00e1s',
+    'aria.siteNav': 'Navegaci\u00f3n principal',
     'aria.langSelector': 'Selector de idioma',
     'aria.heroMockup': 'Vista previa de calculadora',
     'aria.machineSystems': 'Sistemas disponibles',
@@ -216,6 +221,7 @@ const dict = {
     'hero.mockup.tabResults': 'Results',
     'hero.mockup.tabNorm': 'Standard',
     'hero.mockup.service': 'Service factor',
+    'hero.mockup.diagramPanelTitle': 'Transmission diagram',
     'hero.mockup.diagramTitle': 'Diagram \u00b7 driver / driven pulley',
     'hero.mockup.svgCaption': 'Illustrative view \u00b7 not to scale',
     'hero.mockup.kpiTorque': 'Shaft torque',
@@ -250,6 +256,9 @@ const dict = {
     'hero.tier':
       'Free: basic transmission, ISO fits, bolting and most machine/fluid models. Pro: PDF/Excel, saved projects, unlimited daily use where included, multi-shaft canvas and premium calculators marked with a badge.',
     'nav.plans': 'Plans',
+    'nav.hubLab': 'Transmission lab',
+    'nav.hubMachines': 'Machines',
+    'nav.hubFluids': 'Hydraulics',
     'nav.myGearmotors': 'My gearmotors',
     'zone.machines': 'Machines',
     'zone.machinesIntro':
@@ -293,6 +302,7 @@ const dict = {
     'lab.bearings': 'Bearings',
     'lab.shaft': 'Shaft',
     'lab.more': 'More',
+    'aria.siteNav': 'Main navigation',
     'aria.langSelector': 'Language selector',
     'aria.heroMockup': 'Calculator preview',
     'aria.machineSystems': 'Available systems',

@@ -65,17 +65,25 @@
     </style>
   </head>
   <body class="lab-body">
-    <header class="lab-header">
-      <a class="lab-header__brand" href="index.html">The<span>MechAssist</span></a>
-      <nav class="lab-header__nav" aria-label="Navegación laboratorio">
-        <div class="lab-header__nav-start">
-          <a href="index.html">Inicio</a>
-        </div>
-        <div class="lab-header__nav-end">
-          <a href="transmission-lab.html" class="lab-header__nav-cta">Laboratorio</a>
-          <a href="transmission-canvas.html" title="Lienzo técnico multieje (Pro)">Lienzo Pro</a>
-        </div>
+        <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
+        <span class="site-nav__title">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
     </header>
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
@@ -90,7 +98,7 @@
           mantener el régimen sin sobrecarga. Si la relación de inercias o el par no cumplen, conviene reajustar relación,
           tamaño de motorreductor o estrategia de arranque.
         </p>
-        <div class="lab-calc-layout lab-calc-layout--with-diag">
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated" style="margin-bottom: 0.85rem">
               <p class="lab-diagram-wrap__title">Línea cinemática · J<sub>mot</sub> y J<sub>ext</sub> en el eje</p>
@@ -112,7 +120,7 @@
               </p>
             </div>
           </div>
-          <div class="lab-calc-layout__inputs">
+          <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field">
                 <label for="gmJmotor">J motorreductor (kg·m²)</label>
@@ -181,7 +189,7 @@
               </div>
             </div>
           </div>
-          <div class="lab-calc-layout__out">
+          <div class="lab-calc-layout__out lab-calc-layout__out--panel">
             <div id="gmOut"></div>
             <div id="gmTable"></div>
             <div id="gmSummary"></div>
@@ -198,6 +206,12 @@
         </div>
       </section>
     </main>
+
+
+
+
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/gearmotorInertiaPage.js"></script>
     <script type="module" src="js/ui/labDonationFooter.js"></script>
   </body>

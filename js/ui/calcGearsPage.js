@@ -101,6 +101,14 @@ function syncGearCalcModeUi() {
   }
 }
 
+function applyGearsHelpI18n() {
+  const t = gearsRuntimeStrings(getLabLang());
+  const sum = document.getElementById('gearsHelpSummary');
+  const body = document.getElementById('gearsHelpBody');
+  if (sum) sum.textContent = t.helpSummary;
+  if (body) body.innerHTML = t.helpBody;
+}
+
 function refreshCore() {
   const t = gearsRuntimeStrings(getLabLang());
   const u = getLabUnitPrefs();
@@ -415,6 +423,7 @@ bindLabUnitSelectors(debounced);
   });
 });
 syncGearCalcModeUi();
+applyGearsHelpI18n();
 document.getElementById('gCopyResults')?.addEventListener('click', async () => {
   const btn = document.getElementById('gCopyResults');
   if (!(btn instanceof HTMLButtonElement)) return;
@@ -433,6 +442,7 @@ document.getElementById('gCopyResults')?.addEventListener('click', async () => {
 });
 window.addEventListener(LAB_LANG_EVENT, () => {
   bootSmartDashboardIfEnabled(gearsRuntimeStrings(getLabLang()).dashboardBoot);
+  applyGearsHelpI18n();
   debounced();
 });
 runCalcWithIndustrialFeedback(resultsWrap, refreshCore);

@@ -11,6 +11,10 @@ function fmt(n, d = 2) {
   return n.toFixed(d);
 }
 
+function mono(s) {
+  return `<tspan class="diagram-svg-num">${s}</tspan>`;
+}
+
 /**
  * @param {SVGSVGElement | null} svg
  * @param {object} p
@@ -32,16 +36,29 @@ export function renderRollerConveyorDiagram(svg, p) {
   const sf = Number.isFinite(Number(p.serviceFactor)) ? Number(p.serviceFactor) : 1;
   const stdLabel = p.designStandard === 'CEMA' ? (en ? 'CEMA +6% steady' : 'CEMA +6% reg.') : 'ISO 5048';
 
+  const ACC = '#0d9488';
+  const INK = '#334155';
+  const LINE = '#475569';
+  const MUTED = '#64748b';
+
   const vbW = 1000;
-  const vbH = 452;
+  const footerH = 102;
+  /** Alto útil leyenda (título + líneas + nota hasta ~y44 local + margen). */
+  const legendBandH = 54;
 
   const leftPad = 158;
   const rightPad = 24;
   const drawZoneW = vbW - leftPad - rightPad;
   const profileY = 62;
-  const topViewY = 198;
-  const footerY = 312;
-  const footerH = 102;
+  /** Hueco amplio bajo el perfil (patines ~186) antes de la planta */
+  const profileGroundY = profileY + 124;
+  const topViewY = profileGroundY + 36;
+  const topViewRectH = 86;
+  const lDimLineY = topViewY + topViewRectH + 10;
+  const lLabelY = lDimLineY + 22;
+  const caseRowY = lLabelY + 18;
+  const legendRowY = caseRowY + footerH + 14;
+  const vbH = legendRowY + legendBandH + 16;
 
   const lenPx = clamp(200 + (L / 80) * 560, 200, Math.min(780, drawZoneW - 16));
   const x0 = leftPad + (drawZoneW - lenPx) / 2;
@@ -101,11 +118,11 @@ export function renderRollerConveyorDiagram(svg, p) {
   const lblLoadDir = en ? 'Load, direction' : 'Carga, sentido';
   const lblTop = en ? 'Top view (plan)' : 'Vista superior (planta)';
   const fChipSub = en ? 'steady, no SF' : 'regimen, sin SF';
-  const legTitle = en ? 'LEGEND' : 'LEYENDA';
+  const legTitle = en ? 'Legend' : 'Leyenda';
   const legV = en ? 'Run (v)' : 'Marcha (v)';
   const legF = en ? 'F steady (traction)' : 'F regimen (traccion)';
   const legNote1 = en ? 'Green roller: drive. Rails: guards.' : 'Rodillo verde: motriz. Rieles: guardas.';
-  const legNote2 = en ? 'Mouse over left chips or arrows.' : 'Rat\u00f3n sobre chips izq. o flechas.';
+  const legNote2 = en ? 'Mouse over left labels or arrows.' : 'Rat\u00f3n sobre valores izq. o flechas.';
   const caseTitle = en ? 'Case data' : 'Datos del caso';
   const caseL1 = en ? 'Load:' : 'Carga:';
   const caseL2 = en ? 'Illustr. shaft pitch:' : 'Paso ejes ilustr.:';
@@ -114,22 +131,31 @@ export function renderRollerConveyorDiagram(svg, p) {
   svg.setAttribute('viewBox', `0 0 ${vbW} ${vbH}`);
   svg.innerHTML = `
     <defs>
-      <marker id="rlArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-        <path d="M0,0 L8,4 L0,8 Z" fill="#0f172a"/>
+      <marker id="rlArrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M1 1.5 L10 6 L1 10.5" fill="none" stroke="${INK}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
       </marker>
-      <marker id="rlMkV" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto">
-        <path d="M0,0 L11,5.5 L0,11 Z" fill="#16a34a" />
+      <marker id="rlMkV" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M1 1.5 L10 6 L1 10.5" fill="none" stroke="${ACC}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
       </marker>
-      <marker id="rlMkF" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto">
-        <path d="M0,0 L11,5.5 L0,11 Z" fill="#334155" />
+      <marker id="rlMkF" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M1 1.5 L10 6 L1 10.5" fill="none" stroke="${INK}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
       </marker>
-      <filter id="rlCardSh" x="-8%" y="-8%" width="116%" height="116%">
-        <feDropShadow dx="0" dy="1.5" stdDeviation="2.2" flood-opacity="0.14" />
-      </filter>
+      <linearGradient id="sumRlL" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#f8fafc" />
+        <stop offset="100%" stop-color="#f8fafc" />
+      </linearGradient>
+      <linearGradient id="sumRlR" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#f8fafc" />
+        <stop offset="100%" stop-color="#f8fafc" />
+      </linearGradient>
+      <style><![CDATA[
+        .diagram-svg-num { font-family: 'Roboto Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+        .diagram-svg-lbl { font-family: Inter, system-ui, sans-serif; }
+      ]]></style>
     </defs>
 
-    <rect width="${vbW}" height="${vbH}" fill="#f8fafc"/>
-    <rect x="12" y="10" width="${vbW - 24}" height="48" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+    <rect width="${vbW}" height="${vbH}" fill="#fafbfc"/>
+    <line x1="12" y1="58" x2="${vbW - 12}" y2="58" stroke="#e2e8f0" stroke-width="1" />
     <text x="28" y="32" font-size="15" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">${titleMain}</text>
     <text x="28" y="48" font-size="10.5" fill="#475569" font-family="Inter, system-ui, sans-serif">${subLine}</text>
 
@@ -140,12 +166,10 @@ export function renderRollerConveyorDiagram(svg, p) {
     ${Array.from({ length: nVis }, (_, i) => {
       const x = rollerStartX + i * pitchPx;
       const isDrive = i === nVis - 1;
-      const fill = isDrive ? '#bbf7d0' : '#e5e7eb';
-      const stroke = isDrive ? '#15803d' : '#111827';
+      const fill = isDrive ? 'rgba(13, 148, 136, 0.22)' : '#f8fafc';
+      const stroke = isDrive ? ACC : LINE;
       return `
-        <circle cx="${x.toFixed(1)}" cy="${(profileY + 59).toFixed(1)}" r="${rollerR.toFixed(1)}" fill="${fill}" stroke="${stroke}" stroke-width="${isDrive ? 1.6 : 1.2}"/>
-        <circle cx="${x.toFixed(1)}" cy="${(profileY + 59).toFixed(1)}" r="${(rollerR * 0.33).toFixed(1)}" fill="#cbd5e1" stroke="#111827" stroke-width="0.7"/>
-        <line x1="${x.toFixed(1)}" y1="${(profileY + 46).toFixed(1)}" x2="${x.toFixed(1)}" y2="${(profileY + 72).toFixed(1)}" stroke="#9ca3af" stroke-width="0.7"/>
+        <circle cx="${x.toFixed(1)}" cy="${(profileY + 59).toFixed(1)}" r="${rollerR.toFixed(1)}" fill="${fill}" stroke="${stroke}" stroke-width="${isDrive ? 1.35 : 1.05}"/>
       `;
     }).join('')}
 
@@ -157,28 +181,27 @@ export function renderRollerConveyorDiagram(svg, p) {
       <line x1="${x1 - 56}" y1="${profileY + 72}" x2="${x1 - 38}" y2="${profileY + 124}" stroke="#374151" stroke-width="2.6"/>
       <line x1="${x0 + 32}" y1="${profileY + 124}" x2="${x1 - 32}" y2="${profileY + 124}" stroke="#6b7280" stroke-width="2.8"/>
     </g>
-    <rect x="${x0 + lenPx * 0.58}" y="${profileY + 128}" width="54" height="20" rx="4" fill="#94a3b8" stroke="#475569" stroke-width="0.85" filter="url(#rlCardSh)"/>
-    <text x="${x0 + lenPx * 0.58 + 6}" y="${profileY + 141}" font-size="8" font-weight="700" fill="#f8fafc" font-family="Inter, system-ui, sans-serif">${lblMotorGb}</text>
+    <text x="${x1 + 12}" y="${profileY + 62}" text-anchor="start" font-size="9.5" font-weight="600" fill="${INK}" font-family="Inter, system-ui, sans-serif">${lblMotorGb}</text>
 
-    <line x1="${x0 + 22}" y1="${profileY + 16}" x2="${x1 - 22}" y2="${profileY + 16}" stroke="#111827" stroke-width="1.4" marker-end="url(#rlArrow)"/>
-    <text x="${x0 + 26}" y="${profileY + 10}" font-size="10" font-weight="700" fill="#111827" font-family="Inter, system-ui, sans-serif">${lblLoadDir}</text>
+    <line x1="${x0 + 22}" y1="${profileY + 22}" x2="${x1 - 22}" y2="${profileY + 22}" stroke="${LINE}" stroke-width="1.15" marker-end="url(#rlArrow)"/>
+    <text x="${x0 + 26}" y="${profileY + 14}" font-size="10" font-weight="700" fill="#111827" font-family="Inter, system-ui, sans-serif">${lblLoadDir}</text>
 
     <g class="diagram-metric diagram-metric--v" data-diagram-metric="v" pointer-events="bounding-box">
-      <line x1="${x0 + 34}" y1="${profileY + 16}" x2="${x0 + 108}" y2="${profileY + 16}" stroke="#16a34a" stroke-width="3" marker-end="url(#rlMkV)" />
+      <line x1="${x0 + 34}" y1="${profileY + 22}" x2="${x0 + 108}" y2="${profileY + 22}" stroke="${ACC}" stroke-width="1.35" marker-end="url(#rlMkV)" />
     </g>
 
     <g class="diagram-metric diagram-metric--F" data-diagram-metric="F" pointer-events="bounding-box">
-      <line x1="${x0 + 118}" y1="${profileY + 28}" x2="${x0 + 200}" y2="${profileY + 28}" stroke="#334155" stroke-width="2.8" marker-end="url(#rlMkF)" />
+      <line x1="${x0 + 118}" y1="${profileY + 34}" x2="${x0 + 200}" y2="${profileY + 34}" stroke="${INK}" stroke-width="1.35" marker-end="url(#rlMkF)" />
     </g>
 
     <g class="diagram-metric" data-diagram-metric="D" pointer-events="bounding-box">
       <line x1="${rollerStartX + (nVis - 1) * pitchPx}" y1="${profileY + 32}" x2="${rollerStartX + (nVis - 1) * pitchPx}" y2="${profileY + 82}" stroke="#64748b" stroke-width="1.1" stroke-dasharray="4 3"/>
     </g>
 
-    <text x="${x0}" y="${topViewY - 10}" font-size="10.5" font-weight="700" fill="#334155" font-family="Inter, system-ui, sans-serif">${lblTop}</text>
-    <rect x="${x0 - 18}" y="${topViewY + 2}" width="${lenPx + 36}" height="86" fill="#f1f5f9" stroke="${frameStroke}" stroke-width="1.1"/>
-    <rect x="${x0 - 18}" y="${topViewY + 2}" width="9" height="86" fill="${navy}" opacity="0.92"/>
-    <rect x="${x1 + 9}" y="${topViewY + 2}" width="9" height="86" fill="${navy}" opacity="0.92"/>
+    <text x="${x0}" y="${topViewY - 14}" font-size="10.5" font-weight="700" fill="#334155" font-family="Inter, system-ui, sans-serif">${lblTop}</text>
+    <rect x="${x0 - 18}" y="${topViewY + 2}" width="${lenPx + 36}" height="${topViewRectH}" fill="#f1f5f9" stroke="${frameStroke}" stroke-width="1.1"/>
+    <rect x="${x0 - 18}" y="${topViewY + 2}" width="9" height="${topViewRectH}" fill="${navy}" opacity="0.92"/>
+    <rect x="${x1 + 9}" y="${topViewY + 2}" width="9" height="${topViewRectH}" fill="${navy}" opacity="0.92"/>
     <line x1="${x0 - 18}" y1="${topViewY + 14}" x2="${x1 + 18}" y2="${topViewY + 14}" stroke="#111827" stroke-width="0.85"/>
     <line x1="${x0 - 18}" y1="${topViewY + 76}" x2="${x1 + 18}" y2="${topViewY + 76}" stroke="#111827" stroke-width="0.85"/>
 
@@ -186,73 +209,74 @@ export function renderRollerConveyorDiagram(svg, p) {
       const x = rollerStartX + i * pitchPx;
       const isDrive = i === nVis - 1;
       const fill = isDrive ? '#dcfce7' : '#f3f4f6';
-      const stroke = isDrive ? '#166534' : '#111827';
+      const stroke = isDrive ? ACC : LINE;
       return `
         <rect x="${(x - rollerR).toFixed(1)}" y="${(topViewY + 20).toFixed(1)}" width="${(rollerR * 2).toFixed(1)}" height="44" fill="${fill}" stroke="${stroke}" stroke-width="0.9"/>
         <line x1="${x.toFixed(1)}" y1="${(topViewY + 20).toFixed(1)}" x2="${x.toFixed(1)}" y2="${(topViewY + 64).toFixed(1)}" stroke="#9ca3af" stroke-width="0.65"/>
-        ${isDrive ? `<line x1="${(x - rollerR).toFixed(1)}" y1="${(topViewY + 42).toFixed(1)}" x2="${(x + rollerR).toFixed(1)}" y2="${(topViewY + 42).toFixed(1)}" stroke="#22c55e" stroke-width="1.8"/>` : ''}
+        ${isDrive ? `<line x1="${(x - rollerR).toFixed(1)}" y1="${(topViewY + 42).toFixed(1)}" x2="${(x + rollerR).toFixed(1)}" y2="${(topViewY + 42).toFixed(1)}" stroke="${ACC}" stroke-width="1.4"/>` : ''}
       `;
     }).join('')}
 
-    <line x1="${x0 - 18}" y1="${topViewY + 94}" x2="${x1 + 18}" y2="${topViewY + 94}" stroke="#9ca3af" stroke-width="0.9"/>
-    <text x="${x0 + lenPx / 2}" y="${topViewY + 108}" text-anchor="middle" font-size="9.5" fill="#4b5563" font-family="Inter, system-ui, sans-serif">L = ${fmt(L, 1)} m</text>
+    <line x1="${x0 - 18}" y1="${lDimLineY}" x2="${x1 + 18}" y2="${lDimLineY}" stroke="#9ca3af" stroke-width="0.9"/>
+    <text x="${x0 + lenPx / 2}" y="${lLabelY}" text-anchor="middle" font-size="9.5" fill="#4b5563" font-family="Inter, system-ui, sans-serif" class="diagram-svg-lbl">L = ${mono(fmt(L, 1))} m</text>
 
     <g class="diagram-metric" data-diagram-metric="L" pointer-events="bounding-box">
-      <line x1="${x0}" y1="${topViewY + 90}" x2="${x1}" y2="${topViewY + 90}" stroke="#059669" stroke-width="2" stroke-dasharray="5 4"/>
+      <line x1="${x0}" y1="${lDimLineY - 4}" x2="${x1}" y2="${lDimLineY - 4}" stroke="${ACC}" stroke-width="1.15" stroke-dasharray="5 4"/>
     </g>
 
-    <!-- Columna izquierda: chips fuera del dibujo (no solapan perfil/planta) -->
+    <!-- Columna izquierda: valores (texto plano, sin cajas) -->
     <g class="diagram-metric diagram-metric--v" data-diagram-metric="v" pointer-events="bounding-box">
-      <g filter="url(#rlCardSh)">
-        <rect x="${chipX}" y="${yV}" width="${chipW}" height="${chipH}" rx="6" fill="#ffffff" stroke="#86efac" stroke-width="1"/>
-      </g>
-      <text x="${chipX + 6}" y="${yV + 19}" font-size="9.5" font-weight="800" fill="#15803d" font-family="Inter, system-ui, sans-serif">v ${fmt(v, 2)} m/s</text>
+      <text x="${chipX}" y="${yV + 19}" font-size="9.5" font-weight="600" fill="${INK}" class="diagram-svg-lbl">
+        <tspan class="diagram-svg-lbl">v </tspan>${mono(fmt(v, 2))}<tspan class="diagram-svg-lbl"> m/s</tspan>
+      </text>
     </g>
     <g class="diagram-metric" data-diagram-metric="L" pointer-events="bounding-box">
-      <g filter="url(#rlCardSh)">
-        <rect x="${chipX}" y="${yL}" width="${chipW}" height="${chipH}" rx="6" fill="#ffffff" stroke="#6ee7b7" stroke-width="1"/>
-      </g>
-      <text x="${chipX + 6}" y="${yL + 19}" font-size="9.5" font-weight="800" fill="#047857" font-family="Inter, system-ui, sans-serif">L ${fmt(L, 1)} m</text>
+      <text x="${chipX}" y="${yL + 19}" font-size="9.5" font-weight="600" fill="${INK}" class="diagram-svg-lbl">
+        <tspan class="diagram-svg-lbl">L </tspan>${mono(fmt(L, 1))}<tspan class="diagram-svg-lbl"> m</tspan>
+      </text>
     </g>
     <g class="diagram-metric" data-diagram-metric="D" pointer-events="bounding-box">
-      <g filter="url(#rlCardSh)">
-        <rect x="${chipX}" y="${yD}" width="${chipW}" height="${chipH}" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
-      </g>
-      <text x="${chipX + 5}" y="${yD + 19}" font-size="9.5" font-weight="800" fill="#334155" font-family="Inter, system-ui, sans-serif">D ${fmt(D, 0)} mm</text>
+      <text x="${chipX}" y="${yD + 19}" font-size="9.5" font-weight="600" fill="${INK}" class="diagram-svg-lbl">
+        <tspan class="diagram-svg-lbl">D </tspan>${mono(fmt(D, 0))}<tspan class="diagram-svg-lbl"> mm</tspan>
+      </text>
     </g>
     <g class="diagram-metric" data-diagram-metric="crr" pointer-events="bounding-box">
-      <g filter="url(#rlCardSh)">
-        <rect x="${chipX}" y="${yCrr}" width="${chipW}" height="${chipH}" rx="6" fill="#ffffff" stroke="#fdba74" stroke-width="1"/>
-      </g>
-      <text x="${chipX + 6}" y="${yCrr + 19}" font-size="9.5" font-weight="800" fill="#c2410c" font-family="Inter, system-ui, sans-serif">Crr ${fmt(crr, 3)}</text>
+      <text x="${chipX}" y="${yCrr + 19}" font-size="9.5" font-weight="600" fill="${INK}" class="diagram-svg-lbl">
+        <tspan class="diagram-svg-lbl">Crr </tspan>${mono(fmt(crr, 3))}
+      </text>
     </g>
     <g class="diagram-metric diagram-metric--F" data-diagram-metric="F" pointer-events="bounding-box">
-      <g filter="url(#rlCardSh)">
-        <rect x="${chipX}" y="${yF}" width="${chipW}" height="${chipH + 10}" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
-      </g>
-      <text x="${chipX + 5}" y="${yF + 16}" font-size="9" font-weight="800" fill="#111827" font-family="Inter, system-ui, sans-serif">F ${fmt(Fsteady, 1)} N</text>
-      <text x="${chipX + 5}" y="${yF + 30}" font-size="7.5" fill="#64748b" font-family="Inter, system-ui, sans-serif">regimen, sin SF</text>
+      <text x="${chipX}" y="${yF + 16}" font-size="9" font-weight="600" fill="${INK}" class="diagram-svg-lbl">
+        <tspan class="diagram-svg-lbl">F </tspan>${mono(fmt(Fsteady, 1))}<tspan class="diagram-svg-lbl"> N</tspan>
+      </text>
+      <text x="${chipX}" y="${yF + 30}" font-size="7.5" fill="${MUTED}" class="diagram-svg-lbl">${fChipSub}</text>
     </g>
 
-    <!-- Pie: leyenda y datos por debajo de la planta -->
-    <g transform="translate(12, ${footerY})" filter="url(#rlCardSh)">
-      <rect x="0" y="0" width="288" height="${footerH}" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-      <text x="12" y="22" font-size="10.5" font-weight="800" fill="#64748b" font-family="Inter, system-ui, sans-serif" letter-spacing="0.1em">${legTitle}</text>
-      <line x1="12" y1="38" x2="40" y2="38" stroke="#16a34a" stroke-width="2.8" marker-end="url(#rlMkV)" />
-      <text x="48" y="42" font-size="10" font-weight="600" fill="#374151" font-family="Inter, system-ui, sans-serif">${legV}</text>
-      <line x1="12" y1="56" x2="40" y2="56" stroke="#334155" stroke-width="2.8" marker-end="url(#rlMkF)" />
-      <text x="48" y="60" font-size="10" font-weight="600" fill="#374151" font-family="Inter, system-ui, sans-serif">${legF}</text>
-      <text x="12" y="80" font-size="9.5" fill="#64748b" font-family="Inter, system-ui, sans-serif">${legNote1}</text>
-      <text x="12" y="96" font-size="9.5" fill="#64748b" font-family="Inter, system-ui, sans-serif">${legNote2}</text>
+    <g transform="translate(12, ${caseRowY})">
+      <rect x="0" y="0" width="288" height="${footerH}" rx="10" fill="url(#sumRlL)" stroke="none" />
+      <text x="14" y="24" font-size="11" font-weight="800" fill="${INK}">${caseTitle}</text>
+      <text x="14" y="44" font-size="10" fill="${LINE}">${caseL1} ${mono(fmt(m, 0))} kg | ${en ? 'mdot ~' : 'Qm ~'} ${mono(fmt(mdot, 2))} kg/s</text>
+      <text x="14" y="62" font-size="10" fill="${LINE}">${caseL2} ~ ${mono(fmt(pitchMmAssumed, 0))} mm | ${en ? 'rollers ~' : 'rodillos ~'} ${nLogical}${simplifiedNote}</text>
+      <text x="14" y="80" font-size="10" fill="${LINE}">RPM: ${mono(Number.isFinite(rpm) ? fmt(rpm, 2) : '--')} | SF ${mono(fmt(sf, 2))}</text>
+      <text x="14" y="98" font-size="9" fill="${MUTED}">${caseL3}</text>
     </g>
 
-    <g transform="translate(312, ${footerY})" filter="url(#rlCardSh)">
-      <rect x="0" y="0" width="${vbW - 324}" height="${footerH}" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
-      <text x="12" y="22" font-size="11" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">${caseTitle}</text>
-      <text x="12" y="42" font-size="10" fill="#475569" font-family="Inter, system-ui, sans-serif">${caseL1} ${fmt(m, 0)} kg | ${en ? 'mdot ~' : 'Qm ~'} ${fmt(mdot, 2)} kg/s</text>
-      <text x="12" y="60" font-size="10" fill="#475569" font-family="Inter, system-ui, sans-serif">${caseL2} ~ ${fmt(pitchMmAssumed, 0)} mm | ${en ? 'rollers ~' : 'rodillos ~'} ${nLogical}${simplifiedNote}</text>
-      <text x="12" y="78" font-size="10" fill="#475569" font-family="Inter, system-ui, sans-serif">RPM: ${Number.isFinite(rpm) ? fmt(rpm, 2) : '--'} | SF ${fmt(sf, 2)}</text>
-      <text x="12" y="96" font-size="9" fill="#94a3b8" font-family="Inter, system-ui, sans-serif">${caseL3}</text>
+    <g transform="translate(312, ${caseRowY})">
+      <rect x="0" y="0" width="${vbW - 324}" height="${footerH}" rx="10" fill="url(#sumRlR)" stroke="none" />
+      <text x="14" y="24" font-size="11" font-weight="800" fill="${INK}">${en ? 'Standard' : 'Norma'}</text>
+      <text x="14" y="48" font-size="10" fill="${LINE}">${stdLabel}</text>
+      <text x="14" y="72" font-size="9.5" fill="${MUTED}">${en ? 'Qualitative side + plan view.' : 'Vistas cualitativas perfil + planta.'}</text>
+    </g>
+
+    <!-- Leyenda al pie (debajo de datos / norma, orden z superior) -->
+    <g transform="translate(0, ${legendRowY})" font-family="Inter, system-ui, sans-serif" aria-hidden="true">
+      <line x1="20" y1="0" x2="${vbW - 20}" y2="0" stroke="#e2e8f0" stroke-width="1" />
+      <text x="24" y="14" font-size="8" font-weight="800" fill="${MUTED}" letter-spacing="0.1em">${legTitle}</text>
+      <line x1="24" y1="26" x2="46" y2="26" stroke="${ACC}" stroke-width="1.1" marker-end="url(#rlMkV)" />
+      <text x="52" y="29" font-size="9.5" fill="${MUTED}">${legV}</text>
+      <line x1="${vbW / 2 - 40}" y1="26" x2="${vbW / 2 - 18}" y2="26" stroke="${INK}" stroke-width="1.1" marker-end="url(#rlMkF)" />
+      <text x="${vbW / 2 - 12}" y="29" font-size="9.5" fill="${MUTED}">${legF}</text>
+      <text x="24" y="44" font-size="8.5" fill="${MUTED}">${legNote1} · ${legNote2}</text>
     </g>
   `;
 }

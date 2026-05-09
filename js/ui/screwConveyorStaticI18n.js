@@ -228,25 +228,7 @@ function applyChips(lang) {
 /** @param {'es'|'en'} lang */
 function applyNav(lang) {
   const en = lang === 'en';
-  const map = {
-    'index.html': en ? 'Home' : 'Inicio',
-    'flat-conveyor.html': en ? 'Flat belt' : 'Cinta plana',
-    'inclined-conveyor.html': en ? 'Inclined belt' : 'Cinta inclinada',
-    'roller-conveyor.html': en ? 'Rollers' : 'Rodillos',
-    'centrifugal-pump.html': en ? 'Pump' : 'Bomba',
-    'screw-conveyor.html': en ? 'Screw conveyor' : 'Tornillo',
-    'transmission-lab.html': en ? 'Laboratory' : 'Laboratorio',
-    'transmission-canvas.html': en ? 'Pro canvas' : 'Lienzo Pro',
-  };
-  document.querySelectorAll('.app-header__nav-start a[href], .app-header__nav-end a[href]').forEach((a) => {
-    const href = a.getAttribute('href') || '';
-    if (map[href]) a.textContent = map[href];
-  });
-  const canvas = document.querySelector('.app-header__nav-end a[href="transmission-canvas.html"]');
-  if (canvas) {
-    canvas.setAttribute('title', en ? 'Multi-shaft technical canvas (Pro)' : 'Lienzo t\u00e9cnico multieje (Pro)');
-  }
-  const nav = document.querySelector('header nav[aria-label]');
+  const nav = document.querySelector('.site-nav__center');
   if (nav) nav.setAttribute('aria-label', en ? 'Main navigation' : 'Navegaci\u00f3n principal');
 }
 
@@ -423,26 +405,26 @@ function applyBlocks(lang) {
   if (svg) {
     svg.setAttribute('aria-label', en ? 'Screw conveyor schematic' : 'Esquema tornillo');
   }
-  const note = document.querySelector('.diagram-duo.flat-visual .diagram-schematic-note');
+  const note = document.querySelector('.flat-visual__diagram-col .diagram-schematic-note');
   if (note) {
     note.innerHTML = en
       ? '<strong>Quick read:</strong> qualitative side view of trough, screw and bulk flow; <strong>L</strong>, <strong>OD</strong>, <strong>pitch</strong> and <strong>angle</strong> come from the form. The dashboard updates when inputs change.'
       : '<strong>Lectura r\u00e1pida:</strong> vista lateral cualitativa del canal, tornillo y flujo; <strong>L</strong>, <strong>\u00d8</strong>, <strong>paso</strong> e <strong>inclinaci\u00f3n</strong> salen del formulario. El dashboard se actualiza al cambiar entradas.';
   }
-  const fig = document.querySelector('.diagram-duo__real img');
+  const fig = document.querySelector('.flat-visual__photo-block img');
   if (fig) {
     fig.setAttribute(
       'alt',
       en ? 'Screw conveyor reference photo' : 'Transportador de tornillo en planta (referencia)',
     );
   }
-  const cap = document.querySelector('.diagram-duo__real figcaption');
+  const cap = document.querySelector('.flat-visual__photo-block figcaption');
   if (cap) {
     cap.innerHTML = en
       ? 'Reference: screw (illustrative). <a href="https://commons.wikimedia.org/wiki/File:Archimedes_screw_at_Kinderdijk.jpg" target="_blank" rel="noopener">Wikimedia</a>'
       : 'Referencia: tornillo (ejemplo visual). <a href="https://commons.wikimedia.org/wiki/File:Archimedes_screw_at_Kinderdijk.jpg" target="_blank" rel="noopener">Wikimedia</a>';
   }
-  document.querySelector('.diagram-duo.flat-visual')?.setAttribute('aria-label', en ? 'Schematic and reference photo' : 'Esquema tornillo');
+  document.querySelector('.flat-visual.flat-visual--integrated')?.setAttribute('aria-label', en ? 'Schematic and reference photo' : 'Esquema tornillo');
   const vh2 = document.querySelector('#screwVerifyPanel h2');
   if (vh2) {
     vh2.innerHTML = en

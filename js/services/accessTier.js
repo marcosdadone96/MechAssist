@@ -276,3 +276,11 @@ if (typeof window !== 'undefined' && FEATURES.proClientPolicy === 'production' &
     });
   });
 }
+
+if (typeof window !== 'undefined') {
+  queueMicrotask(() => {
+    import('./userCloudSync.js').then((m) => {
+      void m.initUserCloudSync();
+    });
+  });
+}

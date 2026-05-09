@@ -35,21 +35,21 @@
       })();
     </script>
 
-    <header class="app-header">
-      <a class="app-header__brand" href="index.html">Mech<span>Assist</span></a>
-      <nav aria-label="Navegaci�n principal">
-        <div class="app-header__nav-start">
-          <a href="index.html">Inicio</a>
-          <a href="machines-hub.html">M�quinas</a>
-          <a href="my-gearmotors.html" aria-current="page"
-            ><span class="mygm-nav-txt" data-gm-nav-title>Mis motorreductores</span> <span class="premium-flag">Pro</span></a
-          >
-        </div>
-        <div class="app-header__nav-end">
-          <span id="gmLangHost" class="app-header__lang-host"></span>
-          <a href="transmission-lab.html" class="lab-header__nav-cta">Laboratorio</a>
-        </div>
+    <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
+        <span class="site-nav__title">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link" href="my-gearmotors.html" aria-current="page"><span class="mygm-nav-txt" data-gm-nav-title data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <span id="gmLangHost" class="site-nav__gm-lang-wrap"></span>
+      </div>
     </header>
 
     <main class="app-main app-main--flat-wb gearmotor-db-main">
@@ -161,6 +161,8 @@
     </footer>
 
     <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/myGearmotorsPage.js"></script>
   </body>
 </html>

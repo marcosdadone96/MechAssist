@@ -2,7 +2,9 @@
  * TheMechAssist — interfaz clara, orientada a ingeniería.
  */
 
+@import url('site-nav.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600&display=swap');
 
 :root {
   --bg: #eef2f7;
@@ -30,6 +32,11 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+/* details/summary: el summary es siempre el control interactivo del acordeón nativo */
+details > summary {
+  cursor: pointer;
 }
 
 body {
@@ -904,6 +911,23 @@ body {
   gap: 0.35rem;
 }
 
+/* Máquinas / sidebar: mismo criterio que lab — icono "?" al extremo y alineado al texto */
+.field label:has(.info-chip:not(.info-chip--static)) {
+  align-items: flex-start;
+}
+
+.field label .info-chip:not(.info-chip--static) {
+  margin-left: auto;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 0.06rem;
+}
+
+.field label .info-chip:not(.info-chip--static):hover {
+  border-color: rgba(13, 148, 136, 0.52);
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.18);
+}
+
 .field-hint {
   font-size: 0.75rem;
   color: var(--muted);
@@ -1048,22 +1072,26 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 1.15rem;
-  height: 1.15rem;
-  padding: 0 0.28rem;
-  margin-left: 0.15rem;
-  border-radius: 999px;
-  border: 1px solid rgba(13, 148, 136, 0.35);
-  background: #e0f2fe;
-  color: var(--info);
-  font-size: 0.72rem;
-  font-weight: 800;
+  box-sizing: border-box;
+  width: 1.125rem;
+  height: 1.125rem;
+  min-width: 1.125rem;
+  padding: 0;
+  margin-left: 0.35rem;
+  border-radius: 50%;
+  border: 1px solid rgba(13, 148, 136, 0.3);
+  background: linear-gradient(165deg, #f0fdfa 0%, #e0f2fe 100%);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.07);
+  color: #0f766e;
+  font-size: 0.6875rem;
+  font-weight: 700;
   line-height: 1;
+  font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   cursor: help;
   flex-shrink: 0;
-  vertical-align: middle;
+  vertical-align: 0.1em;
   position: relative;
-  top: -0.05em;
+  top: 0;
 }
 
 .info-chip:focus-visible {
@@ -1078,7 +1106,7 @@ body {
 
 .info-chip-popover {
   position: fixed;
-  z-index: 80;
+  z-index: 110;
   max-width: min(22rem, calc(100vw - 1.5rem));
   padding: 0.55rem 0.7rem;
   border-radius: 10px;
@@ -1204,6 +1232,83 @@ body {
   border: 1px solid rgba(13, 148, 136, 0.15);
 }
 
+/* Cinta plana: notas bajo el esquema (reemplaza el párrafo plano) */
+.diagram-tips {
+  margin: 0.65rem 0 0;
+  padding: 0.75rem 0.85rem 0.8rem;
+  border-radius: 14px;
+  background: linear-gradient(165deg, rgba(13, 148, 136, 0.07) 0%, rgba(15, 23, 42, 0.03) 100%);
+  border: 1px solid rgba(13, 148, 136, 0.2);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset;
+}
+
+.diagram-tips__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(13, 148, 136, 0.15);
+}
+
+.diagram-tips__head-icon {
+  display: inline-flex;
+  color: var(--flat-emerald, #059669);
+  flex-shrink: 0;
+}
+
+.diagram-tips__title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--flat-navy, #0f172a);
+}
+
+.diagram-tips__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.diagram-tips__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.55rem 0.65rem;
+  align-items: start;
+}
+
+.diagram-tips__glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: rgba(5, 150, 105, 0.1);
+  color: var(--flat-emerald, #059669);
+}
+
+.diagram-tips__glyph svg {
+  display: block;
+}
+
+.diagram-tips__text {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.48;
+  color: var(--flat-slate, #334155);
+}
+
+.diagram-tips__text strong {
+  color: var(--flat-navy, #0f172a);
+  font-weight: 700;
+}
+
 .field-hint a,
 .form-model-scope a,
 .form-section-lead a {
@@ -1269,6 +1374,11 @@ body {
   color: #475569;
   font-size: 0.86rem;
   font-weight: 700;
+}
+
+/* `hidden` debe ocultar siempre: la clase anterior gana en especificidad y dejaba visible el placeholder (franja gris + texto vertical). */
+.machine-photo-placeholder[hidden] {
+  display: none !important;
 }
 
 .reeving-visual {
@@ -1537,6 +1647,12 @@ html[data-conveyor-tool='flat'] .flat-dashboard .results-grid,
 html[data-conveyor-tool='inclined'] .flat-dashboard .results-grid,
 html[data-conveyor-tool='roller'] .flat-dashboard .results-grid,
 html[data-conveyor-tool='screw'] .flat-dashboard .results-grid {
+  grid-template-columns: 1fr;
+}
+
+html[data-tool='pump'] .flat-dashboard .results-grid,
+html[data-tool='traction'] .flat-dashboard .results-grid,
+html[data-conveyor-tool='bucket'] #beResults {
   grid-template-columns: 1fr;
 }
 
@@ -2302,9 +2418,37 @@ html[data-conveyor-tool='screw'] .flat-dashboard .results-grid {
   align-items: center;
 }
 
-.machine-config-row input,
+.machine-config-row input[type='text'],
 .machine-config-row select {
-  min-height: 2.1rem;
+  min-height: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.85rem;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--text);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.machine-config-row input[type='text']:focus,
+.machine-config-row select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.machine-config-row .button.button--ghost {
+  min-height: 2.5rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .premium-export {
@@ -3498,10 +3642,97 @@ html[data-tool='traction'] {
   --flat-card-shadow-hover: 0 8px 32px rgba(15, 23, 42, 0.1);
 }
 
+/* Workbench calculadoras: sombras mínimas, resultados y métricas planas, inputs a ancho completo */
+html[data-conveyor-tool] .flat-sidebar,
+html[data-machine-tool='car-lift'] .flat-sidebar,
+html[data-tool='pump'] .flat-sidebar,
+html[data-tool='traction'] .flat-sidebar {
+  box-shadow: none;
+  background: #fafbfc;
+  border: 1px solid rgba(51, 65, 85, 0.12);
+}
+
+html[data-conveyor-tool] .flat-dashboard,
+html[data-machine-tool='car-lift'] .flat-dashboard,
+html[data-tool='pump'] .flat-dashboard,
+html[data-tool='traction'] .flat-dashboard {
+  box-shadow: none;
+  background: #fafbfc;
+  border: 1px solid rgba(51, 65, 85, 0.12);
+}
+
+html[data-conveyor-tool] .flat-kpi,
+html[data-machine-tool='car-lift'] .flat-kpi,
+html[data-tool='pump'] .flat-kpi,
+html[data-tool='traction'] .flat-kpi {
+  box-shadow: none;
+}
+
+html[data-conveyor-tool] .flat-kpi:hover,
+html[data-machine-tool='car-lift'] .flat-kpi:hover,
+html[data-tool='pump'] .flat-kpi:hover,
+html[data-tool='traction'] .flat-kpi:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+html[data-conveyor-tool] .flat-kpi--power,
+html[data-machine-tool='car-lift'] .flat-kpi--power,
+html[data-tool='pump'] .flat-kpi--power,
+html[data-tool='traction'] .flat-kpi--power {
+  background: #fff;
+}
+
+html[data-conveyor-tool] .metric,
+html[data-machine-tool='car-lift'] .metric,
+html[data-tool='pump'] .metric,
+html[data-tool='traction'] .metric {
+  background: #f8fafc;
+  box-shadow: none;
+}
+
+html[data-conveyor-tool] .flat-sidebar .field input:not([type='checkbox']):not([type='radio']),
+html[data-conveyor-tool] .flat-sidebar .field select,
+html[data-conveyor-tool] .flat-sidebar .field textarea,
+html[data-machine-tool='car-lift'] .flat-sidebar .field input:not([type='checkbox']):not([type='radio']),
+html[data-machine-tool='car-lift'] .flat-sidebar .field select,
+html[data-machine-tool='car-lift'] .flat-sidebar .field textarea,
+html[data-tool='pump'] .flat-sidebar .field input:not([type='checkbox']):not([type='radio']),
+html[data-tool='pump'] .flat-sidebar .field select,
+html[data-tool='pump'] .flat-sidebar .field textarea,
+html[data-tool='traction'] .flat-sidebar .field input:not([type='checkbox']):not([type='radio']),
+html[data-tool='traction'] .flat-sidebar .field select,
+html[data-tool='traction'] .flat-sidebar .field textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+html[data-conveyor-tool] .flat-sidebar .flat-field__num,
+html[data-machine-tool='car-lift'] .flat-sidebar .flat-field__num,
+html[data-tool='pump'] .flat-sidebar .flat-field__num,
+html[data-tool='traction'] .flat-sidebar .flat-field__num {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+html[data-conveyor-tool] .flat-visual,
+html[data-machine-tool='car-lift'] .flat-visual,
+html[data-tool='pump'] .flat-visual,
+html[data-tool='traction'] .flat-visual {
+  box-shadow: none;
+}
+
+svg .diagram-svg-label--on-drawing {
+  paint-order: stroke fill;
+  stroke: rgba(255, 255, 255, 0.88);
+  stroke-width: 3px;
+}
+
 .app-main--flat-wb {
   max-width: 1440px;
   grid-template-columns: minmax(300px, 400px) 1fr;
-  gap: 1.75rem;
+  gap: 2rem;
   align-items: start;
 }
 
@@ -3522,6 +3753,31 @@ html[data-tool='traction'] {
   border: 1px solid rgba(30, 58, 95, 0.12);
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   padding: 1.35rem 1.25rem 1.5rem;
+}
+
+.flat-sidebar .field-grid--essential {
+  gap: 1.2rem;
+}
+
+.flat-sidebar .flat-accordion {
+  margin-bottom: 0.65rem;
+}
+
+.flat-sidebar .field.flat-field--slider {
+  gap: 0.5rem;
+}
+
+.flat-sidebar .flat-field--slider .flat-slider {
+  margin: 0;
+  align-self: stretch;
+}
+
+.flat-sidebar .flat-field--slider .flat-field__num {
+  margin-top: 0;
+}
+
+.flat-sidebar .flat-help {
+  margin-bottom: 1rem;
 }
 
 @media (max-width: 1100px) {
@@ -3685,6 +3941,19 @@ html[data-tool='traction'] {
   padding: 1.35rem 1.4rem 1.5rem;
 }
 
+/* Misma familia de radios que la barra lateral (.flat-sidebar 18px / acordeón 14px) */
+html[data-conveyor-tool='flat'] .flat-dashboard {
+  border-radius: 18px;
+}
+
+html[data-conveyor-tool='flat'] .flat-kpi {
+  border-radius: 14px;
+}
+
+html[data-conveyor-tool='flat'] .metric {
+  border-radius: 14px;
+}
+
 .flat-dashboard__head {
   margin-bottom: 1.1rem;
 }
@@ -3803,12 +4072,128 @@ html[data-tool='traction'] {
   background: #fff;
 }
 
+/* Cinta plana: esquema SVG + foto de referencia en un solo contenedor */
+.flat-visual--integrated {
+  padding: 0;
+}
+
+.flat-visual__workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 36%);
+  gap: 0.75rem;
+  align-items: stretch;
+  min-height: 0;
+  position: relative;
+  isolation: isolate;
+}
+
+.flat-visual__diagram-col {
+  position: relative;
+  min-width: 0;
+}
+
+.flat-visual__photo-block {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid rgba(51, 65, 85, 0.09);
+  background: #fff;
+}
+
+.flat-visual--integrated .diagram-duo__schematic.flat-visual__diagram-col {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: #f4f7fb;
+  padding: 0.65rem 0.75rem 0.55rem;
+  min-height: min(52vh, 420px);
+  display: flex;
+  flex-direction: column;
+  /* El SVG escala con altura max.; sin esto el dibujo puede desbordarse y tapar la foto (z-index heredado). */
+  overflow: hidden;
+}
+
+.flat-visual__photo-frame {
+  flex: 1 1 auto;
+  min-height: min(52vh, 420px);
+  aspect-ratio: 3 / 4;
+  max-height: min(72vh, 560px);
+  background: #eef2f7;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.flat-visual__photo-frame img {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  object-fit: contain;
+  padding: 0.35rem;
+  box-sizing: border-box;
+}
+
+/* Fallback si la imagen falla: ocupa todo el marco (no una columna estrecha junto al img). */
+.flat-visual__photo-frame .machine-photo-placeholder:not([hidden]) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.flat-visual__caption {
+  margin: 0;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: #475569;
+  background: rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  border-top: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.flat-visual__caption a {
+  color: #0d9488;
+  font-weight: 600;
+}
+
+@media (max-width: 960px) {
+  .flat-visual__workbench {
+    grid-template-columns: 1fr;
+  }
+
+  .flat-visual__photo-block {
+    border-left: none;
+    border-top: 1px solid rgba(51, 65, 85, 0.09);
+  }
+
+  .flat-visual__photo-frame {
+    aspect-ratio: 16 / 10;
+    min-height: 240px;
+    max-height: 48vh;
+  }
+}
+
 .flat-visual .diagram-duo__schematic {
-  padding: 0.75rem 0.75rem 0.25rem;
+  padding: 0.75rem 0.75rem 0.55rem;
 }
 
 .flat-visual .diagram-duo__schematic svg {
   max-height: min(68vh, 620px);
+}
+
+.flat-visual--integrated .diagram-duo__schematic svg {
+  max-height: min(75vh, 680px);
 }
 
 html[data-conveyor-tool='flat'] .diagram-metric,
@@ -3822,7 +4207,7 @@ html[data-conveyor-tool='flat'] .diagram-metric--hover,
 html[data-conveyor-tool='inclined'] .diagram-metric--hover,
 html[data-conveyor-tool='roller'] .diagram-metric--hover,
 html[data-conveyor-tool='screw'] .diagram-metric--hover {
-  filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.55)) drop-shadow(0 0 4px rgba(30, 58, 95, 0.35));
+  filter: none;
 }
 
 html[data-conveyor-tool='flat'] #section-motores .motor-card-grid,

@@ -87,7 +87,7 @@ export const FEATURES = Object.freeze({
 
   /**
    * Registro e inicio de sesión con servidor Netlify (correo de verificación + Blobs + JWT).
-   * Requiere RESEND_API_KEY, AUTH_MAIL_FROM o FEEDBACK_FROM_EMAIL, AUTH_JWT_SECRET o PRO_JWT_SECRET.
+   * Requiere RESEND_API_KEY, AUTH_MAIL_FROM, AUTH_JWT_SECRET o PRO_JWT_SECRET.
    * Si false: comportamiento anterior solo en localStorage (demo en este navegador).
    */
   useServerAuth: true,

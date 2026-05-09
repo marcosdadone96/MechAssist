@@ -300,11 +300,6 @@ function localizeRollerStaticContent() {
     const el = document.querySelector(sel);
     if (el) el.innerHTML = h;
   };
-  setText('.app-header nav a[href="index.html"]', 'Home');
-  setText('.app-header nav a[href="flat-conveyor.html"]', 'Flat Conveyor');
-  setText('.app-header nav a[href="inclined-conveyor.html"]', 'Inclined Conveyor');
-  setText('.app-header nav a[href="centrifugal-pump.html"]', 'Pump');
-  setText('.app-header nav a[href="screw-conveyor.html"]', 'Screw Conveyor');
   setText('.flat-sidebar__title', 'Motorized roller line');
   setText(
     '.flat-sidebar__lead',
@@ -354,10 +349,10 @@ function localizeRollerStaticContent() {
     '.diagram-schematic-note',
     `<strong>Quick read:</strong> at the top, <strong>steady</strong> (no SF) vs <strong>design</strong> (× SF and η). <strong>L</strong> is useful length and <strong>D</strong> the drive roller diameter (your inputs); the drawing is qualitative. Schematic boxes repeat steady and motor-sizing numbers, aligned with <strong>Final results</strong>.`,
   );
-  const refImg = document.querySelector('.diagram-duo__real img');
+  const refImg = document.querySelector('.flat-visual__photo-block img');
   if (refImg) refImg.setAttribute('alt', 'Roller conveyor reference photo');
   setHtml(
-    '.diagram-duo__real figcaption',
+    '.flat-visual__photo-block figcaption',
     `Roller conveyor on site.
     <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.`,
   );

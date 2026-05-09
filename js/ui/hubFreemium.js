@@ -40,7 +40,7 @@ function applyPublicFreeReleaseHomeUi() {
   if (!FEATURES.publicFreeRelease) return;
   document.documentElement.setAttribute('data-public-free-release', '1');
   document.getElementById('hub-pricing')?.setAttribute('hidden', '');
-  document.querySelector('a.hub-header__plans[href="#hub-pricing"]')?.setAttribute('hidden', '');
+  document.querySelectorAll('a[data-nav-plans]').forEach((a) => a.setAttribute('hidden', ''));
   document.querySelector('p.hub-footnote--detail')?.setAttribute('hidden', '');
   document.querySelector('a[href="my-gearmotors.html"] .premium-flag')?.remove();
 }
@@ -68,21 +68,22 @@ function renderHubProBadges() {
 
 function mountHomeAccountControls() {
   const slot =
-    document.querySelector('#hub-header-auth-slot') || document.querySelector('.hub-header__auth-slot');
+    document.querySelector('#hub-header-auth-slot') || document.querySelector('.site-nav__auth');
   if (!(slot instanceof HTMLElement)) return;
   slot.replaceChildren();
 
   const user = getCurrentUser();
+  const hasAuthModal = !!document.getElementById('ma-modal-auth');
 
   if (user) {
     const wrap = document.createElement('div');
-    wrap.className = 'hub-account';
+    wrap.className = 'site-nav__account';
     const userEl = document.createElement('span');
-    userEl.className = 'hub-account__user';
+    userEl.className = 'site-nav__user';
     userEl.textContent = helloLabel(user.name);
     const out = document.createElement('button');
     out.type = 'button';
-    out.className = 'hub-account__btn';
+    out.className = 'site-nav__btn site-nav__btn--ghost';
     out.setAttribute('data-logout', '');
     out.textContent = t('auth.logout', lang() === 'en' ? 'Log out' : 'Cerrar sesi\u00f3n');
     out.addEventListener('click', () => {
@@ -97,30 +98,54 @@ function mountHomeAccountControls() {
   }
 
   const wrap = document.createElement('div');
-  wrap.className = 'hub-account hub-account--anon';
+  wrap.className = 'site-nav__account site-nav__account--anon';
 
-  const loginBtn = document.createElement('button');
-  loginBtn.type = 'button';
-  loginBtn.className = 'hub-account__btn hub-account__btn--ghost';
-  loginBtn.setAttribute('data-ma-modal-open', 'auth');
-  loginBtn.setAttribute('data-auth-tab', 'login');
-  loginBtn.textContent = t('auth.login', lang() === 'en' ? 'Log in' : 'Iniciar sesi\u00f3n');
+  if (hasAuthModal) {
+    const loginBtn = document.createElement('button');
+    loginBtn.type = 'button';
+    loginBtn.className = 'site-nav__btn site-nav__btn--ghost';
+    loginBtn.setAttribute('data-ma-modal-open', 'auth');
+    loginBtn.setAttribute('data-auth-tab', 'login');
+    loginBtn.textContent = t('auth.login', lang() === 'en' ? 'Log in' : 'Iniciar sesi\u00f3n');
 
-  const regBtn = document.createElement('button');
-  regBtn.type = 'button';
-  regBtn.className = 'hub-account__btn hub-account__btn--procta';
-  regBtn.setAttribute('data-ma-modal-open', 'auth');
-  regBtn.setAttribute('data-auth-tab', 'register');
-  regBtn.textContent = t('auth.register', lang() === 'en' ? 'Sign up' : 'Registrarse');
+    const regBtn = document.createElement('button');
+    regBtn.type = 'button';
+    regBtn.className = 'site-nav__btn site-nav__btn--register';
+    regBtn.setAttribute('data-ma-modal-open', 'auth');
+    regBtn.setAttribute('data-auth-tab', 'register');
+    regBtn.textContent = t('auth.register', lang() === 'en' ? 'Sign up' : 'Registrarse');
 
-  wrap.appendChild(loginBtn);
-  wrap.appendChild(regBtn);
+    wrap.appendChild(loginBtn);
+    wrap.appendChild(regBtn);
+  } else {
+    const loginA = document.createElement('a');
+    loginA.href = 'index.html?auth=login';
+    loginA.className = 'site-nav__btn site-nav__btn--ghost';
+    loginA.textContent = t('auth.login', lang() === 'en' ? 'Log in' : 'Iniciar sesi\u00f3n');
+
+    const regA = document.createElement('a');
+    regA.href = 'register.html';
+    regA.className = 'site-nav__btn site-nav__btn--register';
+    regA.textContent = t('auth.register', lang() === 'en' ? 'Sign up' : 'Registrarse');
+
+    wrap.appendChild(loginA);
+    wrap.appendChild(regA);
+  }
+
   slot.appendChild(wrap);
 }
 
 applyPublicFreeReleaseHomeUi();
 renderHubProBadges();
 mountHomeAccountControls();
+
+if (FEATURES.useServerAuth) {
+  queueMicrotask(() => {
+    import('../services/userCloudSync.js').then((m) => {
+      void m.initUserCloudSync();
+    });
+  });
+}
 
 window.addEventListener('home-language-changed', () => {
   applyPublicFreeReleaseHomeUi();

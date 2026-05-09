@@ -130,6 +130,7 @@ export function persistServerSession({ name, email, authToken }) {
 export function clearLocalUser() {
   try {
     localStorage.removeItem(LS_USER);
+    window.dispatchEvent(new CustomEvent('mdr-clear-user-sync'));
   } catch (_) {
     /* ignore */
   }

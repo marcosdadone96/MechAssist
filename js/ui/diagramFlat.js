@@ -1,5 +1,6 @@
 /**
- * Cinta plana — esquema técnico: métricas en chips compactos sobre el dibujo (sin líneas guía).
+ * Cinta plana — esquema tipo plano de ingeniería: líneas finas, acentos limitados,
+ * etiquetas sin sombras; leyenda compacta bajo el trazado principal.
  */
 
 import { clamp } from '../utils/calculations.js';
@@ -8,6 +9,11 @@ import { getCurrentLang } from '../config/locales.js';
 function fmt(n, d = 2) {
   if (!Number.isFinite(n)) return '—';
   return n.toFixed(d);
+}
+
+/** @param {string} s @returns {string} */
+function mono(s) {
+  return `<tspan class="diagram-svg-num">${s}</tspan>`;
 }
 
 /**
@@ -30,6 +36,12 @@ export function renderFlatConveyorDiagram(svg, p) {
   const Pd = Math.max(0, p.powerAtDrum_W || 0);
   const Td = Math.max(0, p.torqueAtDrum_Nm || 0);
 
+  const INK = '#334155';
+  const NAVY = '#1e3a5f';
+  const LINE = '#475569';
+  const MUTED = '#64748b';
+  const ACC = '#0d9488';
+
   const d = p.detail || {};
   const Fsteady = Number.isFinite(d.F_steady_N) ? d.F_steady_N : F;
   const Fstart = Number.isFinite(d.F_total_start_N) ? d.F_total_start_N : Fsteady;
@@ -51,8 +63,8 @@ export function renderFlatConveyorDiagram(svg, p) {
         ? v / (Dmm / 2000)
         : 0;
 
-  const HEADER_H = 50;
-  const HEADER_BOTTOM = HEADER_H + 8;
+  const HEADER_H = 40;
+  const HEADER_BOTTOM = HEADER_H + 6;
 
   const cxL = 142;
   const cxR = 642;
@@ -74,7 +86,6 @@ export function renderFlatConveyorDiagram(svg, p) {
   const dimBandD_Y = Math.max(HEADER_BOTTOM + 40, yTop - 128);
   const dimBandL_Y = dimBandD_Y + 42;
 
-  /* Flechas gruesas; chips de datos anclados encima / junto a cada elemento */
   const vStrandY = yTop - 42;
   const fStrandY = yTop + 2;
   const vx0 = xRunL + 28;
@@ -103,22 +114,22 @@ export function renderFlatConveyorDiagram(svg, p) {
       : 'normal sobre rodillos';
   const headerSubRight = carrySlide
     ? en
-      ? 'v & F \u2192 drive drum · P = F\u00b7v · \u03bc belt\u2013slide'
-      : 'v y F \u2192 tambor motriz · P = F\u00b7v \u00b7 \u03bc banda\u2013placha'
+      ? 'v & F → drive drum · P = F·v · μ belt–slide'
+      : 'v y F → tambor motriz · P = F·v · μ banda–placha'
     : en
-      ? 'v & F \u2192 drive drum · P = F\u00b7v'
-      : 'v y F \u2192 tambor motriz · P = F\u00b7v';
+      ? 'v & F → drive drum · P = F·v'
+      : 'v y F → tambor motriz · P = F·v';
   const carryBedSvg = carrySlide
     ? `
-    <rect x="${xRunL - 8}" y="${yTop + 2}" width="${xRunR - xRunL + 16}" height="32" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.15" />
-    <line x1="${xRunL - 2}" y1="${yTop + 13}" x2="${xRunR + 2}" y2="${yTop + 13}" stroke="#cbd5e1" stroke-width="1" />
-    <line x1="${xRunL - 2}" y1="${yTop + 23}" x2="${xRunR + 2}" y2="${yTop + 23}" stroke="#cbd5e1" stroke-width="1" />
+    <rect x="${xRunL - 8}" y="${yTop + 2}" width="${xRunR - xRunL + 16}" height="32" rx="3" fill="#f1f5f9" stroke="${LINE}" stroke-width="0.9" />
+    <line x1="${xRunL - 2}" y1="${yTop + 13}" x2="${xRunR + 2}" y2="${yTop + 13}" stroke="#cbd5e1" stroke-width="0.85" />
+    <line x1="${xRunL - 2}" y1="${yTop + 23}" x2="${xRunR + 2}" y2="${yTop + 23}" stroke="#cbd5e1" stroke-width="0.85" />
     `
     : rollers
         .map(
           (rx) => `
-    <line x1="${rx}" y1="${yTop + 8}" x2="${rx}" y2="${yTop + 26}" stroke="#6b7280" stroke-width="2" stroke-linecap="round" />
-    <circle cx="${rx}" cy="${yTop + 30}" r="6" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" />`,
+    <line x1="${rx}" y1="${yTop + 8}" x2="${rx}" y2="${yTop + 26}" stroke="${LINE}" stroke-width="1.25" stroke-linecap="round" />
+    <circle cx="${rx}" cy="${yTop + 30}" r="5.5" fill="#f8fafc" stroke="${LINE}" stroke-width="1" />`,
         )
         .join('');
 
@@ -144,32 +155,29 @@ export function renderFlatConveyorDiagram(svg, p) {
   const fLineX1 = fX1;
   const fAnchorX = (fLineX0 + fLineX1) / 2;
 
-  /* Chips compactos (evitar solapes: capas separadas en Y entre D y L) */
-  const vChipW = 116;
+  const vChipW = 118;
   const vChipH = 22;
   let vChipX = vMidStrand - vChipW / 2;
   vChipX = clamp(vChipX, 12, xRunR - vChipW - 16);
   const vChipY = vStrandY - vChipH - 5;
 
-  const lChipW = 88;
+  const lChipW = 92;
   const lChipH = 20;
   const lChipX = lDimMidX - lChipW / 2;
   const lChipY = dimBandL_Y - lChipH - 5;
 
-  const dChipW = 94;
+  const dChipW = 96;
   const dChipH = 20;
-  /* Centrado en el eje del tambor motriz (coincide con la pauta de cota D) */
   let dChipX = cxR - dChipW / 2;
   const motorIconsLeft = cxR + r + 22;
   const dChipMaxX = motorIconsLeft - dChipW - 8;
   dChipX = clamp(dChipX, 14, dChipMaxX);
   const dChipY = dimBandD_Y - dChipH - 3;
 
-  const fChipW = 118;
+  const fChipW = 122;
   const fChipH = 26;
   let fChipX = fAnchorX - fChipW / 2;
   fChipX = clamp(fChipX, 14, xRunR - fChipW - 8);
-  /* Debajo de la banda (yTop+8) para no tapar la flecha F sobre la rama */
   const fChipY = yTop + 14;
 
   const nChipW = 108;
@@ -196,213 +204,211 @@ export function renderFlatConveyorDiagram(svg, p) {
 
   const hasDetail = Boolean(p.detail && Object.keys(p.detail).length);
 
-  const legendX = 20;
-  const legendY = Math.max(yBot + 44, dimBandL_Y + 56, loadBottom + 72, fChipY + fChipH + 28);
-  const legendW = 312;
-  const legendH = 78;
+  const legendStripH = 38;
+  const legendGap = 14;
+  const legendStripY = Math.max(yBot + 48, dimBandL_Y + 52, loadBottom + 68, fChipY + fChipH + 18, nChipY + nChipH + 8);
 
-  const summaryH = hasDetail ? 136 : 128;
-  const summaryY = legendY + legendH + 14;
+  const summaryH = hasDetail ? 134 : 126;
+  const summaryY = legendStripY + legendStripH + legendGap;
   const compactStack = typeof window !== 'undefined' && window.matchMedia('(max-width: 480px)').matches;
   const colGap = 14;
   const colW = compactStack ? VB_W - 40 : (VB_W - 40 - colGap) / 2;
   const rightColY = compactStack ? summaryY + summaryH + 12 : summaryY;
-  const VB_H = rightColY + summaryH + 18;
+  const VB_H = rightColY + summaryH + 20;
 
   const svgTitle = en
-    ? 'Flat belt schematic \u2014 carrying strand, dimensions, legend'
-    : 'Esquema cinta plana \u2014 rama portante, cotas y leyenda';
+    ? 'Flat belt schematic — carrying strand, dimensions'
+    : 'Esquema cinta plana — rama portante y cotas';
   const headMain = en ? 'Horizontal flat belt' : 'Cinta horizontal';
-  const floorLbl = en ? 'Floor / foundation' : 'Suelo / cimentaci\u00f3n';
-  const retLbl = en ? 'Belt \u00b7 return' : 'Banda \u00b7 retorno';
+  const floorLbl = en ? 'Floor / foundation' : 'Suelo / cimentación';
+  const retLbl = en ? 'Belt · return' : 'Banda · retorno';
   const lblTensor = en ? 'Take-up' : 'Tensor';
   const lblCola = en ? 'Tail' : 'Cola';
   const lblMotriz = en ? 'Drive' : 'Motriz';
-  const lblMotor = 'Motor';
-  const lblRed = en ? 'GB.' : 'Red.';
   const lblHopper = en ? 'Hopper (schematic)' : 'Tolva (esquema)';
-  const fChipSub = en ? 'steady' : 'r\u00e9gimen';
-  const legTitle = en ? 'LEGEND' : 'LEYENDA';
-  const legV = en ? 'Run (v) \u2014 above the belt' : 'Marcha (v) \u2014 encima de la banda';
-  const legF = en
-    ? 'F steady \u2014 on carrying strand, same direction (no SF)'
-    : 'F r\u00e9gimen \u2014 sobre la rama portante, mismo sentido (sin SF)';
-  const sumLeftTitle = en ? 'Steady state (no SF)' : 'R\u00e9gimen (sin SF)';
+  const fChipSub = en ? 'steady' : 'régimen';
+  const legV = en ? 'Run v — belt' : 'Marcha v — banda';
+  const legF = en ? 'F steady — strand' : 'F régimen — rama';
+  const sumLeftTitle = en ? 'Steady state (no SF)' : 'Régimen (sin SF)';
   const pDrumLine = en
-    ? `P drum ${PdrumRun.toFixed(2)} W \u00b7 peak ${PdrumStart.toFixed(2)} W`
-    : `P tambor ${PdrumRun.toFixed(2)} W \u00b7 pico ${PdrumStart.toFixed(2)} W`;
+    ? `P drum ${PdrumRun.toFixed(2)} W · peak ${PdrumStart.toFixed(2)} W`
+    : `P tambor ${PdrumRun.toFixed(2)} W · pico ${PdrumStart.toFixed(2)} W`;
   const accelLine = en
-    ? `t accel. ${fmt(d.accelTime_s)} s \u00b7 k ${fmt(d.inertiaStartingFactor)}`
-    : `t acel. ${fmt(d.accelTime_s)} s \u00b7 k ${fmt(d.inertiaStartingFactor)}`;
-  const sumRightTitle = en ? 'Motor design' : 'Dise\u00f1o motor';
+    ? `t accel. ${fmt(d.accelTime_s)} s · k ${fmt(d.inertiaStartingFactor)}`
+    : `t acel. ${fmt(d.accelTime_s)} s · k ${fmt(d.inertiaStartingFactor)}`;
+  const sumRightTitle = en ? 'Motor design' : 'Diseño motor';
   const alignHint = en ? 'Aligned with app results' : 'Alineado con resultados de la app';
+
+  const legMidX = VB_W / 2;
 
   svg.setAttribute('viewBox', `0 0 ${VB_W} ${VB_H}`);
   svg.setAttribute('role', 'img');
   svg.innerHTML = `
     <title>${svgTitle}</title>
     <defs>
-      <marker id="mkV" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto">
-        <path d="M0,0 L11,5.5 L0,11 Z" fill="#15803d" />
+      <marker id="mkArrAcc" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M1 1.5 L10 6 L1 10.5" fill="none" stroke="${ACC}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
       </marker>
-      <marker id="mkW" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto">
-        <path d="M0,0 L11,5.5 L0,11 Z" fill="#475569" />
+      <marker id="mkArrInk" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M1 1.5 L10 6 L1 10.5" fill="none" stroke="${INK}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
       </marker>
-      <marker id="mkF" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto">
-        <path d="M0,0 L11,5.5 L0,11 Z" fill="#334155" />
+      <marker id="mkArrLine" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M1 1.5 L10 6 L1 10.5" fill="none" stroke="${LINE}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
       </marker>
-      <filter id="cardSh" x="-8%" y="-8%" width="116%" height="116%">
-        <feDropShadow dx="0" dy="1.5" stdDeviation="2.2" flood-opacity="0.14" />
-      </filter>
-      <linearGradient id="beltRef" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#6b7280" />
-        <stop offset="100%" stop-color="#374151" />
+      <linearGradient id="sumGradL" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#f8fafc" />
+        <stop offset="100%" stop-color="#f8fafc" />
       </linearGradient>
+      <linearGradient id="sumGradR" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#f8fafc" />
+        <stop offset="100%" stop-color="#f8fafc" />
+      </linearGradient>
+      <style><![CDATA[
+        .diagram-svg-num { font-family: 'Roboto Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+        .diagram-svg-lbl { font-family: Inter, 'Segoe UI', system-ui, sans-serif; }
+      ]]></style>
     </defs>
 
-    <rect x="0" y="0" width="${VB_W}" height="${VB_H}" fill="#f8fafc" />
+    <rect x="0" y="0" width="${VB_W}" height="${VB_H}" fill="#fafbfc" />
 
-    <!-- Cabecera compacta -->
-    <rect x="0" y="0" width="${VB_W}" height="${HEADER_H}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0" />
-    <line x1="0" y1="${HEADER_H}" x2="${VB_W}" y2="${HEADER_H}" stroke="#cbd5e1" stroke-width="1" />
-    <text x="20" y="33" font-size="17" font-weight="800" fill="#1e293b" font-family="Inter, Segoe UI, sans-serif">${headMain}</text>
-    <text x="${VB_W - 20}" y="33" text-anchor="end" font-size="11.5" fill="#64748b" font-family="Inter, Segoe UI, sans-serif">${headerSubRight}</text>
+    <line x1="0" y1="${HEADER_H}" x2="${VB_W}" y2="${HEADER_H}" stroke="#e2e8f0" stroke-width="1" />
+    <text x="20" y="27" class="diagram-svg-lbl" font-size="15" font-weight="700" fill="${INK}">${headMain}</text>
+    <text x="${VB_W - 20}" y="27" text-anchor="end" font-size="10.5" fill="${MUTED}" class="diagram-svg-lbl">${headerSubRight}</text>
 
     <g class="diagram-metric" data-diagram-metric="mu" pointer-events="bounding-box">
-      <g filter="url(#cardSh)">
-        <rect x="${muChipX}" y="${muChipY}" width="${muChipW}" height="${muChipH}" rx="6" fill="#ffffff" stroke="#fdba74" stroke-width="1" />
-      </g>
-      <text x="${muChipX + 6}" y="${muChipY + 14}" font-size="9.5" font-weight="800" fill="#c2410c" font-family="Inter, Segoe UI, sans-serif">μ Coulomb</text>
+      <rect x="${muChipX}" y="${muChipY}" width="${muChipW}" height="${muChipH}" rx="4" fill="#ffffff" fill-opacity="0.97" stroke="none" />
+      <text x="${muChipX + 6}" y="${muChipY + 14}" font-size="9.5" font-weight="700" fill="${INK}" class="diagram-svg-lbl">μ Coulomb</text>
     </g>
 
-    <!-- Cotas D / L -->
     <g class="diagram-metric" data-diagram-metric="D" pointer-events="bounding-box">
-      <line x1="${cxR}" y1="${yTop - 4}" x2="${cxR}" y2="${dimBandD_Y + 8}" stroke="#64748b" stroke-width="1.2" stroke-dasharray="5 4" />
-      <line x1="${cxR - r}" y1="${dimBandD_Y}" x2="${cxR + r}" y2="${dimBandD_Y}" stroke="#64748b" stroke-width="1.5" />
-      <line x1="${cxR - r}" y1="${dimBandD_Y - 5}" x2="${cxR - r}" y2="${dimBandD_Y + 5}" stroke="#64748b" />
-      <line x1="${cxR + r}" y1="${dimBandD_Y - 5}" x2="${cxR + r}" y2="${dimBandD_Y + 5}" stroke="#64748b" />
+      <line x1="${cxR}" y1="${yTop - 4}" x2="${cxR}" y2="${dimBandD_Y + 8}" stroke="${LINE}" stroke-width="0.9" stroke-dasharray="4 4" />
+      <line x1="${cxR - r}" y1="${dimBandD_Y}" x2="${cxR + r}" y2="${dimBandD_Y}" stroke="${LINE}" stroke-width="1" />
+      <line x1="${cxR - r}" y1="${dimBandD_Y - 4}" x2="${cxR - r}" y2="${dimBandD_Y + 4}" stroke="${LINE}" stroke-width="1" />
+      <line x1="${cxR + r}" y1="${dimBandD_Y - 4}" x2="${cxR + r}" y2="${dimBandD_Y + 4}" stroke="${LINE}" stroke-width="1" />
     </g>
 
     <g class="diagram-metric" data-diagram-metric="L" pointer-events="bounding-box">
-      <line x1="${xRunL}" y1="${dimBandL_Y - 4}" x2="${xRunL}" y2="${dimBandL_Y + 8}" stroke="#059669" stroke-width="1.8" />
-      <line x1="${xRunR}" y1="${dimBandL_Y - 4}" x2="${xRunR}" y2="${dimBandL_Y + 8}" stroke="#059669" stroke-width="1.8" />
-      <line x1="${xRunL}" y1="${dimBandL_Y}" x2="${xRunR}" y2="${dimBandL_Y}" stroke="#059669" stroke-width="2" />
+      <line x1="${xRunL}" y1="${dimBandL_Y - 4}" x2="${xRunL}" y2="${dimBandL_Y + 8}" stroke="${ACC}" stroke-width="1" />
+      <line x1="${xRunR}" y1="${dimBandL_Y - 4}" x2="${xRunR}" y2="${dimBandL_Y + 8}" stroke="${ACC}" stroke-width="1" />
+      <line x1="${xRunL}" y1="${dimBandL_Y}" x2="${xRunR}" y2="${dimBandL_Y}" stroke="${ACC}" stroke-width="1.15" />
     </g>
 
     <g class="diagram-metric diagram-metric--v" data-diagram-metric="v" pointer-events="bounding-box">
-      <line x1="${vx0}" y1="${vStrandY}" x2="${vx1}" y2="${vStrandY}" stroke="#16a34a" stroke-width="3.5" marker-end="url(#mkV)" />
+      <line x1="${vx0}" y1="${vStrandY}" x2="${vx1}" y2="${vStrandY}" stroke="${ACC}" stroke-width="1.35" marker-end="url(#mkArrAcc)" />
     </g>
 
-    <!-- Suelo -->
-    <line x1="64" y1="${yBot + 44}" x2="${VB_W - 64}" y2="${yBot + 44}" stroke="#475569" stroke-width="2.2" />
-    <text x="${(xRunL + xRunR) / 2}" y="${yBot + 60}" text-anchor="middle" font-size="11" fill="#64748b" font-family="Inter, Segoe UI, sans-serif">${floorLbl}</text>
+    <line x1="64" y1="${yBot + 44}" x2="${VB_W - 64}" y2="${yBot + 44}" stroke="${LINE}" stroke-width="1.2" />
+    <text x="${(xRunL + xRunR) / 2}" y="${yBot + 58}" text-anchor="middle" font-size="10" fill="${MUTED}" class="diagram-svg-lbl">${floorLbl}</text>
 
-    <!-- Retorno -->
-    <path d="M ${xRunL - 6} ${yBot} Q ${cxL - r * 1.2} ${(yTop + yBot) / 2} ${xRunL} ${yTop + 6}" fill="none" stroke="#9ca3af" stroke-width="8" stroke-linecap="round" opacity="0.45" />
-    <path d="M ${xRunR} ${yTop + 6} Q ${cxR + r * 1.15} ${(yTop + yBot) / 2} ${xRunR + 6} ${yBot}" fill="none" stroke="#9ca3af" stroke-width="8" stroke-linecap="round" opacity="0.45" />
-    <line x1="${xRunL}" y1="${yBot}" x2="${xRunR}" y2="${yBot}" stroke="#9ca3af" stroke-width="8" stroke-linecap="round" />
-    <line x1="${xRunL}" y1="${yBot - 5}" x2="${xRunR}" y2="${yBot - 5}" stroke="#d1d5db" stroke-width="2.5" stroke-dasharray="10 8" stroke-linecap="round" />
-    <line x1="${xRunL}" y1="${yBot + 5}" x2="${xRunR}" y2="${yBot + 5}" stroke="#d1d5db" stroke-width="2.5" stroke-dasharray="10 8" stroke-linecap="round" opacity="0.85" />
-    <text x="${(xRunL + xRunR) / 2 - 58}" y="${yBot + 20}" font-size="11" font-weight="700" fill="#6b7280" font-family="Inter, Segoe UI, sans-serif">${retLbl}</text>
+    <path d="M ${xRunL - 6} ${yBot} Q ${cxL - r * 1.2} ${(yTop + yBot) / 2} ${xRunL} ${yTop + 6}" fill="none" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round" opacity="0.5" />
+    <path d="M ${xRunR} ${yTop + 6} Q ${cxR + r * 1.15} ${(yTop + yBot) / 2} ${xRunR + 6} ${yBot}" fill="none" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round" opacity="0.5" />
+    <line x1="${xRunL}" y1="${yBot}" x2="${xRunR}" y2="${yBot}" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round" opacity="0.55" />
+    <line x1="${xRunL}" y1="${yBot - 4}" x2="${xRunR}" y2="${yBot - 4}" stroke="#e2e8f0" stroke-width="1.2" stroke-dasharray="8 7" stroke-linecap="round" />
+    <line x1="${xRunL}" y1="${yBot + 4}" x2="${xRunR}" y2="${yBot + 4}" stroke="#e2e8f0" stroke-width="1.2" stroke-dasharray="8 7" stroke-linecap="round" opacity="0.9" />
+    <text x="${(xRunL + xRunR) / 2 - 58}" y="${yBot + 19}" font-size="10" font-weight="600" fill="${MUTED}" class="diagram-svg-lbl">${retLbl}</text>
 
-    <!-- Pórtico -->
-    <rect x="${xRunL - 18}" y="${yTop + 28}" width="10" height="${yBot - yTop - 8}" rx="2" fill="#d1d5db" stroke="#9ca3af" />
-    <rect x="${(xRunL + xRunR) / 2 - 5}" y="${yTop + 28}" width="10" height="${yBot - yTop - 26}" rx="2" fill="#d1d5db" stroke="#9ca3af" opacity="0.95" />
-    <rect x="${xRunR + 8}" y="${yTop + 28}" width="10" height="${yBot - yTop - 8}" rx="2" fill="#d1d5db" stroke="#9ca3af" />
-    <rect x="${xRunL - 24}" y="${yTop + 22}" width="${xRunR - xRunL + 48}" height="6" rx="2" fill="#9ca3af" />
+    <rect x="${xRunL - 18}" y="${yTop + 28}" width="10" height="${yBot - yTop - 8}" rx="2" fill="#e2e8f0" stroke="${LINE}" stroke-width="0.8" />
+    <rect x="${(xRunL + xRunR) / 2 - 5}" y="${yTop + 28}" width="10" height="${yBot - yTop - 26}" rx="2" fill="#e2e8f0" stroke="${LINE}" stroke-width="0.8" opacity="0.95" />
+    <rect x="${xRunR + 8}" y="${yTop + 28}" width="10" height="${yBot - yTop - 8}" rx="2" fill="#e2e8f0" stroke="${LINE}" stroke-width="0.8" />
+    <rect x="${xRunL - 24}" y="${yTop + 22}" width="${xRunR - xRunL + 48}" height="5" rx="2" fill="#cbd5e1" />
 
     ${carryBedSvg}
 
-    <rect x="${xRunL}" y="${yTop - 6}" width="${xRunR - xRunL}" height="14" rx="3" fill="url(#beltRef)" stroke="#111827" stroke-width="1.2" filter="url(#cardSh)" />
-    <text x="${xRunR - 10}" y="${yTop - 78}" text-anchor="end" font-size="9.5" font-weight="800" fill="#111827" font-family="Inter, Segoe UI, sans-serif">${ramaPortanteLabel}</text>
+    <rect x="${xRunL}" y="${yTop - 6}" width="${xRunR - xRunL}" height="14" rx="2" fill="#2563eb" stroke="${NAVY}" stroke-width="1" />
+    <text x="${xRunR - 10}" y="${yTop - 78}" text-anchor="end" font-size="9.5" font-weight="700" fill="${INK}" class="diagram-svg-lbl">${ramaPortanteLabel}</text>
 
-    <circle cx="${cxL}" cy="${cy}" r="${r}" fill="#e5e7eb" stroke="#374151" stroke-width="2.8" filter="url(#cardSh)" />
-    <circle cx="${cxL - r - 14}" cy="${yTop + 4}" r="9" fill="#f9fafb" stroke="#6b7280" stroke-width="1.6" />
-    <text x="${cxL - r - 38}" y="${yTop + 8}" font-size="9.5" font-weight="700" fill="#6b7280" font-family="Inter, Segoe UI, sans-serif">${lblTensor}</text>
-    <text x="${cxL - 24}" y="${cy + 6}" font-size="12.5" font-weight="800" fill="#374151" font-family="Inter, Segoe UI, sans-serif">${lblCola}</text>
+    <circle cx="${cxL}" cy="${cy}" r="${r}" fill="#f1f5f9" stroke="${LINE}" stroke-width="1.5" />
+    <circle cx="${cxL - r - 14}" cy="${yTop + 4}" r="8" fill="#ffffff" stroke="${LINE}" stroke-width="1" />
+    <text x="${cxL - r - 36}" y="${yTop + 7}" font-size="9.5" font-weight="600" fill="${MUTED}" class="diagram-svg-lbl">${lblTensor}</text>
+    <text x="${cxL - 24}" y="${cy + 5}" font-size="12" font-weight="700" fill="${INK}" class="diagram-svg-lbl">${lblCola}</text>
 
-    <circle cx="${cxR}" cy="${cy}" r="${r}" fill="#bbf7d0" stroke="#15803d" stroke-width="2.8" filter="url(#cardSh)" />
-    <text x="${cxR - 34}" y="${cy + 6}" font-size="12.5" font-weight="800" fill="#166534" font-family="Inter, Segoe UI, sans-serif">${lblMotriz}</text>
+    <circle cx="${cxR}" cy="${cy}" r="${r}" fill="rgba(13, 148, 136, 0.08)" stroke="${ACC}" stroke-width="1.5" />
+    <text x="${cxR - 34}" y="${cy + 5}" font-size="12" font-weight="700" fill="${ACC}" class="diagram-svg-lbl">${lblMotriz}</text>
 
     <g transform="translate(${cxR + r + 22}, ${cy - 4})">
-      <rect x="0" y="-42" width="56" height="38" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.2" filter="url(#cardSh)" />
-      <text x="9" y="-17" font-size="11" font-weight="700" fill="#1d4ed8" font-family="Inter, Segoe UI, sans-serif">Motor</text>
-      <rect x="66" y="-36" width="42" height="26" rx="5" fill="#d1fae5" stroke="#059669" stroke-width="1.1" filter="url(#cardSh)" />
-      <text x="73" y="-18" font-size="10" font-weight="700" fill="#047857" font-family="Inter, Segoe UI, sans-serif">Red.</text>
+      <text x="6" y="-22" font-size="10.5" font-weight="600" fill="${INK}" class="diagram-svg-lbl">Motor</text>
+      <text x="62" y="-22" font-size="9.5" font-weight="600" fill="${ACC}" class="diagram-svg-lbl">Red.</text>
+      <line x1="28" y1="-10" x2="28" y2="8" stroke="${LINE}" stroke-width="1" />
+      <line x1="68" y1="-10" x2="68" y2="8" stroke="${ACC}" stroke-width="1" />
     </g>
 
-    <line x1="${loadCx}" y1="${loadCy - loadH / 2 - 24}" x2="${loadCx}" y2="${loadCy - loadH / 2 - 6}" stroke="#9ca3af" stroke-width="1.3" stroke-dasharray="4 3" />
-    <text x="${loadCx - 54}" y="${loadCy - loadH / 2 - 26}" font-size="9.5" fill="#6b7280" font-family="Inter, Segoe UI, sans-serif">${lblHopper}</text>
+    <line x1="${loadCx}" y1="${loadCy - loadH / 2 - 24}" x2="${loadCx}" y2="${loadCy - loadH / 2 - 6}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3" />
+    <text x="${loadCx - 54}" y="${loadCy - loadH / 2 - 26}" font-size="9.5" fill="${MUTED}" class="diagram-svg-lbl">${lblHopper}</text>
 
-    <g filter="url(#cardSh)">
-      <rect x="${loadCx - loadW / 2}" y="${loadCy - loadH / 2}" width="${loadW}" height="${loadH}" rx="7" fill="#5eead4" stroke="#0f766e" stroke-width="2" />
-      <text x="${loadCx - 22}" y="${loadCy + 7}" font-size="14" font-weight="800" fill="#134e4a" font-family="Inter, Segoe UI, sans-serif">m</text>
-    </g>
+    <rect x="${loadCx - loadW / 2}" y="${loadCy - loadH / 2}" width="${loadW}" height="${loadH}" rx="6" fill="rgba(13, 148, 136, 0.12)" stroke="${ACC}" stroke-width="1" />
+    <text x="${loadCx - 18}" y="${loadCy + 6}" font-size="13" font-weight="800" fill="${INK}" class="diagram-svg-lbl">m</text>
 
-    <!-- Peso: flecha en el esquema -->
-    <line x1="${wLoadX}" y1="${wLoadY0}" x2="${wLoadX}" y2="${wLoadY1}" stroke="#475569" stroke-width="2.8" marker-end="url(#mkW)" />
+    <line x1="${wLoadX}" y1="${wLoadY0}" x2="${wLoadX}" y2="${wLoadY1}" stroke="${LINE}" stroke-width="1.5" marker-end="url(#mkArrLine)" />
 
     <g class="diagram-metric diagram-metric--F" data-diagram-metric="F" pointer-events="bounding-box">
-      <line x1="${fLineX0}" y1="${fStrandY}" x2="${fLineX1}" y2="${fStrandY}" stroke="#334155" stroke-width="3.5" marker-end="url(#mkF)" />
+      <line x1="${fLineX0}" y1="${fStrandY}" x2="${fLineX1}" y2="${fStrandY}" stroke="${INK}" stroke-width="1.35" marker-end="url(#mkArrInk)" />
     </g>
 
     <g class="diagram-metric diagram-metric--v" data-diagram-metric="v" pointer-events="bounding-box">
-      <g filter="url(#cardSh)">
-        <rect x="${vChipX}" y="${vChipY}" width="${vChipW}" height="${vChipH}" rx="6" fill="#ffffff" stroke="#86efac" stroke-width="1" />
-      </g>
-      <text x="${vChipX + 6}" y="${vChipY + 15}" font-size="10" font-weight="800" fill="#15803d" font-family="Inter, Segoe UI, sans-serif">v ${v.toFixed(2)} m/s</text>
+      <rect x="${vChipX}" y="${vChipY}" width="${vChipW}" height="${vChipH}" rx="4" fill="#ffffff" fill-opacity="0.96" stroke="none" />
+      <text x="${vChipX + 6}" y="${vChipY + 15}" font-size="10" font-weight="600" fill="${INK}">
+        <tspan class="diagram-svg-lbl">v </tspan>${mono(v.toFixed(2))}<tspan class="diagram-svg-lbl"> m/s</tspan>
+      </text>
     </g>
     <g class="diagram-metric" data-diagram-metric="L" pointer-events="bounding-box">
-      <g filter="url(#cardSh)">
-        <rect x="${lChipX}" y="${lChipY}" width="${lChipW}" height="${lChipH}" rx="6" fill="#ffffff" stroke="#6ee7b7" stroke-width="1" />
-      </g>
-      <text x="${lChipX + 6}" y="${lChipY + 14}" font-size="10" font-weight="800" fill="#047857" font-family="Inter, Segoe UI, sans-serif">L ${fmt(L)} m</text>
+      <rect x="${lChipX}" y="${lChipY}" width="${lChipW}" height="${lChipH}" rx="4" fill="#ffffff" fill-opacity="0.96" stroke="none" />
+      <text x="${lChipX + 6}" y="${lChipY + 14}" font-size="10" font-weight="600" fill="${INK}">
+        <tspan class="diagram-svg-lbl">L </tspan>${mono(fmt(L))}<tspan class="diagram-svg-lbl"> m</tspan>
+      </text>
     </g>
     <g class="diagram-metric" data-diagram-metric="D" pointer-events="bounding-box">
-      <g filter="url(#cardSh)">
-        <rect x="${dChipX}" y="${dChipY}" width="${dChipW}" height="${dChipH}" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="1" />
-      </g>
-      <text x="${dChipX + 5}" y="${dChipY + 14}" font-size="9.5" font-weight="800" fill="#334155" font-family="Inter, Segoe UI, sans-serif">D ${fmt(Dmm)} mm</text>
+      <rect x="${dChipX}" y="${dChipY}" width="${dChipW}" height="${dChipH}" rx="4" fill="#ffffff" fill-opacity="0.96" stroke="none" />
+      <text x="${dChipX + 5}" y="${dChipY + 14}" font-size="9.5" font-weight="600" fill="${INK}">
+        <tspan class="diagram-svg-lbl">D </tspan>${mono(fmt(Dmm))}<tspan class="diagram-svg-lbl"> mm</tspan>
+      </text>
     </g>
-    <g filter="url(#cardSh)">
-      <rect x="${nChipX}" y="${nChipY}" width="${nChipW}" height="${nChipH}" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" />
-    </g>
-    <text x="${nChipX + 5}" y="${nChipY + 13}" font-size="9" font-weight="800" fill="#334155" font-family="Inter, Segoe UI, sans-serif">N≈${Nf.toFixed(2)} N</text>
-    <text x="${nChipX + 5}" y="${nChipY + 26}" font-size="7.5" fill="#64748b" font-family="Inter, Segoe UI, sans-serif">${normalContactHint}</text>
+    <rect x="${nChipX}" y="${nChipY}" width="${nChipW}" height="${nChipH}" rx="4" fill="#ffffff" fill-opacity="0.96" stroke="none" />
+    <text x="${nChipX + 5}" y="${nChipY + 13}" font-size="9" font-weight="600" fill="${INK}">
+      <tspan class="diagram-svg-lbl">N≈ </tspan>${mono(Nf.toFixed(2))}<tspan class="diagram-svg-lbl"> N</tspan>
+    </text>
+    <text x="${nChipX + 5}" y="${nChipY + 26}" font-size="7.5" fill="${MUTED}" class="diagram-svg-lbl">${normalContactHint}</text>
     <g class="diagram-metric diagram-metric--F" data-diagram-metric="F" pointer-events="bounding-box">
-      <g filter="url(#cardSh)">
-        <rect x="${fChipX}" y="${fChipY}" width="${fChipW}" height="${fChipH}" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="1" />
-      </g>
-      <text x="${fChipX + 5}" y="${fChipY + 12}" font-size="9" font-weight="800" fill="#111827" font-family="Inter, Segoe UI, sans-serif">F ${Fsteady.toFixed(2)} N</text>
-      <text x="${fChipX + 5}" y="${fChipY + 23}" font-size="7.5" fill="#64748b" font-family="Inter, Segoe UI, sans-serif">${fChipSub}</text>
+      <rect x="${fChipX}" y="${fChipY}" width="${fChipW}" height="${fChipH}" rx="4" fill="#ffffff" fill-opacity="0.96" stroke="none" />
+      <text x="${fChipX + 5}" y="${fChipY + 12}" font-size="9" font-weight="600" fill="${INK}">
+        <tspan class="diagram-svg-lbl">F </tspan>${mono(Fsteady.toFixed(2))}<tspan class="diagram-svg-lbl"> N</tspan>
+      </text>
+      <text x="${fChipX + 5}" y="${fChipY + 23}" font-size="7.5" fill="${MUTED}" class="diagram-svg-lbl">${fChipSub}</text>
     </g>
 
-    <!-- LEYENDA (estilo referencia) -->
-    <g transform="translate(${legendX}, ${legendY})" filter="url(#cardSh)">
-      <rect x="0" y="0" width="${legendW}" height="${legendH}" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" />
-      <text x="14" y="22" font-size="11" font-weight="800" fill="#64748b" font-family="Inter, Segoe UI, sans-serif" letter-spacing="0.12em">${legTitle}</text>
-      <line x1="14" y1="44" x2="44" y2="44" stroke="#16a34a" stroke-width="3" marker-end="url(#mkV)" />
-      <text x="52" y="48" font-size="11" font-weight="600" fill="#374151" font-family="Inter, Segoe UI, sans-serif">${legV}</text>
-      <line x1="14" y1="64" x2="44" y2="64" stroke="#334155" stroke-width="3" marker-end="url(#mkF)" />
-      <text x="52" y="68" font-size="11" font-weight="600" fill="#374151" font-family="Inter, Segoe UI, sans-serif">${legF}</text>
+    <!-- Leyenda horizontal bajo el trazado (sin caja) -->
+    <g transform="translate(0, ${legendStripY})" aria-hidden="true">
+      <line x1="24" y1="12" x2="46" y2="12" stroke="${ACC}" stroke-width="1.1" marker-end="url(#mkArrAcc)" />
+      <text x="52" y="15" font-size="9.5" fill="${MUTED}" class="diagram-svg-lbl">${legV}</text>
+      <line x1="${legMidX}" y1="12" x2="${legMidX + 22}" y2="12" stroke="${INK}" stroke-width="1.1" marker-end="url(#mkArrInk)" />
+      <text x="${legMidX + 28}" y="15" font-size="9.5" fill="${MUTED}" class="diagram-svg-lbl">${legF}</text>
     </g>
 
     <g transform="translate(20, ${summaryY})">
-      <rect x="0" y="0" width="${colW}" height="${summaryH}" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1" filter="url(#cardSh)" />
-      <text x="14" y="24" font-size="12" font-weight="800" fill="#0f172a" font-family="Inter, Segoe UI, sans-serif">${sumLeftTitle}</text>
-      <text x="14" y="42" font-size="10.5" fill="#475569" font-family="Inter, Segoe UI, sans-serif">F ${Fsteady.toFixed(2)} / ${Fstart.toFixed(2)} N · T ${Trun.toFixed(2)} / ${Tstart.toFixed(2)} N·m</text>
-      <text x="14" y="60" font-size="10.5" fill="#475569" font-family="Inter, Segoe UI, sans-serif">${pDrumLine}</text>
-      <text x="14" y="80" font-size="10.5" font-weight="700" fill="#047857" font-family="Inter, Segoe UI, sans-serif">μ ${mu.toFixed(2)} · ṁ ≈ ${fmt(p.massFlow_kg_s || 0)} kg/s</text>
-      ${hasDetail ? `<text x="14" y="100" font-size="9.5" fill="#94a3b8" font-family="Inter, Segoe UI, sans-serif">${accelLine}</text>` : ''}
+      <rect x="0" y="0" width="${colW}" height="${summaryH}" rx="10" fill="url(#sumGradL)" stroke="none" />
+      <text x="14" y="22" font-size="11" font-weight="800" fill="${INK}" class="diagram-svg-lbl" letter-spacing="0.04em">${sumLeftTitle}</text>
+      <text x="14" y="40" font-size="10" fill="${LINE}">
+        <tspan class="diagram-svg-lbl">F </tspan>${mono(Fsteady.toFixed(2))}<tspan class="diagram-svg-lbl"> / </tspan>${mono(Fstart.toFixed(2))}<tspan class="diagram-svg-lbl"> N · T </tspan>${mono(Trun.toFixed(2))}<tspan class="diagram-svg-lbl"> / </tspan>${mono(Tstart.toFixed(2))}<tspan class="diagram-svg-lbl"> N·m</tspan>
+      </text>
+      <text x="14" y="56" font-size="10" fill="${LINE}" class="diagram-svg-lbl">${pDrumLine}</text>
+      <text x="14" y="74" font-size="10" font-weight="600" fill="${ACC}">
+        <tspan class="diagram-svg-lbl">μ </tspan>${mono(mu.toFixed(2))}<tspan class="diagram-svg-lbl"> · ṁ ≈ </tspan>${mono(fmt(p.massFlow_kg_s || 0))}<tspan class="diagram-svg-lbl"> kg/s</tspan>
+      </text>
+      ${hasDetail ? `<text x="14" y="94" font-size="9" fill="${MUTED}" class="diagram-svg-lbl">${accelLine}</text>` : ''}
     </g>
 
     <g transform="translate(${compactStack ? 20 : 20 + colW + colGap}, ${rightColY})">
-      <rect x="0" y="0" width="${colW}" height="${summaryH}" rx="10" fill="#ffffff" stroke="#0d9488" stroke-width="1.5" filter="url(#cardSh)" />
-      <text x="14" y="24" font-size="12" font-weight="800" fill="#0f172a" font-family="Inter, Segoe UI, sans-serif">${sumRightTitle}</text>
-      <text x="14" y="42" font-size="10.5" fill="#475569" font-family="Inter, Segoe UI, sans-serif">SF ${fmt(sf)} · η ${fmt(etaPct)} % · T ${Tdesign.toFixed(2)} N·m</text>
-      <text x="14" y="60" font-size="10.5" fill="#475569" font-family="Inter, Segoe UI, sans-serif">ω ≈ ${fmt(omega)} rad/s</text>
-      <text x="14" y="82" font-size="11.5" font-weight="800" fill="#047857" font-family="Inter, Segoe UI, sans-serif">P motor ≈ ${fmt(PmotorkW)} kW</text>
-      <text x="14" y="102" font-size="9.5" fill="#64748b" font-family="Inter, Segoe UI, sans-serif">${alignHint}</text>
+      <rect x="0" y="0" width="${colW}" height="${summaryH}" rx="10" fill="url(#sumGradR)" stroke="none" />
+      <text x="14" y="22" font-size="11" font-weight="800" fill="${INK}" class="diagram-svg-lbl" letter-spacing="0.04em">${sumRightTitle}</text>
+      <text x="14" y="40" font-size="10" fill="${LINE}">
+        <tspan class="diagram-svg-lbl">SF </tspan>${mono(fmt(sf))}<tspan class="diagram-svg-lbl"> · η </tspan>${mono(fmt(etaPct))}<tspan class="diagram-svg-lbl"> % · T </tspan>${mono(Tdesign.toFixed(2))}<tspan class="diagram-svg-lbl"> N·m</tspan>
+      </text>
+      <text x="14" y="56" font-size="10" fill="${LINE}">
+        <tspan class="diagram-svg-lbl">ω ≈ </tspan>${mono(fmt(omega))}<tspan class="diagram-svg-lbl"> rad/s</tspan>
+      </text>
+      <text x="14" y="76" font-size="11" font-weight="800" fill="${ACC}">
+        <tspan class="diagram-svg-lbl">P motor ≈ </tspan>${mono(fmt(PmotorkW))}<tspan class="diagram-svg-lbl"> kW</tspan>
+      </text>
+      <text x="14" y="96" font-size="9" fill="${MUTED}" class="diagram-svg-lbl">${alignHint}</text>
     </g>
   `;
 }

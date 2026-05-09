@@ -4,6 +4,12 @@
 
 import { isPremiumEffective } from '../services/accessTier.js';
 
+function touchMachineConfigCloudSync() {
+  import('../services/userCloudSync.js')
+    .then((m) => m.touchLocalAndSchedulePush())
+    .catch(() => {});
+}
+
 const LS_KEY = 'mdr-machine-configs-v1';
 
 function getLang() {
@@ -200,6 +206,10 @@ export function mountMachineConfigBar() {
   };
   refreshSelect(select, getToolConfigs(), tx);
 
+  window.addEventListener('mdr-machine-configs-changed', () => {
+    refreshSelect(select, getToolConfigs(), tx);
+  });
+
   saveBtn.addEventListener('click', () => {
     const name = String(nameIn.value || '').trim();
     if (!name) {
@@ -214,6 +224,7 @@ export function mountMachineConfigBar() {
     };
     store[tool] = byTool;
     writeStore(store);
+    touchMachineConfigCloudSync();
     refreshSelect(select, byTool, tx);
     select.value = name;
     msg.textContent = tx.saved(name);
@@ -246,8 +257,8 @@ export function mountMachineConfigBar() {
     delete byTool[selected];
     store[tool] = byTool;
     writeStore(store);
+    touchMachineConfigCloudSync();
     refreshSelect(select, byTool, tx);
-    msg.textContent = tx.deleted(selected);
   });
 }
 

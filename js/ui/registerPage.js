@@ -177,8 +177,6 @@ function applyTx() {
 
   const server = FEATURES.useServerAuth === true;
 
-  setTx('navHome', t.navHome);
-  setTx('navLab', t.navLab);
   setTx('heading', t.heading);
   setTx('lead', server ? t.leadServer : t.lead);
   setTx('terms', server ? t.termsServer : t.terms);
@@ -232,13 +230,13 @@ function applyTx() {
   if (regPassword) regPassword.placeholder = t.pwPh;
   if (regPassword2) regPassword2.placeholder = t.pw2Ph;
 
-  const nav = document.querySelector('.app-header nav');
+  const nav = document.querySelector('.site-nav__center');
   if (nav) nav.setAttribute('aria-label', t.navAria);
-  const langGroup = document.getElementById('registerLang');
+  const langGroup = document.querySelector('.site-nav__lang.hub-lang');
   if (langGroup) langGroup.setAttribute('aria-label', t.ariaLang);
 
-  document.querySelectorAll('[data-register-lang]').forEach((btn) => {
-    const l = btn.getAttribute('data-register-lang');
+  document.querySelectorAll('.hub-lang__btn[data-lang]').forEach((btn) => {
+    const l = btn.getAttribute('data-lang');
     btn.classList.toggle('hub-lang__btn--active', l === lang);
   });
 
@@ -257,17 +255,7 @@ function showError(msg) {
 export function mountRegisterPage() {
   applyTx();
 
-  document.querySelectorAll('[data-register-lang]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const l = btn.getAttribute('data-register-lang');
-      try {
-        localStorage.setItem('mdr-home-lang', l === 'en' ? 'en' : 'es');
-      } catch (_) {
-        /* ignore */
-      }
-      window.location.reload();
-    });
-  });
+  window.addEventListener('home-language-changed', () => applyTx());
 
   const form = document.getElementById('registerForm');
   const signedIn = document.getElementById('registerSignedIn');

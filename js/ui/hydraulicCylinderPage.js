@@ -215,7 +215,6 @@ function applyStaticI18n() {
   const h2 = document.querySelector('.lab-panel h2');
   const lead = document.querySelector('.lab-lead');
   const verdict = document.getElementById('hcVerdict');
-  const nav = document.querySelectorAll('.lab-header nav a');
   const mapEn = {
     Inicio: 'Home',
     Laboratorio: 'Laboratory',
@@ -333,15 +332,16 @@ function applyStaticI18n() {
   };
   if (LANG === 'en') {
     document.querySelectorAll(
-      'label, span.hint, p.lab-field-help, p.lab-diagram-wrap__title, p.lab-diagram-caption, nav a, option, #hcVerdict, .hc-mini-table th, .hc-mini-table td, summary',
+      'label, span.hint, p.lab-field-help, p.lab-diagram-wrap__title, p.lab-diagram-caption, option, #hcVerdict, .hc-mini-table th, .hc-mini-table td, summary',
     ).forEach((el) => {
       const k = (el.textContent || '').trim();
       if (mapEn[k]) el.textContent = mapEn[k];
     });
   }
-  if (nav[0]) nav[0].textContent = LANG === 'en' ? 'Home' : 'Inicio';
-  if (nav[1]) nav[1].textContent = LANG === 'en' ? 'Laboratory' : 'Laboratorio';
-  if (nav[2]) nav[2].textContent = LANG === 'en' ? 'Pro canvas' : 'Lienzo Pro';
+  document.querySelector('.site-nav__center')?.setAttribute(
+    'aria-label',
+    LANG === 'en' ? 'Main navigation' : 'Navegaci\u00f3n principal',
+  );
   if (h2) h2.textContent = t('title');
   if (lead) lead.textContent = t('lead');
   if (verdict) verdict.textContent = t('verdictOk');
@@ -430,58 +430,50 @@ function renderCylinderDiagram(svg, strokeMm, rodMm, boreMm) {
       ? `${txtStroke} ${fmt(strokeMm, 0)} mm · Ø rod ${fmt(rodMm, 0)} / Ø bore ${fmt(boreMm, 0)}`
       : `${txtStroke} ${fmt(strokeMm, 0)} mm · Ø vástago ${fmt(rodMm, 0)} / Ø pistón ${fmt(boreMm, 0)}`;
 
-  svg.setAttribute('viewBox', '0 0 820 350');
+  svg.setAttribute('viewBox', '0 0 820 385');
   svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
   svg.innerHTML = `
     <defs>
       <marker id="hcArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-        <path d="M0,0 L8,4 L0,8 Z" fill="#0ea5e9"/>
+        <path d="M0,0 L8,4 L0,8 Z" fill="#0d9488"/>
       </marker>
-      <linearGradient id="hcTube" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#f1f5f9"/>
-        <stop offset="100%" stop-color="#dbeafe"/>
-      </linearGradient>
-      <linearGradient id="hcRod" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#d1d5db"/>
-        <stop offset="100%" stop-color="#9ca3af"/>
-      </linearGradient>
     </defs>
-    <rect width="820" height="350" fill="#f8fafc"/>
+    <rect width="820" height="385" fill="#f4f7fb"/>
     <text x="28" y="28" font-size="13" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">${t('title')}</text>
 
-    <rect x="${tubeX}" y="${y0}" width="${bodyW}" height="${h}" rx="14" fill="url(#hcTube)" stroke="#475569" stroke-width="2"/>
-    <rect x="${x0}" y="${y0 + 6}" width="${capW}" height="${h - 12}" rx="8" fill="#94a3b8" stroke="#334155" stroke-width="1.8"/>
-    <rect x="${tubeX + bodyW}" y="${y0 + 6}" width="${capW}" height="${h - 12}" rx="8" fill="#94a3b8" stroke="#334155" stroke-width="1.8"/>
+    <rect x="${tubeX}" y="${y0}" width="${bodyW}" height="${h}" rx="14" fill="#e8eef5" stroke="#94a3b8" stroke-width="1.5"/>
+    <rect x="${x0}" y="${y0 + 6}" width="${capW}" height="${h - 12}" rx="8" fill="#cbd5e1" stroke="#64748b" stroke-width="1.4"/>
+    <rect x="${tubeX + bodyW}" y="${y0 + 6}" width="${capW}" height="${h - 12}" rx="8" fill="#cbd5e1" stroke="#64748b" stroke-width="1.4"/>
 
-    <rect x="${tubeX + 12}" y="${y0 + 12}" width="${pistonX - tubeX - 12}" height="${h - 24}" rx="8" fill="#bae6fd"/>
-    <rect x="${pistonX + 13}" y="${y0 + 12}" width="${tubeX + bodyW - pistonX - 13}" height="${h - 24}" rx="8" fill="#dbeafe"/>
+    <rect x="${tubeX + 12}" y="${y0 + 12}" width="${pistonX - tubeX - 12}" height="${h - 24}" rx="8" fill="#bae6fd" fill-opacity="0.95" stroke="#38bdf8" stroke-width="1"/>
+    <rect x="${pistonX + 13}" y="${y0 + 12}" width="${tubeX + bodyW - pistonX - 13}" height="${h - 24}" rx="8" fill="#e0f2fe" fill-opacity="0.95" stroke="#7dd3fc" stroke-width="1"/>
 
-    <rect x="${pistonX - 10}" y="${y0 + 9}" width="20" height="${h - 18}" rx="5" fill="#334155"/>
-    <rect x="${pistonX - 14}" y="${y0 + 20}" width="4" height="${h - 40}" fill="#0f172a"/>
-    <rect x="${pistonX + 10}" y="${y0 + 20}" width="4" height="${h - 40}" fill="#0f172a"/>
+    <rect x="${pistonX - 10}" y="${y0 + 9}" width="20" height="${h - 18}" rx="5" fill="#64748b"/>
+    <rect x="${pistonX - 14}" y="${y0 + 20}" width="4" height="${h - 40}" fill="#475569"/>
+    <rect x="${pistonX + 10}" y="${y0 + 20}" width="4" height="${h - 40}" fill="#475569"/>
     <circle cx="${pistonX}" cy="${midY}" r="2.6" fill="#e2e8f0"/>
 
-    <rect x="${rodStart}" y="${midY - rodScale / 2}" width="${rodEnd - rodStart}" height="${rodScale}" rx="${Math.min(8, rodScale / 2.5)}" fill="url(#hcRod)" stroke="#475569"/>
-    <rect x="${tubeX + bodyW + 5}" y="${midY - rodScale / 2 - 5}" width="12" height="${rodScale + 10}" rx="3" fill="#334155"/>
-    <circle cx="${rodEnd + 15}" cy="${midY}" r="12" fill="#cbd5e1" stroke="#64748b"/>
+    <rect x="${rodStart}" y="${midY - rodScale / 2}" width="${rodEnd - rodStart}" height="${rodScale}" rx="${Math.min(8, rodScale / 2.5)}" fill="#d4d4d8" stroke="#64748b"/>
+    <rect x="${tubeX + bodyW + 5}" y="${midY - rodScale / 2 - 5}" width="12" height="${rodScale + 10}" rx="3" fill="#64748b"/>
+    <circle cx="${rodEnd + 15}" cy="${midY}" r="12" fill="#cbd5e1" stroke="#94a3b8"/>
 
-    <rect x="${tubeX + 38}" y="${y0 - 16}" width="12" height="16" rx="3" fill="#0284c7"/>
-    <rect x="${tubeX + bodyW - 52}" y="${y0 - 16}" width="12" height="16" rx="3" fill="#0284c7"/>
-    <text x="${tubeX + 32}" y="${y0 - 22}" font-size="10.5" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">${txtPortA}</text>
-    <text x="${tubeX + bodyW - 94}" y="${y0 - 22}" font-size="10.5" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">${txtPortB}</text>
+    <rect x="${tubeX + 38}" y="${y0 - 16}" width="12" height="16" rx="3" fill="#0ea5e9"/>
+    <rect x="${tubeX + bodyW - 52}" y="${y0 - 16}" width="12" height="16" rx="3" fill="#0ea5e9"/>
+    <text x="${tubeX + 32}" y="${y0 - 22}" class="fluid-svg-lbl" font-size="10" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">${txtPortA}</text>
+    <text x="${tubeX + bodyW - 94}" y="${y0 - 22}" class="fluid-svg-lbl" font-size="10" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">${txtPortB}</text>
 
-    <path d="M${tubeX + 44} ${midY} L${pistonX - 18} ${midY}" stroke="#0ea5e9" stroke-width="2.6" marker-end="url(#hcArrow)"/>
-    <path d="M${tubeX + bodyW - 46} ${midY} L${pistonX + 30} ${midY}" stroke="#0ea5e9" stroke-width="2.6" marker-end="url(#hcArrow)"/>
+    <path d="M${tubeX + 44} ${midY} L${pistonX - 18} ${midY}" stroke="#0d9488" stroke-width="2.4" marker-end="url(#hcArrow)"/>
+    <path d="M${tubeX + bodyW - 46} ${midY} L${pistonX + 30} ${midY}" stroke="#0d9488" stroke-width="2.4" marker-end="url(#hcArrow)"/>
 
-    <text x="${tubeX + 20}" y="${y0 + h + 26}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${txtPush}</text>
-    <text x="${tubeX + bodyW - 175}" y="${y0 + h + 26}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${txtPull}</text>
-    <text x="${pistonX - 35}" y="${y0 + h + 45}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${txtSeals}</text>
-    <text x="${rodEnd - 10}" y="${y0 + h + 45}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${txtRod}</text>
+    <text x="${tubeX + 8}" y="${y0 + h + 22}" class="fluid-svg-lbl" font-size="9.5" fill="#334155" font-family="Inter,system-ui,sans-serif">${txtPush}</text>
+    <text x="${tubeX + bodyW - 8}" y="${y0 + h + 22}" class="fluid-svg-lbl" font-size="9.5" fill="#334155" font-family="Inter,system-ui,sans-serif" text-anchor="end">${txtPull}</text>
+    <text x="${pistonX}" y="${y0 + h + 42}" class="fluid-svg-lbl" font-size="9.5" fill="#334155" font-family="Inter,system-ui,sans-serif" text-anchor="middle">${txtSeals}</text>
+    <text x="${rodEnd + 28}" y="${y0 + h + 42}" class="fluid-svg-lbl" font-size="9.5" fill="#334155" font-family="Inter,system-ui,sans-serif" text-anchor="end">${txtRod}</text>
 
-    <line x1="${tubeX}" y1="${y0 + h + 62}" x2="${tubeX + bodyW}" y2="${y0 + h + 62}" stroke="#64748b" stroke-width="1.3"/>
-    <line x1="${tubeX}" y1="${y0 + h + 57}" x2="${tubeX}" y2="${y0 + h + 67}" stroke="#64748b" stroke-width="1.3"/>
-    <line x1="${tubeX + bodyW}" y1="${y0 + h + 57}" x2="${tubeX + bodyW}" y2="${y0 + h + 67}" stroke="#64748b" stroke-width="1.3"/>
-    <text x="${tubeX + bodyW / 2 - 56}" y="${y0 + h + 80}" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif">${dimHint}</text>
+    <line x1="${tubeX}" y1="${y0 + h + 64}" x2="${tubeX + bodyW}" y2="${y0 + h + 64}" stroke="#64748b" stroke-width="1.2"/>
+    <line x1="${tubeX}" y1="${y0 + h + 59}" x2="${tubeX}" y2="${y0 + h + 69}" stroke="#64748b" stroke-width="1.2"/>
+    <line x1="${tubeX + bodyW}" y1="${y0 + h + 59}" x2="${tubeX + bodyW}" y2="${y0 + h + 69}" stroke="#64748b" stroke-width="1.2"/>
+    <text x="${tubeX + bodyW / 2}" y="${y0 + h + 82}" class="fluid-svg-lbl" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif" text-anchor="middle">${dimHint}</text>
   `;
 }
 

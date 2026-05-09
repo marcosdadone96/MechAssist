@@ -37,23 +37,25 @@
       })();
     </script>
 
-    <header class="app-header">
-      <a class="app-header__brand" href="index.html">The<span>MechAssist</span></a>
-      <nav aria-label="Navegación principal">
-        <div class="app-header__nav-start">
-          <a href="index.html">Inicio</a>
-          <a href="flat-conveyor.html">Cinta plana</a>
-          <a href="inclined-conveyor.html">Cinta inclinada</a>
-          <a href="car-lift-screw.html" aria-current="page">Elevador coches</a>
-          <a href="bucket-elevator.html">Elevador cangilones</a>
-          <a href="centrifugal-pump.html">Bomba</a>
-          <a href="screw-conveyor.html">Tornillo</a>
-        </div>
-        <div class="app-header__nav-end">
-          <a href="transmission-lab.html" class="lab-header__nav-cta">Laboratorio</a>
-          <a href="transmission-canvas.html" title="Lienzo técnico multieje (Pro)">Lienzo Pro</a>
-        </div>
+        <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
+        <span class="site-nav__title">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
     </header>
 
     <main class="app-main app-main--flat-wb">
@@ -351,28 +353,31 @@
           <p id="clDisclaimer" class="muted" style="margin-top: 0.75rem; font-size: 0.82rem"></p>
         </section>
 
-        <section class="diagram-duo flat-visual" id="carLiftDiagramDuo" aria-label="Esquema y referencia fotogr&aacute;fica">
-          <div class="diagram-duo__schematic">
-            <svg id="clDiagram" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama elevador por husillo"></svg>
-            <p class="diagram-schematic-note muted">
-              <strong>Lectura r&aacute;pida:</strong> vista cualitativa de <strong>dos columnas</strong>, husillo, tuerca de carga y de seguridad, y posici&oacute;n del motor (arriba o abajo seg&uacute;n su selecci&oacute;n). <strong>H</strong>, <strong>p</strong> y <strong>d</strong> son los valores del formulario; valide siempre con el fabricante del elevador.
-            </p>
+        <section class="flat-visual flat-visual--integrated" id="carLiftDiagramDuo" aria-label="Esquema y referencia fotogr&aacute;fica">
+          <div class="flat-visual__workbench">
+            <div class="diagram-duo__schematic flat-visual__diagram-col">
+              <svg id="clDiagram" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama elevador por husillo"></svg>
+              <p class="diagram-schematic-note muted">
+                <strong>Lectura r&aacute;pida:</strong> vista cualitativa de <strong>dos columnas</strong>, husillo, tuerca de carga y de seguridad, y posici&oacute;n del motor (arriba o abajo seg&uacute;n su selecci&oacute;n). <strong>H</strong>, <strong>p</strong> y <strong>d</strong> son los valores del formulario; valide siempre con el fabricante del elevador.
+              </p>
+            </div>
+            <figure class="flat-visual__photo-block">
+              <div class="flat-visual__photo-frame">
+                <img
+                  src="assets/car-lift-reference.png"
+                  alt="Elevador de coches de dos columnas en taller"
+                  width="800"
+                  height="520"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <figcaption class="flat-visual__caption muted">
+                Referencia: aplicaci&oacute;n en taller (ejemplo).
+                <a href="https://commons.wikimedia.org/wiki/File:Two-post_lift.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.
+              </figcaption>
+            </figure>
           </div>
-          <figure class="diagram-duo__real">
-            <img
-              src="assets/car-lift-reference.png"
-              alt="Elevador de coches de dos columnas en taller"
-              width="800"
-              height="520"
-              loading="lazy"
-              decoding="async"
-            />
-            <figcaption class="muted">
-              Referencia: aplicaci&oacute;n en taller (ejemplo).
-              <a href="https://commons.wikimedia.org/wiki/File:Two-post_lift.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>
-              .
-            </figcaption>
-          </figure>
         </section>
 
         <section class="panel flat-panel--verify">
@@ -479,6 +484,10 @@
       </div>
     </main>
 
+
+
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/carLiftScrewAppEntry.js"></script>
   </body>
 </html>

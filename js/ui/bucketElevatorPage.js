@@ -216,21 +216,53 @@ function computeAndRender() {
     const pw = r.power;
     const drive = getDriveRequirements();
     const mount = readMountingPreferences();
-    const mechanicalSummary = [
-      `Tambor cabeza Ø${p.headDrumDiameter_m.toFixed(2)} m`,
-      `banda ${p.beltWidth_mm.toFixed(0)} mm`,
-      mount.machineShaftDiameter_mm != null ? `eje ${mount.machineShaftDiameter_mm.toFixed(0)} mm` : null,
-    ]
-      .filter(Boolean)
-      .join(' · ');
+    const withSfHint = en ? 'With service factor applied' : 'Con factor de servicio aplicado';
+    const sizingHint = en ? '(T×ω)/η · sizing' : '(T×ω)/η · dimensionamiento';
+    const torqueEyebrow = en ? `${LBL.designTorque} · head drum` : `${LBL.designTorque} · tambor cabeza`;
+    const speedComboLabel = en ? 'Belt · drum speed' : 'Velocidad cinta / tambor';
+    const mechLabel = en ? 'Mechanical details' : 'Detalles mecánicos';
+    const drumRpmHint = en
+      ? `${drive.drum_rpm.toFixed(2)} drum rpm`
+      : `${drive.drum_rpm.toFixed(2)} rpm tambor`;
+    const mechanicalSummary = en
+      ? [
+          `Head drum Ø${p.headDrumDiameter_m.toFixed(2)} m`,
+          `belt ${p.beltWidth_mm.toFixed(0)} mm`,
+          mount.machineShaftDiameter_mm != null ? `shaft ${mount.machineShaftDiameter_mm.toFixed(0)} mm` : null,
+        ]
+          .filter(Boolean)
+          .join(' · ')
+      : [
+          `Tambor cabeza Ø${p.headDrumDiameter_m.toFixed(2)} m`,
+          `banda ${p.beltWidth_mm.toFixed(0)} mm`,
+          mount.machineShaftDiameter_mm != null ? `eje ${mount.machineShaftDiameter_mm.toFixed(0)} mm` : null,
+        ]
+          .filter(Boolean)
+          .join(' · ');
+    const vLine = `${p.beltSpeed_m_s.toFixed(2)} m/s · ${drive.drum_rpm.toFixed(2)} rpm`;
     res.innerHTML = `
-      <div class="result-focus-grid">
-        <div class="metric"><div class="label">${LBL.requiredTorque}</div><div class="value">${drive.torque_Nm.toFixed(0)} N·m</div></div>
+      <div class="flat-kpi-row" role="group" aria-label="${LBL.resultsMain}">
+        <article class="flat-kpi flat-kpi--torque">
+          <span class="flat-kpi__eyebrow">${torqueEyebrow}</span>
+          <p class="flat-kpi__value">${drive.torque_Nm.toFixed(0)}<span class="flat-kpi__unit">N·m</span></p>
+          <p class="flat-kpi__hint">${withSfHint}</p>
+        </article>
+        <article class="flat-kpi flat-kpi--power">
+          <span class="flat-kpi__eyebrow">${LBL.motorPower}</span>
+          <p class="flat-kpi__value">${drive.power_kW.toFixed(3)}<span class="flat-kpi__unit">kW</span></p>
+          <p class="flat-kpi__hint">${sizingHint}</p>
+        </article>
+        <article class="flat-kpi flat-kpi--speed">
+          <span class="flat-kpi__eyebrow">${LBL.speed}</span>
+          <p class="flat-kpi__value">${p.beltSpeed_m_s.toFixed(2)}<span class="flat-kpi__unit">m/s</span></p>
+          <p class="flat-kpi__hint">${drumRpmHint}</p>
+        </article>
+      </div>
+      <div class="result-focus-grid flat-kpi-secondary">
         <div class="metric"><div class="label">${LBL.serviceFactor}</div><div class="value">1.00</div></div>
         <div class="metric metric--text"><div class="label">${LBL.mountingType}</div><div class="value">${formatMounting(mount)}</div></div>
-        <div class="metric"><div class="label">${LBL.speed}</div><div class="value">${drive.drum_rpm.toFixed(1)} rpm</div></div>
-        <div class="metric"><div class="label">${LBL.motorPower} (kW)</div><div class="value">${drive.power_kW.toFixed(3)} kW</div></div>
-        <div class="metric metric--text"><div class="label">Detalles mecánicos</div><div class="value">${mechanicalSummary}</div></div>
+        <div class="metric metric--text"><div class="label">${speedComboLabel}</div><div class="value">${vLine}</div></div>
+        <div class="metric metric--text"><div class="label">${mechLabel}</div><div class="value">${mechanicalSummary}</div></div>
       </div>
       <details class="motors-details result-focus-extra">
         <summary class="motors-details__summary">

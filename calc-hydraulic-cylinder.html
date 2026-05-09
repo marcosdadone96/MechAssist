@@ -188,17 +188,25 @@
     </style>
   </head>
   <body class="lab-body">
-    <header class="lab-header">
-      <a class="lab-header__brand" href="index.html">The<span>MechAssist</span></a>
-      <nav class="lab-header__nav" aria-label="Navegación laboratorio">
-        <div class="lab-header__nav-start">
-          <a href="index.html">Inicio</a>
-        </div>
-        <div class="lab-header__nav-end">
-          <a href="transmission-lab.html" class="lab-header__nav-cta">Laboratorio</a>
-          <a href="transmission-canvas.html" title="Lienzo técnico multieje (Pro)">Lienzo Pro</a>
-        </div>
+        <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
+        <span class="site-nav__title">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
     </header>
 
     <main class="lab-main">
@@ -208,7 +216,7 @@
           Valida fuerza de empuje/tracción, caudal requerido, pandeo del vástago (Euler) y espesor mínimo de tubo para operar con seguridad a presión nominal.
         </p>
 
-        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc">
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
               <p class="lab-diagram-wrap__title">Corte de cilindro hidráulico (doble efecto, alta presión)</p>
@@ -217,7 +225,7 @@
             </div>
           </div>
 
-          <div class="lab-calc-layout__inputs">
+          <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field lab-field--wide">
                 <label for="hcLabTier">Nivel de detalle memoria</label>
@@ -369,7 +377,7 @@
             </div>
           </div>
 
-          <div class="lab-calc-layout__out">
+          <div class="lab-calc-layout__out lab-calc-layout__out--panel">
             <details class="lab-fluid-formulas" id="hcFormulasBlock">
               <summary>Memoria de cálculo, fórmulas y supuestos</summary>
               <div id="hcFormulaBody" class="lab-fluid-formulas__body"></div>
@@ -385,6 +393,11 @@
       </section>
     </main>
 
+
+
+
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/hydraulicCylinderPage.js?v=20260506b"></script>
     <script type="module" src="js/ui/labDonationFooter.js"></script>
   </body>

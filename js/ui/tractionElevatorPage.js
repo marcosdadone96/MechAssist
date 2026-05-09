@@ -153,6 +153,10 @@ function computeAndRender() {
         ropesLine: 'ropes',
         shaftLine: 'shaft',
         mechDetail: 'Mechanical detail',
+        withSfHint: 'With service factor applied',
+        sizingHint: '(T×ω)/η · sizing',
+        speedComboLabel: 'Car · sheave speed',
+        sheaveRpmHintSuffix: 'sheave rpm',
         cwModel: 'Counterweight (model)',
         cwOpt: 'Optimal counterweight',
         tensionEuler: 'T₁/T₂ · e^μα',
@@ -170,6 +174,10 @@ function computeAndRender() {
         ropesLine: 'cables',
         shaftLine: 'eje',
         mechDetail: 'Detalles mecánicos',
+        withSfHint: 'Con factor de servicio aplicado',
+        sizingHint: '(T×ω)/η · dimensionamiento',
+        speedComboLabel: 'Velocidad cabina / polea',
+        sheaveRpmHintSuffix: 'rpm polea',
         cwModel: 'Contrapeso (modelo)',
         cwOpt: 'Contrapeso óptimo',
         tensionEuler: 'T₁/T₂ · e^μα',
@@ -209,13 +217,31 @@ function computeAndRender() {
     const adhesionVal = eu.adhesionOk
       ? `OK · ${TX.margin} ×${eu.adhesionMargin.toFixed(2)}`
       : `${TX.adhesionReview} · ${TX.margin} ×${eu.adhesionMargin.toFixed(2)}`;
+    const torqueEyebrow = `${LBL.designTorque} · ${TX.sheaveLine.toLowerCase()}`;
+    const sheaveRpmHint = `${r.drive.sheave_rpm.toFixed(2)} ${TX.sheaveRpmHintSuffix}`;
+    const vLine = `${p.speed_m_s.toFixed(2)} m/s · ${r.drive.sheave_rpm.toFixed(2)} rpm`;
     res.innerHTML = `
-      <div class="result-focus-grid">
-        <div class="metric"><div class="label">${LBL.requiredTorque}</div><div class="value">${drive.torque_Nm.toFixed(0)} N·m</div></div>
-        <div class="metric"><div class="label">${LBL.serviceFactor}</div><div class="value">${r.inputs.SF.toFixed(0)}</div></div>
+      <div class="flat-kpi-row" role="group" aria-label="${LBL.resultsMain}">
+        <article class="flat-kpi flat-kpi--torque">
+          <span class="flat-kpi__eyebrow">${torqueEyebrow}</span>
+          <p class="flat-kpi__value">${drive.torque_Nm.toFixed(0)}<span class="flat-kpi__unit">N·m</span></p>
+          <p class="flat-kpi__hint">${TX.withSfHint}</p>
+        </article>
+        <article class="flat-kpi flat-kpi--power">
+          <span class="flat-kpi__eyebrow">${LBL.motorPower}</span>
+          <p class="flat-kpi__value">${drive.power_kW.toFixed(3)}<span class="flat-kpi__unit">kW</span></p>
+          <p class="flat-kpi__hint">${TX.sizingHint}</p>
+        </article>
+        <article class="flat-kpi flat-kpi--speed">
+          <span class="flat-kpi__eyebrow">${LBL.speed}</span>
+          <p class="flat-kpi__value">${p.speed_m_s.toFixed(2)}<span class="flat-kpi__unit">m/s</span></p>
+          <p class="flat-kpi__hint">${sheaveRpmHint}</p>
+        </article>
+      </div>
+      <div class="result-focus-grid flat-kpi-secondary">
+        <div class="metric"><div class="label">${LBL.serviceFactor}</div><div class="value">${r.inputs.SF.toFixed(2)}</div></div>
         <div class="metric metric--text"><div class="label">${LBL.mountingType}</div><div class="value">${formatMounting(mount)}</div></div>
-        <div class="metric"><div class="label">${LBL.speed}</div><div class="value">${r.drive.sheave_rpm.toFixed(1)} rpm</div></div>
-        <div class="metric"><div class="label">${LBL.motorPower} (kW)</div><div class="value">${drive.power_kW.toFixed(3)} kW</div></div>
+        <div class="metric metric--text"><div class="label">${TX.speedComboLabel}</div><div class="value">${vLine}</div></div>
         <div class="metric metric--text"><div class="label">${TX.mechDetail}</div><div class="value">${mechanicalSummary}</div></div>
       </div>
       <details class="motors-details result-focus-extra">

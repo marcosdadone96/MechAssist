@@ -30,6 +30,12 @@ export const USER_SAVED_BRAND_VALUE = '__user_saved__';
 
 export const USER_GEARMOTOR_CHANGED_EVENT = 'mdr-user-gearmotors-changed';
 
+function notifyCloudSync() {
+  import('./userCloudSync.js')
+    .then((m) => m.touchLocalAndSchedulePush())
+    .catch(() => {});
+}
+
 function newId() {
   try {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
@@ -189,6 +195,7 @@ export function addUserGearmotor(p) {
   } catch (_) {
     return null;
   }
+  notifyCloudSync();
   try {
     window.dispatchEvent(new CustomEvent(USER_GEARMOTOR_CHANGED_EVENT, { detail: { id: rec.id } }));
   } catch (_) {
@@ -211,6 +218,7 @@ export function removeUserGearmotor(id) {
   } catch (_) {
     return false;
   }
+  notifyCloudSync();
   try {
     window.dispatchEvent(new CustomEvent(USER_GEARMOTOR_CHANGED_EVENT, { detail: { id } }));
   } catch (_) {
@@ -274,6 +282,7 @@ export function updateUserGearmotor(id, p) {
   } catch (_) {
     return null;
   }
+  notifyCloudSync();
   try {
     window.dispatchEvent(new CustomEvent(USER_GEARMOTOR_CHANGED_EVENT, { detail: { id } }));
   } catch (_) {
@@ -285,9 +294,10 @@ export function updateUserGearmotor(id, p) {
 /**
  * Reemplaza toda la biblioteca. Valida y recorta a {@link MAX_USER_GEARMOTORS}.
  * @param {unknown[]} rows
+ * @param {{ skipCloudSync?: boolean }} [opts]
  * @returns {boolean}
  */
-export function replaceUserGearmotorsList(rows) {
+export function replaceUserGearmotorsList(rows, opts = {}) {
   if (!Array.isArray(rows)) return false;
   const out = clampGearmotorList(normalizeImportRows(rows));
   try {
@@ -295,6 +305,7 @@ export function replaceUserGearmotorsList(rows) {
   } catch (_) {
     return false;
   }
+  if (!opts.skipCloudSync) notifyCloudSync();
   try {
     window.dispatchEvent(new CustomEvent(USER_GEARMOTOR_CHANGED_EVENT, { detail: { replace: true } }));
   } catch (_) {
@@ -321,6 +332,7 @@ export function mergeUserGearmotorsList(rows) {
   } catch (_) {
     return false;
   }
+  notifyCloudSync();
   try {
     window.dispatchEvent(new CustomEvent(USER_GEARMOTOR_CHANGED_EVENT, { detail: { merge: true } }));
   } catch (_) {

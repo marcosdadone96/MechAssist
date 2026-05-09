@@ -36,23 +36,25 @@
         }
       })();
     </script>
-    <header class="app-header">
-      <a class="app-header__brand" href="index.html">The<span>MechAssist</span></a>
-      <nav aria-label="Navegación principal">
-        <div class="app-header__nav-start">
-          <a href="index.html">Inicio</a>
-          <a href="flat-conveyor.html">Cinta plana</a>
-          <a href="inclined-conveyor.html">Cinta inclinada</a>
-          <a href="roller-conveyor.html">Rodillos</a>
-          <a href="centrifugal-pump.html">Bomba</a>
-          <a href="screw-conveyor.html" aria-current="page">Tornillo</a>
-        </div>
-        <div class="app-header__nav-end">
-          <span id="scLangHost" class="app-header__lang-host"></span>
-          <a href="transmission-lab.html" class="lab-header__nav-cta">Laboratorio</a>
-          <a href="transmission-canvas.html" title="Lienzo técnico multieje (Pro)">Lienzo Pro</a>
-        </div>
+        <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
+        <span class="site-nav__title">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
     </header>
 
     <main class="app-main app-main--flat-wb">
@@ -283,27 +285,31 @@
           <div class="results-grid" id="screwResultsGrid"></div>
         </section>
 
-        <section class="diagram-duo flat-visual" aria-label="Esquema tornillo">
-          <div class="diagram-duo__schematic">
-            <svg id="diagramScrew" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema tornillo"></svg>
-            <p class="diagram-schematic-note muted">
-              <strong>Lectura rápida:</strong> vista lateral cualitativa del canal, tornillo y flujo; <strong>L</strong>, <strong>Ø</strong>, <strong>paso</strong> e <strong>inclinación</strong> salen del formulario. El dashboard se actualiza al cambiar entradas.
-            </p>
+        <section class="flat-visual flat-visual--integrated" aria-label="Esquema tornillo">
+          <div class="flat-visual__workbench">
+            <div class="diagram-duo__schematic flat-visual__diagram-col">
+              <svg id="diagramScrew" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema tornillo"></svg>
+              <p class="diagram-schematic-note muted">
+                <strong>Lectura rápida:</strong> vista lateral cualitativa del canal, tornillo y flujo; <strong>L</strong>, <strong>Ø</strong>, <strong>paso</strong> e <strong>inclinación</strong> salen del formulario. El dashboard se actualiza al cambiar entradas.
+              </p>
+            </div>
+            <figure class="flat-visual__photo-block">
+              <div class="flat-visual__photo-frame">
+                <img
+                  src="assets/screw-conveyor-reference.png"
+                  alt="Transportador de tornillo en planta (referencia)"
+                  width="800"
+                  height="520"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <figcaption class="flat-visual__caption">
+                Referencia: tornillo (ejemplo visual).
+                <a href="https://commons.wikimedia.org/wiki/File:Archimedes_screw_at_Kinderdijk.jpg" target="_blank" rel="noopener">Wikimedia</a>
+              </figcaption>
+            </figure>
           </div>
-          <figure class="diagram-duo__real">
-            <img
-              src="assets/screw-conveyor-reference.png"
-              alt="Transportador de tornillo en planta (referencia)"
-              width="800"
-              height="520"
-              loading="lazy"
-              decoding="async"
-            />
-            <figcaption>
-              Referencia: tornillo (ejemplo visual).
-              <a href="https://commons.wikimedia.org/wiki/File:Archimedes_screw_at_Kinderdijk.jpg" target="_blank" rel="noopener">Wikimedia</a>
-            </figcaption>
-          </figure>
         </section>
 
         <section class="panel flat-panel--verify">
@@ -393,6 +399,10 @@
       </div>
     </main>
 
+
+
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/screwAppEntry.js"></script>
   </body>
 </html>

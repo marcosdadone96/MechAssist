@@ -223,3 +223,24 @@ window.addEventListener('home-language-changed', () => {
     else el.textContent = txt;
   });
 });
+
+function openAuthModalFromQueryParam() {
+  try {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('auth') !== 'login') return;
+    const modal = getModal('auth');
+    if (!(modal instanceof HTMLElement)) return;
+    openModal('auth', { authTab: AUTH_TAB_LOGIN });
+    const url = new URL(window.location.href);
+    url.searchParams.delete('auth');
+    window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', openAuthModalFromQueryParam);
+} else {
+  openAuthModalFromQueryParam();
+}

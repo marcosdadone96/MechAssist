@@ -449,11 +449,6 @@ function localizeInclinedStaticContent() {
     const el = document.querySelector(selector);
     if (el) el.innerHTML = html;
   };
-  setText('.app-header nav a[href="index.html"]', 'Home');
-  setText('.app-header nav a[href="flat-conveyor.html"]', 'Flat Conveyor');
-  setText('.app-header nav a[href="inclined-conveyor.html"]', 'Inclined Conveyor');
-  setText('.app-header nav a[href="centrifugal-pump.html"]', 'Pump');
-  setText('.app-header nav a[href="screw-conveyor.html"]', 'Screw Conveyor');
   setText('.flat-sidebar__title', 'Inclined conveyor');
   setText(
     '.flat-sidebar__lead',
@@ -525,7 +520,7 @@ function localizeInclinedStaticContent() {
     if (lead) lead.textContent = 'Gearbox, motor strategies, and step-by-step detail.';
   }
   setHtml(
-    '.diagram-duo__real figcaption',
+    '.flat-visual__photo-block figcaption',
     `Inclined conveyor on site.
     <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.`,
   );

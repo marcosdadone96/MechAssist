@@ -20,6 +20,30 @@ function isEnglishUi() {
   return document?.documentElement?.lang?.toLowerCase().startsWith('en') || false;
 }
 
+function escMini(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/**
+ * Separa valor numérico inicial y unidades para tipografía (número destacado, unidad apagada).
+ * No altera cadenas que ya parecen HTML.
+ */
+export function labValueWithMutedUnit(display) {
+  const s = String(display ?? '').trim();
+  if (!s) return '';
+  if (s.includes('<')) return s;
+  if (s === '—') return `<span class="lab-num">${escMini(s)}</span>`;
+  const m = s.match(/^(-?[\d][\d.,]*)\s+(.+)$/);
+  if (m) {
+    return `<span class="lab-num">${escMini(m[1])}</span><span class="lab-num__unit">\u00a0${escMini(m[2])}</span>`;
+  }
+  return `<span class="lab-num">${escMini(s)}</span>`;
+}
+
 export function uxCopy(es, en) {
   return isEnglishUi() ? en : es;
 }
@@ -84,7 +108,7 @@ export function metricHtml(k, v, help) {
   const tip = help
     ? labHelpTooltipMarkup(help, isEnglishUi() ? 'Help for this metric' : 'Ayuda sobre esta magnitud')
     : '';
-  return `<div class="lab-metric"><div class="lab-metric__head"><span class="k">${k}</span>${tip}</div><div class="v">${v}</div></div>`;
+  return `<div class="lab-metric"><div class="lab-metric__head"><span class="k">${k}</span>${tip}</div><div class="v">${labValueWithMutedUnit(v)}</div></div>`;
 }
 
 /**
@@ -102,7 +126,7 @@ export function renderResultHero(items) {
         ${it.hint ? labHelpTooltipMarkup(it.hint, helpLabel, 'lab-help-hover--hero') : ''}
       </div>
       <div class="lab-result-hero__value-line">
-        <span class="lab-result-hero__value">${it.display != null ? it.display : `${it.value}${it.unit ? ` ${it.unit}` : ''}`}</span>
+        <span class="lab-result-hero__value">${labValueWithMutedUnit(it.display != null ? it.display : `${it.value}${it.unit ? ` ${it.unit}` : ''}`)}</span>
       </div>
     </div>`,
     )

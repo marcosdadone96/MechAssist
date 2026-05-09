@@ -28,26 +28,41 @@
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
   <body class="lab-body">
-    <header class="lab-header">
-      <a class="lab-header__brand" href="index.html">The<span>MechAssist</span></a>
-      <nav class="lab-header__nav" aria-label="Navegación laboratorio">
-        <div class="lab-header__nav-start">
-          <a href="index.html">Inicio</a>
-        </div>
-        <div class="lab-header__nav-end">
-          <a href="transmission-lab.html" class="lab-header__nav-cta">Laboratorio</a>
-          <a href="transmission-canvas.html" title="Lienzo técnico multieje (Pro)">Lienzo Pro</a>
-        </div>
+        <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
+        <span class="site-nav__title">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
     </header>
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2>Engranajes cilíndricos rectos · diseño y cinemática</h2>
-        <p class="lab-lead">
-          Geometría estándar exterior: <strong>a = m(z₁+z₂)/2</strong>, ha = m, hf = 1,25m. Cinemática en el <strong>primitivo</strong>.
-          La comprobación de resistencia sigue un <strong>modelo simplificado inspirado en AGMA 2001</strong> (Lewis + contacto aproximado) — no sustituye el método completo ni datos certificados del material.
-        </p>
-        <div class="lab-calc-layout lab-calc-layout--with-diag">
+        <header class="lab-calc-page-head">
+          <h2>Engranajes cilíndricos rectos · diseño y cinemática</h2>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" id="gearsHelpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help" id="gearsHelpBody">
+                Geometría estándar exterior: <strong>a = m(z₁+z₂)/2</strong>, ha = m, hf = 1,25m. Cinemática en el <strong>primitivo</strong>.
+                La comprobación de resistencia sigue un <strong>modelo simplificado inspirado en AGMA 2001</strong> (Lewis + contacto aproximado) — no sustituye el método completo ni datos certificados del material.
+              </p>
+            </div>
+          </details>
+        </header>
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
               <p class="lab-diagram-wrap__title">Vista esquemática · se actualiza al cambiar los datos</p>
@@ -55,7 +70,7 @@
               <p class="lab-diagram-caption">Círculo discontinuo: primitivo. Cotas <strong>a</strong>, <strong>z</strong> y módulo orientativos; no sustituye plano de taller.</p>
             </div>
           </div>
-          <div class="lab-calc-layout__inputs">
+          <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field lab-field--wide">
                 <label for="gCalcMode">Modo de trabajo</label>
@@ -218,7 +233,7 @@
               </div>
             </div>
           </div>
-          <div class="lab-calc-layout__out">
+          <div class="lab-calc-layout__out lab-calc-layout__out--panel">
             <div
               class="lab-units-bar"
               role="group"
@@ -254,7 +269,7 @@
             </div>
             <div id="gHero"></div>
             <div id="gMotorCompare"></div>
-            <details class="lab-results-details">
+              <details class="lab-results-details lab-results-details--chevron-end">
               <summary>Resultados por elemento</summary>
               <div id="gElementResults" class="lab-element-columns"></div>
             </details>
@@ -268,11 +283,11 @@
                 </svg>
                 <span class="lab-results-computing__label">Recalculando</span>
               </div>
-              <details class="lab-results-details">
+              <details class="lab-results-details lab-results-details--chevron-end">
                 <summary>Resultado completo</summary>
                 <div class="lab-results" id="gResults"></div>
               </details>
-              <button type="button" class="lab-btn" id="gCopyResults">Copiar resultados</button>
+              <button type="button" class="lab-btn lab-btn--block" id="gCopyResults">Copiar resultados</button>
             </div>
             <div id="gAlerts" class="lab-alerts"></div>
             <div id="gSubstitution"></div>
@@ -281,6 +296,12 @@
         </div>
       </section>
     </main>
+
+
+
+
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/calcGearsPage.js"></script>
     <script type="module" src="js/ui/labDonationFooter.js"></script>
   </body>

@@ -5,7 +5,12 @@
 import { clamp } from '../utils/calculations.js';
 
 const VB_W = 860;
-const VB_H = 520;
+const VB_H = 536;
+
+const NAVY = '#1e3a5f';
+const INK = '#334155';
+const MUTED = '#64748b';
+const ACCENT = '#0ea5e9';
 
 function esc(s) {
   return String(s)
@@ -79,8 +84,9 @@ export function renderCentrifugalPumpDiagram(svg, p) {
   const rise = clamp(72 + Math.sqrt(H) * 10, 80, 220);
   const qArrow = clamp(56 + (flowLabel.length > 12 ? 8 : 0), 52, 120);
 
-  const yGround = 420;
-  const yLiquid = 388;
+  const yGround = 402;
+  const footTop = 424;
+  const yLiquid = yGround - 30;
   const xTankL = 72;
   const xTankR = 228;
   const cxPump = 420;
@@ -103,93 +109,76 @@ export function renderCentrifugalPumpDiagram(svg, p) {
 
   svg.innerHTML = `
     <defs>
-      <linearGradient id="bgPump" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#ecfeff" />
-        <stop offset="50%" stop-color="#f8fafc" />
-        <stop offset="100%" stop-color="#e0f2fe" />
-      </linearGradient>
-      <linearGradient id="liquidPump" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#7dd3fc" />
-        <stop offset="100%" stop-color="#0284c7" />
-      </linearGradient>
-      <linearGradient id="metalPump" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#94a3b8" />
-        <stop offset="100%" stop-color="#475569" />
-      </linearGradient>
-      <marker id="mkQ" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
-        <path d="M0,0 L9,4.5 L0,9 Z" fill="#0d9488" />
+      <marker id="mkQ" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M1 1.5 L10 6 L1 10.5" fill="none" stroke="#0d9488" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
       </marker>
-      <marker id="mkH" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
-        <path d="M0,0 L9,4.5 L0,9 Z" fill="#b45309" />
+      <marker id="mkH" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M1 1.5 L10 6 L1 10.5" fill="none" stroke="${INK}" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
       </marker>
-      <filter id="pumpShadow" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.14" />
-      </filter>
+      <style><![CDATA[ .diagram-svg-num { font-family: 'Roboto Mono', ui-monospace, monospace; } ]]></style>
     </defs>
 
-    <rect width="${VB_W}" height="${VB_H}" fill="url(#bgPump)" />
-    <rect x="14" y="14" width="${VB_W - 28}" height="52" rx="12" fill="#0f766e" fill-opacity="0.1" stroke="#0d9488" stroke-width="1.5" />
+    <rect width="${VB_W}" height="${VB_H}" fill="#f4f7fb" />
+    <line x1="14" y1="66" x2="${VB_W - 14}" y2="66" stroke="#e2e8f0" stroke-width="1" />
     <text x="28" y="38" font-size="17" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, Segoe UI, sans-serif">${esc(C.title)}</text>
     <text x="28" y="56" font-size="11.5" fill="#475569" font-family="Inter, system-ui, sans-serif">${esc(C.subtitle)}</text>
 
-    <!-- Suelo -->
-    <line x1="40" y1="${yGround}" x2="${VB_W - 40}" y2="${yGround}" stroke="#64748b" stroke-width="2.5" />
-    <text x="${VB_W - 210}" y="${yGround + 18}" font-size="10" fill="#94a3b8" font-family="Inter, system-ui, sans-serif">${esc(C.floorRef)}</text>
+    <!-- Suelo (solo trazo; ref. texto en pie) -->
+    <line x1="40" y1="${yGround}" x2="${VB_W - 40}" y2="${yGround}" stroke="${INK}" stroke-width="1" />
 
     <!-- Depósito succión -->
-    <rect x="${xTankL}" y="${yLiquid - 110}" width="${xTankR - xTankL}" height="122" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="2" />
-    <rect x="${xTankL + 4}" y="${yLiquid - 20}" width="${xTankR - xTankL - 8}" height="28" fill="url(#liquidPump)" opacity="0.85" />
+    <rect x="${xTankL}" y="${yLiquid - 110}" width="${xTankR - xTankL}" height="122" rx="6" fill="#eef2f7" stroke="${NAVY}" stroke-width="1" />
+    <rect x="${xTankL + 4}" y="${yLiquid - 20}" width="${xTankR - xTankL - 8}" height="28" fill="${ACCENT}" fill-opacity="0.35" />
     <path d="M ${xTankL + 6} ${yLiquid - 22} Q ${(xTankL + xTankR) / 2} ${yLiquid - 34} ${xTankR - 6} ${yLiquid - 22}" fill="none" stroke="#0ea5e9" stroke-width="2" opacity="0.7" />
     <text x="${(xTankL + xTankR) / 2 - 42}" y="${yLiquid - 88}" font-size="11" font-weight="700" fill="#334155" font-family="Inter, system-ui, sans-serif">${esc(C.tankLabel)}</text>
     <text x="${(xTankL + xTankR) / 2 - 38}" y="${yLiquid + 8}" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">${esc(C.npshNote)}</text>
 
-    <!-- Tubería succión -->
-    <path d="M ${xTankR - 4} ${yLiquid - 6} L ${cxPump - rVolute - 6} ${yLiquid - 6} L ${cxPump - rVolute - 6} ${cyPump + 8}" fill="none" stroke="#334155" stroke-width="14" stroke-linejoin="round" />
-    <path d="M ${xTankR - 4} ${yLiquid - 6} L ${cxPump - rVolute - 6} ${yLiquid - 6} L ${cxPump - rVolute - 6} ${cyPump + 8}" fill="none" stroke="#0ea5e9" stroke-width="5" stroke-linejoin="round" opacity="0.55" />
+    <!-- Tubería succión (trazo único, sin efecto tubo) -->
+    <path d="M ${xTankR - 4} ${yLiquid - 6} L ${cxPump - rVolute - 6} ${yLiquid - 6} L ${cxPump - rVolute - 6} ${cyPump + 8}" fill="none" stroke="${NAVY}" stroke-width="5.5" stroke-linejoin="round" />
 
-    <!-- Flecha caudal Q (succión) -->
-    <line x1="${xTankR + 30}" y1="${yLiquid - 6}" x2="${xTankR + 30 + qArrow}" y2="${yLiquid - 6}" stroke="#0d9488" stroke-width="2.8" marker-end="url(#mkQ)" />
-    <text x="${xTankR + 24}" y="${yLiquid - 18}" font-size="11" font-weight="800" fill="#0f766e" font-family="Inter, system-ui, sans-serif">Q = ${flowLabel}</text>
+    <!-- Flecha caudal Q (succión); valor Q en pie del dibujo -->
+    <line x1="${xTankR + 30}" y1="${yLiquid - 6}" x2="${xTankR + 30 + qArrow}" y2="${yLiquid - 6}" stroke="#0d9488" stroke-width="2" marker-end="url(#mkQ)" />
 
     <!-- Motor / reductor -->
-    <g filter="url(#pumpShadow)">
-      <rect x="${xMotor}" y="${yMotor}" width="${motorW}" height="${motorH}" rx="8" fill="#1e293b" stroke="#0f172a" stroke-width="1.5" />
-      <text x="${xMotor + motorW / 2}" y="${yMotor + motorH / 2 + 4}" text-anchor="middle" font-size="10" font-weight="800" fill="#f8fafc" font-family="Inter, system-ui, sans-serif">${
+    <g>
+      <rect x="${xMotor}" y="${yMotor}" width="${motorW}" height="${motorH}" rx="6" fill="${NAVY}" stroke="none" />
+      <text x="${xMotor + motorW / 2}" y="${yMotor + motorH / 2 + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="#f8fafc" font-family="Inter, system-ui, sans-serif">${
         coupling === 'gearmotor' ? esc(C.motorGear) : esc(C.motorOnly)
       }</text>
     </g>
-    <line x1="${xMotor + motorW}" y1="${cyPump}" x2="${cxPump - rVolute}" y2="${cyPump}" stroke="#334155" stroke-width="6" stroke-linecap="round" />
+    <line x1="${xMotor + motorW}" y1="${cyPump}" x2="${cxPump - rVolute}" y2="${cyPump}" stroke="${NAVY}" stroke-width="4" stroke-linecap="round" />
     <circle cx="${cxPump - rVolute - 10}" cy="${cyPump}" r="5" fill="#64748b" stroke="#334155" />
 
     <!-- Voluta / bomba -->
-    <g filter="url(#pumpShadow)">
-      <ellipse cx="${cxPump}" cy="${cyPump}" rx="${rVolute + 18}" ry="${rVolute}" fill="url(#metalPump)" stroke="#334155" stroke-width="2" />
-      <path d="M ${cxPump - 8} ${cyPump - rVolute * 0.2} A ${rVolute * 0.55} ${rVolute * 0.55} 0 1 1 ${cxPump + 10} ${cyPump + rVolute * 0.35}" fill="none" stroke="#1e293b" stroke-width="3" opacity="0.45" />
-      <circle cx="${cxPump - 4}" cy="${cyPump}" r="${rVolute * 0.38}" fill="#0ea5e9" fill-opacity="0.25" stroke="#0369a1" stroke-width="2" />
+    <g>
+      <ellipse cx="${cxPump}" cy="${cyPump}" rx="${rVolute + 18}" ry="${rVolute}" fill="#64748b" stroke="${NAVY}" stroke-width="1.25" />
+      <path d="M ${cxPump - 8} ${cyPump - rVolute * 0.2} A ${rVolute * 0.55} ${rVolute * 0.55} 0 1 1 ${cxPump + 10} ${cyPump + rVolute * 0.35}" fill="none" stroke="${NAVY}" stroke-width="1.25" opacity="0.45" />
+      <circle cx="${cxPump - 4}" cy="${cyPump}" r="${rVolute * 0.38}" fill="${ACCENT}" fill-opacity="0.35" stroke="${NAVY}" stroke-width="1" />
       <text x="${cxPump - 6}" y="${cyPump + rVolute + 22}" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">${esc(C.pumpLabel)}</text>
       <text x="${cxPump - 6}" y="${cyPump + rVolute + 38}" text-anchor="middle" font-size="9.5" fill="#64748b" font-family="Inter, system-ui, sans-serif">n = ${n.toFixed(0)} rpm</text>
     </g>
 
     <!-- Impulsión -->
-    <path d="M ${xDisStart} ${yDisBottom} L ${xDisCorner} ${yDisBottom} L ${xDisCorner} ${yDisTop} L ${xDisEnd} ${yDisTop}" fill="none" stroke="#334155" stroke-width="14" stroke-linejoin="round" />
-    <path d="M ${xDisStart} ${yDisBottom} L ${xDisCorner} ${yDisBottom} L ${xDisCorner} ${yDisTop} L ${xDisEnd} ${yDisTop}" fill="none" stroke="#0ea5e9" stroke-width="5" stroke-linejoin="round" opacity="0.5" />
+    <path d="M ${xDisStart} ${yDisBottom} L ${xDisCorner} ${yDisBottom} L ${xDisCorner} ${yDisTop} L ${xDisEnd} ${yDisTop}" fill="none" stroke="${NAVY}" stroke-width="5.5" stroke-linejoin="round" />
 
     <!-- Flecha Q impulsión -->
     <line x1="${xDisCorner + 20}" y1="${yDisTop}" x2="${xDisCorner + 20 + qArrow * 0.85}" y2="${yDisTop}" stroke="#0d9488" stroke-width="2.5" marker-end="url(#mkQ)" />
 
-    <!-- Doble flecha H -->
-    <line x1="${xDisEnd + 48}" y1="${yDisBottom}" x2="${xDisEnd + 48}" y2="${yDisTop}" stroke="#b45309" stroke-width="2.2" marker-start="url(#mkH)" marker-end="url(#mkH)" />
-    <text x="${xDisEnd + 58}" y="${(yDisBottom + yDisTop) / 2}" font-size="12" font-weight="800" fill="#9a3412" font-family="Inter, system-ui, sans-serif">H = ${H.toFixed(1)} m</text>
+    <!-- Doble flecha H (cota fina; valor en pie de dibujo) -->
+    <line x1="${xDisEnd + 48}" y1="${yDisBottom}" x2="${xDisEnd + 48}" y2="${yDisTop}" stroke="${INK}" stroke-width="1" marker-start="url(#mkH)" marker-end="url(#mkH)" />
 
-    <!-- Caja datos -->
-    <rect x="56" y="${yGround - 168}" width="286" height="108" rx="12" fill="#ffffff" fill-opacity="0.94" stroke="#cbd5e1" stroke-width="1.5" />
-    <text x="72" y="${yGround - 142}" font-size="10" font-weight="800" fill="#0f172a" font-family="Inter, system-ui, sans-serif">${esc(C.workPoint)}</text>
-    <text x="72" y="${yGround - 122}" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">${esc(C.phPs(Ph, Ps))}</text>
-    <text x="72" y="${yGround - 104}" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">${esc(C.etaLine(eta))}</text>
+    <!-- Pie: datos y referencias (sin caja con borde) -->
+    <line x1="32" y1="${footTop}" x2="${VB_W - 32}" y2="${footTop}" stroke="#cbd5e1" stroke-width="1" />
+    <text x="40" y="${footTop + 16}" font-size="9.5" font-weight="700" fill="${INK}" font-family="Inter, system-ui, sans-serif">${esc(C.workPoint)}</text>
+    <text x="40" y="${footTop + 32}" font-size="9.5" fill="${MUTED}" font-family="Inter, system-ui, sans-serif">${esc(C.phPs(Ph, Ps))}</text>
+    <text x="40" y="${footTop + 48}" font-size="9.5" fill="${MUTED}" font-family="Inter, system-ui, sans-serif">${esc(C.etaLine(eta))}</text>
     ${
       fluidShort
-        ? `<text x="72" y="${yGround - 86}" font-size="9.5" fill="#475569" font-family="Inter, system-ui, sans-serif">${fluidShort}</text>`
+        ? `<text x="40" y="${footTop + 64}" font-size="9.5" fill="${MUTED}" font-family="Inter, system-ui, sans-serif">${fluidShort}</text>`
         : ''
     }
+    <text x="40" y="${footTop + (fluidShort ? 82 : 66)}" font-size="9" fill="${MUTED}" font-family="Inter, system-ui, sans-serif">
+      ${esc(C.floorRef)} · H = <tspan class="diagram-svg-num">${H.toFixed(1)}</tspan> m · Q = ${flowLabel}
+    </text>
   `;
 }

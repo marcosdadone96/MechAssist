@@ -36,24 +36,25 @@
         }
       })();
     </script>
-    <header class="app-header">
-      <a class="app-header__brand" href="index.html">The<span>MechAssist</span></a>
-      <nav aria-label="Navegación principal">
-        <div class="app-header__nav-start">
-          <a href="index.html">Inicio</a>
-          <a href="flat-conveyor.html">Cinta plana</a>
-          <a href="inclined-conveyor.html">Cinta inclinada</a>
-          <a href="bucket-elevator.html" aria-current="page">Elevador cangilones</a>
-          <a href="car-lift-screw.html">Elevador coches</a>
-          <a href="screw-conveyor.html">Tornillo</a>
-          <a href="centrifugal-pump.html">Bomba</a>
-        </div>
-        <div class="app-header__nav-end">
-          <span id="beLangHost" class="app-header__lang-host" aria-hidden="false"></span>
-          <a href="transmission-lab.html" class="lab-header__nav-cta">Laboratorio</a>
-          <a href="transmission-canvas.html" title="Lienzo técnico multieje (Pro)">Lienzo Pro</a>
-        </div>
+        <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
+        <span class="site-nav__title">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
     </header>
 
     <main class="app-main app-main--be">
@@ -368,6 +369,10 @@
       </aside>
     </main>
 
+
+
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/bucketElevatorAppEntry.js"></script>
   </body>
 </html>

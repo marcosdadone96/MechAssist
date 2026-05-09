@@ -44,29 +44,29 @@
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
   <body class="hub-body">
-    <header class="hub-header">
-      <div class="hub-header__brand">
+    <header class="site-nav site-nav--home">
+      <a class="site-nav__brand" href="index.html">
         <img
-          class="hub-header__logo"
+          class="site-nav__logo"
           src="logo-themechassist.svg"
           width="40"
           height="40"
           alt=""
           decoding="async"
         />
-        <span class="hub-header__title">The<em>MechAssist</em></span>
-      </div>
-      <div class="hub-header__right">
-        <span class="hub-header__tag" data-i18n="header.tag">Transmisión</span>
-        <a class="hub-header__plans" href="#hub-pricing" data-i18n="nav.plans">Planes</a>
-        <a class="hub-header__plans" href="my-gearmotors.html"
-          ><span data-i18n="nav.myGearmotors">Mis motorreductores</span>&nbsp;<span class="premium-flag">Pro</span></a
-        >
-        <a class="hub-header__plans" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
-        <div class="hub-header__auth-slot" id="hub-header-auth-slot"></div>
-        <div class="hub-lang" role="group" aria-label="Language selector" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
-          <button type="button" class="hub-lang__btn" data-lang="es">ES</button>
-          <button type="button" class="hub-lang__btn" data-lang="en">EN</button>
+        <span class="site-nav__title">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
+      </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Language selector" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
         </div>
       </div>
     </header>
@@ -153,83 +153,24 @@
                       <span class="hub-hero__value">1.25</span>
                     </div>
                   </div>
-                  <div class="hub-hero__mockup-sketch" aria-hidden="true">
-                    <svg viewBox="0 0 360 118" xmlns="http://www.w3.org/2000/svg" class="hub-hero__mockup-svg">
-                      <defs>
-                        <linearGradient id="hubHeroBelt2" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" stop-color="#60a5fa" />
-                          <stop offset="45%" stop-color="#22d3ee" />
-                          <stop offset="100%" stop-color="#34d399" />
-                        </linearGradient>
-                        <!-- Solo dibujo mecánico: no invade franjas de título / pie -->
-                        <clipPath id="hubHeroDiagClip" clipPathUnits="userSpaceOnUse">
-                          <rect x="10" y="40" width="340" height="68" rx="0" />
-                        </clipPath>
-                      </defs>
-                      <rect x="8" y="8" width="344" height="102" rx="10" fill="rgba(248,250,252,0.95)" stroke="#e2e8f0" stroke-width="1" />
-                      <!-- Franja título (debajo del título, detrás del dibujo) -->
-                      <rect x="10" y="10" width="340" height="28" rx="6" fill="rgba(248, 250, 252, 0.98)" stroke="rgba(226, 232, 240, 0.95)" stroke-width="1" />
-                      <!-- Franja pie -->
-                      <rect x="10" y="86" width="340" height="22" rx="6" fill="rgba(248, 250, 252, 0.98)" stroke="rgba(226, 232, 240, 0.95)" stroke-width="1" />
-                      <g clip-path="url(#hubHeroDiagClip)">
-                        <!-- Poleas bajadas (cy=68) para caber en clip; tangentes recalculadas -->
-                        <circle cx="90" cy="68" r="22" fill="#1e293b" stroke="#334155" stroke-width="1.5" />
-                        <circle cx="90" cy="68" r="15" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="2.5 3.5" opacity="0.75" />
-                        <circle cx="270" cy="68" r="36" fill="#1e293b" stroke="#334155" stroke-width="1.5" />
-                        <circle cx="270" cy="68" r="26" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="2.5 3.5" opacity="0.75" />
-                        <line
-                          x1="91.71"
-                          y1="46.07"
-                          x2="272.8"
-                          y2="32.11"
-                          stroke="url(#hubHeroBelt2)"
-                          stroke-width="5.5"
-                          stroke-linecap="round"
-                          opacity="0.95"
-                        />
-                        <line
-                          x1="91.71"
-                          y1="89.93"
-                          x2="272.8"
-                          y2="103.89"
-                          stroke="url(#hubHeroBelt2)"
-                          stroke-width="5.5"
-                          stroke-linecap="round"
-                          opacity="0.95"
-                        />
-                        <circle cx="90" cy="68" r="6" fill="#0f172a" stroke="#22c55e" stroke-width="1.2" />
-                        <circle cx="270" cy="68" r="7" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2" />
-                      </g>
-                      <!-- Texto encima del dibujo + contorno para contraste -->
-                      <text
-                        x="24"
-                        y="28"
-                        fill="#64748b"
-                        font-size="11"
-                        font-family="Inter, system-ui, sans-serif"
-                        font-weight="600"
-                        stroke="#f8fafc"
-                        stroke-width="4"
-                        paint-order="stroke fill"
-                        data-i18n="hero.mockup.diagramTitle"
-                      >
-                        Esquema · polea motriz / conducida
-                      </text>
-                      <text
-                        x="24"
-                        y="102"
-                        fill="#0d9488"
-                        font-size="10"
-                        font-family="Inter, system-ui, sans-serif"
-                        font-weight="700"
-                        stroke="#f8fafc"
-                        stroke-width="4"
-                        paint-order="stroke fill"
-                        data-i18n="hero.mockup.svgCaption"
-                      >
-                        Vista orientativa · no escala
-                      </text>
-                    </svg>
+                  <div class="hub-hero__mockup-diagram" role="group" aria-labelledby="hub-hero-mockup-diagram-heading">
+                    <h3 class="hub-hero__mockup-diagram-title" id="hub-hero-mockup-diagram-heading" data-i18n="hero.mockup.diagramPanelTitle">
+                      Esquema de Transmisión
+                    </h3>
+                    <div class="hub-hero__mockup-sketch" aria-hidden="true">
+                      <svg viewBox="0 0 360 88" xmlns="http://www.w3.org/2000/svg" class="hub-hero__mockup-svg">
+                        <!-- Polea motriz -->
+                        <circle cx="88" cy="44" r="22" fill="#D1D5DB" />
+                        <circle cx="88" cy="44" r="13" fill="#9CA3AF" />
+                        <!-- Polea conducida -->
+                        <circle cx="268" cy="44" r="34" fill="#D1D5DB" />
+                        <circle cx="268" cy="44" r="22" fill="#9CA3AF" />
+                        <!-- Correa: tangentes externas (centros alineados) -->
+                        <line x1="88" y1="22" x2="268" y2="10" stroke="#1E3A8A" stroke-width="4" stroke-linecap="round" />
+                        <line x1="88" y1="66" x2="268" y2="78" stroke="#1E3A8A" stroke-width="4" stroke-linecap="round" />
+                      </svg>
+                    </div>
+                    <p class="hub-hero__mockup-sketch-caption" data-i18n="hero.mockup.svgCaption">Vista orientativa · no escala</p>
                   </div>
                   <div class="hub-hero__mockup-kpis" aria-hidden="true">
                     <div class="hub-hero__kpi">
@@ -339,7 +280,9 @@
         data-i18n-attr="aria-label"
       >
         <svg class="hub-wires" viewBox="0 0 100 100" aria-hidden="true">
-          <circle class="hub-wires__orbit" cx="50" cy="50" r="40" fill="none" />
+          <g class="hub-wires__orbit-spin">
+            <circle class="hub-wires__orbit" cx="50" cy="50" r="40" fill="none" />
+          </g>
         </svg>
 
         <div class="hub-core" aria-hidden="true">
@@ -394,41 +337,52 @@
           data-i18n-attr="aria-label"
         >
           <svg class="hub-wires hub-wires--lab" viewBox="0 0 100 100" aria-hidden="true">
-            <circle class="hub-wires__orbit hub-wires__orbit--lab" cx="50" cy="50" r="34" fill="none" />
+            <g class="hub-wires__orbit-spin">
+              <circle class="hub-wires__orbit hub-wires__orbit--lab" cx="50" cy="50" r="34" fill="none" />
+            </g>
           </svg>
           <div class="hub-core hub-core--lab" aria-hidden="true">
             <div class="hub-core__pulse hub-core__pulse--lab"></div>
             <div class="hub-core__ring hub-core__ring--lab"></div>
             <div class="hub-core__body hub-core__body--lab"></div>
-            <svg class="hub-core__mesh hub-core__mesh--lab" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <g class="hub-core__gear hub-core__gear--lab-a">
-                <circle cx="40" cy="50" r="14" fill="#0e7490" stroke="#7dd3fc" stroke-width="1.35" />
-                <g class="hub-core__cogs hub-core__cogs--lab" stroke="#38bdf8" stroke-width="2.1" stroke-linecap="round">
-                  <line x1="40" y1="36" x2="40" y2="28" transform="rotate(0 40 50)" />
-                  <line x1="40" y1="36" x2="40" y2="28" transform="rotate(45 40 50)" />
-                  <line x1="40" y1="36" x2="40" y2="28" transform="rotate(90 40 50)" />
-                  <line x1="40" y1="36" x2="40" y2="28" transform="rotate(135 40 50)" />
-                  <line x1="40" y1="36" x2="40" y2="28" transform="rotate(180 40 50)" />
-                  <line x1="40" y1="36" x2="40" y2="28" transform="rotate(225 40 50)" />
-                  <line x1="40" y1="36" x2="40" y2="28" transform="rotate(270 40 50)" />
-                  <line x1="40" y1="36" x2="40" y2="28" transform="rotate(315 40 50)" />
+            <svg class="hub-core__mesh hub-core__mesh--lab" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <!-- Metrología: rodamiento + calibre lineal (sin engranajes) -->
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="52" cy="44" r="22" stroke="#38bdf8" stroke-width="1.35" opacity="0.95" />
+                <circle cx="52" cy="44" r="14" stroke="#0ea5e9" stroke-width="1.05" opacity="0.9" />
+                <g fill="#7dd3fc" stroke="none">
+                  <circle cx="52" cy="22" r="2.15" />
+                  <circle cx="68.2" cy="29.4" r="2.15" />
+                  <circle cx="74.6" cy="44" r="2.15" />
+                  <circle cx="68.2" cy="58.6" r="2.15" />
+                  <circle cx="52" cy="66" r="2.15" />
+                  <circle cx="35.8" cy="58.6" r="2.15" />
+                  <circle cx="29.4" cy="44" r="2.15" />
+                  <circle cx="35.8" cy="29.4" r="2.15" />
                 </g>
-                <circle cx="40" cy="50" r="6.5" fill="#0f172a" stroke="#0ea5e9" stroke-width="0.85" opacity="0.95" />
-              </g>
-              <g class="hub-core__gear hub-core__gear--lab-b">
-                <circle cx="71" cy="50" r="10.5" fill="#0e7490" stroke="#7dd3fc" stroke-width="1.15" />
-                <g class="hub-core__cogs hub-core__cogs--lab" stroke="#38bdf8" stroke-width="1.95" stroke-linecap="round">
-                  <line x1="71" y1="39.5" x2="71" y2="32" transform="rotate(0 71 50)" />
-                  <line x1="71" y1="39.5" x2="71" y2="32" transform="rotate(40 71 50)" />
-                  <line x1="71" y1="39.5" x2="71" y2="32" transform="rotate(80 71 50)" />
-                  <line x1="71" y1="39.5" x2="71" y2="32" transform="rotate(120 71 50)" />
-                  <line x1="71" y1="39.5" x2="71" y2="32" transform="rotate(160 71 50)" />
-                  <line x1="71" y1="39.5" x2="71" y2="32" transform="rotate(200 71 50)" />
-                  <line x1="71" y1="39.5" x2="71" y2="32" transform="rotate(240 71 50)" />
-                  <line x1="71" y1="39.5" x2="71" y2="32" transform="rotate(280 71 50)" />
-                  <line x1="71" y1="39.5" x2="71" y2="32" transform="rotate(320 71 50)" />
+                <circle cx="52" cy="44" r="6" fill="#0f172a" stroke="#bae6fd" stroke-width="1" />
+                <!-- Beam calibre -->
+                <path d="M22 76 h56" stroke="#38bdf8" stroke-width="2.4" />
+                <path d="M22 76 v9 M78 76 v9" stroke="#38bdf8" stroke-width="2.2" />
+                <!-- Mordazas -->
+                <path d="M34 76 V58 h14 V76" stroke="#bae6fd" stroke-width="1.85" />
+                <path d="M52 76 V58 h14 V76" stroke="#7dd3fc" stroke-width="1.85" />
+                <!-- Escala -->
+                <g stroke="#67e8fc" stroke-width="0.9" opacity="0.85">
+                  <line x1="26" y1="72" x2="26" y2="68" />
+                  <line x1="30" y1="72" x2="30" y2="69" />
+                  <line x1="34" y1="72" x2="34" y2="69" />
+                  <line x1="38" y1="72" x2="38" y2="69" />
+                  <line x1="42" y1="72" x2="42" y2="68" />
+                  <line x1="46" y1="72" x2="46" y2="69" />
+                  <line x1="50" y1="72" x2="50" y2="69" />
+                  <line x1="54" y1="72" x2="54" y2="69" />
+                  <line x1="58" y1="72" x2="58" y2="68" />
+                  <line x1="62" y1="72" x2="62" y2="69" />
+                  <line x1="66" y1="72" x2="66" y2="69" />
+                  <line x1="70" y1="72" x2="70" y2="69" />
+                  <line x1="74" y1="72" x2="74" y2="68" />
                 </g>
-                <circle cx="71" cy="50" r="5" fill="#0f172a" stroke="#0ea5e9" stroke-width="0.75" opacity="0.95" />
               </g>
             </svg>
           </div>
@@ -448,16 +402,31 @@
           data-i18n-attr="aria-label"
         >
           <svg class="hub-wires hub-wires--fluid" viewBox="0 0 100 100" aria-hidden="true">
-            <circle class="hub-wires__orbit hub-wires__orbit--fluid" cx="50" cy="50" r="34" fill="none" />
+            <g class="hub-wires__orbit-spin">
+              <circle class="hub-wires__orbit hub-wires__orbit--fluid" cx="50" cy="50" r="34" fill="none" />
+            </g>
           </svg>
           <div class="hub-core hub-core--fluid" aria-hidden="true">
             <div class="hub-core__pulse hub-core__pulse--fluid"></div>
             <div class="hub-core__ring hub-core__ring--fluid"></div>
             <div class="hub-core__body hub-core__body--fluid"></div>
-            <svg class="hub-core__mesh hub-core__mesh--fluid" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <path d="M30 66c10-15 26-15 38 0" fill="none" stroke="#67e8f9" stroke-width="4" stroke-linecap="round"/>
-              <circle cx="50" cy="42" r="9.5" fill="#0f172a" stroke="#67e8f9" stroke-width="2"/>
-              <path d="M50 33v18M41 42h18" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round"/>
+            <svg class="hub-core__mesh hub-core__mesh--fluid" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <!-- Cilindro hidráulico en corte + fluido / presión -->
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="16" y="38" width="68" height="26" rx="3.5" fill="#0f172a" stroke="#22d3ee" stroke-width="1.65" />
+                <!-- Cámara fluido -->
+                <rect x="19" y="41" width="26" height="20" rx="1.5" fill="rgba(6,182,212,0.22)" stroke="#06b6d4" stroke-width="1" stroke-dasharray="3 2" opacity="0.95" />
+                <path d="M22 48 q6-1.5 12 0 t12 0" stroke="#67e8f9" stroke-width="1.2" fill="none" opacity="0.9" />
+                <path d="M22 54 q6-1.5 12 0 t12 0" stroke="#22d3ee" stroke-width="1" fill="none" opacity="0.75" />
+                <!-- Pistón -->
+                <rect x="44" y="43" width="5" height="16" rx="0.8" fill="#334155" stroke="#a5f3fc" stroke-width="0.85" />
+                <!-- Vástago -->
+                <rect x="52" y="46" width="28" height="10" rx="2" fill="#1e293b" stroke="#67e8f9" stroke-width="1.2" />
+                <circle cx="82" cy="51" r="3.2" fill="#0f172a" stroke="#22d3ee" stroke-width="1" />
+                <!-- Símbolo presión Δp -->
+                <path d="M28 30 L28 22 M24 26 L32 26" stroke="#a5f3fc" stroke-width="1.35" />
+                <path d="M26 24 L30 20 M26 24 L30 28" stroke="#22d3ee" stroke-width="1.2" />
+              </g>
             </svg>
           </div>
           <p class="hub-scene__peek" data-i18n="zone.fluids.peek">Bombas · Cilindros · Prensa · Neumática</p>
@@ -611,7 +580,7 @@
         </div>
         <p id="ma-auth-error" class="ma-modal__error" role="alert" hidden></p>
         <p class="ma-modal__note" data-i18n="auth.backendNote">
-          Los datos se guardan solo en este dispositivo (localStorage). Sin cuenta en servidor por ahora.
+          Si el sitio usa cuenta en servidor, recibirá un correo para verificar el email antes de iniciar sesión; si no, los datos quedan solo en este dispositivo (demo).
         </p>
       </div>
     </div>

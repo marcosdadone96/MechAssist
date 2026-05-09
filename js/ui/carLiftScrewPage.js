@@ -242,12 +242,6 @@ function localizeCarLiftStaticContent() {
     const el = document.querySelector(sel);
     if (el) el.innerHTML = h;
   };
-  setText('.app-header nav a[href="index.html"]', 'Home');
-  setText('.app-header nav a[href="flat-conveyor.html"]', 'Flat conveyor');
-  setText('.app-header nav a[href="inclined-conveyor.html"]', 'Inclined conveyor');
-  setText('.app-header nav a[href="car-lift-screw.html"]', 'Car lift');
-  setText('.app-header nav a[href="centrifugal-pump.html"]', 'Pump');
-  setText('.app-header nav a[href="screw-conveyor.html"]', 'Screw conveyor');
   setText('.flat-sidebar__title', 'Screw-type car lift');
   setText(
     '.flat-sidebar__lead',
@@ -373,9 +367,9 @@ function localizeCarLiftStaticContent() {
   );
   const dia = document.getElementById('clDiagram');
   if (dia) dia.setAttribute('aria-label', 'Screw car lift diagram');
-  const img = document.querySelector('.diagram-duo__real img');
+  const img = document.querySelector('.flat-visual__photo-block img');
   if (img) img.setAttribute('alt', 'Two-post car lift in a workshop');
-  const cap = document.querySelector('.diagram-duo__real figcaption');
+  const cap = document.querySelector('.flat-visual__photo-block figcaption');
   if (cap) {
     cap.innerHTML =
       'Reference: workshop application (example). <a href="https://commons.wikimedia.org/wiki/File:Two-post_lift.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.';

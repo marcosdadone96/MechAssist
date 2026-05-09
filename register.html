@@ -37,20 +37,24 @@
       })();
     </script>
 
-    <header class="app-header">
-      <a class="app-header__brand" href="index.html">The<span>MechAssist</span></a>
-      <nav aria-label="Main">
-        <div class="app-header__nav-start">
-          <a href="index.html" data-reg-tx="navHome">Inicio</a>
-        </div>
-        <div class="app-header__nav-end">
-          <a href="transmission-lab.html" class="lab-header__nav-cta" data-reg-tx="navLab">Laboratorio</a>
-          <div class="hub-lang" role="group" aria-label="Language" id="registerLang">
-            <button type="button" class="hub-lang__btn" data-register-lang="es">ES</button>
-            <button type="button" class="hub-lang__btn" data-register-lang="en">EN</button>
-          </div>
-        </div>
+    <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
+        <span class="site-nav__title">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
     </header>
 
     <main class="app-main register-page">
@@ -166,6 +170,8 @@
       </nav>
     </footer>
 
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/registerPageEntry.js"></script>
   </body>
 </html>

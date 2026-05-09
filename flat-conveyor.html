@@ -41,22 +41,25 @@
         }
       })();
     </script>
-    <header class="app-header">
-      <a class="app-header__brand" href="index.html">The<span>MechAssist</span></a>
-      <nav aria-label="Navegación principal">
-        <div class="app-header__nav-start">
-          <a href="index.html">Inicio</a>
-          <a href="flat-conveyor.html" aria-current="page">Cinta plana</a>
-          <a href="inclined-conveyor.html">Cinta inclinada</a>
-          <a href="roller-conveyor.html">Rodillos</a>
-          <a href="centrifugal-pump.html">Bomba</a>
-          <a href="screw-conveyor.html">Tornillo</a>
-        </div>
-        <div class="app-header__nav-end">
-          <a href="transmission-lab.html" class="lab-header__nav-cta">Laboratorio</a>
-          <a href="transmission-canvas.html" title="Lienzo técnico multieje (Pro)">Lienzo Pro</a>
-        </div>
+        <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
+        <span class="site-nav__title">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
     </header>
 
     <main class="app-main app-main--flat-wb">
@@ -360,28 +363,94 @@
           <div class="results-grid" id="resultsGrid"></div>
         </section>
 
-        <section class="diagram-duo flat-visual" aria-label="Esquema y referencia fotográfica">
-          <div class="diagram-duo__schematic">
+        <section class="flat-visual flat-visual--integrated" aria-label="Esquema y referencia fotográfica">
+          <div class="flat-visual__workbench">
+            <div class="diagram-duo__schematic flat-visual__diagram-col">
             <svg id="diagramFlat" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema cualitativo cinta plana"></svg>
-            <p class="diagram-schematic-note muted">
-              <strong>Lectura rápida:</strong> arriba del todo, texto <strong>régimen</strong> (sin SF) frente a <strong>diseño</strong> (× SF y η). Sobre la rama portante, <strong>L</strong> y <strong>D</strong> son sus datos del formulario; el dibujo es cualitativo. Abajo, las dos cajas repiten números de régimen (izquierda) y de dimensionamiento al motor (derecha), alineados con <strong>Resultados finales</strong>.
-            </p>
+            <div class="diagram-tips" role="note" aria-labelledby="flatDiagramTipsTitle">
+              <div class="diagram-tips__head">
+                <span class="diagram-tips__head-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path
+                      d="M12 16v-4M12 8h.01M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10z"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+                <span id="flatDiagramTipsTitle" class="diagram-tips__title">Notas técnicas</span>
+              </div>
+              <ul class="diagram-tips__list">
+                <li class="diagram-tips__item">
+                  <span class="diagram-tips__glyph" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path
+                        d="M8 12h8M6 8l-2 4 2 4M18 8l2 4-2 4"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <p class="diagram-tips__text" id="flatDiagramTip1">
+                    <strong>Parte superior del esquema:</strong> compara el texto de <strong>régimen</strong> (sin factor de servicio) frente al de <strong>diseño</strong> (con SF y η aplicados).
+                  </p>
+                </li>
+                <li class="diagram-tips__item">
+                  <span class="diagram-tips__glyph" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path
+                        d="M4 17h16M6 7v10M12 5v12M18 9v8"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <p class="diagram-tips__text" id="flatDiagramTip2">
+                    <strong>Rama portante:</strong> <strong>L</strong> y <strong>D</strong> coinciden con el formulario; el dibujo es <strong>cualitativo</strong>.
+                  </p>
+                </li>
+                <li class="diagram-tips__item">
+                  <span class="diagram-tips__glyph" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path
+                        d="M4 8h7v8H4V8zm9 0h7v5h-7V8zm0 7h7v5h-7v-5z"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <p class="diagram-tips__text" id="flatDiagramTip3">
+                    <strong>Cajas inferiores:</strong> repiten valores de régimen (izquierda) y de dimensionamiento al motor (derecha), alineados con <strong>Resultados finales</strong>.
+                  </p>
+                </li>
+              </ul>
+            </div>
+            </div>
+            <figure class="flat-visual__photo-block">
+              <div class="flat-visual__photo-frame">
+                <img
+                  src="assets/conveyor-belt-reference.png"
+                  alt="Instalación real de cinta transportadora con banda y estructura"
+                  width="1024"
+                  height="768"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <figcaption class="flat-visual__caption">
+                Referencia: cinta en obra / planta (ejemplo).
+                <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.
+              </figcaption>
+            </figure>
           </div>
-          <figure class="diagram-duo__real">
-            <img
-              src="assets/conveyor-belt-reference.png"
-              alt="Instalación real de cinta transportadora con banda y estructura"
-              width="1024"
-              height="768"
-              loading="lazy"
-              decoding="async"
-            />
-            <figcaption>
-              Referencia: cinta en obra / planta (ejemplo).
-              <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>
-              .
-            </figcaption>
-          </figure>
         </section>
 
         <section class="panel flat-panel--verify">
@@ -488,6 +557,10 @@
       </div>
     </main>
 
+
+
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/conveyorAppEntry.js"></script>
   </body>
 </html>

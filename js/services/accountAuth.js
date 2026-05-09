@@ -1,5 +1,5 @@
 /**
- * Cuenta: registro con verificaciÛn e inicio de sesiÛn en servidor (Netlify),
+ * Cuenta: registro con verificaciùn e inicio de sesiùn en servidor (Netlify),
  * o registro local previo si `useServerAuth` es false.
  */
 import { FEATURES } from '../config/features.js';
@@ -26,6 +26,7 @@ function mapRegisterError(code, lang) {
     already_registered: 'Este correo ya est\u00e1 registrado.',
     misconfigured_secret: 'Cuenta: falta configuraci\u00f3n en el servidor (AUTH_JWT_SECRET).',
     misconfigured_resend: 'Cuenta: falta correo en el servidor (RESEND_API_KEY).',
+    misconfigured_from: 'Cuenta: falta remitente en el servidor (AUTH_MAIL_FROM).',
     mail_failed: 'No se pudo enviar el correo de verificaci\u00f3n.',
     json: 'Error en la petici\u00f3n.',
     default: 'No se pudo completar el registro.',
@@ -37,6 +38,7 @@ function mapRegisterError(code, lang) {
     already_registered: 'This email is already registered.',
     misconfigured_secret: 'Server misconfiguration (AUTH_JWT_SECRET).',
     misconfigured_resend: 'Server misconfiguration (RESEND_API_KEY).',
+    misconfigured_from: 'Server misconfiguration (AUTH_MAIL_FROM).',
     mail_failed: 'Could not send the verification email.',
     json: 'Invalid request.',
     default: 'Registration could not be completed.',

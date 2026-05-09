@@ -415,9 +415,9 @@ function renderPumpDiagram(svg, pumpType) {
     <circle cx="300" cy="170" r="12" fill="#334155"/>
     <circle cx="430" cy="170" r="12" fill="#334155"/>
     <path d="M248 118 L248 222 M352 118 L352 222 M378 118 L378 222 M482 118 L482 222" stroke="#94a3b8" stroke-width="2"/>
-    <path d="M110 170 L200 170" stroke="#22d3ee" stroke-width="3" marker-end="url(#hpArrow)"/>
-    <path d="M215 118 Q300 82 385 118" stroke="#22d3ee" stroke-width="3" fill="none" marker-end="url(#hpArrow)"/>
-    <path d="M515 222 Q610 248 675 170" stroke="#22d3ee" stroke-width="3" fill="none" marker-end="url(#hpArrow)"/>`;
+    <path d="M110 170 L200 170" stroke="#0d9488" stroke-width="3" marker-end="url(#hpArrow)"/>
+    <path d="M215 118 Q300 82 385 118" stroke="#0d9488" stroke-width="3" fill="none" marker-end="url(#hpArrow)"/>
+    <path d="M515 222 Q610 248 675 170" stroke="#0d9488" stroke-width="3" fill="none" marker-end="url(#hpArrow)"/>`;
 
   const bodyVane = `
     <ellipse cx="390" cy="170" rx="220" ry="95" fill="#e0f2fe" stroke="#0369a1" stroke-width="2.5"/>
@@ -431,8 +431,8 @@ function renderPumpDiagram(svg, pumpType) {
       <line x1="390" y1="170" x2="275" y2="195"/>
       <line x1="390" y1="170" x2="260" y2="125"/>
     </g>
-    <path d="M95 170 H230" stroke="#22d3ee" stroke-width="3" marker-end="url(#hpArrow)"/>
-    <path d="M555 170 H685" stroke="#22d3ee" stroke-width="3" marker-end="url(#hpArrow)"/>`;
+    <path d="M95 170 H230" stroke="#0d9488" stroke-width="3" marker-end="url(#hpArrow)"/>
+    <path d="M555 170 H685" stroke="#0d9488" stroke-width="3" marker-end="url(#hpArrow)"/>`;
 
   const bodyPiston = `
     <circle cx="390" cy="170" r="105" fill="#f1f5f9" stroke="#475569" stroke-width="2"/>
@@ -446,8 +446,8 @@ function renderPumpDiagram(svg, pumpType) {
         return `<rect x="${cx - 10}" y="${cy - 22}" width="20" height="44" rx="4" fill="#94a3b8" stroke="#334155" stroke-width="1.5" transform="rotate(${deg + 90} ${cx} ${cy})"/>`;
       })
       .join('')}
-    <path d="M95 170 H250" stroke="#22d3ee" stroke-width="3" marker-end="url(#hpArrow)"/>
-    <path d="M530 170 H685" stroke="#22d3ee" stroke-width="3" marker-end="url(#hpArrow)"/>`;
+    <path d="M95 170 H250" stroke="#0d9488" stroke-width="3" marker-end="url(#hpArrow)"/>
+    <path d="M530 170 H685" stroke="#0d9488" stroke-width="3" marker-end="url(#hpArrow)"/>`;
 
   const body = t === 'vane' ? bodyVane : t === 'piston' ? bodyPiston : bodyGear;
 
@@ -455,15 +455,15 @@ function renderPumpDiagram(svg, pumpType) {
   svg.innerHTML = `
     <defs>
       <marker id="hpArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-        <path d="M0,0 L8,4 L0,8 Z" fill="#22d3ee"/>
+        <path d="M0,0 L8,4 L0,8 Z" fill="#0d9488"/>
       </marker>
     </defs>
-    <rect width="780" height="320" fill="#f8fafc"/>
-    <rect x="30" y="40" width="720" height="230" rx="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
-    <text x="50" y="66" font-size="14" font-weight="800" fill="#0f766e" font-family="Inter,system-ui,sans-serif">${title}</text>
+    <rect width="780" height="320" fill="#f4f7fb"/>
+    <rect x="30" y="40" width="720" height="230" rx="14" fill="#fafbfc" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="50" y="66" font-size="13" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">${title}</text>
     ${body}
-    <text x="95" y="158" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${lblIn}</text>
-    <text x="620" y="158" font-size="10" fill="#14532d" font-family="Inter,system-ui,sans-serif">${lblOut}</text>
+    <text x="95" y="98" class="fluid-svg-lbl" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif">${lblIn}</text>
+    <text x="685" y="98" class="fluid-svg-lbl" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif" text-anchor="end">${lblOut}</text>
   `;
 }
 
@@ -484,12 +484,12 @@ function renderPipeDiagram(svg, dpBar) {
         <path d="M0,0 L8,4 L0,8 Z" fill="${c}"/>
       </marker>
     </defs>
-    <rect width="780" height="220" fill="#f8fafc"/>
-    <rect x="40" y="32" width="700" height="156" rx="14" fill="#ffffff" stroke="#cbd5e1"/>
+    <rect width="780" height="220" fill="#f4f7fb"/>
+    <rect x="40" y="32" width="700" height="156" rx="12" fill="#fafbfc" stroke="#e2e8f0" stroke-width="1"/>
     <path d="M90 110 H260 V70 H520 V145 H690" fill="none" stroke="${c}" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
-    <path d="M90 110 H260 V70 H520 V145 H690" fill="none" stroke="#0f172a" stroke-width="2.8" stroke-dasharray="12 8"/>
-    <text x="92" y="92" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${LANG === 'en' ? 'Flow line' : 'Línea de flujo'}</text>
-    <text x="520" y="172" font-size="11" font-weight="800" fill="${c}" font-family="Inter,system-ui,sans-serif">dP = ${fmt(dpBar, 2)} bar</text>
+    <path d="M90 110 H260 V70 H520 V145 H690" fill="none" stroke="#334155" stroke-width="2.5" stroke-dasharray="12 8"/>
+    <text x="52" y="54" class="fluid-svg-lbl" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif">${LANG === 'en' ? 'Flow line' : 'Línea de flujo'}</text>
+    <text x="728" y="178" class="fluid-svg-lbl" font-size="11" font-weight="800" fill="${c}" font-family="Inter,system-ui,sans-serif" text-anchor="end">Δp = ${fmt(dpBar, 2)} bar</text>
   `;
 }
 

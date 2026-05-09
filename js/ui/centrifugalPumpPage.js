@@ -249,15 +249,7 @@ function localizePumpStaticContent() {
     const el = document.querySelector(sel);
     if (el) el.innerHTML = h;
   };
-  document.querySelector('header nav')?.setAttribute('aria-label', 'Main navigation');
-  setText('.app-header nav a[href="index.html"]', 'Home');
-  setText('.app-header nav a[href="flat-conveyor.html"]', 'Flat conveyor');
-  setText('.app-header nav a[href="inclined-conveyor.html"]', 'Inclined conveyor');
-  setText('.app-header nav a[href="roller-conveyor.html"]', 'Rollers');
-  setText('.app-header nav a[href="centrifugal-pump.html"]', 'Pump');
-  setText('.app-header nav a[href="screw-conveyor.html"]', 'Screw conveyor');
-  setText('.app-header nav a[href="transmission-lab.html"]', 'Lab');
-  setText('.app-header nav a[href="transmission-canvas.html"]', 'Pro canvas');
+  document.querySelector('.site-nav__center')?.setAttribute('aria-label', 'Main navigation');
   setText('.flat-sidebar__title', 'Centrifugal pump');
   setText(
     '.flat-sidebar__lead',
@@ -391,12 +383,12 @@ function localizePumpStaticContent() {
     resultsLead.textContent =
       'Hydraulic power, shaft power and design quantities with service factor.';
   }
-  const duo = document.querySelector('.diagram-duo.flat-visual');
+  const duo = document.querySelector('.flat-visual.flat-visual--integrated');
   if (duo) duo.setAttribute('aria-label', 'Centrifugal pump schematic');
-  const img = document.querySelector('.diagram-duo__real img');
+  const img = document.querySelector('.flat-visual__photo-block img');
   if (img) img.alt = 'Centrifugal pump installed in a pumping station';
   setHtml(
-    '.diagram-duo__real figcaption',
+    '.flat-visual__photo-block figcaption',
     `Centrifugal pump at a pumping station.
               <a href="https://commons.wikimedia.org/wiki/File:Pump_station.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.`,
   );
@@ -747,6 +739,13 @@ function refresh() {
 
     if (els.results) {
       const mount = readMountingPreferences();
+      const flowUnitLabel = raw.flowUnit === 'lmin' ? 'L/min' : 'm³/h';
+      const qhHint = `${formatNum(raw.head_m, 2)} m · ${raw.flowValue} ${flowUnitLabel}`;
+      const vLine = `${formatNum(raw.head_m, 2)} m · ${raw.flowValue} ${flowUnitLabel} · ${formatNum(r.drumRpm, 2)} rpm`;
+      const torqueEyebrow = en ? `${LBL.designTorque} · pump shaft` : `${LBL.designTorque} · eje bomba`;
+      const withSfHint = en ? 'With service factor applied' : 'Con factor de servicio aplicado';
+      const sizingHintPump = en ? '(T×ω)/η · sizing' : '(T×ω)/η · dimensionamiento';
+      const speedComboLabel = en ? 'Head · flow · speed' : 'Altura · caudal · velocidad';
       const mechanicalSummary = en
         ? [
             `${raw.couplingType === 'direct' ? 'Direct' : 'Geared'} coupling`,
@@ -777,12 +776,27 @@ function refresh() {
       const torqueRun = en ? 'Torque at shaft (steady)' : 'Par en eje (régimen)';
 
       els.results.innerHTML = `
-    <div class="result-focus-grid">
-      <div class="metric"><div class="label">${LBL.requiredTorque}</div><div class="value">${formatNum(r.torqueWithService_Nm, 2)} N\u00b7m</div></div>
+    <div class="flat-kpi-row" role="group" aria-label="${LBL.resultsMain}">
+      <article class="flat-kpi flat-kpi--torque">
+        <span class="flat-kpi__eyebrow">${torqueEyebrow}</span>
+        <p class="flat-kpi__value">${formatNum(r.torqueWithService_Nm, 2)}<span class="flat-kpi__unit">N·m</span></p>
+        <p class="flat-kpi__hint">${withSfHint}</p>
+      </article>
+      <article class="flat-kpi flat-kpi--power">
+        <span class="flat-kpi__eyebrow">${LBL.motorPower}</span>
+        <p class="flat-kpi__value">${formatNum(r.requiredMotorPower_kW, 3)}<span class="flat-kpi__unit">kW</span></p>
+        <p class="flat-kpi__hint">${sizingHintPump}</p>
+      </article>
+      <article class="flat-kpi flat-kpi--speed">
+        <span class="flat-kpi__eyebrow">${LBL.speed}</span>
+        <p class="flat-kpi__value">${formatNum(r.drumRpm, 2)}<span class="flat-kpi__unit">rpm</span></p>
+        <p class="flat-kpi__hint">${qhHint}</p>
+      </article>
+    </div>
+    <div class="result-focus-grid flat-kpi-secondary">
       <div class="metric"><div class="label">${LBL.serviceFactor}</div><div class="value">${formatNum(r.serviceFactorUsed ?? 1, 3)}</div></div>
       <div class="metric metric--text"><div class="label">${LBL.mountingType}</div><div class="value">${formatMounting(mount)}</div></div>
-      <div class="metric"><div class="label">${LBL.speed}</div><div class="value">${formatNum(r.drumRpm, 2)} rpm</div></div>
-      <div class="metric"><div class="label">${LBL.motorPower}</div><div class="value">${formatNum(r.requiredMotorPower_kW, 3)} kW</div></div>
+      <div class="metric metric--text"><div class="label">${speedComboLabel}</div><div class="value">${vLine}</div></div>
       <div class="metric metric--text"><div class="label">${en ? 'Mechanical details' : 'Detalles mecánicos'}</div><div class="value">${mechanicalSummary}</div></div>
     </div>
     <details class="motors-details result-focus-extra">

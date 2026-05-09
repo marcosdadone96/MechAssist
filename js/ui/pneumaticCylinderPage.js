@@ -37,7 +37,13 @@ const TXT = {
     navLab: 'Laboratorio',
     navCanvas: 'Lienzo Pro',
     diagramTitle: 'Corte de cilindro neumático (doble efecto)',
+    diagramTitleSe: 'Corte de cilindro neumático (simple efecto — retorno por muelle)',
+    diagramTitleSr: 'Corte de cilindro neumático (simple efecto — avance por muelle)',
     diagramCaption: 'Cámara A: avance. Cámara B: retroceso. Se muestran émbolo, sellos y vástago.',
+    diagramCaptionSe:
+      'Presión en la cámara del fondo (avance); el retroceso lo realiza un muelle en la cámara del lado vástago (sin aire útil).',
+    diagramCaptionSr:
+      'Presión en la cámara anular (retroceso); el avance lo realiza un muelle en el fondo del cilindro (sin aire útil).',
     fModeLabel: 'Modo de diámetros',
     fModeHint: 'ISO reduce coste y plazo de entrega',
     fModeHelp: 'En modo ISO se usan medidas comerciales normalizadas. En modo manual se permite valor libre con aviso de cercanía a estándar.',
@@ -94,10 +100,25 @@ const TXT = {
     verdictOkLong: 'SISTEMA APTO — Cilindro válido para la carga y presión de red',
     rodFallback: 'Conexión: vástago {d} mm; confirmar rosca en catálogo del fabricante.',
     diagramHead: 'Cilindro neumático de doble efecto — corte longitudinal',
+    diagramHeadSe: 'Cilindro neumático simple efecto — presión en avance, muelle de retorno',
+    diagramHeadSr: 'Cilindro neumático simple efecto — presión en retroceso, muelle de avance',
     diagramStroke: 'Carrera nominal {s} mm',
     diagramRodD: 'Ø vástago {d} mm / Ø émbolo {b} mm',
     diagramChamberA: 'Cámara A (avance)',
     diagramChamberB: 'Cámara B (retroceso)',
+    diagramChamberAspring: 'Cámara A — muelle / sin presión útil',
+    diagramChamberBspring: 'Cámara B — muelle / sin presión útil',
+    diagramChamberAp: 'Cámara A (presión — avance)',
+    diagramChamberBp: 'Cámara B (presión — retroceso)',
+    fCylinderTypeLabel: 'Tipo de cilindro',
+    fCylinderTypeHint: 'Define áreas útiles y consumo de aire por ciclo',
+    fCylinderTypeHelp:
+      'En simple efecto solo una carrera usa aire comprimido; la opuesta la realiza un muelle (no se modela la fuerza del muelle aquí).',
+    optCylinderDouble: 'Doble efecto (presión en ambos sentidos)',
+    optCylinderSingleExt: 'Simple efecto — retorno por muelle (presión en avance)',
+    optCylinderSingleRet: 'Simple efecto — avance por muelle (presión en retroceso)',
+    m1FootSpringRet: 'retroceso por muelle',
+    m1FootSpringExt: 'avance por muelle',
     diagramPiston: 'Émbolo + sellos',
     diagramRod: 'Vástago',
     invalidTitle: 'Entrada no válida',
@@ -159,7 +180,13 @@ const TXT = {
     navLab: 'Laboratory',
     navCanvas: 'Pro canvas',
     diagramTitle: 'Pneumatic cylinder cross-section (double acting)',
+    diagramTitleSe: 'Pneumatic cylinder cross-section (single acting — spring return)',
+    diagramTitleSr: 'Pneumatic cylinder cross-section (single acting — spring extend)',
     diagramCaption: 'Chamber A: extension. Chamber B: retraction. Piston, seals and rod are shown.',
+    diagramCaptionSe:
+      'Pressure on cap side (extend); return by spring on rod side (no useful compressed-air force on return).',
+    diagramCaptionSr:
+      'Pressure on annulus (retract); extend by spring on cap side (no useful compressed-air force on extend).',
     fModeLabel: 'Diameter mode',
     fModeHint: 'ISO reduces cost and lead time',
     fModeHelp: 'ISO mode uses standardized commercial dimensions. Manual mode allows free values with nearest standard warning.',
@@ -215,11 +242,26 @@ const TXT = {
     verdictLow: 'LOW EFFICIENCY - Reduced force margin',
     verdictOkLong: 'SYSTEM SUITABLE - Cylinder is valid for selected load and supply pressure',
     rodFallback: 'Connection: Rod {d} mm, verify thread in manufacturer catalog.',
-    diagramHead: 'Double-acting pneumatic cylinder - longitudinal cross-section',
+    diagramHead: 'Double-acting pneumatic cylinder — longitudinal cross-section',
+    diagramHeadSe: 'Single-acting cylinder — pressure extend, spring return',
+    diagramHeadSr: 'Single-acting cylinder — pressure retract, spring extend',
     diagramStroke: 'Nominal stroke {s} mm',
     diagramRodD: 'Ø rod {d} mm / Ø bore {b} mm',
     diagramChamberA: 'Chamber A (extend)',
     diagramChamberB: 'Chamber B (retract)',
+    diagramChamberAspring: 'Chamber A — spring / no useful pressure',
+    diagramChamberBspring: 'Chamber B — spring / no useful pressure',
+    diagramChamberAp: 'Chamber A (pressure — extend)',
+    diagramChamberBp: 'Chamber B (pressure — retract)',
+    fCylinderTypeLabel: 'Cylinder type',
+    fCylinderTypeHint: 'Sets active areas and air per cycle',
+    fCylinderTypeHelp:
+      'In single acting, only one stroke uses compressed air; the opposite stroke is done by a spring (spring force not modeled here).',
+    optCylinderDouble: 'Double acting (pressure both directions)',
+    optCylinderSingleExt: 'Single acting — spring return (pressure extend)',
+    optCylinderSingleRet: 'Single acting — spring extend (pressure retract)',
+    m1FootSpringRet: 'spring return',
+    m1FootSpringExt: 'spring extend',
     diagramPiston: 'Piston + seals',
     diagramRod: 'Rod',
     invalidTitle: 'Invalid input',
@@ -281,10 +323,10 @@ function setFieldText(id, label, hint, help) {
 function applyStaticI18n() {
   document.documentElement.setAttribute('lang', LANG);
   document.title = tr('pageTitle');
-  const nav = document.querySelectorAll('.lab-header nav a');
-  if (nav[0]) nav[0].textContent = tr('navHome');
-  if (nav[1]) nav[1].textContent = tr('navLab');
-  if (nav[2]) nav[2].textContent = tr('navCanvas');
+  document.querySelector('.site-nav__center')?.setAttribute(
+    'aria-label',
+    LANG === 'en' ? 'Main navigation' : 'Navegaci\u00f3n principal',
+  );
   const pTitle = document.querySelector('.lab-panel h2');
   const pLead = document.querySelector('.lab-lead');
   const pVerdict = document.getElementById('pcVerdict');
@@ -296,6 +338,13 @@ function applyStaticI18n() {
   if (dTitle) dTitle.textContent = tr('diagramTitle');
   if (dCap) dCap.textContent = tr('diagramCaption');
 
+  setFieldText('pcCylinderType', tr('fCylinderTypeLabel'), tr('fCylinderTypeHint'), tr('fCylinderTypeHelp'));
+  const cylTypeSel = document.getElementById('pcCylinderType');
+  if (cylTypeSel instanceof HTMLSelectElement && cylTypeSel.options.length >= 3) {
+    cylTypeSel.options[0].textContent = tr('optCylinderDouble');
+    cylTypeSel.options[1].textContent = tr('optCylinderSingleExt');
+    cylTypeSel.options[2].textContent = tr('optCylinderSingleRet');
+  }
   setFieldText('pcMode', tr('fCalcModeLabel'), tr('fCalcModeHint'), tr('fCalcModeHelp'));
   const calcModeSel = document.getElementById('pcMode');
   if (calcModeSel instanceof HTMLSelectElement && calcModeSel.options.length >= 2) {
@@ -483,7 +532,28 @@ function syncManualVisibility() {
   if (f2 instanceof HTMLElement) f2.hidden = !manual;
 }
 
-function renderCylinderDiagram(svg, strokeMm, rodMm, boreMm) {
+function syncPcDiagramLegend(cylinderType) {
+  const dTitle = document.querySelector('.lab-diagram-wrap__title');
+  const dCap = document.querySelector('.lab-diagram-caption');
+  if (dTitle instanceof HTMLElement) {
+    dTitle.textContent =
+      cylinderType === 'double'
+        ? tr('diagramTitle')
+        : cylinderType === 'single_extend'
+          ? tr('diagramTitleSe')
+          : tr('diagramTitleSr');
+  }
+  if (dCap instanceof HTMLElement) {
+    dCap.textContent =
+      cylinderType === 'double'
+        ? tr('diagramCaption')
+        : cylinderType === 'single_extend'
+          ? tr('diagramCaptionSe')
+          : tr('diagramCaptionSr');
+  }
+}
+
+function renderCylinderDiagram(svg, strokeMm, rodMm, boreMm, cylinderType = 'double') {
   if (!(svg instanceof SVGElement)) return;
   const boreRef = Math.max(8, boreMm);
   /** Grosor del vástago en pantalla proporcional a rod/bore (no tamaño fijo en mm de pantalla). */
@@ -500,70 +570,107 @@ function renderCylinderDiagram(svg, strokeMm, rodMm, boreMm) {
   const rodEndX = tubeX + tubeW + 150;
   const midY = y0 + h / 2;
 
-  svg.setAttribute('viewBox', '0 0 760 320');
+  const headTitle =
+    cylinderType === 'double'
+      ? tr('diagramHead')
+      : cylinderType === 'single_extend'
+        ? tr('diagramHeadSe')
+        : tr('diagramHeadSr');
+
+  const showArrowA = cylinderType === 'double' || cylinderType === 'single_extend';
+  const showArrowB = cylinderType === 'double' || cylinderType === 'single_retract';
+
+  let fillLeftChamber = '#bae6fd';
+  let fillLeftOp = 0.88;
+  let fillRightChamber = '#fed7aa';
+  let fillRightOp = 0.88;
+  if (cylinderType === 'single_retract') {
+    fillLeftChamber = '#e2e8f0';
+    fillLeftOp = 0.62;
+  }
+  if (cylinderType === 'single_extend') {
+    fillRightChamber = '#fde68a';
+    fillRightOp = 0.55;
+  }
+
+  const labelLeft =
+    cylinderType === 'single_retract'
+      ? tr('diagramChamberAspring')
+      : cylinderType === 'single_extend'
+        ? tr('diagramChamberAp')
+        : tr('diagramChamberA');
+  const labelRight =
+    cylinderType === 'single_extend'
+      ? tr('diagramChamberBspring')
+      : cylinderType === 'single_retract'
+        ? tr('diagramChamberBp')
+        : tr('diagramChamberB');
+
+  const arrowA = showArrowA
+    ? `<path d="M${tubeX + 40} ${midY} L${pistonX - 20} ${midY}" stroke="#0284c7" stroke-width="2.5" marker-end="url(#pcArrowA)"/>`
+    : '';
+  const arrowB = showArrowB
+    ? `<path d="M${tubeX + tubeW - 38} ${midY} L${pistonX + 26} ${midY}" stroke="#ea580c" stroke-width="2.5" marker-end="url(#pcArrowB)"/>`
+    : '';
+
+  svg.setAttribute('viewBox', '0 0 760 355');
   svg.innerHTML = `
     <defs>
       <marker id="pcArrowA" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-        <path d="M0,0 L8,4 L0,8 Z" fill="#0369a1"/>
+        <path d="M0,0 L8,4 L0,8 Z" fill="#0284c7"/>
       </marker>
       <marker id="pcArrowB" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-        <path d="M0,0 L8,4 L0,8 Z" fill="#c2410c"/>
+        <path d="M0,0 L8,4 L0,8 Z" fill="#ea580c"/>
       </marker>
-      <linearGradient id="pcTube" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#eef2f7"/>
-        <stop offset="100%" stop-color="#dbe3ed"/>
-      </linearGradient>
-      <linearGradient id="pcRod" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#cbd5e1"/>
-        <stop offset="100%" stop-color="#94a3b8"/>
-      </linearGradient>
     </defs>
-    <rect width="760" height="320" fill="#f8fafc"/>
-    <text x="30" y="26" font-size="13" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">${tr('diagramHead')}</text>
+    <rect width="760" height="355" fill="#f4f7fb"/>
+    <text x="30" y="26" font-size="13" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">${headTitle}</text>
 
     <!-- Cuerpo + tapas -->
-    <rect x="${tubeX}" y="${y0}" width="${tubeW}" height="${h}" rx="14" fill="url(#pcTube)" stroke="#64748b" stroke-width="2"/>
-    <rect x="${x0}" y="${y0 + 6}" width="${capW}" height="${h - 12}" rx="8" fill="#94a3b8" stroke="#475569" stroke-width="1.8"/>
-    <rect x="${tubeX + tubeW}" y="${y0 + 6}" width="${capW}" height="${h - 12}" rx="8" fill="#94a3b8" stroke="#475569" stroke-width="1.8"/>
+    <rect x="${tubeX}" y="${y0}" width="${tubeW}" height="${h}" rx="14" fill="#e8eef5" stroke="#94a3b8" stroke-width="1.5"/>
+    <rect x="${x0}" y="${y0 + 6}" width="${capW}" height="${h - 12}" rx="8" fill="#cbd5e1" stroke="#64748b" stroke-width="1.4"/>
+    <rect x="${tubeX + tubeW}" y="${y0 + 6}" width="${capW}" height="${h - 12}" rx="8" fill="#cbd5e1" stroke="#64748b" stroke-width="1.4"/>
     <circle cx="${x0 + capW / 2}" cy="${midY}" r="6.5" fill="#64748b"/>
     <circle cx="${tubeX + tubeW + capW / 2}" cy="${midY}" r="6.5" fill="#64748b"/>
 
-    <!-- Cámaras: A avance (azul), B retroceso (naranja) -->
-    <rect x="${tubeX + 10}" y="${y0 + 10}" width="${pistonX - tubeX - 10}" height="${h - 20}" rx="10" fill="#7dd3fc" opacity="0.92" stroke="#0284c7" stroke-width="1.2"/>
-    <rect x="${pistonX + 12}" y="${y0 + 10}" width="${tubeX + tubeW - pistonX - 12}" height="${h - 20}" rx="10" fill="#fdba74" opacity="0.92" stroke="#ea580c" stroke-width="1.2"/>
-    <text x="${tubeX + 16}" y="${y0 + 28}" font-size="9.5" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">${escHtml(tr('diagramChamberA'))}</text>
-    <text x="${pistonX + 22}" y="${y0 + 28}" font-size="9.5" font-weight="800" fill="#7c2d12" font-family="Inter,system-ui,sans-serif">${escHtml(tr('diagramChamberB'))}</text>
+    <!-- Cámaras -->
+    <rect x="${tubeX + 10}" y="${y0 + 10}" width="${pistonX - tubeX - 10}" height="${h - 20}" rx="10" fill="${fillLeftChamber}" fill-opacity="${fillLeftOp}" stroke="#0284c7" stroke-width="1.1"/>
+    <rect x="${pistonX + 12}" y="${y0 + 10}" width="${tubeX + tubeW - pistonX - 12}" height="${h - 20}" rx="10" fill="${fillRightChamber}" fill-opacity="${fillRightOp}" stroke="#ea580c" stroke-width="1.1"/>
 
     <!-- Embolo y sellos -->
-    <rect x="${pistonX - 9}" y="${y0 + 8}" width="18" height="${h - 16}" rx="4" fill="#334155"/>
-    <rect x="${pistonX - 11.5}" y="${y0 + 15}" width="3" height="${h - 30}" fill="#111827"/>
-    <rect x="${pistonX + 8.5}" y="${y0 + 15}" width="3" height="${h - 30}" fill="#111827"/>
+    <rect x="${pistonX - 9}" y="${y0 + 8}" width="18" height="${h - 16}" rx="4" fill="#64748b"/>
+    <rect x="${pistonX - 11.5}" y="${y0 + 15}" width="3" height="${h - 30}" fill="#475569"/>
+    <rect x="${pistonX + 8.5}" y="${y0 + 15}" width="3" height="${h - 30}" fill="#475569"/>
     <line x1="${pistonX}" y1="${y0 + 16}" x2="${pistonX}" y2="${y0 + h - 16}" stroke="#e2e8f0" stroke-width="1"/>
 
-    <!-- Vastago + guia -->
-    <rect x="${rodStart}" y="${midY - rodScale / 2}" width="${rodEndX - rodStart}" height="${rodScale}" rx="7" fill="url(#pcRod)" stroke="#475569"/>
-    <rect x="${tubeX + tubeW + 5}" y="${midY - rodScale / 2 - 4}" width="10" height="${rodScale + 8}" rx="3" fill="#334155"/>
-    <circle cx="${rodEndX + 12}" cy="${midY}" r="10" fill="#cbd5e1" stroke="#64748b"/>
+    <!-- Vástago -->
+    <rect x="${rodStart}" y="${midY - rodScale / 2}" width="${rodEndX - rodStart}" height="${rodScale}" rx="7" fill="#d4d4d8" stroke="#64748b"/>
+    <rect x="${tubeX + tubeW + 5}" y="${midY - rodScale / 2 - 4}" width="10" height="${rodScale + 8}" rx="3" fill="#64748b"/>
+    <circle cx="${rodEndX + 12}" cy="${midY}" r="10" fill="#cbd5e1" stroke="#94a3b8"/>
 
     <!-- Puertos -->
     <rect x="${tubeX + 34}" y="${y0 - 14}" width="12" height="14" rx="2" fill="#0ea5e9"/>
     <rect x="${tubeX + tubeW - 44}" y="${y0 - 14}" width="12" height="14" rx="2" fill="#f97316"/>
-    <text x="${tubeX + 28}" y="${y0 - 20}" font-size="10.5" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">A</text>
-    <text x="${tubeX + tubeW - 48}" y="${y0 - 20}" font-size="10.5" font-weight="800" fill="#9a3412" font-family="Inter,system-ui,sans-serif">B</text>
+    <text x="${tubeX + 28}" y="${y0 - 22}" class="fluid-svg-lbl" font-size="10.5" font-weight="800" fill="#0c4a6e" font-family="Inter,system-ui,sans-serif">A</text>
+    <text x="${tubeX + tubeW - 48}" y="${y0 - 22}" class="fluid-svg-lbl" font-size="10.5" font-weight="800" fill="#9a3412" font-family="Inter,system-ui,sans-serif">B</text>
 
-    <!-- Flujo hacia cámaras -->
-    <path d="M${tubeX + 40} ${midY} L${pistonX - 20} ${midY}" stroke="#0284c7" stroke-width="2.5" marker-end="url(#pcArrowA)"/>
-    <path d="M${tubeX + tubeW - 38} ${midY} L${pistonX + 26} ${midY}" stroke="#ea580c" stroke-width="2.5" marker-end="url(#pcArrowB)"/>
+    <!-- Flujo -->
+    ${arrowA}
+    ${arrowB}
+
+    <!-- Leyenda cámaras (debajo del tubo; no sobre pistón) -->
+    <text x="${tubeX + tubeW * 0.22}" y="${y0 + h + 18}" class="fluid-svg-lbl" font-size="8.5" font-weight="700" fill="#0369a1" font-family="Inter,system-ui,sans-serif" text-anchor="middle">${escHtml(labelLeft)}</text>
+    <text x="${tubeX + tubeW * 0.78}" y="${y0 + h + 18}" class="fluid-svg-lbl" font-size="8.5" font-weight="700" fill="#9a3412" font-family="Inter,system-ui,sans-serif" text-anchor="middle">${escHtml(labelRight)}</text>
 
     <!-- Cotas -->
-    <line x1="${tubeX}" y1="${y0 + h + 24}" x2="${tubeX + tubeW}" y2="${y0 + h + 24}" stroke="#64748b" stroke-width="1.3"/>
-    <line x1="${tubeX}" y1="${y0 + h + 19}" x2="${tubeX}" y2="${y0 + h + 29}" stroke="#64748b" stroke-width="1.3"/>
-    <line x1="${tubeX + tubeW}" y1="${y0 + h + 19}" x2="${tubeX + tubeW}" y2="${y0 + h + 29}" stroke="#64748b" stroke-width="1.3"/>
-    <text x="${tubeX + tubeW / 2 - 52}" y="${y0 + h + 39}" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif">${tr('diagramStroke', { s: fmt(strokeMm, 0) })}</text>
-    <text x="${rodEndX - 8}" y="${y0 + h + 20}" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif">${escHtml(tr('diagramRodD', { d: fmt(rodMm, 0), b: fmt(boreMm, 0) }))}</text>
+    <line x1="${tubeX}" y1="${y0 + h + 44}" x2="${tubeX + tubeW}" y2="${y0 + h + 44}" stroke="#64748b" stroke-width="1.3"/>
+    <line x1="${tubeX}" y1="${y0 + h + 39}" x2="${tubeX}" y2="${y0 + h + 49}" stroke="#64748b" stroke-width="1.3"/>
+    <line x1="${tubeX + tubeW}" y1="${y0 + h + 39}" x2="${tubeX + tubeW}" y2="${y0 + h + 49}" stroke="#64748b" stroke-width="1.3"/>
+    <text x="${tubeX + tubeW / 2}" y="${y0 + h + 59}" class="fluid-svg-lbl" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif" text-anchor="middle">${tr('diagramStroke', { s: fmt(strokeMm, 0) })}</text>
+    <text x="${rodEndX + 18}" y="${y0 + h + 44}" class="fluid-svg-lbl" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif" text-anchor="end">${escHtml(tr('diagramRodD', { d: fmt(rodMm, 0), b: fmt(boreMm, 0) }))}</text>
 
-    <text x="${pistonX - 38}" y="${y0 + h + 58}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${tr('diagramPiston')}</text>
-    <text x="${rodEndX - 18}" y="${y0 + h + 58}" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif">${tr('diagramRod')}</text>
+    <text x="${pistonX}" y="${y0 + h + 78}" class="fluid-svg-lbl" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif" text-anchor="middle">${tr('diagramPiston')}</text>
+    <text x="${rodEndX + 18}" y="${y0 + h + 78}" class="fluid-svg-lbl" font-size="10" fill="#334155" font-family="Inter,system-ui,sans-serif" text-anchor="end">${tr('diagramRod')}</text>
   `;
 }
 
@@ -577,6 +684,14 @@ function computeAndRender() {
   const motionType = document.getElementById('pcMotionType') instanceof HTMLSelectElement
     ? document.getElementById('pcMotionType').value
     : 'horizontal';
+  const rawCylinderType =
+    document.getElementById('pcCylinderType') instanceof HTMLSelectElement
+      ? document.getElementById('pcCylinderType').value
+      : 'double';
+  const cylinderType =
+    rawCylinderType === 'single_extend' || rawCylinderType === 'single_retract'
+      ? /** @type {'single_extend'|'single_retract'} */ (rawCylinderType)
+      : /** @type {'double'} */ ('double');
 
   const results = document.getElementById('pcResults');
   const advisor = document.getElementById('pcAdvisor');
@@ -660,7 +775,12 @@ function computeAndRender() {
   const vCapL = areaPiston * strokeM * 1000;
   const vRodL = areaAnn * strokeM * 1000;
   const nlFactor = labTierPc === 'project' ? (pBar + patmBar) / patmBar : (pBar + 1);
-  const nlCycle = (vCapL + vRodL) * nlFactor;
+  const nlCycle =
+    cylinderType === 'double'
+      ? (vCapL + vRodL) * nlFactor
+      : cylinderType === 'single_extend'
+        ? vCapL * nlFactor
+        : vRodL * nlFactor;
   const nlMin = nlCycle * cyclesMin;
 
   const iRod = (Math.PI * Math.pow(rodM, 4)) / 64;
@@ -669,9 +789,10 @@ function computeAndRender() {
   const bucklingRisk = pCrN < loadN * 2.2;
 
   if (calcMode === 'diagnostic') {
-    loadN = Math.max(1, forceRealAdvN * 0.7);
+    const refForce = cylinderType === 'single_retract' ? forceRealRetN : forceRealAdvN;
+    loadN = Math.max(1, refForce * 0.7);
     if (loadInput instanceof HTMLInputElement) {
-      loadInput.value = fmt(forceRealAdvN / G, 1);
+      loadInput.value = fmt(refForce / G, 1);
       loadInput.readOnly = true;
       loadInput.setAttribute('aria-readonly', 'true');
     }
@@ -680,18 +801,44 @@ function computeAndRender() {
     loadInput.setAttribute('aria-readonly', 'false');
   }
   const loadKg = loadN / G;
-  const forceRatio = forceRealAdvN / loadN;
+  const forceWorking =
+    cylinderType === 'single_retract' ? forceRealRetN : forceRealAdvN;
+  const forceRatio = forceWorking / loadN;
   const recommendedRatio = motionType === 'vertical' ? 2.0 : 1.5;
   const lowForceMargin = forceRatio < recommendedRatio;
   const highRisk = bucklingRisk || forceRatio < 1.0;
 
-  renderCylinderDiagram(document.getElementById('pcDiagram'), strokeMm, rodMm, boreMm);
+  syncPcDiagramLegend(cylinderType);
+  renderCylinderDiagram(document.getElementById('pcDiagram'), strokeMm, rodMm, boreMm, cylinderType);
 
   const estSpeed = (2 * strokeM * cyclesMin) / 60;
 
+  const m1Line =
+    cylinderType === 'double'
+      ? `${fmt(forceRealAdvN, 0)} / ${fmt(forceRealRetN, 0)} N`
+      : cylinderType === 'single_extend'
+        ? `${fmt(forceRealAdvN, 0)} / — N`
+        : `— / ${fmt(forceRealRetN, 0)} N`;
+  const m1Unit =
+    cylinderType === 'double'
+      ? LANG === 'en'
+        ? '-10% friction'
+        : '-10% fricción'
+      : cylinderType === 'single_extend'
+        ? `${LANG === 'en' ? '-10% friction' : '-10% fricción'} · ${tr('m1FootSpringRet')}`
+        : `${LANG === 'en' ? '-10% friction' : '-10% fricción'} · ${tr('m1FootSpringExt')}`;
+  const m2Sub =
+    cylinderType === 'single_retract'
+      ? LANG === 'en'
+        ? 'Freal retract / F load'
+        : 'Freal retroceso / F carga'
+      : LANG === 'en'
+        ? 'Freal extension / F load'
+        : 'Freal avance / F carga';
+
   const keyMetrics = [
-    metric(tr('m1'), `${fmt(forceRealAdvN, 0)} / ${fmt(forceRealRetN, 0)} N`, LANG === 'en' ? '-10% friction' : '-10% fricción'),
-    metric(tr('m2'), `${fmt(forceRatio, 2)} x`, LANG === 'en' ? 'Freal extension / F load' : 'Freal avance / F carga'),
+    metric(tr('m1'), m1Line, m1Unit),
+    metric(tr('m2'), `${fmt(forceRatio, 2)} x`, m2Sub),
     metric(tr('m3'), `${fmt(nlMin, 1)} Nl/min`, `${fmt(cyclesMin, 1)} cpm`),
     metric(
       tr('m4'),
@@ -704,15 +851,31 @@ function computeAndRender() {
 
   const formulaLinesPc = LANG === 'en'
     ? [
-        'F_push = P_gauge * A_piston * eta_mech; F_pull = P_gauge * (A_piston - A_rod) * eta_mech.',
-        `Free air per cycle: (V_push + V_pull) * ${labTierPc === 'project' ? '(P_gauge+Patm)/Patm' : '(P_gauge+1) with Patm=1 bar'}.`,
+        cylinderType === 'double'
+          ? 'F_push = P_gauge * A_piston * eta_mech; F_pull = P_gauge * (A_piston - A_rod) * eta_mech.'
+          : cylinderType === 'single_extend'
+            ? 'Single acting (spring return): F_push = P_gauge * A_piston * eta_mech; return stroke vents / spring — spring k not modeled.'
+            : 'Single acting (spring extend): F_pull = P_gauge * (A_piston - A_rod) * eta_mech; extend stroke vents / spring — spring k not modeled.',
+        cylinderType === 'double'
+          ? `Free air per cycle: (V_push + V_pull) * ${labTierPc === 'project' ? '(P_gauge+Patm)/Patm' : '(P_gauge+1) with Patm=1 bar'}.`
+          : cylinderType === 'single_extend'
+            ? `Free air per cycle: V_cap (bore area × stroke) * ${labTierPc === 'project' ? '(P_gauge+Patm)/Patm' : '(P_gauge+1) with Patm=1 bar'} — one pneumatic stroke per cycle.`
+            : `Free air per cycle: V_annulus × stroke * ${labTierPc === 'project' ? '(P_gauge+Patm)/Patm' : '(P_gauge+1) with Patm=1 bar'} — retract stroke only.`,
         `Euler buckling (rod): I = pi*d^4/64, L_eff = stroke * ${fmt(eulerLengthFactor, 2)}, Pcr = pi^2*E*I/L_eff^2.`,
         'Consumption Nl/min = Nl/cycle * cpm (assumes continuous cycling at entered cpm, no receiver smoothing).',
         'Line and valve losses are not included; apply an empirical 1.2–1.5 multiplier when sizing the compressor.',
       ]
     : [
-        'F_avance = P_man × A_émbolo × η_mec; F_retroceso = P_man × (A_émbolo − A_vástago) × η_mec.',
-        `Aire libre por ciclo: (V_avance + V_retroceso) × ${labTierPc === 'project' ? '(P_man+Patm)/Patm' : '(P_man+1) con Patm=1 bar'}.`,
+        cylinderType === 'double'
+          ? 'F_avance = P_man × A_émbolo × η_mec; F_retroceso = P_man × (A_émbolo − A_vástago) × η_mec.'
+          : cylinderType === 'single_extend'
+            ? 'Simple efecto (retorno por muelle): F_avance = P_man × A_émbolo × η_mec; retroceso por venteo/muelle (constante del muelle no modelada).'
+            : 'Simple efecto (avance por muelle): F_retroceso = P_man × (A_émbolo − A_vástago) × η_mec; avance por muelle (constante del muelle no modelada).',
+        cylinderType === 'double'
+          ? `Aire libre por ciclo: (V_avance + V_retroceso) × ${labTierPc === 'project' ? '(P_man+Patm)/Patm' : '(P_man+1) con Patm=1 bar'}.`
+          : cylinderType === 'single_extend'
+            ? `Aire libre por ciclo: V_fondo (área émbolo × carrera) × ${labTierPc === 'project' ? '(P_man+Patm)/Patm' : '(P_man+1) con Patm=1 bar'} — una carrera neumática por ciclo.`
+            : `Aire libre por ciclo: V_anular × carrera × ${labTierPc === 'project' ? '(P_man+Patm)/Patm' : '(P_man+1) con Patm=1 bar'} — solo retroceso alimentado.`,
         `Pandeo Euler (vástago): I = π×d⁴/64, L_eff = carrera × ${fmt(eulerLengthFactor, 2)}, Pcr = π²×E×I/L_eff².`,
         'Consumo Nl/min = Nl/ciclo × cpm (supone ciclo continuo a la frecuencia indicada, sin efecto amortiguador de acumulador).',
         'No se incluyen pérdidas en tuberías y válvulas; en dimensionado de compresor aplicar factor empírico 1,2–1,5 sobre el caudal calculado.',
@@ -726,9 +889,16 @@ function computeAndRender() {
     `;
   }
 
+  const springWord = LANG === 'en' ? 'spring' : 'muelle';
   const extraMetrics = [
-    metric(tr('e1'), `${fmt(forceTheoAdvN, 0)} N`),
-    metric(tr('e2'), `${fmt(forceRealRetN, 0)} N`),
+    metric(
+      tr('e1'),
+      cylinderType === 'single_retract' ? `— (${springWord})` : `${fmt(forceTheoAdvN, 0)} N`,
+    ),
+    metric(
+      tr('e2'),
+      cylinderType === 'single_extend' ? `— (${springWord})` : `${fmt(forceRealRetN, 0)} N`,
+    ),
     metric(tr('e3'), `${fmt(nlCycle, 2)} ${LANG === 'en' ? 'Nl/cycle' : 'Nl/ciclo'}`),
     metric(tr('e4'), `${fmt(estSpeed, 3)} m/s`),
     metric(tr('e5'), `${fmt(loadN, 0)} N`, `${fmt(loadKg, 1)} kg`),
@@ -780,7 +950,8 @@ function computeAndRender() {
   }
   alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body"><strong>${tr('infoAir')}:</strong> ${tr('infoAirBody', { n: fmt(nlCycle, 2) })}</div></div>`);
   if (calcMode === 'diagnostic') {
-    const fsDiag = pCrN / Math.max(1, forceRealAdvN);
+    const fsDiagRef = cylinderType === 'single_retract' ? forceRealRetN : forceRealAdvN;
+    const fsDiag = pCrN / Math.max(1, fsDiagRef);
     alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body"><strong>${tr('infoDiagTitle')}:</strong> ${tr('infoDiagBody', { fs: fmt(fsDiag, 2) })}</div></div>`);
   }
   if (calcMode === 'diagnostic' && pBar > 10) {
@@ -820,6 +991,9 @@ function computeAndRender() {
   const ts = formatDateTimeLocale(new Date(), langPdf);
   const assumptionsPc = [
     langPdf === 'en'
+      ? `Cylinder: ${cylinderType === 'double' ? 'double acting' : cylinderType === 'single_extend' ? 'single acting, spring return (extend powered)' : 'single acting, spring extend (retract powered)'}.`
+      : `Cilindro: ${cylinderType === 'double' ? 'doble efecto' : cylinderType === 'single_extend' ? 'simple efecto, retorno por muelle (avance neumático)' : 'simple efecto, avance por muelle (retroceso neumático)'}.`,
+    langPdf === 'en'
       ? `Mechanical efficiency ~ ${fmt((calcMode === 'diagnostic' ? 0.9 : ETA_MECH) * 100, 0)} % (mode).`
       : `Eficiencia mecánica ~ ${fmt((calcMode === 'diagnostic' ? 0.9 : ETA_MECH) * 100, 0)} % (modo).`,
     langPdf === 'en'
@@ -841,13 +1015,23 @@ function computeAndRender() {
     timestamp: ts,
     tierLabel: labTierPc === 'project' ? (langPdf === 'en' ? 'Mode: Project' : 'Modo: Proyecto') : (langPdf === 'en' ? 'Mode: Classroom' : 'Modo: Aula'),
     kpis: [
-      { title: langPdf === 'en' ? 'F push/pull' : 'F av/ret', value: `${fmt(forceRealAdvN, 0)}/${fmt(forceRealRetN, 0)} N`, subtitle: 'real' },
+      {
+        title: langPdf === 'en' ? 'F push/pull' : 'F av/ret',
+        value:
+          cylinderType === 'double'
+            ? `${fmt(forceRealAdvN, 0)}/${fmt(forceRealRetN, 0)} N`
+            : cylinderType === 'single_extend'
+              ? `${fmt(forceRealAdvN, 0)}/— N`
+              : `—/${fmt(forceRealRetN, 0)} N`,
+        subtitle: 'real',
+      },
       { title: 'FS', value: `${fmt(forceRatio, 2)}`, subtitle: langPdf === 'en' ? 'force' : 'fuerza' },
       { title: 'Nl/min', value: `${fmt(nlMin, 1)}`, subtitle: langPdf === 'en' ? 'free air' : 'aire libre' },
       { title: 'Pcr', value: `${fmt(pCrN, 0)} N`, subtitle: 'Euler' },
     ],
     inputRows: [
       { label: 'tier', value: labTierPc },
+      { label: 'cylinder', value: cylinderType },
       { label: 'p', value: `${fmt(pBar, 2)} bar` },
       { label: 'D/d', value: `${fmt(boreMm, 0)}/${fmt(rodMm, 0)} mm` },
       { label: 'stroke', value: `${fmt(strokeMm, 0)} mm` },
@@ -905,7 +1089,7 @@ document.getElementById('pcDiameterMode')?.addEventListener('change', () => {
   computeAndRender();
 });
 
-['pcPressureBar', 'pcRodIso', 'pcBoreManual', 'pcRodManual', 'pcStrokeMm', 'pcLoadKg', 'pcCyclesMin', 'pcMotionType', 'pcMode', 'pcLabTier', 'pcEulerLengthFactor', 'pcPatmBar', 'pcMethodNote'].forEach((id) => {
+['pcPressureBar', 'pcRodIso', 'pcBoreManual', 'pcRodManual', 'pcStrokeMm', 'pcLoadKg', 'pcCyclesMin', 'pcMotionType', 'pcMode', 'pcCylinderType', 'pcLabTier', 'pcEulerLengthFactor', 'pcPatmBar', 'pcMethodNote'].forEach((id) => {
   document.getElementById(id)?.addEventListener('input', () => {
     if (id === 'pcLabTier') syncPcLabTierUi();
     if (id === 'pcMode') syncCalcModeUi();

@@ -14,9 +14,14 @@ import {
   propagateKinematics,
   computeVerdicts,
   buildOpenBeltPath2D,
-  buildOrderedBeltPath2D,
   nearestCommercialVBeltLength,
   VERDICT,
+  beltRunGeometry,
+  beltCoreEngagementMetrics,
+  pulleyCentersAdjustedForBeltRun,
+  beltRunTensionDiagnostics,
+  minDistPointToBeltRunCoreMm,
+  beltRunSequentialNodeIds,
 } from '../lab/transmissionCanvasEngine.js';
 import { CHAIN_CATALOG, chainAssemblyHints, getChainById } from '../lab/chainCatalog.js';
 import { filterChainCatalogRows } from '../data/commerceCatalog.js';
@@ -25,6 +30,11 @@ import { filterChainCatalogRows } from '../data/commerceCatalog.js';
 let activeTab = 'gears';
 /** @type {import('../lab/transmissionCanvasEngine.js').TxState} */
 let state = createInitialState();
+/** Si es true, al arrastrar una polea cerca del lazo núcleo (snap en px pantalla) se fija como tensora en esa corrida. */
+const TX_IDLER_BELT_AUTO_SNAP = true;
+/** Umbral en píxeles de pantalla (CSS px), convertidos a coords SVG con el viewBox actual. */
+const TX_IDLER_BELT_SNAP_SCREEN_PX = 5;
+
 let mode = /** @type {'none'|'belt'|'chain'} */ ('none');
 let drag = /** @type {{ id: number; ox: number; oy: number; px: number; py: number } | null} */ (null); // ox,oy en coords SVG
 /** Clic corto vs arrastre: hasta DRAG_PX no se inicia drag */
@@ -44,6 +54,8 @@ const ZOOM_MAX = 5;
 
 let lastT = performance.now();
 let propsDirty = true;
+/** Panel de propiedades solo tras doble clic en un elemento */
+let propsDrawerOpen = false;
 const crossedPulleyIds = new Set();
 let openContextMenu = null;
 
@@ -62,10 +74,18 @@ const beltModeBtn = document.getElementById('txBeltMode');
 const chainModeBtn = document.getElementById('txChainMode');
 const finishBeltBtn = document.getElementById('txFinishBelt');
 const finishChainBtn = document.getElementById('txFinishChain');
-const finishSyncBtn = document.getElementById('txFinishSync');
 const motorBtn = document.getElementById('txMarkMotor');
 const propsPanel = document.getElementById('txProps');
 const zoomLabel = document.getElementById('txZoomLabel');
+
+function updateDrawerOpen() {
+  const drawer = document.getElementById('txDrawer');
+  if (!drawer || !propsPanel) return;
+  const node = state.nodes.find((n) => n.id === state.selectedId);
+  const open = propsDrawerOpen && !!(node && selectedMatchesTab());
+  drawer.classList.toggle('tx-drawer--open', open);
+  drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+}
 
 function closeContextMenu() {
   if (openContextMenu && openContextMenu.parentElement) openContextMenu.remove();
@@ -188,6 +208,11 @@ function helpTip(text) {
   </span>`;
 }
 
+/** Fila en drawer: texto a la izquierda, "?" a la derecha */
+function labelWithHelp(labelText, tipText) {
+  return `<label class="lab-field-label--help-row"><span class="lab-field-label__txt">${esc(labelText)}</span>${helpTip(tipText)}</label>`;
+}
+
 function renderInputChecks(kin) {
   if (!hudInputChecks) return;
   const { n, T } = readMotorInputs();
@@ -247,20 +272,21 @@ function renderRunResults() {
   crossedPulleyIds.clear();
   if (activeTab === 'belts') {
     if (!state.beltRuns.length) {
-      hudRuns.innerHTML = '<div class="tx-check tx-check--warn">Sin correas cerradas. Use "Cerrar correa".</div>';
+      hudRuns.innerHTML = '<div class="tx-check tx-check--warn">Sin correas cerradas. Elija tipo y pulse «Cerrar correa».</div>';
       return;
     }
     hudRuns.innerHTML = state.beltRuns
       .map((br) => {
         const s = computeBeltRunSummary(br);
         if (!s.geo.reliable || !s.geo.pathD) br.nodeIds.forEach((id) => crossedPulleyIds.add(id));
-        const txtKind = br.kind === 'sync' ? 'sincrona' : 'V';
+        const bk = br.kind ?? 'v';
+        const txtKind = beltKindUiLabel(bk).toLowerCase();
         const idlerTxt = s.idlerCount > 0 ? ` · tensoras: ${s.idlerCount}` : '';
         const wrapModes = br.nodeIds
           .map((id) => state.nodes.find((n) => n.id === id))
           .filter((n) => n?.kind === 'pulley' && n.pulleyRole === 'idler')
           .map((n) => `${n.id}: ${n.idlerWrapSide === 'inside' ? 'interior' : 'exterior'}`);
-        const comm = br.kind === 'v' && s.comm ? `${s.comm.L_nom.toFixed(0)} mm (${s.comm.ok ? 'OK' : `Δ ${s.comm.delta_mm.toFixed(1)} mm`})` : 'n/a';
+        const comm = bk === 'v' && s.comm ? `${s.comm.L_nom.toFixed(0)} mm (${s.comm.ok ? 'OK' : `Δ ${s.comm.delta_mm.toFixed(1)} mm`})` : 'n/a';
         return `<div class="tx-check tx-check--ok">
           <strong>Correa ${esc(br.id)}</strong> (${txtKind}${idlerTxt})<br/>
           L geom: <strong>${s.geo.length_mm.toFixed(1)} mm</strong> · L efectiva: <strong>${s.Leff.toFixed(1)} mm</strong><br/>
@@ -459,6 +485,7 @@ function selectedMatchesTab() {
 }
 
 function clearGearsWorkspace() {
+  propsDrawerOpen = false;
   const ids = state.nodes.filter((n) => n.kind === 'gear').map((n) => n.id);
   state.nodes = state.nodes.filter((n) => n.kind !== 'gear');
   state.meshes = [];
@@ -467,6 +494,7 @@ function clearGearsWorkspace() {
 }
 
 function clearBeltsWorkspace() {
+  propsDrawerOpen = false;
   const ids = state.nodes.filter((n) => n.kind === 'pulley').map((n) => n.id);
   state.nodes = state.nodes.filter((n) => n.kind !== 'pulley');
   state.beltRuns = [];
@@ -477,6 +505,7 @@ function clearBeltsWorkspace() {
 }
 
 function clearChainsWorkspace() {
+  propsDrawerOpen = false;
   const ids = state.nodes.filter((n) => n.kind === 'sprocket').map((n) => n.id);
   state.nodes = state.nodes.filter((n) => n.kind !== 'sprocket');
   state.chainRuns = [];
@@ -507,6 +536,15 @@ function clientToSvg(ev) {
     x: vb.x + ((ev.clientX - r.left) / rw) * vb.width,
     y: vb.y + ((ev.clientY - r.top) / rh) * vb.height,
   };
+}
+
+/** Convierte px CSS de pantalla a longitud en coords usuario SVG (coherente con viewBox). */
+function screenPxToSvgLen(pxCss) {
+  if (!(svg instanceof SVGSVGElement)) return pxCss;
+  const r = svg.getBoundingClientRect();
+  const vb = svg.viewBox.baseVal;
+  const rw = Math.max(1e-6, r.width);
+  return (pxCss / rw) * vb.width;
 }
 
 function updateZoomLabel() {
@@ -576,7 +614,7 @@ function updateHud(kin, verdict) {
   if (hudPick) {
     if (activeTab === 'belts' && mode === 'belt') {
       const man = manualBeltTrace ? ' · manual tangente ON' : '';
-      hudPick.textContent = `Orden de correa: [${state.beltPickOrder.join(', ')}]${man} — cierre con V o síncrona. Clic corto = añadir; arrastre = mover.`;
+      hudPick.textContent = `Orden de correa: [${state.beltPickOrder.join(', ')}]${man} — elija tipo y pulse «Cerrar correa». Clic corto = añadir; arrastre = mover.`;
     } else if (activeTab === 'belts') {
       hudPick.textContent = 'Pulse «Elegir orden correa» y haga clic corto en cada polea en secuencia.';
     } else {
@@ -595,6 +633,7 @@ function updateHud(kin, verdict) {
   renderInputChecks(kin);
   renderElementColumns(kin);
   renderRunResults();
+  updateBeltEngineeringHud();
 }
 
 /** Geometría de lazo abierto (correa o cadena sobre primitivos). */
@@ -603,35 +642,7 @@ function pathGeometryForIds(nodeIds) {
 }
 
 function beltPathForRun(br) {
-  const ids = (br.nodeIds || []).slice();
-  const hasInsideIdler = ids.some((id) => {
-    const n = state.nodes.find((x) => x.id === id);
-    return n?.kind === 'pulley' && n.pulleyRole === 'idler' && n.idlerWrapSide === 'inside';
-  });
-  const effectiveIds = hasInsideIdler
-    ? ids
-    : ids.filter((id) => {
-        const n = state.nodes.find((x) => x.id === id);
-        return !(n?.kind === 'pulley' && n.pulleyRole === 'idler' && (n.isExternal === true || n.idlerWrapSide === 'outside'));
-      });
-  const centers = centersForNodeIds(effectiveIds, br.centerOverride_mm ?? 0);
-  if (!centers) return { pathD: '', length_mm: 0, reliable: false, note: 'Falta un nodo en la ruta.' };
-  const radii = [];
-  for (const id of effectiveIds) {
-    const n = state.nodes.find((x) => x.id === id);
-    if (!n) return { pathD: '', length_mm: 0, reliable: false, note: 'Falta un nodo en la ruta.' };
-    radii.push(getNodeD_mm(n) / 2);
-  }
-  const hasIdler = effectiveIds.some((id) => state.nodes.find((x) => x.id === id)?.pulleyRole === 'idler');
-  const meta = effectiveIds.map((id) => {
-    const n = state.nodes.find((x) => x.id === id);
-    const isIdler = n?.pulleyRole === 'idler';
-    const isExt = isIdler && (n?.isExternal === true || n?.idlerWrapSide === 'outside');
-    return { role: n?.pulleyRole, wrapSide: n?.idlerWrapSide, isExternal: isExt, contacto: isExt ? 'exterior' : 'interior' };
-  });
-  if (!hasIdler) return buildOpenBeltPath2D(centers, radii);
-  /* Con tensora, mantener orden del lazo actual y contacto tangencial (inside/outside por meta). */
-  return buildOrderedBeltPath2D(centers, radii, meta, br.edgeSigns || []);
+  return beltRunGeometry(state, br, br.centerOverride_mm ?? 0);
 }
 
 function centersForNodeIds(nodeIds, centerOverrideMm = 0) {
@@ -672,6 +683,13 @@ function pathGeometryForIdsWithOverride(nodeIds, centerOverrideMm = 0) {
 }
 
 function centerDistanceMark(a, b, label, tone = 'belt', offsetPx = 26) {
+  return centerDistanceMarkNudged(a, b, label, tone, offsetPx, null, 0);
+}
+
+/**
+ * Cota entre centros con banda desplazada hacia una tensora (si aplica) y margen extra si γ es alto.
+ */
+function centerDistanceMarkNudged(a, b, label, tone = 'belt', offsetPx = 26, nudgeFrom = null, gammaDeg = 0) {
   if (!a || !b) return '';
   const dx = b.x - a.x;
   const dy = b.y - a.y;
@@ -679,7 +697,14 @@ function centerDistanceMark(a, b, label, tone = 'belt', offsetPx = 26) {
   if (!(L > 1e-6)) return '';
   const nx = -dy / L;
   const ny = dx / L;
-  const off = offsetPx;
+  let off = offsetPx + Math.min(20, Math.max(0, gammaDeg) * 0.14);
+  if (nudgeFrom) {
+    const mx0 = (a.x + b.x) / 2;
+    const my0 = (a.y + b.y) / 2;
+    const vx = nudgeFrom.x - mx0;
+    const vy = nudgeFrom.y - my0;
+    off += vx * nx + vy * ny;
+  }
   const ax = a.x + nx * off;
   const ay = a.y + ny * off;
   const bx = b.x + nx * off;
@@ -687,16 +712,16 @@ function centerDistanceMark(a, b, label, tone = 'belt', offsetPx = 26) {
   const mx = (ax + bx) / 2;
   const my = (ay + by) / 2;
   const mm = L.toFixed(0);
-  const c = tone === 'chain' ? '#334155' : '#92400e';
-  const bg = tone === 'chain' ? '#f1f5f9' : '#fffbeb';
-  const stroke = tone === 'chain' ? '#cbd5e1' : '#fde68a';
+  const c = tone === 'chain' ? '#e2e8f0' : '#fdba74';
+  const bg = tone === 'chain' ? 'rgba(15,23,42,0.92)' : 'rgba(67,20,7,0.88)';
+  const stroke = tone === 'chain' ? 'rgba(34,211,238,0.45)' : 'rgba(251,146,60,0.55)';
   return `
     <g class="tx-center-dim">
       <line x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}" stroke="${c}" stroke-width="1.6" stroke-dasharray="6 4" opacity="0.95"/>
       <line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${ax.toFixed(1)}" y2="${ay.toFixed(1)}" stroke="${c}" stroke-width="1.1" opacity="0.55"/>
       <line x1="${b.x.toFixed(1)}" y1="${b.y.toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}" stroke="${c}" stroke-width="1.1" opacity="0.55"/>
       <rect x="${(mx - 43).toFixed(1)}" y="${(my - 10).toFixed(1)}" width="86" height="18" rx="4" fill="${bg}" stroke="${stroke}" />
-      <text x="${mx.toFixed(1)}" y="${(my + 2.5).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="800" fill="${c}" font-family="Inter,system-ui,sans-serif">${esc(label)} = ${mm} mm</text>
+      <text x="${mx.toFixed(1)}" y="${(my + 2.5).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="800" fill="${c}" font-family="ui-monospace,Courier New,monospace">${esc(label)} = ${mm} mm</text>
     </g>`;
 }
 
@@ -707,9 +732,9 @@ function centerDistanceMarkBelow(a, b, label, tone = 'chain', dropPx = 58) {
   const L = Math.hypot(dx, dy);
   if (!(L > 1e-6)) return '';
   const yDim = Math.max(a.y, b.y) + dropPx;
-  const c = tone === 'chain' ? '#334155' : '#92400e';
-  const bg = tone === 'chain' ? '#f1f5f9' : '#fffbeb';
-  const stroke = tone === 'chain' ? '#cbd5e1' : '#fde68a';
+  const c = tone === 'chain' ? '#e2e8f0' : '#fdba74';
+  const bg = tone === 'chain' ? 'rgba(15,23,42,0.92)' : 'rgba(67,20,7,0.88)';
+  const stroke = tone === 'chain' ? 'rgba(34,211,238,0.45)' : 'rgba(251,146,60,0.55)';
   const mx = (a.x + b.x) / 2;
   const mm = L.toFixed(0);
   return `
@@ -718,12 +743,59 @@ function centerDistanceMarkBelow(a, b, label, tone = 'chain', dropPx = 58) {
       <line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${a.x.toFixed(1)}" y2="${yDim.toFixed(1)}" stroke="${c}" stroke-width="1.1" opacity="0.55"/>
       <line x1="${b.x.toFixed(1)}" y1="${b.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${yDim.toFixed(1)}" stroke="${c}" stroke-width="1.1" opacity="0.55"/>
       <rect x="${(mx - 43).toFixed(1)}" y="${(yDim - 10).toFixed(1)}" width="86" height="18" rx="4" fill="${bg}" stroke="${stroke}" />
-      <text x="${mx.toFixed(1)}" y="${(yDim + 2.5).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="800" fill="${c}" font-family="Inter,system-ui,sans-serif">${esc(label)} = ${mm} mm</text>
+      <text x="${mx.toFixed(1)}" y="${(yDim + 2.5).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="800" fill="${c}" font-family="ui-monospace,Courier New,monospace">${esc(label)} = ${mm} mm</text>
     </g>`;
 }
 
 function centerDistanceMarksForRun(nodeIds, tone) {
   return centerDistanceMarksForRunWithOverride(nodeIds, tone, 0);
+}
+
+/** Vista previa de lazo: si coincide con una corrida guardada, usar la misma geometría que la correa real (tensoras incl.). */
+function beltRunMatchingPreviewIds(previewIds) {
+  if (!previewIds?.length) return null;
+  const set = new Set(previewIds);
+  for (const br of state.beltRuns) {
+    const ids = br.nodeIds || [];
+    if (ids.length !== previewIds.length) continue;
+    const bs = new Set(ids);
+    if (bs.size !== set.size) continue;
+    let ok = true;
+    for (const id of previewIds) {
+      if (!bs.has(id)) {
+        ok = false;
+        break;
+      }
+    }
+    if (ok) return br;
+  }
+  return null;
+}
+
+/** Cotas C1… siguiendo orden de lazo y centros alineados con el trazado de correa (tensoras + C1 manual). */
+function beltDistanceMarksHtml(br) {
+  const ring = beltRunSequentialNodeIds(state, br);
+  const pos = pulleyCentersAdjustedForBeltRun(state, br, br.centerOverride_mm ?? 0);
+  const geo = beltRunGeometry(state, br, br.centerOverride_mm ?? 0);
+  const wrapById = new Map((geo.idlerWraps || []).map((w) => [w.id, w.wrapDeg]));
+  let html = '';
+  for (let i = 1; i < ring.length; i++) {
+    const ida = ring[i - 1];
+    const idb = ring[i];
+    const pa = pos.get(ida);
+    const pb = pos.get(idb);
+    if (!pa || !pb) continue;
+    const na = state.nodes.find((x) => x.id === ida);
+    const nb = state.nodes.find((x) => x.id === idb);
+    /** @type {{ x: number; y: number } | null} */
+    let nudge = null;
+    if (na?.pulleyRole === 'idler') nudge = pa;
+    else if (nb?.pulleyRole === 'idler') nudge = pb;
+    const wid = na?.pulleyRole === 'idler' ? ida : nb?.pulleyRole === 'idler' ? idb : null;
+    const gamma = wid != null ? wrapById.get(wid) ?? 0 : 0;
+    html += centerDistanceMarkNudged(pa, pb, `C${i}`, 'belt', 26, nudge, gamma);
+  }
+  return html;
 }
 
 function centerDistanceMarksForRunWithOverride(nodeIds, tone, centerOverrideMm = 0) {
@@ -736,38 +808,61 @@ function centerDistanceMarksForRunWithOverride(nodeIds, tone, centerOverrideMm =
   return html;
 }
 
+function beltKindUiLabel(k) {
+  if (k === 'sync') return 'Síncrona (dentada)';
+  if (k === 'flat') return 'Plana';
+  return 'Trapezoidal (V)';
+}
+
+function updateBeltEngineeringHud() {
+  const el = document.getElementById('txBeltEngHud');
+  if (!el) return;
+  if (activeTab !== 'belts' || !state.beltRuns.length) {
+    el.hidden = true;
+    el.innerHTML = '';
+    return;
+  }
+  el.hidden = false;
+  const parts = [];
+  parts.push('<div class="tx-belt-eng-hud__head">HUD · correa</div>');
+  for (const br of state.beltRuns) {
+    const m = beltCoreEngagementMetrics(state, br);
+    const bk = br.kind ?? 'v';
+    let inner = `<div class="tx-belt-eng-hud__title">${esc(br.id)} · ${beltKindUiLabel(bk)}</div>`;
+    inner += `<div>L total ≈ <strong>${m.lengthMm.toFixed(1)} mm</strong></div>`;
+    if (bk === 'sync') {
+      inner += `<div>p (corrida) = ${Number(br.pitch_mm ?? 8).toFixed(3)} mm</div>`;
+    }
+    if (!m.rows.length) {
+      inner += `<div class="tx-muted">β por polea: geometría serpentín o caso especial — use ≥3 poleas convexas para lectura completa.</div>`;
+    }
+    for (const row of m.rows) {
+      const col = row.gripOk ? '#34d399' : '#f87171';
+      inner += `<div style="color:${col}">Polea #${row.id}: β ≈ ${row.wrapDeg.toFixed(1)}° · ${
+        row.gripOk ? 'agarre suficiente (demo ≥120°)' : 'agarre bajo (demo)'
+      }</div>`;
+    }
+    for (const row of m.idlerWraps) {
+      inner += `<div style="color:#a5b4fc">Tensora #${row.id}: γ ≈ ${row.wrapDeg.toFixed(1)}°</div>`;
+    }
+    const td = beltRunTensionDiagnostics(state, br, br.centerOverride_mm ?? 0);
+    if (m.idlerWraps.length || td.flechaMm > 0.5) {
+      inner += `<div style="color:#94a3b8">Flecha (deflexión) ≈ ${td.flechaMm.toFixed(1)} mm · penetración máx. ${td.maxPenetrationMm.toFixed(1)} mm</div>`;
+    }
+    if (td.overTension) {
+      inner += `<div style="color:#f87171;font-weight:800">Sobre-tensión (demo): γ o flecha por encima del umbral seguro.</div>`;
+    }
+    parts.push(`<div class="tx-belt-eng-hud__run">${inner}</div>`);
+  }
+  el.innerHTML = parts.join('');
+}
+
 function computeBeltRunSummary(br) {
   const ids = (br.nodeIds || []).slice();
-  const hasInsideIdler = ids.some((id) => {
-    const n = state.nodes.find((x) => x.id === id);
-    return n?.kind === 'pulley' && n.pulleyRole === 'idler' && n.idlerWrapSide === 'inside';
-  });
-  const effectiveIds = hasInsideIdler
-    ? ids
-    : ids.filter((id) => {
-        const n = state.nodes.find((x) => x.id === id);
-        return !(n?.kind === 'pulley' && n.pulleyRole === 'idler' && (n.isExternal === true || n.idlerWrapSide === 'outside'));
-      });
-  const centers = centersForNodeIds(effectiveIds, br.centerOverride_mm ?? 0);
-  const radii = effectiveIds.map((id) => {
-    const n = state.nodes.find((x) => x.id === id);
-    return n ? getNodeD_mm(n) / 2 : 0;
-  });
-  const hasIdler = effectiveIds.some((id) => state.nodes.find((x) => x.id === id)?.pulleyRole === 'idler');
-  const meta = effectiveIds.map((id) => {
-    const n = state.nodes.find((x) => x.id === id);
-    const isIdler = n?.pulleyRole === 'idler';
-    const isExt = isIdler && (n?.isExternal === true || n?.idlerWrapSide === 'outside');
-    return { role: n?.pulleyRole, wrapSide: n?.idlerWrapSide, isExternal: isExt, contacto: isExt ? 'exterior' : 'interior' };
-  });
-  const geo =
-    centers && centers.length === radii.length
-      ? !hasIdler
-        ? buildOpenBeltPath2D(centers, radii)
-        : buildOrderedBeltPath2D(centers, radii, meta, br.edgeSigns || [])
-      : pathGeometryForIdsWithOverride(effectiveIds, br.centerOverride_mm ?? 0);
-  const Leff = br.kind === 'sync' ? geo.length_mm : geo.length_mm * (1 + (br.slip ?? 0.015));
-  const comm = br.kind === 'v' ? nearestCommercialVBeltLength(Leff) : null;
+  const geo = beltRunGeometry(state, br, br.centerOverride_mm ?? 0);
+  const bk = br.kind ?? 'v';
+  const Leff = bk === 'sync' ? geo.length_mm : geo.length_mm * (1 + (br.slip ?? 0.015));
+  const comm = bk === 'v' ? nearestCommercialVBeltLength(Leff) : null;
   const c1 = centersForNodeIds(ids, br.centerOverride_mm ?? 0);
   const cDist = c1 && c1.length >= 2 ? Math.hypot(c1[1].x - c1[0].x, c1[1].y - c1[0].y) : null;
   const idlerCount = ids.reduce((acc, id) => {
@@ -818,6 +913,110 @@ function getChainPreviewNodeIds() {
   return null;
 }
 
+/** @param {import('../lab/transmissionCanvasEngine.js').TxNode} node */
+function hudAccentStroke(node) {
+  if (node.kind === 'gear' && node.isMotor) return '#fbbf24';
+  if (node.isMotor) return '#fb923c';
+  if (node.kind === 'pulley') {
+    const role = node.pulleyRole || 'driven';
+    if (role === 'drive') return '#fb923c';
+    if (role === 'idler') return '#a5b4fc';
+  }
+  return '#22d3ee';
+}
+
+let txSvgDelegationBound = false;
+/** Doble clic manual: `preventDefault` en pointerdown impide `dblclick` fiable en SVG */
+let lastNodePointerAt = 0;
+let lastNodePointerId = /** @type {number|null} */ (null);
+const NODE_DOUBLE_CLICK_MS = 450;
+
+function bindTransmissionSvgDelegation() {
+  if (!(svg instanceof SVGSVGElement) || txSvgDelegationBound) return;
+  txSvgDelegationBound = true;
+  svg.addEventListener('contextmenu', onTxSvgContextMenu);
+  svg.addEventListener('pointerdown', onTxSvgPointerDown);
+}
+
+function onTxSvgContextMenu(ev) {
+  const g = ev.target instanceof Element ? ev.target.closest('.tx-node') : null;
+  if (!g) return;
+  ev.preventDefault();
+  const id = Number(g.getAttribute('data-id'));
+  if (!Number.isFinite(id)) return;
+  const n = state.nodes.find((x) => x.id === id);
+  if (!n) return;
+  state.selectedId = id;
+  propsDirty = true;
+  showNodeContextMenu(n, ev.clientX, ev.clientY);
+}
+
+function onTxSvgPointerDown(ev) {
+  const g = ev.target instanceof Element ? ev.target.closest('.tx-node') : null;
+  if (!g) return;
+  closeContextMenu();
+  const id = Number(g.getAttribute('data-id'));
+  if (!Number.isFinite(id)) return;
+  const n = state.nodes.find((x) => x.id === id);
+  if (!n) return;
+
+  const beltPick = activeTab === 'belts' && mode === 'belt' && n.kind === 'pulley';
+  const chainPick = activeTab === 'chains' && mode === 'chain' && n.kind === 'sprocket';
+
+  if (beltPick || chainPick) {
+    lastNodePointerAt = 0;
+    lastNodePointerId = null;
+    pending = { id, px: n.x, py: n.y, sx: ev.clientX, sy: ev.clientY };
+    ev.preventDefault();
+    propsDirty = true;
+    const { n: n0, T: t0 } = readMotorInputs();
+    const kkin = propagateKinematics(state, n0, t0);
+    const verdict = computeVerdicts(state, kkin);
+    updateHud(kkin, verdict);
+    drawSvg(kkin);
+    return;
+  }
+
+  const now = Date.now();
+  const dt = now - lastNodePointerAt;
+  const isDoubleTap = lastNodePointerId === id && dt >= 0 && dt < NODE_DOUBLE_CLICK_MS;
+
+  if (isDoubleTap) {
+    lastNodePointerAt = 0;
+    lastNodePointerId = null;
+    state.selectedId = id;
+    propsDrawerOpen = true;
+    propsDirty = true;
+    drag = null;
+    pending = null;
+    ev.preventDefault();
+    ev.stopPropagation();
+    const { n: n0, T: t0 } = readMotorInputs();
+    const kkin = propagateKinematics(state, n0, t0);
+    const verdict = computeVerdicts(state, kkin);
+    updateHud(kkin, verdict);
+    drawSvg(kkin);
+    syncPropsPanel();
+    propsDirty = false;
+    return;
+  }
+
+  lastNodePointerAt = now;
+  lastNodePointerId = id;
+
+  state.selectedId = id;
+  const p = clientToSvg(ev);
+  drag = { id, ox: p.x, oy: p.y, px: n.x, py: n.y };
+  pending = null;
+  ev.preventDefault();
+  propsDirty = true;
+  const { n: n0, T: t0 } = readMotorInputs();
+  const kkin = propagateKinematics(state, n0, t0);
+  const verdict = computeVerdicts(state, kkin);
+  updateHud(kkin, verdict);
+  drawSvg(kkin);
+}
+
 function drawSvg(kin) {
   if (!(svg instanceof SVGSVGElement)) return;
   const vbW = BASE_W / viewPanZoom.zoom;
@@ -826,14 +1025,29 @@ function drawSvg(kin) {
   const vy = viewPanZoom.cy - vbH / 2;
   svg.setAttribute('viewBox', `${vx} ${vy} ${vbW} ${vbH}`);
 
+  const dotStep = Math.min(88, Math.max(5, 20 / viewPanZoom.zoom));
+  const dotR = Math.max(0.28, Math.min(1.15, dotStep * 0.042));
+  const dotCx = (dotStep * 0.5).toFixed(3);
+  const dotCy = (dotStep * 0.5).toFixed(3);
   const defs = `
   <defs>
-    <pattern id="txGrid" width="24" height="24" patternUnits="userSpaceOnUse">
-      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#e2e8f0" stroke-width="0.6"/>
+    <filter id="txHudGlow" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.35" result="blur"/>
+      <feOffset in="blur" dx="0" dy="0" result="offsetBlur"/>
+      <feFlood flood-color="rgba(34,211,238,0.45)" result="color"/>
+      <feComposite in="color" in2="offsetBlur" operator="in" result="shadow"/>
+      <feMerge>
+        <feMergeNode in="shadow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <pattern id="txDotGrid" width="${dotStep}" height="${dotStep}" patternUnits="userSpaceOnUse">
+      <circle cx="${dotCx}" cy="${dotCy}" r="${dotR.toFixed(3)}" fill="rgba(34,211,238,0.2)"/>
     </pattern>
   </defs>
-  <rect x="0" y="0" width="${BASE_W}" height="${BASE_H}" fill="url(#txGrid)" />
-  <rect x="0" y="0" width="${BASE_W}" height="${BASE_H}" fill="none" stroke="#cbd5e1" stroke-width="2" />
+  <rect class="tx-svg-bg" x="0" y="0" width="${BASE_W}" height="${BASE_H}" fill="#001524" />
+  <rect class="tx-svg-bg" x="0" y="0" width="${BASE_W}" height="${BASE_H}" fill="url(#txDotGrid)" opacity="0.92" />
+  <rect class="tx-svg-bg" x="0" y="0" width="${BASE_W}" height="${BASE_H}" fill="none" stroke="rgba(34,211,238,0.24)" stroke-width="2" />
   `;
 
   const showGears = activeTab === 'gears';
@@ -846,21 +1060,55 @@ function drawSvg(kin) {
   if (showBelts) {
     const previewIds = getBeltPreviewNodeIds();
     if (previewIds) {
-      const geo = pathGeometryForIds(previewIds);
+      const previewMatch = beltRunMatchingPreviewIds(previewIds);
+      const geo = previewMatch
+        ? beltRunGeometry(state, previewMatch, previewMatch.centerOverride_mm ?? 0)
+        : pathGeometryForIds(previewIds);
       if (geo.pathD) {
-        beltsHtml += `<path class="tx-path-preview" d="${geo.pathD}" fill="none" stroke="#d97706" stroke-width="4" stroke-dasharray="14 8" stroke-linejoin="round" opacity="0.75" />`;
-        beltDimsHtml += centerDistanceMarksForRunWithOverride(previewIds, 'belt', 0);
+        beltsHtml += `<path class="tx-path-preview" d="${geo.pathD}" fill="none" stroke="#fb923c" stroke-width="2.5" stroke-dasharray="12 8" stroke-linejoin="round" opacity="0.85" />`;
+        beltDimsHtml += previewMatch
+          ? beltDistanceMarksHtml(previewMatch)
+          : centerDistanceMarksForRunWithOverride(previewIds, 'belt', 0);
       }
     }
+    const motorNode = state.nodes.find((n) => n.isMotor);
     for (const br of state.beltRuns) {
       const geo = beltPathForRun(br);
-      const Leff = br.kind === 'sync' ? geo.length_mm : geo.length_mm * (1 + (br.slip ?? 0.015));
-      const comm = br.kind === 'v' && geo.reliable ? nearestCommercialVBeltLength(Leff) : { ok: true };
-      const stroke = comm && !comm.ok ? '#ea580c' : br.kind === 'sync' ? '#0369a1' : '#a16207';
-      const dash = br.kind === 'sync' ? '6 3' : 'none';
+      const bk = br.kind ?? 'v';
+      const Leff = bk === 'sync' ? geo.length_mm : geo.length_mm * (1 + (br.slip ?? 0.015));
+      const comm = bk === 'v' && geo.reliable ? nearestCommercialVBeltLength(Leff) : { ok: true };
+      const wraps = geo.idlerWraps || [];
+      const maxGamma = wraps.reduce((m, w) => Math.max(m, w.wrapDeg), 0);
+      const tensionT = Math.min(1, Math.max(0, (maxGamma - 8) / 72));
+      let stroke = comm && !comm.ok ? '#f87171' : bk === 'sync' ? '#67e8f9' : bk === 'flat' ? '#f1f5f9' : '#fb923c';
+      if (geo.crossingWarning || geo.geometryImpossible) stroke = '#ef4444';
+      if (bk === 'v' && !(comm && !comm.ok) && !geo.crossingWarning && !geo.geometryImpossible && tensionT > 0.12) {
+        const r = Math.round(251 + tensionT * 4);
+        const g = Math.round(146 + tensionT * 56);
+        const bc = Math.round(114 - tensionT * 38);
+        stroke = `rgb(${r},${g},${bc})`;
+      }
+      const dash = bk === 'sync' ? '2 3 0.5 3' : 'none';
+      const swBase = bk === 'v' ? 5.4 : bk === 'flat' ? 3.6 : 2.9;
+      const sw = swBase + (bk === 'v' ? tensionT * 3.2 : tensionT * 1.2);
+      const metrics = beltCoreEngagementMetrics(state, br);
+      const td = beltRunTensionDiagnostics(state, br, br.centerOverride_mm ?? 0);
       if (geo.pathD) {
-        beltsHtml += `<path d="${geo.pathD}" fill="none" stroke="${stroke}" stroke-width="5" stroke-dasharray="${dash}" stroke-linejoin="round" opacity="0.92" />`;
-        beltDimsHtml += centerDistanceMarksForRunWithOverride(br.nodeIds, 'belt', br.centerOverride_mm ?? 0);
+        if (td.overTension) {
+          beltsHtml += `<path d="${geo.pathD}" fill="none" stroke="rgba(248,113,113,0.42)" stroke-width="${sw + 5}" stroke-dasharray="${dash}" stroke-linejoin="round" opacity="0.9" />`;
+        }
+        beltsHtml += `<path d="${geo.pathD}" fill="none" stroke="${stroke}" stroke-width="${sw}" stroke-dasharray="${dash}" stroke-linejoin="round" opacity="0.96" />`;
+        for (const arc of metrics.arcs) {
+          beltsHtml += `<path d="${arc.d}" fill="none" stroke="${arc.ok ? 'rgba(52,211,153,0.55)' : 'rgba(248,113,113,0.65)'}" stroke-width="9" stroke-linecap="round" opacity="0.45" />`;
+        }
+        beltDimsHtml += beltDistanceMarksHtml(br);
+      }
+      if (geo.pathD && motorNode && br.nodeIds.includes(motorNode.id)) {
+        const safeId = String(br.id).replace(/[^a-zA-Z0-9_-]/g, '_');
+        const pathRef = `txFlow_${safeId}`;
+        beltsHtml += `<path id="${pathRef}" d="${geo.pathD}" fill="none" stroke="none" />`;
+        const reverse = (kin.byId[motorNode.id]?.n_rpm ?? 0) < 0;
+        beltsHtml += `<circle class="tx-belt-flow-dot" r="5" fill="#fbbf24" opacity="0.95"><animateMotion dur="2.8s" repeatCount="indefinite" rotate="auto" keyPoints="${reverse ? '1;0' : '0;1'}" keyTimes="0;1" calcMode="linear"><mpath xlink:href="#${pathRef}" href="#${pathRef}" /></animateMotion></circle>`;
       }
     }
     const guide = manualTangentGuide();
@@ -869,18 +1117,18 @@ function drawSvg(kin) {
       const candDots = cands
         .map(
           (c) =>
-            `<circle cx="${c.p0.x.toFixed(2)}" cy="${c.p0.y.toFixed(2)}" r="3.4" fill="#60a5fa" />
-             <circle cx="${c.p1.x.toFixed(2)}" cy="${c.p1.y.toFixed(2)}" r="3.4" fill="#60a5fa" />`,
+            `<circle cx="${c.p0.x.toFixed(2)}" cy="${c.p0.y.toFixed(2)}" r="3.4" fill="#67e8f9" />
+             <circle cx="${c.p1.x.toFixed(2)}" cy="${c.p1.y.toFixed(2)}" r="3.4" fill="#67e8f9" />`,
         )
         .join('');
       manualGuideHtml = `
         <line x1="${best.p0.x.toFixed(2)}" y1="${best.p0.y.toFixed(2)}" x2="${best.p1.x.toFixed(2)}" y2="${best.p1.y.toFixed(2)}"
-          stroke="#2563eb" stroke-width="4" stroke-dasharray="8 5" opacity="0.95" />
-        <circle cx="${best.p0.x.toFixed(2)}" cy="${best.p0.y.toFixed(2)}" r="5" fill="#1d4ed8" />
-        <circle cx="${best.p1.x.toFixed(2)}" cy="${best.p1.y.toFixed(2)}" r="5" fill="#1d4ed8" />
+          stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="8 5" opacity="0.95" />
+        <circle cx="${best.p0.x.toFixed(2)}" cy="${best.p0.y.toFixed(2)}" r="5" fill="#22d3ee" />
+        <circle cx="${best.p1.x.toFixed(2)}" cy="${best.p1.y.toFixed(2)}" r="5" fill="#22d3ee" />
         ${candDots}
         <text x="${((a.x + b.x) / 2).toFixed(2)}" y="${(((a.y + b.y) / 2) - 12).toFixed(2)}" text-anchor="middle"
-          fill="#1d4ed8" font-size="10" font-weight="800" font-family="Inter,system-ui,sans-serif">Tangencia detectada</text>
+          fill="#67e8f9" font-size="10" font-weight="800" font-family="ui-monospace,Consolas,monospace">Tangencia</text>
       `;
     }
   }
@@ -892,14 +1140,14 @@ function drawSvg(kin) {
     if (previewCIds) {
       const geo = pathGeometryForIds(previewCIds);
       if (geo.pathD) {
-        chainsHtml += `<path class="tx-path-preview" d="${geo.pathD}" fill="none" stroke="#475569" stroke-width="4" stroke-dasharray="12 7" stroke-linejoin="round" opacity="0.72" />`;
+        chainsHtml += `<path class="tx-path-preview" d="${geo.pathD}" fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="10 7" stroke-linejoin="round" opacity="0.65" />`;
         chainDimsHtml += centerDistanceMarksForRunWithOverride(previewCIds, 'chain', 0);
       }
     }
     for (const cr of state.chainRuns) {
       const geo = pathGeometryForIdsWithOverride(cr.nodeIds, cr.centerOverride_mm ?? 0);
       if (geo.pathD) {
-        chainsHtml += `<path d="${geo.pathD}" fill="none" stroke="#1e293b" stroke-width="5" stroke-linejoin="round" opacity="0.9" />`;
+        chainsHtml += `<path d="${geo.pathD}" fill="none" stroke="#67e8f9" stroke-width="2.5" stroke-linejoin="round" opacity="0.92" />`;
         chainDimsHtml += centerDistanceMarksForRunWithOverride(cr.nodeIds, 'chain', cr.centerOverride_mm ?? 0);
       }
     }
@@ -911,20 +1159,13 @@ function drawSvg(kin) {
       const a = state.nodes.find((n) => n.id === e.a);
       const b = state.nodes.find((n) => n.id === e.b);
       if (!a || !b) continue;
-      meshHtml += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 4" opacity="0.85" />`;
+      meshHtml += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="rgba(34,211,238,0.35)" stroke-width="1.25" stroke-dasharray="6 5" opacity="0.95" />`;
       /* Cota de engranes siempre abajo del par para evitar solape con etiquetas superiores. */
       meshHtml += centerDistanceMarkBelow(a, b, 'a', 'chain', 62);
     }
   }
 
   let nodesHtml = '';
-  const visibleNodes = state.nodes.filter((n) => kindVisibleInTab(n.kind));
-  const hasCloseNeighbor = (node) =>
-    visibleNodes.some((other) => {
-      if (other.id === node.id) return false;
-      const d = Math.hypot(other.x - node.x, other.y - node.y);
-      return d < 175;
-    });
 
   for (const node of state.nodes) {
     if (!kindVisibleInTab(node.kind)) continue;
@@ -933,24 +1174,22 @@ function drawSvg(kin) {
     const D = getNodeD_mm(node);
     const r = D / 2;
     const k = node.kind;
-    const fill = k === 'gear' ? '#ccfbf1' : k === 'pulley' ? '#fef3c7' : '#e2e8f0';
+    const accent = hudAccentStroke(node);
     const pulleyRole = node.kind === 'pulley' ? node.pulleyRole || 'driven' : '';
     const isIdler = pulleyRole === 'idler';
     const hasCrossIssue = node.kind === 'pulley' && crossedPulleyIds.has(node.id);
-    const stroke = sel
-      ? '#0d9488'
-      : k === 'gear'
-        ? '#0f766e'
-        : k === 'pulley'
-          ? isIdler
-            ? '#2563eb'
-            : '#b45309'
-          : '#475569';
-    const sw = sel ? 4 : 2.5;
+    const strokeBody = accent;
+    const sw =
+      sel ? (node.kind === 'gear' && node.isMotor ? 2.55 : 2.85) : node.kind === 'gear' && node.isMotor ? 2.15 : 1.45;
     const ph = node.phase_rad ?? 0;
     const rotDeg = (ph * 180) / Math.PI;
-    const motorRing = node.isMotor ? `<circle cx="${node.x}" cy="${node.y}" r="${r + 12}" fill="none" stroke="#059669" stroke-width="3" stroke-dasharray="6 4" />` : '';
-    const crossRing = hasCrossIssue ? `<circle cx="${node.x}" cy="${node.y}" r="${r + 16}" fill="none" stroke="#ef4444" stroke-width="3" opacity="0.75" class="tx-cross-glow" />` : '';
+    const motorStrokeOuter = node.kind === 'gear' && node.isMotor ? '#fbbf24' : '#fb923c';
+    const motorRing = node.isMotor
+      ? `<circle cx="${node.x}" cy="${node.y}" r="${r + 12}" fill="none" stroke="${motorStrokeOuter}" stroke-width="1.75" stroke-dasharray="5 4" opacity="0.95" />`
+      : '';
+    const crossRing = hasCrossIssue
+      ? `<circle cx="${node.x}" cy="${node.y}" r="${r + 16}" fill="none" stroke="#f87171" stroke-width="2" opacity="0.85" class="tx-cross-glow" />`
+      : '';
 
     let symbol = '';
     if (k === 'gear') {
@@ -959,14 +1198,14 @@ function drawSvg(kin) {
         const t = (i / teeth) * Math.PI * 2;
         const x1 = node.x + (r - 2) * Math.cos(t);
         const y1 = node.y + (r - 2) * Math.sin(t);
-        const x2 = node.x + (r + 6) * Math.cos(t);
-        const y2 = node.y + (r + 6) * Math.sin(t);
-        symbol += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#0f766e" stroke-width="2" />`;
+        const x2 = node.x + (r + 5) * Math.cos(t);
+        const y2 = node.y + (r + 5) * Math.sin(t);
+        symbol += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${accent}" stroke-width="1.25" />`;
       }
     } else if (k === 'pulley') {
-      symbol += `<circle cx="${node.x}" cy="${node.y}" r="${r * 0.35}" fill="none" stroke="#92400e" stroke-width="2" />`;
+      symbol += `<circle cx="${node.x}" cy="${node.y}" r="${r * 0.35}" fill="none" stroke="${accent}" stroke-width="1.35" />`;
       if (isIdler) {
-        symbol += `<circle cx="${node.x}" cy="${node.y}" r="${Math.max(8, r * 0.72)}" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="6 4" />`;
+        symbol += `<circle cx="${node.x}" cy="${node.y}" r="${Math.max(8, r * 0.72)}" fill="none" stroke="${accent}" stroke-width="1.2" stroke-dasharray="5 4" opacity="0.85" />`;
       }
     } else {
       const z = Math.max(6, node.z ?? 17);
@@ -974,82 +1213,36 @@ function drawSvg(kin) {
         const t = (i / z) * Math.PI * 2;
         const x2 = node.x + r * Math.cos(t);
         const y2 = node.y + r * Math.sin(t);
-        symbol += `<circle cx="${x2}" cy="${y2}" r="3" fill="#334155" />`;
+        symbol += `<circle cx="${x2}" cy="${y2}" r="2.6" fill="${accent}" opacity="0.95" />`;
       }
     }
 
     const kn = kin.byId[node.id];
     const zLabel = k === 'pulley' ? `Ø${Math.round(D)}` : `z${node.z ?? '--'}`;
-    const tag = kn ? `${zLabel} · ${Math.abs(kn.n_rpm).toFixed(0)} rpm · ${kn.T_Nm.toFixed(1)} N*m` : `${k} #${node.id}`;
-    const mini = kn
-      ? `n ${num(Math.abs(kn.n_rpm), 0)} rpm · T ${num(kn.T_Nm, 1)} N*m`
-      : `${zLabel} · sin propagación`;
-    const showMini = sel || !hasCloseNeighbor(node);
+    const rpmTxt = kn ? `${Math.abs(kn.n_rpm).toFixed(0)} rpm` : `— rpm`;
+    const torqueTxt = kn ? `${kn.T_Nm.toFixed(1)} N·m` : `— N·m`;
 
-    nodesHtml += `<g class="tx-node" data-id="${node.id}" style="cursor:grab">
+    nodesHtml += `<g class="tx-node" data-id="${node.id}">
+      <text x="${node.x}" y="${(node.y - r - 20).toFixed(1)}" text-anchor="middle" fill="#a5f3fc" font-size="9.5" font-weight="700" font-family="ui-monospace,Courier New,monospace">${esc(rpmTxt)}</text>
+      <text x="${node.x}" y="${(node.y - r - 7).toFixed(1)}" text-anchor="middle" fill="${accent}" font-size="9.5" font-weight="700" font-family="ui-monospace,Courier New,monospace">${esc(torqueTxt)}</text>
+      <g filter="url(#txHudGlow)" style="cursor:grab">
       ${motorRing}
       ${crossRing}
       <g transform="rotate(${rotDeg.toFixed(2)} ${node.x} ${node.y})">
-        <circle cx="${node.x}" cy="${node.y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" />
+        <circle cx="${node.x}" cy="${node.y}" r="${r}" fill="rgba(8,47,73,0.42)" stroke="${strokeBody}" stroke-width="${sw}" />
         ${symbol}
       </g>
-      ${
-        showMini
-          ? `<rect x="${(node.x - 70).toFixed(1)}" y="${(node.y + r + 8).toFixed(1)}" width="140" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" opacity="0.96" />
-      <text x="${node.x}" y="${(node.y + r + 20).toFixed(1)}" text-anchor="middle" font-size="9.2" font-weight="700" fill="#334155" font-family="Inter,system-ui,sans-serif">${esc(
-              mini,
-            )}</text>`
-          : ''
-      }
+      </g>
       ${
         sel
-          ? `<rect x="${node.x - 84}" y="${node.y - r - 44}" width="168" height="34" rx="5" fill="#0f172a" opacity="0.93" />
-      <text x="${node.x}" y="${node.y - r - 24}" text-anchor="middle" font-size="10" font-weight="700" fill="#f8fafc" font-family="Inter,system-ui,sans-serif">${esc(tag)}</text>`
+          ? `<circle cx="${node.x}" cy="${node.y}" r="${r + 8}" fill="none" stroke="#22d3ee" stroke-width="3" opacity="0.98" pointer-events="none" />
+      <text x="${node.x}" y="${(node.y + r + 28).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="800" fill="#a5f3fc" font-family="ui-monospace,Courier New,monospace">${esc(zLabel)}</text>`
           : ''
       }
     </g>`;
   }
 
   svg.innerHTML = defs + beltsHtml + chainsHtml + beltDimsHtml + chainDimsHtml + meshHtml + manualGuideHtml + nodesHtml;
-
-  svg.querySelectorAll('.tx-node').forEach((g) => {
-    g.addEventListener('contextmenu', (ev) => {
-      ev.preventDefault();
-      const id = Number(g.getAttribute('data-id'));
-      if (!Number.isFinite(id)) return;
-      const n = state.nodes.find((x) => x.id === id);
-      if (!n) return;
-      state.selectedId = id;
-      propsDirty = true;
-      showNodeContextMenu(n, ev.clientX, ev.clientY);
-    });
-    g.addEventListener('pointerdown', (ev) => {
-      closeContextMenu();
-      const id = Number(g.getAttribute('data-id'));
-      if (!Number.isFinite(id)) return;
-      const n = state.nodes.find((x) => x.id === id);
-      if (!n) return;
-
-      const beltPick = activeTab === 'belts' && mode === 'belt' && n.kind === 'pulley';
-      const chainPick = activeTab === 'chains' && mode === 'chain' && n.kind === 'sprocket';
-
-      if (beltPick || chainPick) {
-        pending = { id, px: n.x, py: n.y, sx: ev.clientX, sy: ev.clientY };
-      } else {
-        state.selectedId = id;
-        const p = clientToSvg(ev);
-        drag = { id, ox: p.x, oy: p.y, px: n.x, py: n.y };
-        pending = null;
-      }
-      ev.preventDefault();
-      propsDirty = true;
-      const { n: n0, T: t0 } = readMotorInputs();
-      const kkin = propagateKinematics(state, n0, t0);
-      const verdict = computeVerdicts(state, kkin);
-      updateHud(kkin, verdict);
-      drawSvg(kkin);
-    });
-  });
 }
 
 function tryPickShortClick(ev) {
@@ -1123,6 +1316,34 @@ function onPointerMove(ev) {
   node.x = drag.px + (p.x - drag.ox);
   node.y = drag.py + (p.y - drag.oy);
   if (node.kind === 'gear') snapGearToPeer(state, node.id, 22);
+  if (
+    TX_IDLER_BELT_AUTO_SNAP &&
+    activeTab === 'belts' &&
+    state.beltRuns.length &&
+    node.kind === 'pulley'
+  ) {
+    const thresh = screenPxToSvgLen(TX_IDLER_BELT_SNAP_SCREEN_PX);
+    let bestRun = null;
+    let bestD = Infinity;
+    for (const br of state.beltRuns) {
+      const d = minDistPointToBeltRunCoreMm(state, br, node.x, node.y, br.centerOverride_mm ?? 0);
+      if (d < bestD) {
+        bestD = d;
+        bestRun = br;
+      }
+    }
+    if (bestRun && bestD < thresh) {
+      node.idlerBeltSnapLocked = true;
+      if (!bestRun.nodeIds.includes(node.id)) {
+        attachPulleyAsIdlerToRun(node.id, bestRun.id);
+      }
+      if (node.pulleyRole !== 'idler') {
+        node.pulleyRole = 'idler';
+        node.idlerWrapSide = node.idlerWrapSide || 'outside';
+        node.isExternal = node.idlerWrapSide === 'outside';
+      }
+    }
+  }
   const { n: n0, T: t0 } = readMotorInputs();
   const kin = propagateKinematics(state, n0, t0);
   const verdict = computeVerdicts(state, kin);
@@ -1154,12 +1375,13 @@ function frame(t) {
   lastT = t;
   const { n: n0, T: t0 } = readMotorInputs();
   const kin = propagateKinematics(state, n0, t0);
+  const verdict = computeVerdicts(state, kin);
+  const spinBoost = verdict.worst === VERDICT.OK ? 2.4 : 1;
   for (const node of state.nodes) {
     const k = kin.byId[node.id];
     if (!k) continue;
-    node.phase_rad = (node.phase_rad ?? 0) + k.omega * dt;
+    node.phase_rad = (node.phase_rad ?? 0) + k.omega * dt * spinBoost;
   }
-  const verdict = computeVerdicts(state, kin);
   updateHud(kin, verdict);
   if (propsDirty) {
     syncPropsPanel();
@@ -1171,19 +1393,20 @@ function frame(t) {
 
 function syncPropsPanel() {
   if (!propsPanel) return;
+  if (!propsDrawerOpen) {
+    propsPanel.innerHTML = '';
+    updateDrawerOpen();
+    return;
+  }
   if (!selectedMatchesTab()) {
-    const hint =
-      activeTab === 'gears'
-        ? 'Seleccione un engranaje en el lienzo (pestaña Engranajes).'
-        : activeTab === 'belts'
-          ? 'Seleccione una polea (pestaña Poleas y correas).'
-          : 'Seleccione un piñón (pestaña Piñones y cadenas).';
-    propsPanel.innerHTML = `<p class="tx-muted">${hint}</p>`;
+    propsPanel.innerHTML = `<p class="tx-muted">Doble clic en un elemento del lienzo para editar propiedades.</p>`;
+    updateDrawerOpen();
     return;
   }
   const node = state.nodes.find((n) => n.id === state.selectedId);
   if (!node) {
     propsPanel.innerHTML = '<p class="tx-muted">Seleccione un elemento en el lienzo.</p>';
+    updateDrawerOpen();
     return;
   }
   if (node.kind === 'gear') {
@@ -1194,15 +1417,16 @@ function syncPropsPanel() {
     const eff = Number.isFinite(node.meshEff_pct) ? node.meshEff_pct : 98.5;
     propsPanel.innerHTML = `
       <div class="tx-props-head">Configuracion: Engranaje #${node.id}</div>
+      <button type="button" class="lab-btn tx-btn--motor-primary" data-tx-p="setMotorInput">Definir como Entrada (Motor)</button>
       <div class="lab-grid lab-grid--2 tx-props-grid">
-        <div class="lab-field"><label>z dientes ${helpTip('Numero de dientes del engranaje. Afecta relacion de transmision y diametro primitivo.')}</label><input type="number" min="6" data-tx-p="z" value="${node.z}" /></div>
-        <div class="lab-field"><label>m (mm) ${helpTip('Modulo en mm. Para engranar, pares conectados deben compartir modulo.')}</label><input type="number" min="0.25" step="0.25" data-tx-p="m" value="${node.module_mm}" /></div>
-        <div class="lab-field"><label>b (mm) ${helpTip('Ancho de cara. Se usa en los chequeos simplificados de flexion/contacto.')}</label><input type="number" min="4" data-tx-p="b" value="${node.faceWidth_mm}" /></div>
-        <div class="lab-field"><label>alpha (deg) ${helpTip('Angulo de presion de referencia. Solo informativo en esta version visual.')}</label><input type="number" min="14.5" max="30" step="0.5" data-tx-p="alpha" value="${alpha}" /></div>
-        <div class="lab-field"><label>beta (deg) ${helpTip('Angulo de helice. Si usa dientes rectos, deje 0.')}</label><input type="number" min="0" max="45" step="0.5" data-tx-p="beta" value="${beta}" /></div>
-        <div class="lab-field"><label>eta malla (%) ${helpTip('Rendimiento por malla, para memoria de calculo. No altera aun la propagacion base.')}</label><input type="number" min="85" max="99.9" step="0.1" data-tx-p="eta" value="${eff}" /></div>
-        <div class="lab-field"><label>X (mm) ${helpTip('Coordenada horizontal del centro en el lienzo tecnico.')}</label><input type="number" step="1" data-tx-p="x" value="${x.toFixed(0)}" /></div>
-        <div class="lab-field"><label>Y (mm) ${helpTip('Coordenada vertical del centro en el lienzo tecnico.')}</label><input type="number" step="1" data-tx-p="y" value="${y.toFixed(0)}" /></div>
+        <div class="lab-field">${labelWithHelp('z dientes', 'Numero de dientes del engranaje. Afecta relacion de transmision y diametro primitivo.')}<input type="number" min="6" data-tx-p="z" value="${node.z}" /></div>
+        <div class="lab-field">${labelWithHelp('m (mm)', 'Modulo en mm. Para engranar, pares conectados deben compartir modulo.')}<input type="number" min="0.25" step="0.25" data-tx-p="m" value="${node.module_mm}" /></div>
+        <div class="lab-field">${labelWithHelp('b (mm)', 'Ancho de cara. Se usa en los chequeos simplificados de flexion/contacto.')}<input type="number" min="4" data-tx-p="b" value="${node.faceWidth_mm}" /></div>
+        <div class="lab-field">${labelWithHelp('alpha (deg)', 'Angulo de presion de referencia. Solo informativo en esta version visual.')}<input type="number" min="14.5" max="30" step="0.5" data-tx-p="alpha" value="${alpha}" /></div>
+        <div class="lab-field">${labelWithHelp('beta (deg)', 'Angulo de helice. Si usa dientes rectos, deje 0.')}<input type="number" min="0" max="45" step="0.5" data-tx-p="beta" value="${beta}" /></div>
+        <div class="lab-field">${labelWithHelp('eta malla (%)', 'Rendimiento por malla, para memoria de calculo. No altera aun la propagacion base.')}<input type="number" min="85" max="99.9" step="0.1" data-tx-p="eta" value="${eff}" /></div>
+        <div class="lab-field">${labelWithHelp('X (mm)', 'Coordenada horizontal del centro en el lienzo tecnico.')}<input type="number" step="1" data-tx-p="x" value="${x.toFixed(0)}" /></div>
+        <div class="lab-field">${labelWithHelp('Y (mm)', 'Coordenada vertical del centro en el lienzo tecnico.')}<input type="number" step="1" data-tx-p="y" value="${y.toFixed(0)}" /></div>
       </div>
       <button type="button" class="lab-btn" data-tx-p="del" style="margin-top:0.5rem">Eliminar elemento</button>`;
   } else if (node.kind === 'pulley') {
@@ -1211,28 +1435,33 @@ function syncPropsPanel() {
     const cVal = bsum?.cDist ?? 0;
     const runOpts = state.beltRuns.map((r) => `<option value="${r.id}" ${br && r.id === br.id ? 'selected' : ''}>${esc(r.id)}</option>`).join('');
     const role = node.pulleyRole || 'driven';
+    const bkRun = br?.kind ?? 'v';
     propsPanel.innerHTML = `
       <div class="tx-props-head">Configuracion: Polea #${node.id}</div>
+      <button type="button" class="lab-btn tx-btn--motor-primary" data-tx-p="setMotorInput">Definir como Entrada (Motor)</button>
       <div class="lab-grid lab-grid--2 tx-props-grid">
-      <div class="lab-field"><label>Ø primitivo (mm) ${helpTip('Diametro de paso de la polea. Define relacion de velocidad con la polea enlazada.')}</label>
+      <div class="lab-field">${labelWithHelp('Ø primitivo (mm)', 'Diametro de paso de la polea. Define relacion de velocidad con la polea enlazada.')}
         <input type="number" min="10" data-tx-p="d" value="${node.d_mm}" />
         <input type="range" min="40" max="420" step="1" data-tx-p="dRange" value="${Math.max(40, Math.min(420, Number(node.d_mm) || 120))}" />
       </div>
-      <div class="lab-field"><label>Tipo de polea ${helpTip('Motriz/conducida/tensora. La tensora afecta trazado y longitud, pero no cambia la relacion principal de transmision.')}</label>
+      <div class="lab-field">${labelWithHelp('z (dientes)', 'Correa síncrona: con el paso p de la corrida, d_primitivo = z·p/π. Vacío = usar solo Ø primitivo.')}
+        <input type="number" min="6" step="1" data-tx-p="pulleyZ" value="${node.z != null && Number.isFinite(node.z) ? node.z : ''}" placeholder="—" />
+      </div>
+      <div class="lab-field">${labelWithHelp('Tipo de polea', 'Motriz/conducida/tensora. La tensora afecta trazado y longitud, pero no cambia la relacion principal de transmision.')}
         <div class="tx-segmented" data-tx-p="pulleyRoleSeg">
           <button type="button" data-role="driven" class="${role === 'driven' ? 'is-active' : ''}">Conducida</button>
           <button type="button" data-role="drive" class="${role === 'drive' ? 'is-active' : ''}">Motriz</button>
           <button type="button" data-role="idler" class="${role === 'idler' ? 'is-active' : ''}">Tensora</button>
         </div>
       </div>
-      <div class="lab-field"><label>Contacto tensora ${helpTip('Solo para polea tensora. Exterior: contacto por fuera de la correa. Interior: contacto por dentro (retorno).')}</label>
+      <div class="lab-field">${labelWithHelp('Contacto tensora', 'Solo para polea tensora. Exterior: contacto por fuera de la correa. Interior: contacto por dentro (retorno).')}
         <select data-tx-p="idlerWrap" ${node.pulleyRole === 'idler' ? '' : 'disabled'}>
           <option value="outside" ${(node.idlerWrapSide || 'outside') === 'outside' ? 'selected' : ''}>Exterior</option>
           <option value="inside" ${(node.idlerWrapSide || 'outside') === 'inside' ? 'selected' : ''}>Interior</option>
         </select>
       </div>
       <div class="lab-field">
-        <label>Contacto dorsal (exterior) ${helpTip('Si está activa, esta polea se trata como nodo de inflexión (back-side): usa tangentes internas contra poleas normales y arco corto local.')}</label>
+        ${labelWithHelp('Contacto dorsal (exterior)', 'Si está activa, esta polea se trata como nodo de inflexión (back-side): usa tangentes internas contra poleas normales y arco corto local.')}
         <label class="tx-switch">
           <input type="checkbox" data-tx-p="isExternal" ${node.isExternal ? 'checked' : ''} ${node.pulleyRole === 'idler' ? '' : 'disabled'} />
           <span class="tx-switch__track"></span>
@@ -1243,7 +1472,7 @@ function syncPropsPanel() {
         </svg>
       </div>
       <div class="lab-field lab-field--wide">
-        <label>Correa activa ${helpTip('Seleccione una correa activa para unir esta polea como tensora.')}</label>
+        ${labelWithHelp('Correa activa', 'Seleccione una correa activa para unir esta polea como tensora.')}
         <div class="tx-chip-row">${state.beltRuns
           .map((r) => `<button type="button" class="tx-chip ${br && r.id === br.id ? 'is-active' : ''}" data-tx-p="runChip" data-run-id="${r.id}">${esc(r.id)}</button>`)
           .join('')}</div>
@@ -1252,17 +1481,20 @@ function syncPropsPanel() {
           <button type="button" class="lab-btn tx-btn--secondary" data-tx-p="applyIdler" ${state.beltRuns.length ? '' : 'disabled'}>Aplicar como tensora</button>
         </div>
       </div>
-      <div class="lab-field"><label>X (mm) ${helpTip('Coordenada horizontal del centro de polea.')}</label><input type="number" step="1" data-tx-p="x" value="${(node.x ?? 0).toFixed(0)}" /></div>
-      <div class="lab-field"><label>Y (mm) ${helpTip('Coordenada vertical del centro de polea.')}</label><input type="number" step="1" data-tx-p="y" value="${(node.y ?? 0).toFixed(0)}" /></div>
+      <div class="lab-field">${labelWithHelp('X (mm)', 'Coordenada horizontal del centro de polea.')}<input type="number" step="1" data-tx-p="x" value="${(node.x ?? 0).toFixed(0)}" /></div>
+      <div class="lab-field">${labelWithHelp('Y (mm)', 'Coordenada vertical del centro de polea.')}<input type="number" step="1" data-tx-p="y" value="${(node.y ?? 0).toFixed(0)}" /></div>
       ${
         br && bsum
-          ? `<div class="lab-field"><label>C1 manual (mm) ${helpTip('Distancia entre centros del primer tramo de la correa. Ajusta geometria y longitud resultante.')}</label><input type="number" min="20" step="1" data-tx-p="beltC" value="${cVal.toFixed(0)}" /></div>
-      <div class="lab-field"><label>Deslizamiento s (%) ${helpTip('Solo para correa V. Se usa para ajustar n2 = n1*(d1/d2)*(1-s).')}</label><input type="number" min="0" max="8" step="0.1" data-tx-p="slip" value="${(((br.slip ?? 0.018) * 100)).toFixed(2)}" ${br.kind === 'sync' ? 'disabled' : ''} /></div>
-      <div class="lab-field lab-field--wide"><label>Tipo de correa ${helpTip('V: con deslizamiento. Sincrona: sin deslizamiento nominal.')}</label><input type="text" value="${
-            br.kind === 'sync' ? 'Sincrona' : 'V'
-          }" disabled /></div>
+          ? `<div class="lab-field">${labelWithHelp('C1 manual (mm)', 'Distancia entre centros del primer tramo de la correa. Ajusta geometria y longitud resultante.')}<input type="number" min="20" step="1" data-tx-p="beltC" value="${cVal.toFixed(0)}" /></div>
+      <div class="lab-field">${labelWithHelp('Deslizamiento s (%)', 'Correa V o plana: n₂ ≈ n₁·(d₁/d₂)·(1−s).')}<input type="number" min="0" max="8" step="0.1" data-tx-p="slip" value="${(((br.slip ?? 0.018) * 100)).toFixed(2)}" ${bkRun === 'sync' ? 'disabled' : ''} /></div>
+      <div class="lab-field lab-field--wide">${labelWithHelp('Tipo de correa', 'Definido al cerrar el lazo.')}<input type="text" value="${beltKindUiLabel(bkRun)}" disabled /></div>
+      ${
+        br && bkRun === 'sync'
+          ? `<div class="lab-field">${labelWithHelp('Paso p corrida (mm)', 'Paso de la correa síncrona (cinemática con z en poleas).')}<input type="number" min="2" step="0.5" data-tx-p="beltPitch" value="${Number(br.pitch_mm ?? 8).toFixed(3)}" /></div>`
+          : ''
+      }
       <div class="tx-run-summary">
-        <div><strong>Correa ${esc(br.id)}</strong> · ${br.kind === 'sync' ? 'Síncrona' : 'V'}</div>
+        <div><strong>Correa ${esc(br.id)}</strong> · ${beltKindUiLabel(bkRun)}</div>
         <div>Longitud geométrica: <strong>${bsum.geo.length_mm.toFixed(1)} mm</strong></div>
         <div>Longitud efectiva: <strong>${bsum.Leff.toFixed(1)} mm</strong></div>
         ${
@@ -1271,7 +1503,7 @@ function syncPropsPanel() {
             : ''
         }
         ${
-          br.kind === 'v' && bsum.comm
+          bkRun === 'v' && bsum.comm
             ? `<div>Comercial demo: <strong>${bsum.comm.L_nom.toFixed(0)} mm</strong> (${bsum.comm.ok ? 'OK' : `Δ ${bsum.comm.delta_mm.toFixed(1)} mm`})</div>`
             : ''
         }
@@ -1295,14 +1527,15 @@ function syncPropsPanel() {
     const cVal = csum?.cDist ?? 0;
     propsPanel.innerHTML = `
       <div class="tx-props-head">Configuracion: Piñon #${node.id}</div>
+      <button type="button" class="lab-btn tx-btn--motor-primary" data-tx-p="setMotorInput">Definir como Entrada (Motor)</button>
       <div class="lab-grid lab-grid--2 tx-props-grid">
-      <div class="lab-field"><label>z dientes ${helpTip('Numero de dientes del pinon. Influye en velocidad, par y efecto poligonal.')}</label><input type="number" min="6" data-tx-p="z" value="${node.z}" /></div>
-      <div class="lab-field lab-field--wide"><label>Cadena ISO/ANSI ${helpTip('Seleccione el paso de cadena comercial para longitud en pasos y verificacion de cierre.')}</label><select data-tx-p="chain">${opts}</select></div>
-      <div class="lab-field"><label>X (mm) ${helpTip('Coordenada horizontal del centro del pinon.')}</label><input type="number" step="1" data-tx-p="x" value="${(node.x ?? 0).toFixed(0)}" /></div>
-      <div class="lab-field"><label>Y (mm) ${helpTip('Coordenada vertical del centro del pinon.')}</label><input type="number" step="1" data-tx-p="y" value="${(node.y ?? 0).toFixed(0)}" /></div>
+      <div class="lab-field">${labelWithHelp('z dientes', 'Numero de dientes del pinon. Influye en velocidad, par y efecto poligonal.')}<input type="number" min="6" data-tx-p="z" value="${node.z}" /></div>
+      <div class="lab-field lab-field--wide">${labelWithHelp('Cadena ISO/ANSI', 'Seleccione el paso de cadena comercial para longitud en pasos y verificacion de cierre.')}<select data-tx-p="chain">${opts}</select></div>
+      <div class="lab-field">${labelWithHelp('X (mm)', 'Coordenada horizontal del centro del pinon.')}<input type="number" step="1" data-tx-p="x" value="${(node.x ?? 0).toFixed(0)}" /></div>
+      <div class="lab-field">${labelWithHelp('Y (mm)', 'Coordenada vertical del centro del pinon.')}<input type="number" step="1" data-tx-p="y" value="${(node.y ?? 0).toFixed(0)}" /></div>
       ${
         cr && csum
-          ? `<div class="lab-field lab-field--wide"><label>C1 manual (mm) ${helpTip('Distancia entre centros del primer tramo de cadena; ajusta longitud total y numero de pasos.')}</label><input type="number" min="20" step="1" data-tx-p="chainC" value="${cVal.toFixed(0)}" /></div>
+          ? `<div class="lab-field lab-field--wide">${labelWithHelp('C1 manual (mm)', 'Distancia entre centros del primer tramo de cadena; ajusta longitud total y numero de pasos.')}<input type="number" min="20" step="1" data-tx-p="chainC" value="${cVal.toFixed(0)}" /></div>
       <div class="tx-run-summary">
         <div><strong>Cadena ${esc(cr.id)}</strong> · paso p = ${csum.p.toFixed(3)} mm</div>
         <div>Longitud total: <strong>${csum.geo.length_mm.toFixed(1)} mm</strong></div>
@@ -1319,7 +1552,21 @@ function syncPropsPanel() {
   propsPanel.querySelector('[data-tx-p="del"]')?.addEventListener('click', () => {
     const sid = state.selectedId;
     if (sid != null) removeNode(state, sid);
+    propsDrawerOpen = false;
     propsDirty = true;
+  });
+
+  propsPanel.querySelector('[data-tx-p="setMotorInput"]')?.addEventListener('click', () => {
+    const sid = state.selectedId;
+    if (sid == null) return;
+    setMotor(state, sid);
+    propsDirty = true;
+    const { n: n0, T: t0 } = readMotorInputs();
+    const kin = propagateKinematics(state, n0, t0);
+    const verdict = computeVerdicts(state, kin);
+    updateHud(kin, verdict);
+    drawSvg(kin);
+    syncPropsPanel();
   });
 
   propsPanel.querySelector('[data-tx-p="applyIdler"]')?.addEventListener('click', () => {
@@ -1417,7 +1664,18 @@ function syncPropsPanel() {
       if (k === 'slip' && node.kind === 'pulley') {
         const run = state.beltRuns.find((r) => r.nodeIds.includes(node.id));
         const pct = Math.max(0, Math.min(8, parseFloat(/** @type {HTMLInputElement} */ (el).value) || 0));
-        if (run && run.kind === 'v') run.slip = pct / 100;
+        const bk = run?.kind ?? 'v';
+        if (run && bk !== 'sync') run.slip = pct / 100;
+      }
+      if (k === 'pulleyZ' && node.kind === 'pulley') {
+        const raw = parseFloat(/** @type {HTMLInputElement} */ (el).value);
+        if (!Number.isFinite(raw) || raw < 6) delete node.z;
+        else node.z = Math.round(raw);
+      }
+      if (k === 'beltPitch' && node.kind === 'pulley') {
+        const run = state.beltRuns.find((r) => r.nodeIds.includes(node.id));
+        const v = Math.max(2, parseFloat(/** @type {HTMLInputElement} */ (el).value) || 8);
+        if (run && (run.kind ?? 'v') === 'sync') run.pitch_mm = v;
       }
       if (k === 'chainC' && node.kind === 'sprocket') {
         const run = state.chainRuns.find((r) => r.nodeIds.includes(node.id));
@@ -1433,16 +1691,24 @@ function syncPropsPanel() {
     el.addEventListener('change', () => {
       if (el instanceof HTMLSelectElement || (el instanceof HTMLInputElement && el.type === 'checkbox')) {
         const key = el.getAttribute('data-tx-p');
-        if (key === 'chain' || key === 'pulleyRole' || key === 'idlerWrap' || key === 'isExternal') {
+        if (key === 'chain' || key === 'pulleyRole' || key === 'idlerWrap' || key === 'isExternal' || key === 'beltPitch') {
           el.dispatchEvent(new Event('input'));
         }
       }
     });
   });
+  updateDrawerOpen();
+}
+
+function refreshSyncPitchRowVisibility() {
+  const row = document.getElementById('txSyncPitchRow');
+  const sel = document.getElementById('txBeltKind');
+  if (row) row.hidden = !(sel instanceof HTMLSelectElement && sel.value === 'sync');
 }
 
 function switchTab(tab) {
   activeTab = tab;
+  propsDrawerOpen = false;
   mode = 'none';
   pending = null;
   drag = null;
@@ -1461,6 +1727,7 @@ function switchTab(tab) {
   if (pg) pg.hidden = tab !== 'gears';
   if (pb) pb.hidden = tab !== 'belts';
   if (pc) pc.hidden = tab !== 'chains';
+  refreshSyncPitchRowVisibility();
   if (!selectedMatchesTab()) state.selectedId = null;
   propsDirty = true;
 }
@@ -1513,6 +1780,41 @@ document.getElementById('txClearChains')?.addEventListener('click', () => {
   clearChainsWorkspace();
 });
 
+document.getElementById('txClearActiveTab')?.addEventListener('click', () => {
+  propsDrawerOpen = false;
+  if (activeTab === 'gears') clearGearsWorkspace();
+  else if (activeTab === 'belts') {
+    clearBeltsWorkspace();
+    manualHoverPulleyId = null;
+    manualEdgeSigns = [];
+  } else clearChainsWorkspace();
+  propsDirty = true;
+});
+
+function txClosePropsDrawer() {
+  propsDrawerOpen = false;
+  propsDirty = true;
+}
+
+function txClosePropsDrawerAndDeselect() {
+  propsDrawerOpen = false;
+  state.selectedId = null;
+  propsDirty = true;
+  lastNodePointerAt = 0;
+  lastNodePointerId = null;
+}
+
+document.getElementById('txDrawerClose')?.addEventListener('click', txClosePropsDrawer);
+document.getElementById('txDrawerBackdrop')?.addEventListener('click', txClosePropsDrawer);
+
+svgWrap?.addEventListener('pointerdown', (ev) => {
+  const t = ev.target;
+  if (t instanceof SVGRectElement && t.classList.contains('tx-svg-bg')) {
+    txClosePropsDrawerAndDeselect();
+    closeContextMenu();
+  }
+});
+
 motorBtn?.addEventListener('click', () => {
   if (state.selectedId != null) setMotor(state, state.selectedId);
   propsDirty = true;
@@ -1541,13 +1843,19 @@ chainModeBtn?.addEventListener('click', () => {
   chainModeBtn.classList.toggle('tx-btn--active', mode === 'chain');
 });
 
-function finishBelt(kind) {
+function finishBelt() {
   const ids = [...state.beltPickOrder];
   const uniq = [...new Set(ids)].filter((id) => state.nodes.some((n) => n.id === id && n.kind === 'pulley'));
   if (uniq.length < 2) {
     alert('Seleccione al menos 2 poleas en orden (modo «Elegir orden», clic corto en cada una).');
     return;
   }
+  const sel = document.getElementById('txBeltKind');
+  const rawKind = sel instanceof HTMLSelectElement ? sel.value : 'v';
+  /** @type {'v'|'sync'|'flat'} */
+  const kind = rawKind === 'sync' || rawKind === 'flat' ? rawKind : 'v';
+  const pitchEl = document.getElementById('txSyncPitch');
+  const pitch_mm = kind === 'sync' ? Math.max(2, parseFloat(pitchEl instanceof HTMLInputElement ? pitchEl.value : '8') || 8) : undefined;
   /** @type {Array<-1|1>|undefined} */
   let edgeSigns;
   if (manualBeltTrace && uniq.length >= 2) {
@@ -1564,6 +1872,7 @@ function finishBelt(kind) {
     nodeIds: uniq,
     kind,
     slip: kind === 'sync' ? 0 : 0.018,
+    pitch_mm,
     centerOverride_mm: 0,
     edgeSigns,
   });
@@ -1574,8 +1883,7 @@ function finishBelt(kind) {
   propsDirty = true;
 }
 
-finishBeltBtn?.addEventListener('click', () => finishBelt('v'));
-finishSyncBtn?.addEventListener('click', () => finishBelt('sync'));
+finishBeltBtn?.addEventListener('click', () => finishBelt());
 
 finishChainBtn?.addEventListener('click', () => {
   const ids = [...state.chainPickOrder];
@@ -1686,10 +1994,97 @@ window.addEventListener('pointerup', onPointerUp);
 window.addEventListener('pointercancel', onPointerUp);
 window.addEventListener('click', () => closeContextMenu());
 window.addEventListener('keydown', (ev) => {
-  if (ev.key === 'Escape') closeContextMenu();
+  if (ev.key !== 'Escape') return;
+  closeContextMenu();
+  if (ev.target instanceof HTMLInputElement || ev.target instanceof HTMLTextAreaElement || ev.target instanceof HTMLSelectElement) return;
+  txClosePropsDrawer();
 });
 
+function buildTransmissionReportPlain(kin, verdict) {
+  const { n: n0, T: t0 } = readMotorInputs();
+  const lines = [];
+  lines.push('Informe técnico — Lienzo multieje (TheMechAssist)');
+  lines.push(`Generado: ${new Date().toISOString()}`);
+  lines.push(`Área de trabajo: ${activeTab}`);
+  lines.push(`Entrada cinemática: n₀ = ${n0} rpm, T₀ = ${t0} N·m`);
+  lines.push(`Veredicto (orientativo): ${verdict.worst}`);
+  if (verdict.items?.length) {
+    lines.push('Detalle:');
+    for (const it of verdict.items.slice(0, 16)) {
+      lines.push(`  [${it.level}] ${it.text}`);
+    }
+  }
+  lines.push('');
+  lines.push(`Elementos (${state.nodes.length}):`);
+  for (const node of state.nodes) {
+    const k = kin.byId[node.id];
+    const bits = [`${node.kind} #${node.id}`, `(${Number(node.x).toFixed(0)}, ${Number(node.y).toFixed(0)}) mm`];
+    if (node.isMotor) bits.push('MOTOR');
+    if (k) bits.push(`n=${Math.abs(k.n_rpm).toFixed(0)} rpm`, `T=${k.T_Nm.toFixed(2)} N·m`);
+    lines.push(`- ${bits.join(' · ')}`);
+  }
+  if (state.beltRuns.length) {
+    lines.push('');
+    lines.push('Correas:');
+    for (const br of state.beltRuns) {
+      const bk = br.kind ?? 'v';
+      lines.push(`- ${br.id}: ${beltKindUiLabel(bk)} · poleas [${br.nodeIds.join(', ')}]`);
+      const m = beltCoreEngagementMetrics(state, br);
+      lines.push(`  L total ≈ ${m.lengthMm.toFixed(1)} mm`);
+      if (bk === 'sync') lines.push(`  Paso p = ${Number(br.pitch_mm ?? 8).toFixed(3)} mm`);
+      for (const row of m.rows) {
+        lines.push(`  Polea #${row.id}: arco de contacto β ≈ ${row.wrapDeg.toFixed(1)}° (${row.gripOk ? 'agarre OK demo' : 'agarre bajo demo'})`);
+      }
+      for (const row of m.idlerWraps) {
+        lines.push(`  Tensora #${row.id}: abrazamiento γ ≈ ${row.wrapDeg.toFixed(1)}°`);
+      }
+    }
+  }
+  if (state.chainRuns.length) {
+    lines.push('');
+    lines.push('Cadenas:');
+    for (const cr of state.chainRuns) {
+      lines.push(`- ${cr.id}: piñones [${cr.nodeIds.join(', ')}]`);
+    }
+  }
+  return lines.join('\n');
+}
+
+document.getElementById('txSendReport')?.addEventListener('click', async () => {
+  const btn = document.getElementById('txSendReport');
+  const { n: n0, T: t0 } = readMotorInputs();
+  const kin = propagateKinematics(state, n0, t0);
+  const verdict = computeVerdicts(state, kin);
+  const text = buildTransmissionReportPlain(kin, verdict);
+  if (btn instanceof HTMLButtonElement) btn.disabled = true;
+  try {
+    const res = await fetch('/.netlify/functions/transmission-report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      if (res.status === 501 || data.error === 'not_configured') {
+        alert('Envío no configurado en el servidor (RESEND_API_KEY y FEEDBACK_TO_EMAIL o REPORT_TO_EMAIL).');
+        return;
+      }
+      throw new Error(data.error || `HTTP ${res.status}`);
+    }
+    alert('Informe enviado correctamente.');
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    alert(`No se pudo enviar el informe: ${msg}`);
+  } finally {
+    if (btn instanceof HTMLButtonElement) btn.disabled = false;
+  }
+});
+
+document.getElementById('txBeltKind')?.addEventListener('change', refreshSyncPitchRowVisibility);
+refreshSyncPitchRowVisibility();
+
 updateZoomLabel();
+bindTransmissionSvgDelegation();
 switchTab('gears');
 fitViewToContent();
 requestAnimationFrame(frame);

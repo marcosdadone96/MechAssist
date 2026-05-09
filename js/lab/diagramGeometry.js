@@ -24,8 +24,12 @@ export function svgOpenBeltTangents(xL, y, rL, xR, rR) {
   };
 }
 
-function fmtPt(p) {
+export function fmtPtSvg(p) {
   return `${p.x.toFixed(2)} ${p.y.toFixed(2)}`;
+}
+
+function fmtPt(p) {
+  return fmtPtSvg(p);
 }
 
 /**
@@ -65,7 +69,7 @@ function arcAlongCircle(cx, cy, r, pFrom, pTo) {
 }
 
 /** Arco cuyo punto medio queda más alejado del centroide (lado exterior del polígono). */
-function arcAlongCircleExterior(cx, cy, r, pFrom, pTo, centroid) {
+export function arcAlongCircleExterior(cx, cy, r, pFrom, pTo, centroid) {
   const t0 = Math.atan2(pFrom.y - cy, pFrom.x - cx);
   const t1 = Math.atan2(pTo.y - cy, pTo.x - cx);
   let dShort = t1 - t0;
@@ -155,7 +159,7 @@ export function convexHullIndices(centers) {
 /**
  * @returns {{ segs: { p0: { x: number; y: number }; p1: { x: number; y: number } }[]; centroid: { x: number; y: number } } | null}
  */
-function buildConvexBeltSegments(centers, radii, hullIdx) {
+export function buildConvexBeltSegments(centers, radii, hullIdx) {
   const m = hullIdx.length;
   if (m < 3) return null;
   const centroid = {
