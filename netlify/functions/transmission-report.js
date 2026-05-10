@@ -5,16 +5,30 @@
  * FEEDBACK_FROM_EMAIL o AUTH_MAIL_FROM
  */
 
-function corsHeaders() {
+function corsHeaders(event) {
+  const allowed = [
+    'https://www.themechassist.com',
+    'https://themechassist.com',
+  ];
+  // En desarrollo local o deploy preview de Netlify, permitir el origen del request
+  const origin = (event && event.headers)
+    ? (event.headers.origin || event.headers.Origin || '')
+    : '';
+  const isNetlifyPreview = origin.includes('.netlify.app');
+  const isLocalhost = origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1');
+  const allowedOrigin = allowed.includes(origin) || isNetlifyPreview || isLocalhost
+    ? origin
+    : 'https://www.themechassist.com';
   return {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'Authorization, Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Vary': 'Origin',
   };
 }
 
 exports.handler = async (event) => {
-  const cors = corsHeaders();
+  const cors = corsHeaders(event);
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: cors };
   }

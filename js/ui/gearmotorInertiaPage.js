@@ -3,7 +3,9 @@
  */
 
 import { renderInertiaTransmissionLine } from '../lab/diagramCatalogModules.js';
+import { bindInputValidation } from './labCalcUx.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 function interpCurve(curve, x) {
   const pts = [...curve].sort((a, b) => a[0] - b[0]);
@@ -184,6 +186,19 @@ function render() {
 renderInertiaTransmissionLine(document.getElementById('gmLineDiagram'));
 mountCompactLabFieldHelp();
 
+bindInputValidation([
+  { id: 'gmJmotor', min: 1e-12, max: 1000, label: 'J motor' },
+  { id: 'gmJratioMax', min: 1, max: 500, label: 'J ratio máx' },
+  { id: 'gmTN', min: 0.01, max: 1e6, label: 'Par nominal' },
+  { id: 'gmNsync', min: 1, max: 120000, label: 'n sync' },
+  { id: 'gmTpeak', min: 1, max: 10, label: 'Par arranque rel.' },
+  { id: 'gmJload', min: 0, max: 10000, label: 'J carga' },
+  { id: 'gmIratio', min: 0.001, max: 100000, label: 'i reducción' },
+  { id: 'gmJext', min: 0, max: 10000, label: 'J ext' },
+  { id: 'gmN', min: 1, max: 120000, label: 'RPM' },
+  { id: 'gmTload', min: 0, max: 1e9, label: 'T carga' },
+]);
+
 ['gmJmotor', 'gmJratioMax', 'gmTN', 'gmNsync', 'gmTpeak', 'gmJload', 'gmIratio', 'gmJext', 'gmN', 'gmTload'].forEach((id) => {
   document.getElementById(id)?.addEventListener('input', render);
   document.getElementById(id)?.addEventListener('change', render);
@@ -199,3 +214,4 @@ document.querySelectorAll('.gm-ref-chip').forEach((chip) => {
 });
 
 render();
+mountLabCloudSaveBar('Inercia motor / carga');

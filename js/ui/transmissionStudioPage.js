@@ -2,6 +2,7 @@
  * Estudio modular Pro: lienzo con arrastre, N poleas / N ruedas cadena / tren reconfigurable.
  */
 
+import { insertCalculoMecanico } from '../services/calculosMecanicosSave.js';
 import { renderStudioSchematic } from './studioSchematic.js';
 import {
   cascadeSpeeds,
@@ -718,6 +719,24 @@ document.getElementById('studioCopy')?.addEventListener('click', async () => {
       /* ignore */
     }
   }
+});
+
+document.getElementById('studioCloudSave')?.addEventListener('click', async () => {
+  const n0 = readN0();
+  let stagesPayload;
+  try {
+    stagesPayload = JSON.parse(JSON.stringify(stages));
+  } catch (_) {
+    stagesPayload = [];
+  }
+  await insertCalculoMecanico({
+    tipo_maquina: 'Estudio modular',
+    datos_entrada: { n0_rpm: n0, stages: stagesPayload },
+    resultados: {
+      summary: document.getElementById('studioSummaryCards')?.innerText?.slice(0, 16000),
+      jsonPreview: document.getElementById('studioJson')?.innerText?.slice(0, 16000),
+    },
+  });
 });
 
 wireCanvasDnD();

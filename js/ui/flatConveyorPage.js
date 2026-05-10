@@ -26,6 +26,7 @@ import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { FLAT_CONVEYOR_EN } from '../lab/i18n/pages/flatConvEn.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 const inputIds = [
   'beltLength',
@@ -627,6 +628,8 @@ watchLangAndApply(FLAT_CONVEYOR_EN, {
 if (getCurrentLang() !== 'en') {
   refresh();
 }
+
+mountLabCloudSaveBar('Cinta transportadora plana', { scopeSelector: 'main.app-main' });
 
 if (location.hash === '#flat-conveyor-assumptions') {
   const assumptionsSection = document.getElementById('flat-conveyor-assumptions');

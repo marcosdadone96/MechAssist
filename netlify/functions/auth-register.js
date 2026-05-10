@@ -13,12 +13,27 @@ const crypto = require('crypto');
 const { getProStore } = require('./lib/blobStore.js');
 const { normalizeEmail } = require('./lib/proEntitlementLogic.js');
 const { pendingTokenKey, pendingIndexKey, verifiedUserKey } = require('./lib/authBlobKeys.js');
+const { checkRateLimit } = require('./lib/rateLimiter.js');
 
-function corsHeaders() {
+function corsHeaders(event) {
+  const allowed = [
+    'https://www.themechassist.com',
+    'https://themechassist.com',
+  ];
+  // En desarrollo local o deploy preview de Netlify, permitir el origen del request
+  const origin = (event && event.headers)
+    ? (event.headers.origin || event.headers.Origin || '')
+    : '';
+  const isNetlifyPreview = origin.includes('.netlify.app');
+  const isLocalhost = origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1');
+  const allowedOrigin = allowed.includes(origin) || isNetlifyPreview || isLocalhost
+    ? origin
+    : 'https://www.themechassist.com';
   return {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'Authorization, Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Vary': 'Origin',
   };
 }
 
@@ -116,7 +131,7 @@ function buildVerificationEmailHtml({ name, verifyUrl, lang }) {
 }
 
 exports.handler = async (event) => {
-  const cors = corsHeaders();
+  const cors = corsHeaders(event);
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: cors };
   }
@@ -165,6 +180,23 @@ exports.handler = async (event) => {
   }
   if (password.length < 8) {
     return { statusCode: 400, headers: cors, body: JSON.stringify({ error: 'password_short' }) };
+  }
+
+  // Rate limiting por IP: evita spam de registros
+  const clientIp = event.headers['x-nf-client-connection-ip']
+    || event.headers['x-forwarded-for']?.split(',')[0]?.trim()
+    || 'unknown';
+  const rlReg = await checkRateLimit(event, `register:${clientIp}`);
+  if (!rlReg.allowed) {
+    return {
+      statusCode: 429,
+      headers: {
+        ...cors,
+        'Retry-After': String(rlReg.retryAfterSecs ?? 1800),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ error: 'rate_limited', retryAfterSecs: rlReg.retryAfterSecs ?? 1800 }),
+    };
   }
 
   const store = getProStore(event);

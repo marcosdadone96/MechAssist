@@ -17,6 +17,7 @@ import { renderFullEngineeringAside } from './engineeringReport.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 function recoCopyTraction(en) {
   return en
@@ -422,5 +423,5 @@ syncReevingVisual();
 computeAndRender();
 initInfoChipPopovers(document.body);
 
-
+mountLabCloudSaveBar('Elevador de tracción');
 

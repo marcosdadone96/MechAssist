@@ -1,5 +1,5 @@
 /**
- * Cuenta: registro con verificaciùn e inicio de sesiùn en servidor (Netlify),
+ * Cuenta: registro con verificaci?n e inicio de sesi?n en servidor (Netlify),
  * o registro local previo si `useServerAuth` es false.
  */
 import { FEATURES } from '../config/features.js';
@@ -54,6 +54,7 @@ function mapRegisterError(code, lang) {
 function mapLoginError(code, lang) {
   const es = {
     incomplete: 'Introduzca correo y contrase\u00f1a.',
+    rate_limited: 'Demasiados intentos. Espere 30 minutos e int?ntelo de nuevo.',
     bad_credentials: 'Correo o contrase\u00f1a incorrectos.',
     not_verified: 'Primero debe confirmar el enlace del correo.',
     json: 'Petici\u00f3n inv\u00e1lida.',
@@ -61,6 +62,7 @@ function mapLoginError(code, lang) {
   };
   const en = {
     incomplete: 'Enter email and password.',
+    rate_limited: 'Too many attempts. Please wait 30 minutes and try again.',
     bad_credentials: 'Incorrect email or password.',
     not_verified: 'Please confirm your email link first.',
     json: 'Invalid request.',

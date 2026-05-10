@@ -56,6 +56,10 @@
           <strong>plana</strong> y <strong>Poly-V</strong> (énfasis en <strong>v</strong> y ángulo de abrazamiento).
           Longitud primitiva para <strong>correa abierta</strong> y veredicto de <strong>velocidad lineal</strong> en el primitivo motriz.
         </p>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="bPresetsBar"></div>
+        </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
@@ -317,6 +321,11 @@
               <summary data-i18n="belt.summaryPerElement">Resultados por elemento</summary>
               <div id="bElementResults" class="lab-element-columns"></div>
             </details>
+            <div id="bAlerts" class="lab-alerts"></div>
+            <div class="lab-results-share" id="bShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn" id="bCopyLinkBtn">Copiar enlace</button>
+              <div class="lab-copy-toast" id="bCopyToast" role="status">¡Enlace copiado!</div>
+            </div>
             <div class="lab-results-wrap" id="bResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
@@ -332,7 +341,6 @@
                 <div class="lab-results" id="bResults"></div>
               </details>
             </div>
-            <div id="bAlerts" class="lab-alerts"></div>
             <div id="bSubstitution"></div>
             <div id="labPurchaseSuggestions" hidden></div>
           </div>
@@ -340,8 +348,10 @@
       </section>
     </main>
 
-
-
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
 
     <script type="module" src="js/ui/homeI18n.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>

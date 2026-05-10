@@ -4,23 +4,37 @@ import { bindLabUnitSelectors, formatLength, getLabUnitPrefs } from '../lab/labU
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
+  bindInputValidation,
+  createLabUrlSync,
   debounce,
   executiveSummaryAlert,
   labAlert,
   metricHtml,
+  mountLabPresetsBar,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  updateLabShareVisibility,
+  wireLabCopyLink,
 } from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
 import { metricsFromShaft } from '../services/iaAdvisor.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 mountTierStatusBar();
 bootSmartDashboardIfEnabled('Eje · laboratorio');
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
 mountCompactLabFieldHelp();
+
+bindInputValidation([
+  { id: 'shT', min: 0, max: 1e9, label: 'Par T' },
+  { id: 'shTau', min: 1, max: 2000, label: 'τ adm' },
+  { id: 'shM', min: 0, max: 1e9, label: 'Momento M' },
+  { id: 'shKt', min: 1, max: 20, label: 'Kt' },
+  { id: 'shAvailableD', min: 0.1, max: 5000, label: 'Diámetro' },
+]);
 
 function read(id, fallback) {
   const el = document.getElementById(id);
@@ -84,6 +98,67 @@ function syncShCalcModeUi() {
       : 'Par torsor de diseño que debe transmitir el eje (N·m). Entra en τ = 16T/(πd³) para sección circular maciza.';
   }
 }
+
+const SHAFT_PRESETS = [
+  {
+    label: 'Torsión · diseño',
+    values: {
+      shCalcMode: 'design',
+      shT: 480,
+      shTau: 40,
+      shUseBending: false,
+      shM: 0,
+      shCriterion: 'von_mises',
+      shKt: 1.5,
+      shAvailableD: 45,
+    },
+  },
+  {
+    label: 'T + M · Von Mises',
+    values: {
+      shCalcMode: 'design',
+      shT: 1200,
+      shTau: 55,
+      shUseBending: true,
+      shM: 800,
+      shCriterion: 'von_mises',
+      shKt: 1.4,
+      shAvailableD: 70,
+    },
+  },
+  {
+    label: 'Diagnóstico Ø40',
+    values: {
+      shCalcMode: 'diagnostic',
+      shT: 650,
+      shTau: 42,
+      shUseBending: false,
+      shM: 0,
+      shCriterion: 'tresca',
+      shKt: 1,
+      shAvailableD: 40,
+    },
+  },
+];
+
+const SHAFT_URL_PARAM_TO_ID = {
+  mode: 'shCalcMode',
+  T: 'shT',
+  tau: 'shTau',
+  bend: 'shUseBending',
+  M: 'shM',
+  crit: 'shCriterion',
+  kt: 'shKt',
+  d: 'shAvailableD',
+};
+
+const shaftUrl = createLabUrlSync(SHAFT_URL_PARAM_TO_ID, {
+  hydrateOrder: ['mode', 'bend', 'T', 'tau', 'M', 'crit', 'kt', 'd'],
+  afterHydrate: () => {
+    syncAdvancedUi();
+    syncShCalcModeUi();
+  },
+});
 
 function refreshCore() {
   const u = getLabUnitPrefs();
@@ -199,20 +274,9 @@ function refreshCore() {
                 : `Comparar con su τ adm = ${r.tauAllow_MPa.toFixed(2)} MPa.`,
             },
           ];
-    heroEl.innerHTML = renderResultHero(heroItems);
-  }
-
-  const fitVerdict = document.getElementById('shFitVerdict');
-  if (fitVerdict) {
-    fitVerdict.innerHTML =
-      mode === 'diagnostic'
-        ? `<div class="lab-verdict ${fitOk ? 'lab-verdict--ok' : 'lab-verdict--err'}">
-      Veredicto eje instalado: <strong>${fitOk ? 'APTO' : 'REVISAR'}</strong> · d = ${dAvail_mm.toFixed(2)} mm
-      ${diagUtil != null && Number.isFinite(diagUtil) ? `· utilización ${(diagUtil * 100).toFixed(1)} %` : ''}.
-    </div>`
-        : `<div class="lab-verdict ${fitOk ? 'lab-verdict--ok' : 'lab-verdict--err'}">
-      Veredicto de diámetro disponible: <strong>${fitOk ? 'APTO' : 'INSUFICIENTE'}</strong> · requerido ≈ ${diameter_min_mm.toFixed(2)} mm, disponible = ${dAvail_mm.toFixed(2)} mm.
-    </div>`;
+    const shaftVerdict =
+      validationMsgs.length ? 'error' : mode === 'design' ? (!fitOk ? 'error' : 'ok') : !fitOk ? 'warn' : 'ok';
+    heroEl.innerHTML = renderResultHero(heroItems, { verdict: shaftVerdict });
   }
 
   const box = document.getElementById('shResults');
@@ -300,7 +364,13 @@ function refreshCore() {
     const parts = [];
     parts.push(
       executiveSummaryAlert({
-        level: validationMsgs.length ? 'danger' : !fitOk ? 'warn' : 'ok',
+        level: validationMsgs.length
+          ? 'danger'
+          : mode === 'design' && !fitOk
+            ? 'danger'
+            : !fitOk
+              ? 'warn'
+              : 'ok',
         titleEs: validationMsgs.length
           ? 'Resumen ejecutivo: revisar entradas antes de validar diámetro.'
           : mode === 'diagnostic' && !fitOk
@@ -395,21 +465,38 @@ function refreshCore() {
       searchQuery: `barra redonda acero ${Math.ceil(shopD)} mm`,
     },
   ]);
+
+  updateLabShareVisibility('shShareLinkWrap', 'shResults');
+  shaftUrl.serializeToUrl();
 }
 
 const wrap = document.getElementById('shResultsWrap');
 const debounced = debounce(() => runCalcWithIndustrialFeedback(wrap, refreshCore), 55);
-bindLabUnitSelectors(debounced);
+
+const shaftPresets = mountLabPresetsBar('shPresetsBar', SHAFT_PRESETS, debounced);
+
+function scheduleShaftRecalc() {
+  if (!shaftPresets.applying && !shaftUrl.hydrating) {
+    shaftPresets.clearActive();
+  }
+  debounced();
+}
+
+shaftUrl.hydrateFromUrl();
+syncAdvancedUi();
+syncShCalcModeUi();
+
+bindLabUnitSelectors(scheduleShaftRecalc);
 ['shCalcMode', 'shT', 'shTau', 'shM', 'shKt', 'shCriterion', 'shUseBending', 'shAvailableD'].forEach((id) => {
-  document.getElementById(id)?.addEventListener('input', debounced);
+  document.getElementById(id)?.addEventListener('input', scheduleShaftRecalc);
   document.getElementById(id)?.addEventListener('change', () => {
     if (id === 'shCalcMode') syncShCalcModeUi();
-    debounced();
+    scheduleShaftRecalc();
   });
 });
 document.getElementById('shUseBending')?.addEventListener('change', () => {
   syncAdvancedUi();
-  debounced();
+  scheduleShaftRecalc();
 });
 document.querySelectorAll('#shTauChips [data-tau]').forEach((btn) => {
   btn.addEventListener('click', () => {
@@ -417,10 +504,10 @@ document.querySelectorAll('#shTauChips [data-tau]').forEach((btn) => {
     const tauEl = document.getElementById('shTau');
     if (tauEl instanceof HTMLInputElement && Number.isFinite(tau)) {
       tauEl.value = String(tau);
-      debounced();
+      scheduleShaftRecalc();
     }
   });
 });
-syncAdvancedUi();
-syncShCalcModeUi();
+wireLabCopyLink('shCopyLinkBtn', 'shCopyToast');
 runCalcWithIndustrialFeedback(wrap, refreshCore);
+mountLabCloudSaveBar('C\u00e1lculo de eje');

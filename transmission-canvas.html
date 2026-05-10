@@ -109,6 +109,7 @@
           <div class="tx-motor-dashboard__actions">
             <button type="button" class="lab-btn tx-btn--secondary" id="txMarkMotor">Marcar motor</button>
             <button type="button" class="lab-btn tx-btn--report" id="txSendReport">Enviar informe técnico</button>
+            <button type="button" class="lab-btn tx-btn--secondary" id="txCloudSave">Guardar en la nube</button>
           </div>
         </div>
       </div>
@@ -218,7 +219,10 @@
       </div>
     </main>
 
-
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
 
     <script type="module" src="js/ui/homeI18n.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>

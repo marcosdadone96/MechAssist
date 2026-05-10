@@ -10,22 +10,31 @@ import { renderIso286FitDiagram } from '../lab/diagramIso286Fit.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
+  bindInputValidation,
+  createLabUrlSync,
   debounce,
   executiveSummaryAlert,
   labAlert,
   metricHtml,
+  mountLabPresetsBar,
+  renderLabFinalVerdictBanner,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  updateLabShareVisibility,
   uxCopy,
+  wireLabCopyLink,
 } from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 mountTierStatusBar();
 bootSmartDashboardIfEnabled('ISO 286 · ajustes');
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
 mountCompactLabFieldHelp();
+
+bindInputValidation([{ id: 'isoD', min: 1, max: 500, label: 'Diámetro nominal d' }]);
 
 function escapeHtml(s) {
   return String(s)
@@ -152,12 +161,6 @@ function applyRecommendationById(id) {
 mountAppPresetSelect();
 renderRecommendationTable();
 
-function fitVerdictAlert(kind) {
-  if (kind === 'clearance') return labAlert('ok', '<strong>Ajuste con juego</strong> (azul). J<sub>min</sub> &ge; 0.');
-  if (kind === 'interference') return labAlert('danger', '<strong>Ajuste con apriete</strong> (rojo). J<sub>max</sub> &le; 0.');
-  return labAlert('warn', '<strong>Ajuste de transición</strong> (amarillo). J<sub>max</sub> &gt; 0 y J<sub>min</sub> &lt; 0.');
-}
-
 function refreshCore() {
   const dNom = readNum('isoD', 25);
   const validationMsgs = [];
@@ -173,7 +176,6 @@ function refreshCore() {
   const r = computeIsoFit(dNom, holeLetter, holeIt, shaftLetter, shaftIt);
 
   const heroEl = document.getElementById('isoHero');
-  const verdictEl = document.getElementById('isoVerdict');
   const alertsEl = document.getElementById('isoAlerts');
   const box = document.getElementById('isoResults');
 
@@ -181,9 +183,9 @@ function refreshCore() {
 
   if (!r.ok) {
     if (heroEl) heroEl.innerHTML = '';
-    if (verdictEl) verdictEl.innerHTML = labAlert('danger', r.err || uxCopy('Error de cálculo', 'Calculation error'));
     if (alertsEl) {
       const parts = [
+        renderLabFinalVerdictBanner('error'),
         executiveSummaryAlert({
           level: 'danger',
           titleEs: 'Resumen ejecutivo: no se puede generar el ajuste.',
@@ -193,10 +195,13 @@ function refreshCore() {
         }),
       ];
       validationMsgs.forEach((msg) => parts.push(labAlert('danger', escapeHtml(msg))));
+      parts.push(labAlert('danger', escapeHtml(r.err || uxCopy('Error de cálculo', 'Calculation error'))));
       alertsEl.innerHTML = parts.join('');
     }
     if (box) box.innerHTML = '';
     renderIso286FitDiagram(document.getElementById('isoDiagram'), null);
+    updateLabShareVisibility('isoShareLinkWrap', 'isoResults');
+    isoUrl.serializeToUrl();
     return;
   }
 
@@ -205,8 +210,12 @@ function refreshCore() {
   const jMaxLabel = jMax >= 0 ? 'Juego max.' : 'Interferencia max. (|Jmax|)';
   const jMinLabel = jMin >= 0 ? 'Juego min.' : 'Interferencia min. (|Jmin|)';
 
+  const isoFitVerdict =
+    validationMsgs.length ? 'error' : r.fitKind === 'clearance' ? 'ok' : 'warn';
+
   if (heroEl) {
-    heroEl.innerHTML = renderResultHero([
+    heroEl.innerHTML = renderResultHero(
+      [
       {
         label: jMaxLabel,
         display: `${jMax.toFixed(1)} um`,
@@ -222,10 +231,11 @@ function refreshCore() {
         display: r.fitLabelEs,
         hint: r.fitLabelEn,
       },
-    ]);
+    ],
+      { verdict: isoFitVerdict },
+    );
   }
 
-  if (verdictEl) verdictEl.innerHTML = fitVerdictAlert(r.fitKind);
   if (alertsEl) {
     const parts = [];
     parts.push(
@@ -294,11 +304,69 @@ function refreshCore() {
     ],
     metrics: { energyEfficiencyPct: null, materialUtilizationPct: null },
   });
+
+  updateLabShareVisibility('isoShareLinkWrap', 'isoResults');
+  isoUrl.serializeToUrl();
 }
+
+const ISO_PRESETS = [
+  {
+    label: 'H7/g6 · Ø25',
+    values: {
+      isoD: 25,
+      isoHoleLetter: 'H',
+      isoHoleIt: 'IT7',
+      isoShaftLetter: 'g',
+      isoShaftIt: 'IT6',
+    },
+  },
+  {
+    label: 'H7/k6 · Ø40',
+    values: {
+      isoD: 40,
+      isoHoleLetter: 'H',
+      isoHoleIt: 'IT7',
+      isoShaftLetter: 'k',
+      isoShaftIt: 'IT6',
+    },
+  },
+  {
+    label: 'JS7/h6 · Ø28',
+    values: {
+      isoD: 28,
+      isoHoleLetter: 'JS',
+      isoHoleIt: 'IT7',
+      isoShaftLetter: 'h',
+      isoShaftIt: 'IT6',
+    },
+  },
+];
+
+const ISO_URL_PARAM_TO_ID = {
+  d: 'isoD',
+  hL: 'isoHoleLetter',
+  hI: 'isoHoleIt',
+  sL: 'isoShaftLetter',
+  sI: 'isoShaftIt',
+};
+
+const isoUrl = createLabUrlSync(ISO_URL_PARAM_TO_ID, {
+  hydrateOrder: ['d', 'hL', 'hI', 'sL', 'sI'],
+});
 
 const wrap = document.getElementById('isoResultsWrap');
 const debounced = debounce(() => runCalcWithIndustrialFeedback(wrap, refreshCore), 55);
 
+const isoPresets = mountLabPresetsBar('isoPresetsBar', ISO_PRESETS, debounced);
+
+function scheduleIsoRecalc() {
+  if (!isoPresets.applying && !isoUrl.hydrating) {
+    isoPresets.clearActive();
+  }
+  debounced();
+}
+
+isoUrl.hydrateFromUrl();
 document.getElementById('isoAppPreset')?.addEventListener('change', () => {
   const sel = document.getElementById('isoAppPreset');
   const id = sel instanceof HTMLSelectElement ? sel.value : '';
@@ -334,8 +402,10 @@ document.querySelectorAll('[data-iso-chip]').forEach((btn) => {
 });
 
 ['isoD', 'isoHoleLetter', 'isoHoleIt', 'isoShaftLetter', 'isoShaftIt'].forEach((id) => {
-  document.getElementById(id)?.addEventListener('input', debounced);
-  document.getElementById(id)?.addEventListener('change', debounced);
+  document.getElementById(id)?.addEventListener('input', scheduleIsoRecalc);
+  document.getElementById(id)?.addEventListener('change', scheduleIsoRecalc);
 });
 
+wireLabCopyLink('isoCopyLinkBtn', 'isoCopyToast');
 runCalcWithIndustrialFeedback(wrap, refreshCore);
+mountLabCloudSaveBar('Ajustes ISO 286');

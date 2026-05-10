@@ -111,10 +111,30 @@ export function metricHtml(k, v, help) {
   return `<div class="lab-metric"><div class="lab-metric__head"><span class="k">${k}</span>${tip}</div><div class="v">${labValueWithMutedUnit(v)}</div></div>`;
 }
 
+const LAB_FINAL_VERDICT_LABELS = {
+  ok: { es: 'APTO PARA DISE\u00d1O BASE', en: 'SUITABLE FOR BASELINE DESIGN' },
+  warn: { es: 'REVISAR', en: 'REVIEW' },
+  error: { es: 'FUERA DE L\u00cdMITE', en: 'OUT OF RANGE' },
+};
+
+/**
+ * Banner único de veredicto (laboratorio): va sobre el hero numérico.
+ * @param {'ok'|'warn'|'error'} verdict
+ */
+export function renderLabFinalVerdictBanner(verdict) {
+  const v = verdict === 'error' ? 'error' : verdict === 'warn' ? 'warn' : 'ok';
+  const cls = v === 'ok' ? 'ok' : v === 'warn' ? 'warn' : 'error';
+  const icon = cls === 'ok' ? '\u2713' : cls === 'warn' ? '\u26a0' : '\u2717';
+  const L = LAB_FINAL_VERDICT_LABELS[v];
+  const label = uxCopy(L.es, L.en);
+  return `<div class="lab-verdict lab-verdict--${cls}" role="status"><span class="lab-verdict__icon" aria-hidden="true">${icon}</span><span class="lab-verdict__label">${escMini(label)}</span></div>`;
+}
+
 /**
  * @param {Array<{ label: string, value: string, unit?: string, hint?: string }>} items
+ * @param {{ verdict?: 'ok'|'warn'|'error' }} [opts] — si `verdict` está definido, se antepone el bloque .lab-verdict
  */
-export function renderResultHero(items) {
+export function renderResultHero(items, opts = {}) {
   if (!items.length) return '';
   const helpLabel = isEnglishUi() ? 'Help' : 'Ayuda';
   const cells = items
@@ -131,7 +151,10 @@ export function renderResultHero(items) {
     </div>`,
     )
     .join('');
-  return `<div class="lab-result-hero">${cells}</div>`;
+  const verdict = opts.verdict;
+  const verdictPrefix =
+    verdict === 'ok' || verdict === 'warn' || verdict === 'error' ? renderLabFinalVerdictBanner(verdict) : '';
+  return `${verdictPrefix}<div class="lab-result-hero">${cells}</div>`;
 }
 
 /**
@@ -183,6 +206,280 @@ export function renderMotorPowerRuler(powerKw) {
       }
     </figcaption>
   </figure>`;
+}
+
+/**
+ * Borde rojo / mensaje solo en blur para rangos; en input se limpia el error cuando el valor ya es válido.
+ * No bloquea el recálculo (solo visual).
+ * @param {Array<{ id: string, min?: number, max?: number, label?: string }>} inputConfigs
+ */
+export function bindInputValidation(inputConfigs) {
+  inputConfigs.forEach(({ id, min, max }) => {
+    const el = document.getElementById(id);
+    if (!(el instanceof HTMLInputElement)) return;
+    if (el.dataset.labValidationBound === '1') return;
+    el.dataset.labValidationBound = '1';
+
+    const errEl = document.createElement('span');
+    errEl.className = 'lab-field-error';
+    errEl.setAttribute('aria-live', 'polite');
+    el.insertAdjacentElement('afterend', errEl);
+
+    function validate(commit) {
+      const invalidMsg = uxCopy('Introduce un número válido', 'Enter a valid number');
+      const minMsg = (m) => uxCopy(`Mínimo: ${m}`, `Minimum: ${m}`);
+      const maxMsg = (m) => uxCopy(`Máximo: ${m}`, `Maximum: ${m}`);
+
+      const raw = String(el.value).trim();
+      if (raw === '') {
+        el.classList.remove('lab-input--error', 'lab-input--ok');
+        errEl.textContent = '';
+        return;
+      }
+
+      const v = parseFloat(raw.replace(',', '.'));
+
+      if (commit) {
+        if (!Number.isFinite(v)) {
+          el.classList.add('lab-input--error');
+          el.classList.remove('lab-input--ok');
+          errEl.textContent = invalidMsg;
+          return;
+        }
+        if (min !== undefined && v < min) {
+          el.classList.add('lab-input--error');
+          el.classList.remove('lab-input--ok');
+          errEl.textContent = minMsg(min);
+          return;
+        }
+        if (max !== undefined && v > max) {
+          el.classList.add('lab-input--error');
+          el.classList.remove('lab-input--ok');
+          errEl.textContent = maxMsg(max);
+          return;
+        }
+        el.classList.remove('lab-input--error');
+        el.classList.add('lab-input--ok');
+        errEl.textContent = '';
+        return;
+      }
+
+      if (!Number.isFinite(v)) {
+        el.classList.remove('lab-input--ok');
+        return;
+      }
+
+      const inRange =
+        (min === undefined || v >= min) && (max === undefined || v <= max);
+      if (inRange) {
+        el.classList.remove('lab-input--error');
+        el.classList.add('lab-input--ok');
+        errEl.textContent = '';
+      } else {
+        el.classList.remove('lab-input--ok', 'lab-input--error');
+        errEl.textContent = '';
+      }
+    }
+
+    el.addEventListener('input', () => validate(false));
+    el.addEventListener('blur', () => validate(true));
+    validate(true);
+  });
+}
+
+/**
+ * Barra de ejemplos típicos (misma UX que engranajes/correas).
+ * @param {string} containerId id del contenedor `.lab-presets-bar`
+ * @param {Array<{ label: string, values: Record<string, string | number | boolean> }>} presets
+ * @param {() => void} recalculate
+ */
+export function mountLabPresetsBar(containerId, presets, recalculate) {
+  const container = document.getElementById(containerId);
+  if (!container) {
+    return {
+      get applying() {
+        return false;
+      },
+      clearActive() {},
+    };
+  }
+  let applying = false;
+  const clearActive = () => {
+    container.querySelectorAll('.lab-preset-btn').forEach((b) => b.classList.remove('is-active'));
+  };
+  presets.forEach((preset) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'lab-preset-btn';
+    btn.textContent = preset.label;
+    btn.addEventListener('click', () => {
+      clearActive();
+      btn.classList.add('is-active');
+      applying = true;
+      try {
+        Object.entries(preset.values).forEach(([id, value]) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          if (el instanceof HTMLInputElement && el.type === 'checkbox') {
+            el.checked = Boolean(value);
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+          } else if (el instanceof HTMLSelectElement) {
+            el.value = String(value);
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+          } else if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+            el.value = value === '' || value == null ? '' : String(value);
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        });
+      } finally {
+        queueMicrotask(() => {
+          applying = false;
+        });
+      }
+      recalculate();
+    });
+    container.appendChild(btn);
+  });
+  return {
+    get applying() {
+      return applying;
+    },
+    clearActive,
+  };
+}
+
+/**
+ * Serializa / hidrata entradas del laboratorio en la URL (query corta).
+ * Soporta checkbox como 1/0 en la query.
+ * @param {Record<string, string>} paramToId
+ * @param {{ hydrateOrder?: string[], afterHydrate?: () => void, hydrateKeyAliases?: Record<string, string[]> }} options
+ *        hydrateKeyAliases: p.ej. `{ face: ['faceWidth'] }` acepta claves alternativas en la query.
+ */
+export function createLabUrlSync(paramToId, options = {}) {
+  let hydrating = false;
+
+  function getRawFromQuery(q, key) {
+    let raw = q.get(key);
+    if (raw != null) return raw;
+    const alts = options.hydrateKeyAliases?.[key];
+    if (alts) {
+      for (const a of alts) {
+        raw = q.get(a);
+        if (raw != null) return raw;
+      }
+    }
+    return null;
+  }
+
+  function applyQueryValue(key, raw) {
+    const id = paramToId[key];
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el instanceof HTMLInputElement && el.type === 'checkbox') {
+      const on = raw === '1' || raw === 'true' || raw === 'yes' || raw === 'on';
+      el.checked = on;
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      return;
+    }
+    if (el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement) {
+      el.value = raw;
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      return;
+    }
+    if (el instanceof HTMLInputElement) {
+      el.value = raw;
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
+  function serializeToUrl() {
+    if (hydrating) return;
+    const params = new URLSearchParams();
+    for (const [key, id] of Object.entries(paramToId)) {
+      const el = document.getElementById(id);
+      if (el instanceof HTMLInputElement && el.type === 'checkbox') {
+        params.set(key, el.checked ? '1' : '0');
+      } else if (
+        el instanceof HTMLInputElement ||
+        el instanceof HTMLSelectElement ||
+        el instanceof HTMLTextAreaElement
+      ) {
+        params.set(key, el.value);
+      }
+    }
+    const qs = params.toString();
+    const path = `${location.pathname}${location.hash || ''}`;
+    history.replaceState(null, '', qs ? `${path}?${qs}` : path);
+  }
+
+  function hydrateFromUrl() {
+    const q = new URLSearchParams(location.search);
+    if ([...q.keys()].length === 0) return;
+    hydrating = true;
+    try {
+      const order = options.hydrateOrder ?? Object.keys(paramToId);
+      const seen = new Set();
+      for (const key of order) {
+        const raw = getRawFromQuery(q, key);
+        if (raw != null) {
+          applyQueryValue(key, raw);
+          seen.add(key);
+        }
+      }
+      for (const key of Object.keys(paramToId)) {
+        if (seen.has(key)) continue;
+        const raw = getRawFromQuery(q, key);
+        if (raw != null) applyQueryValue(key, raw);
+      }
+      options.afterHydrate?.();
+    } finally {
+      queueMicrotask(() => {
+        hydrating = false;
+      });
+    }
+  }
+
+  return {
+    get hydrating() {
+      return hydrating;
+    },
+    serializeToUrl,
+    hydrateFromUrl,
+  };
+}
+
+/** Botón «Copiar enlace» + toast (mensajes ES/EN con `uxCopy`). */
+export function wireLabCopyLink(buttonId, toastId) {
+  document.getElementById(buttonId)?.addEventListener('click', async () => {
+    const toast = document.getElementById(toastId);
+    try {
+      await navigator.clipboard.writeText(location.href);
+      if (toast) {
+        toast.textContent = uxCopy('¡Enlace copiado!', 'Link copied!');
+        toast.classList.add('is-shown');
+        window.setTimeout(() => toast.classList.remove('is-shown'), 2000);
+      }
+    } catch {
+      if (toast) {
+        toast.textContent = uxCopy('No se pudo copiar', 'Could not copy');
+        toast.classList.add('is-shown');
+        window.setTimeout(() => toast.classList.remove('is-shown'), 2000);
+      }
+    }
+  });
+}
+
+/** Muestra la fila de compartir cuando hay métricas en el bloque de resultados. */
+export function updateLabShareVisibility(shareWrapId, resultsInnerElId) {
+  const wrap = document.getElementById(shareWrapId);
+  const inner = document.getElementById(resultsInnerElId);
+  if (wrap && inner) {
+    wrap.classList.toggle('is-visible', Boolean(inner.innerHTML.trim()));
+  }
 }
 
 export function debounce(fn, ms) {

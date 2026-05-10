@@ -32,6 +32,7 @@ import {
   removeUserGearmotor,
   buildSavedGearmotorModel,
   MAX_USER_GEARMOTORS,
+  ensureGearmotorsCacheLoaded,
 } from '../services/userGearmotorLibrary.js';
 import { shaftSizingFromDrive } from '../modules/shaftSizing.js';
 import { getCurrentUser } from '../services/localAuth.js';
@@ -585,61 +586,75 @@ function wireUserGearmotorDelegation(root) {
         startProCheckoutFlow();
         return;
       }
-      const out = root.querySelector('[data-verify-out]');
-      const raw = readManualMotorFieldsFromDom(root);
-      const en = getCurrentLang() === 'en';
-      if (!raw) {
+      void (async () => {
+        const out = root.querySelector('[data-verify-out]');
+        const raw = readManualMotorFieldsFromDom(root);
+        const en = getCurrentLang() === 'en';
+        if (!raw) {
+          if (out) {
+            out.innerHTML = en
+              ? `<p class="verify-result verify-result--warn">Enter <strong>kW</strong>, <strong>output rpm</strong>, and <strong>rated T\u2082</strong> before saving.</p>`
+              : `<p class="verify-result verify-result--warn">Rellene <strong>kW</strong>, <strong>rpm salida</strong> y <strong>T\u2082 nominal</strong> antes de guardar.</p>`;
+          }
+          return;
+        }
+        const labelEl = root.querySelector('[data-verify-manual-label]');
+        const label =
+          labelEl instanceof HTMLInputElement ? String(labelEl.value || '').trim().slice(0, 160) : '';
+
+        try {
+          await ensureGearmotorsCacheLoaded();
+        } catch (_) {
+          if (out) {
+            out.innerHTML = en
+              ? `<p class="verify-result verify-result--warn">Could not load your cloud library. Check connection and Supabase configuration.</p>`
+              : `<p class="verify-result verify-result--warn">No se pudo cargar la biblioteca en la nube. Revise la conexi\u00f3n y la configuraci\u00f3n de Supabase.</p>`;
+          }
+          return;
+        }
+
+        const rec = await addUserGearmotor({
+          motor_kW: raw.motor_kW,
+          n2_rpm: raw.n2_rpm,
+          T2_nom_Nm: raw.T2_nom_Nm,
+          T2_peak_Nm: raw.T2_peak_Nm,
+          motor_rpm_nom: raw.motor_rpm_nom,
+          eta_g: raw.eta_g,
+          label: label || undefined,
+        });
+        if (!rec) {
+          if (out) {
+            const signedIn = Boolean(String(getCurrentUser()?.email || '').trim());
+            if (!signedIn) {
+              out.innerHTML = en
+                ? `<p class="verify-result verify-result--warn">Sign in to save gearmotors to your library.</p>`
+                : `<p class="verify-result verify-result--warn">Inicie sesi\u00f3n para guardar motorreductores en su lista.</p>`;
+              return;
+            }
+            const atCap = listUserGearmotors().length >= MAX_USER_GEARMOTORS;
+            out.innerHTML = atCap
+              ? en
+                ? `<p class="verify-result verify-result--warn">Saved list is full (${MAX_USER_GEARMOTORS} entries). Remove one in <a href="my-gearmotors.html">My gearmotors</a> or delete from the list here.</p>`
+                : `<p class="verify-result verify-result--warn">La lista guardada est\u00e1 llena (${MAX_USER_GEARMOTORS} entradas). Elimine una en <a href="my-gearmotors.html">Mis motorreductores</a> o desde la lista aqu\u00ed.</p>`
+              : en
+                ? `<p class="verify-result verify-result--warn">Could not save to TheMechAssist Cloud (network or permissions).</p>`
+                : `<p class="verify-result verify-result--warn">No se pudo guardar en TheMechAssist Cloud (red o permisos).</p>`;
+          }
+          return;
+        }
         if (out) {
           out.innerHTML = en
-            ? `<p class="verify-result verify-result--warn">Enter <strong>kW</strong>, <strong>output rpm</strong>, and <strong>rated T\u2082</strong> before saving.</p>`
-            : `<p class="verify-result verify-result--warn">Rellene <strong>kW</strong>, <strong>rpm salida</strong> y <strong>T\u2082 nominal</strong> antes de guardar.</p>`;
+            ? `<p class="verify-result verify-result--ok"><strong>Saved.</strong> Choose <em>My saved gearmotors</em> in the brand list and select your entry.</p>`
+            : `<p class="verify-result verify-result--ok"><strong>Guardado.</strong> Elija <em>Mis motorreductores guardados</em> en la marca y seleccione su equipo.</p>`;
         }
-        return;
-      }
-      const labelEl = root.querySelector('[data-verify-manual-label]');
-      const label =
-        labelEl instanceof HTMLInputElement ? String(labelEl.value || '').trim().slice(0, 160) : '';
-      const rec = addUserGearmotor({
-        motor_kW: raw.motor_kW,
-        n2_rpm: raw.n2_rpm,
-        T2_nom_Nm: raw.T2_nom_Nm,
-        T2_peak_Nm: raw.T2_peak_Nm,
-        motor_rpm_nom: raw.motor_rpm_nom,
-        eta_g: raw.eta_g,
-        label: label || undefined,
-      });
-      if (!rec) {
-        if (out) {
-          const signedIn = Boolean(String(getCurrentUser()?.email || '').trim());
-          if (!signedIn) {
-            out.innerHTML = en
-              ? `<p class="verify-result verify-result--warn">Sign in to save gearmotors to your library.</p>`
-              : `<p class="verify-result verify-result--warn">Inicie sesi\u00f3n para guardar motorreductores en su lista.</p>`;
-            return;
-          }
-          const atCap = listUserGearmotors().length >= MAX_USER_GEARMOTORS;
-          out.innerHTML = atCap
-            ? en
-              ? `<p class="verify-result verify-result--warn">Saved list is full (${MAX_USER_GEARMOTORS} entries). Remove one in <a href="my-gearmotors.html">My gearmotors</a> or delete from the list here.</p>`
-              : `<p class="verify-result verify-result--warn">La lista guardada est\u00e1 llena (${MAX_USER_GEARMOTORS} entradas). Elimine una en <a href="my-gearmotors.html">Mis motorreductores</a> o desde la lista aqu\u00ed.</p>`
-            : en
-              ? `<p class="verify-result verify-result--warn">Could not save (storage blocked or unavailable).</p>`
-              : `<p class="verify-result verify-result--warn">No se pudo guardar (almacenamiento bloqueado o no disponible).</p>`;
+        const refill = root._mdrRefillVerifyModels;
+        if (typeof refill === 'function') refill();
+        const brandEl = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-brand]'));
+        const modelSelect = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-model]'));
+        if (brandEl && modelSelect && brandEl.value === USER_SAVED_BRAND_VALUE) {
+          modelSelect.value = `ug:${rec.id}`;
         }
-        return;
-      }
-      if (out) {
-        out.innerHTML = en
-          ? `<p class="verify-result verify-result--ok"><strong>Saved.</strong> Choose <em>My saved gearmotors</em> in the brand list and select your entry.</p>`
-          : `<p class="verify-result verify-result--ok"><strong>Guardado.</strong> Elija <em>Mis motorreductores guardados</em> en la marca y seleccione su equipo.</p>`;
-      }
-      const refill = root._mdrRefillVerifyModels;
-      if (typeof refill === 'function') refill();
-      const brandEl = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-brand]'));
-      const modelSelect = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-model]'));
-      if (brandEl && modelSelect && brandEl.value === USER_SAVED_BRAND_VALUE) {
-        modelSelect.value = `ug:${rec.id}`;
-      }
+      })();
       return;
     }
 
@@ -650,25 +665,30 @@ function wireUserGearmotorDelegation(root) {
         startProCheckoutFlow();
         return;
       }
-      const modelSelect = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-model]'));
-      const v = modelSelect instanceof HTMLSelectElement ? modelSelect.value : '';
-      if (!v.startsWith('ug:')) return;
-      const id = v.slice(3);
-      const enDel = getCurrentLang() === 'en';
-      const okDel = enDel
-        ? window.confirm('Remove this saved gearmotor from your list?')
-        : window.confirm('\u00bfEliminar este motorreductor guardado de la lista?');
-      if (!okDel) return;
-      removeUserGearmotor(id);
-      const refill = root._mdrRefillVerifyModels;
-      if (typeof refill === 'function') refill();
-      const out = root.querySelector('[data-verify-out]');
-      if (out) {
-        out.innerHTML =
-          getCurrentLang() === 'en'
-            ? `<p class="muted">Removed from saved list.</p>`
-            : `<p class="muted">Eliminado de la lista guardada.</p>`;
-      }
+      void (async () => {
+        const modelSelect = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-model]'));
+        const v = modelSelect instanceof HTMLSelectElement ? modelSelect.value : '';
+        if (!v.startsWith('ug:')) return;
+        const id = v.slice(3);
+        const enDel = getCurrentLang() === 'en';
+        const okDel = enDel
+          ? window.confirm('Remove this saved gearmotor from your list?')
+          : window.confirm('\u00bfEliminar este motorreductor guardado de la lista?');
+        if (!okDel) return;
+        const removed = await removeUserGearmotor(id);
+        const refill = root._mdrRefillVerifyModels;
+        if (typeof refill === 'function') refill();
+        const out = root.querySelector('[data-verify-out]');
+        if (out) {
+          out.innerHTML = removed
+            ? getCurrentLang() === 'en'
+              ? `<p class="muted">Removed from saved list.</p>`
+              : `<p class="muted">Eliminado de la lista guardada.</p>`
+            : getCurrentLang() === 'en'
+              ? `<p class="verify-result verify-result--warn">Could not remove from cloud.</p>`
+              : `<p class="verify-result verify-result--warn">No se pudo eliminar en la nube.</p>`;
+        }
+      })();
     }
   });
 }
@@ -911,7 +931,7 @@ export function initMotorVerification(root, getRequirements) {
     out.innerHTML = renderMotorVerifyResultHtml(r, model);
   });
 
-  refillModels();
+  void ensureGearmotorsCacheLoaded().then(() => refillModels());
 }
 
 function escapeHtml(s) {

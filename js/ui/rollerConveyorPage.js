@@ -20,6 +20,7 @@ import { initInfoChipPopovers } from './infoChipPopover.js';
 import { mountMachineConfigBar } from './machineConfigMount.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 const inputIds = [
   'length',
@@ -727,5 +728,5 @@ window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
   location.reload();
 });
 
-
+mountLabCloudSaveBar('Transportador de rodillos');
 

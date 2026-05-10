@@ -4,10 +4,12 @@
  * - Dimensionamiento de tuberías (Reynolds + Darcy)
  * - Veredicto integral
  */
+import { bindInputValidation } from './labCalcUx.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 /** @type {object | null} */
 let pumpPdfSnapshot = null;
@@ -910,6 +912,21 @@ syncPumpModeUi();
 mountHpDiaUnitToggle();
 applyStaticI18n();
 mountCompactLabFieldHelp();
+
+bindInputValidation([
+  { id: 'hpTankZ_m', min: -500, max: 500, label: 'z tanque' },
+  { id: 'hpNPSHr_m', min: 0, max: 500, label: 'NPSHr' },
+  { id: 'hpOilTempC', min: -40, max: 200, label: 'T aceite' },
+  { id: 'hpPressure', min: 1, max: 600, label: 'Presión' },
+  { id: 'hpRpm', min: 1, max: 10000, label: 'RPM' },
+  { id: 'hpDispCm3Rev', min: 0.01, max: 100000, label: 'Cilindrada' },
+  { id: 'pipeFlowLmin', min: 0.01, max: 500000, label: 'Caudal tubería' },
+  { id: 'pipeViscCst', min: 1, max: 100000, label: 'Viscosidad' },
+  { id: 'pipeLengthM', min: 0.05, max: 10000, label: 'Longitud tubería' },
+  { id: 'pipeElbows', min: 0, max: 200, label: 'Codos' },
+  { id: 'pipeValves', min: 0, max: 200, label: 'Válvulas' },
+]);
+
 computeAndRender();
 
 ['hpBtnCalcPump', 'hpBtnCalcPipes'].forEach((btnId) => {
@@ -925,4 +942,4 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountHp'), {
     return [a, b].filter((el) => el instanceof SVGSVGElement);
   },
 });
-
+mountLabCloudSaveBar('Bomba hidr\u00e1ulica');

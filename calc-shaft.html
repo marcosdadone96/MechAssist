@@ -50,6 +50,10 @@
           Este módulo estima el diámetro necesario de un eje macizo sometido primero a torsión pura y, en modo avanzado, a la combinación de momento flector y par torsor mediante tensión equivalente de Von Mises o Tresca con coeficientes de concentración orientativos. El resultado sirve como predimensionado previo a un análisis de fatiga detallado o a la normativa corporativa del proyecto. Lo usan ingenieros de diseño de máquinas y mantenimiento cuando hay que sustituir un eje o validar un aumento de potencia. Por ejemplo, puede dimensionar el eje de salida de un reductor antes de encargar el mecanizado cuando cambian la polea y la cinta arrastrada.
         </p>
         <p class="lab-lead">Modo básico: torsión pura. Modo avanzado: combina T y M con Von Mises o Tresca e incluye Kt. Resultado orientativo para predimensionado.</p>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="shPresetsBar"></div>
+        </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
@@ -219,7 +223,11 @@
               </label>
             </div>
             <div id="shHero"></div>
-            <div id="shFitVerdict"></div>
+            <div id="shAlerts" class="lab-alerts"></div>
+            <div class="lab-results-share" id="shShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn" id="shCopyLinkBtn">Copiar enlace</button>
+              <div class="lab-copy-toast" id="shCopyToast" role="status">¡Enlace copiado!</div>
+            </div>
             <div class="lab-results-wrap" id="shResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
@@ -232,15 +240,16 @@
               </div>
               <div class="lab-results" id="shResults"></div>
             </div>
-            <div id="shAlerts" class="lab-alerts"></div>
             <div id="labPurchaseSuggestions" hidden></div>
           </div>
         </div>
       </section>
     </main>
 
-
-
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
 
     <script type="module" src="js/ui/homeI18n.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>

@@ -10,24 +10,38 @@ import {
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
+  bindInputValidation,
+  createLabUrlSync,
   debounce,
   executiveSummaryAlert,
   labAlert,
   metricHtml,
+  mountLabPresetsBar,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  updateLabShareVisibility,
   uxCopy,
+  wireLabCopyLink,
 } from './labCalcUx.js';
 import { commerceIdForBearingC } from '../data/commerceCatalog.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 mountTierStatusBar();
 bootSmartDashboardIfEnabled('Rodamientos · laboratorio');
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
 mountCompactLabFieldHelp();
+
+bindInputValidation([
+  { id: 'brgC', min: 100, max: 2e9, label: 'C dinámica' },
+  { id: 'brgL10TargetH', min: 100, max: 1e9, label: 'L₁₀ objetivo (h)' },
+  { id: 'brgP', min: 0.01, max: 1e9, label: 'Carga P' },
+  { id: 'brgN', min: 0, max: 1e6, label: 'RPM' },
+  { id: 'brgDuty', min: 0, max: 24, label: 'Horas/día' },
+]);
 
 function read(id, fallback) {
   const el = document.getElementById(id);
@@ -68,6 +82,62 @@ function syncBrgCalcModeUi() {
   if (fc instanceof HTMLElement) fc.hidden = design;
   if (fl instanceof HTMLElement) fl.hidden = !design;
 }
+
+const BRG_PRESETS = [
+  {
+    label: 'Diagnóstico · servicio',
+    values: {
+      brgCalcMode: 'diagnostic',
+      brgC: 52000,
+      brgP: 8200,
+      brgN: 1455,
+      brgType: 'ball',
+      brgDuty: 8,
+      brgL10TargetH: 20000,
+    },
+  },
+  {
+    label: 'Diseño · 20 kh',
+    values: {
+      brgCalcMode: 'design',
+      brgC: 32500,
+      brgP: 6500,
+      brgN: 750,
+      brgType: 'roller',
+      brgDuty: 16,
+      brgL10TargetH: 20000,
+    },
+  },
+  {
+    label: 'Rodillos · carga alta',
+    values: {
+      brgCalcMode: 'diagnostic',
+      brgC: 98000,
+      brgP: 18500,
+      brgN: 600,
+      brgType: 'roller',
+      brgDuty: 12,
+      brgL10TargetH: 40000,
+    },
+  },
+];
+
+const BRG_URL_PARAM_TO_ID = {
+  mode: 'brgCalcMode',
+  C: 'brgC',
+  P: 'brgP',
+  n: 'brgN',
+  typ: 'brgType',
+  duty: 'brgDuty',
+  L10: 'brgL10TargetH',
+};
+
+const brgUrl = createLabUrlSync(BRG_URL_PARAM_TO_ID, {
+  hydrateOrder: ['mode', 'C', 'P', 'n', 'typ', 'duty', 'L10'],
+  afterHydrate: () => {
+    syncBrgCalcModeUi();
+  },
+});
 
 function refreshCore() {
   const u = getLabUnitPrefs();
@@ -136,6 +206,13 @@ function refreshCore() {
     r = computeBearingL10(p);
   }
 
+  const pOverC =
+    mode === 'diagnostic' && pRaw != null && cRaw != null && pRaw > cRaw;
+  const lowLife =
+    mode === 'diagnostic' && r.nominalLife_hours != null && r.nominalLife_hours < 2000;
+  const brgVerdict =
+    validationMsgs.length || pOverC ? 'error' : lowLife ? 'warn' : 'ok';
+
   const heroEl = document.getElementById('brgHero');
   if (heroEl) {
     const heroItems =
@@ -167,7 +244,7 @@ function refreshCore() {
               hint: 'Velocidad del eje que usa la conversión a horas.',
             },
           ];
-    heroEl.innerHTML = renderResultHero(heroItems);
+    heroEl.innerHTML = renderResultHero(heroItems, { verdict: brgVerdict });
   }
 
   const box = document.getElementById('brgResults');
@@ -238,13 +315,9 @@ function refreshCore() {
       noteEl = document.createElement('div');
       noteEl.id = 'brgNote';
       noteEl.className = 'lab-alerts';
-      resultsW.after(noteEl);
+      resultsW.parentElement.insertBefore(noteEl, resultsW);
     }
     const parts = [];
-    const pOverC =
-      mode === 'diagnostic' && pRaw != null && cRaw != null && pRaw > cRaw;
-    const lowLife =
-      mode === 'diagnostic' && r.nominalLife_hours != null && r.nominalLife_hours < 2000;
     const designOk = mode === 'design' && cRequired_N != null && Number.isFinite(cRequired_N) && !validationMsgs.length;
     parts.push(
       executiveSummaryAlert({
@@ -344,18 +417,35 @@ function refreshCore() {
     metrics: { energyEfficiencyPct: null, materialUtilizationPct: null },
   });
   setLabPurchaseFromShoppingLines(document.getElementById('labPurchaseSuggestions'), shoppingLines);
+
+  updateLabShareVisibility('brgShareLinkWrap', 'brgResults');
+  brgUrl.serializeToUrl();
 }
 
 const wrap = document.getElementById('brgResultsWrap');
 const debounced = debounce(() => runCalcWithIndustrialFeedback(wrap, refreshCore), 55);
-bindLabUnitSelectors(debounced, { life: true });
+
+const brgPresets = mountLabPresetsBar('brgPresetsBar', BRG_PRESETS, debounced);
+
+function scheduleBrgRecalc() {
+  if (!brgPresets.applying && !brgUrl.hydrating) {
+    brgPresets.clearActive();
+  }
+  debounced();
+}
+
+brgUrl.hydrateFromUrl();
+syncBrgCalcModeUi();
+
+bindLabUnitSelectors(scheduleBrgRecalc, { life: true });
 ['brgCalcMode', 'brgC', 'brgP', 'brgN', 'brgType', 'brgDuty', 'brgL10TargetH'].forEach((id) => {
   const el = document.getElementById(id);
-  el?.addEventListener('input', debounced);
+  el?.addEventListener('input', scheduleBrgRecalc);
   el?.addEventListener('change', () => {
     if (id === 'brgCalcMode') syncBrgCalcModeUi();
-    debounced();
+    scheduleBrgRecalc();
   });
 });
-syncBrgCalcModeUi();
+wireLabCopyLink('brgCopyLinkBtn', 'brgCopyToast');
 runCalcWithIndustrialFeedback(wrap, refreshCore);
+mountLabCloudSaveBar('Rodamientos (ISO 281)');

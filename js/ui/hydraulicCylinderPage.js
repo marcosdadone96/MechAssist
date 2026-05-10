@@ -1,9 +1,11 @@
+import { bindInputValidation } from './labCalcUx.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { HYDRAULIC_CYLINDER_EN } from '../lab/i18n/pages/hydCylEn.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 const G = 9.81;
 /** @type {object | null} */
@@ -934,6 +936,17 @@ applyStaticI18n();
 syncHcLabTierUi();
 syncModeUi();
 mountCompactLabFieldHelp();
+
+bindInputValidation([
+  { id: 'hcOilTempC', min: -40, max: 250, label: 'T aceite' },
+  { id: 'hcPressureBar', min: 1, max: 600, label: 'Presión' },
+  { id: 'hcStrokeMm', min: 20, max: 50000, label: 'Carrera' },
+  { id: 'hcLoadKg', min: 0.01, max: 1e9, label: 'Carga' },
+  { id: 'hcTargetSpeedMs', min: 0.001, max: 50, label: 'Velocidad objetivo' },
+  { id: 'hcPumpFlowLmin', min: 0.01, max: 50000, label: 'Caudal bomba' },
+  { id: 'hcPortDiaMm', min: 1, max: 500, label: 'Ø puerto' },
+]);
+
 computeAndRender();
 
 watchLangAndApply(HYDRAULIC_CYLINDER_EN, {
@@ -952,3 +965,4 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountHc'), {
     return svg instanceof SVGSVGElement ? [svg] : [];
   },
 });
+mountLabCloudSaveBar('Cilindro hidr\u00e1ulico');

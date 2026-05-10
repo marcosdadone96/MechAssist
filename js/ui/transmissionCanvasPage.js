@@ -23,6 +23,8 @@ import {
   minDistPointToBeltRunCoreMm,
   beltRunSequentialNodeIds,
 } from '../lab/transmissionCanvasEngine.js';
+import { insertCalculoMecanico } from '../services/calculosMecanicosSave.js';
+import { showToast } from './toast.js';
 import { CHAIN_CATALOG, chainAssemblyHints, getChainById } from '../lab/chainCatalog.js';
 import { filterChainCatalogRows } from '../data/commerceCatalog.js';
 
@@ -1847,7 +1849,9 @@ function finishBelt() {
   const ids = [...state.beltPickOrder];
   const uniq = [...new Set(ids)].filter((id) => state.nodes.some((n) => n.id === id && n.kind === 'pulley'));
   if (uniq.length < 2) {
-    alert('Seleccione al menos 2 poleas en orden (modo «Elegir orden», clic corto en cada una).');
+    showToast('Seleccione al menos 2 poleas en orden (modo «Elegir orden», clic corto en cada una).', {
+      variant: 'info',
+    });
     return;
   }
   const sel = document.getElementById('txBeltKind');
@@ -1889,7 +1893,7 @@ finishChainBtn?.addEventListener('click', () => {
   const ids = [...state.chainPickOrder];
   const uniq = [...new Set(ids)].filter((id) => state.nodes.some((n) => n.id === id && n.kind === 'sprocket'));
   if (uniq.length < 2) {
-    alert('Seleccione al menos 2 piñones en orden.');
+    showToast('Seleccione al menos 2 piñones en orden.', { variant: 'info' });
     return;
   }
   const first = state.nodes.find((n) => n.id === uniq[0]);
@@ -2050,6 +2054,30 @@ function buildTransmissionReportPlain(kin, verdict) {
   return lines.join('\n');
 }
 
+document.getElementById('txCloudSave')?.addEventListener('click', async () => {
+  /** @type {Record<string, unknown>} */
+  let datos_entrada;
+  try {
+    datos_entrada = JSON.parse(
+      JSON.stringify({ activeTab, mode, viewPanZoom, state }),
+    );
+  } catch (_) {
+    datos_entrada = { error: 'serialization_failed' };
+  }
+  const resultados = {
+    inputChecks: document.getElementById('txInputChecks')?.innerText?.slice(0, 12000),
+    verdict: document.getElementById('txVerdict')?.innerText?.slice(0, 6000),
+    formulas: document.getElementById('txFormulas')?.innerText?.slice(0, 6000),
+    elements: document.getElementById('txElementResults')?.innerText?.slice(0, 12000),
+    runs: document.getElementById('txRunResults')?.innerText?.slice(0, 12000),
+  };
+  await insertCalculoMecanico({
+    tipo_maquina: 'Lienzo de transmisión (canvas)',
+    datos_entrada,
+    resultados,
+  });
+});
+
 document.getElementById('txSendReport')?.addEventListener('click', async () => {
   const btn = document.getElementById('txSendReport');
   const { n: n0, T: t0 } = readMotorInputs();
@@ -2066,15 +2094,18 @@ document.getElementById('txSendReport')?.addEventListener('click', async () => {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
       if (res.status === 501 || data.error === 'not_configured') {
-        alert('Envío no configurado en el servidor (RESEND_API_KEY y FEEDBACK_TO_EMAIL o REPORT_TO_EMAIL).');
+        showToast(
+          'Envío no configurado en el servidor (RESEND_API_KEY y FEEDBACK_TO_EMAIL o REPORT_TO_EMAIL).',
+          { variant: 'error', duration: 9000 },
+        );
         return;
       }
       throw new Error(data.error || `HTTP ${res.status}`);
     }
-    alert('Informe enviado correctamente.');
+    showToast('Informe enviado correctamente.', { variant: 'success' });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    alert(`No se pudo enviar el informe: ${msg}`);
+    showToast(`No se pudo enviar el informe: ${msg}`, { variant: 'error', duration: 9000 });
   } finally {
     if (btn instanceof HTMLButtonElement) btn.disabled = false;
   }

@@ -2,6 +2,13 @@
  * Selector acoplamientos — catálogo + par de diseño.
  */
 
+import {
+  bindInputValidation,
+  mountLabPresetsBar,
+  updateLabShareVisibility,
+  wireLabCopyLink,
+} from './labCalcUx.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 import { COUPLING_BRANDS } from '../data/couplingsCatalog.js';
 import { renderCouplingAssemblyDiagram } from '../lab/diagramCatalogModules.js';
 
@@ -47,6 +54,94 @@ function findSuggestedModel(brandId, T_req_Nm) {
   return ok.reduce((a, b) => (a.T_nom_Nm < b.T_nom_Nm ? a : b));
 }
 
+let couplingUrlHydrating = false;
+
+function serializeCouplingUrl() {
+  if (couplingUrlHydrating) return;
+  const params = new URLSearchParams();
+  const pEl = document.getElementById('cpPower');
+  const nEl = document.getElementById('cpRpm');
+  const kEl = document.getElementById('cpK');
+  const bEl = document.getElementById('cpBrand');
+  const mEl = document.getElementById('cpSeries');
+  if (pEl instanceof HTMLInputElement) params.set('P', pEl.value);
+  if (nEl instanceof HTMLInputElement) params.set('n', nEl.value);
+  if (kEl instanceof HTMLInputElement) params.set('K', kEl.value);
+  if (bEl instanceof HTMLSelectElement) params.set('b', bEl.value);
+  if (mEl instanceof HTMLSelectElement && mEl.value) params.set('m', mEl.value);
+  const qs = params.toString();
+  const path = `${location.pathname}${location.hash || ''}`;
+  history.replaceState(null, '', qs ? `${path}?${qs}` : path);
+}
+
+function hydrateCouplingFromUrl() {
+  const q = new URLSearchParams(location.search);
+  if ([...q.keys()].length === 0) return;
+  couplingUrlHydrating = true;
+  try {
+    const b = q.get('b');
+    if (b && document.getElementById('cpBrand') instanceof HTMLSelectElement) {
+      document.getElementById('cpBrand').value = b;
+      fillSeriesSelect(b);
+    }
+    const p = q.get('P');
+    const n = q.get('n');
+    const K = q.get('K');
+    if (p != null && document.getElementById('cpPower') instanceof HTMLInputElement) {
+      document.getElementById('cpPower').value = p;
+    }
+    if (n != null && document.getElementById('cpRpm') instanceof HTMLInputElement) {
+      document.getElementById('cpRpm').value = n;
+    }
+    if (K != null && document.getElementById('cpK') instanceof HTMLInputElement) {
+      document.getElementById('cpK').value = K;
+    }
+    const m = q.get('m');
+    const sEl = document.getElementById('cpSeries');
+    if (m && sEl instanceof HTMLSelectElement) {
+      sEl.value = m;
+    }
+    updateSeriesPreview();
+  } finally {
+    queueMicrotask(() => {
+      couplingUrlHydrating = false;
+    });
+  }
+}
+
+const CP_PRESETS = [
+  {
+    label: 'Lovejoy · bomba 7.5 kW',
+    values: {
+      cpBrand: 'lovejoy',
+      cpSeries: 'L095',
+      cpPower: 7.5,
+      cpRpm: 1455,
+      cpK: 1.5,
+    },
+  },
+  {
+    label: 'KTR ROTEX · 15 kW',
+    values: {
+      cpBrand: 'ktr',
+      cpSeries: 'ROTEX 24',
+      cpPower: 15,
+      cpRpm: 3000,
+      cpK: 1.25,
+    },
+  },
+  {
+    label: 'Flender · pesado',
+    values: {
+      cpBrand: 'flender',
+      cpSeries: 'N-Eupex 125',
+      cpPower: 45,
+      cpRpm: 750,
+      cpK: 1.75,
+    },
+  },
+];
+
 function render() {
   const P = parseFloat((document.getElementById('cpPower')?.value || '0').replace(',', '.'));
   const n = parseFloat((document.getElementById('cpRpm')?.value || '0').replace(',', '.'));
@@ -60,6 +155,8 @@ function render() {
   if (!(Number.isFinite(P) && P >= 0 && Number.isFinite(n) && n > 0 && Number.isFinite(K) && K >= 1)) {
     out.innerHTML = '<p class="lab-verdict lab-verdict--err"><strong>Entrada no válida:</strong> use P ≥ 0, n > 0 y K ≥ 1.</p>';
     tbl.innerHTML = '';
+    updateLabShareVisibility('cpShareLinkWrap', 'cpOut');
+    serializeCouplingUrl();
     return;
   }
   const T_ap = torqueFromPower_kW_nm(P, n);
@@ -70,6 +167,8 @@ function render() {
   if (!row) {
     out.innerHTML = '<p class="lab-verdict lab-verdict--muted">Seleccione fabricante y modelo.</p>';
     tbl.innerHTML = '';
+    updateLabShareVisibility('cpShareLinkWrap', 'cpOut');
+    serializeCouplingUrl();
     return;
   }
 
@@ -101,32 +200,56 @@ function render() {
       </tbody>
     </table>
     <p class="lab-small-print">Datos de catálogo demostrativos. La selección final debe hacerse con el catálogo oficial del fabricante y su condición real de servicio.</p>`;
+
+  updateLabShareVisibility('cpShareLinkWrap', 'cpOut');
+  serializeCouplingUrl();
 }
 
 renderCouplingAssemblyDiagram(document.getElementById('cpDiagram'));
+
+bindInputValidation([
+  { id: 'cpPower', min: 0, max: 1e7, label: 'Potencia' },
+  { id: 'cpRpm', min: 1, max: 2e6, label: 'RPM' },
+  { id: 'cpK', min: 1, max: 10, label: 'Factor K' },
+]);
 
 fillBrandSelect();
 fillSeriesSelect(COUPLING_BRANDS[0].id);
 updateSeriesPreview();
 
+hydrateCouplingFromUrl();
+
+function scheduleCouplingRender() {
+  if (!couplingUrlHydrating) {
+    document.querySelectorAll('#cpPresetsBar .lab-preset-btn').forEach((b) => b.classList.remove('is-active'));
+  }
+  render();
+}
+
+mountLabPresetsBar('cpPresetsBar', CP_PRESETS, () => {
+  render();
+});
 document.getElementById('cpBrand')?.addEventListener('change', (e) => {
   fillSeriesSelect(e.target.value);
   updateSeriesPreview();
-  render();
+  scheduleCouplingRender();
 });
 document.getElementById('cpSeries')?.addEventListener('change', () => {
   updateSeriesPreview();
-  render();
+  scheduleCouplingRender();
 });
-['cpPower', 'cpRpm', 'cpK'].forEach((id) => document.getElementById(id)?.addEventListener('input', render));
+['cpPower', 'cpRpm', 'cpK'].forEach((id) => document.getElementById(id)?.addEventListener('input', scheduleCouplingRender));
 document.querySelectorAll('.cp-ka-btn').forEach((btn) => {
   btn.addEventListener('click', () => {
     const input = document.getElementById('cpK');
     const ka = Number(btn.getAttribute('data-ka'));
     if (!(input instanceof HTMLInputElement) || !Number.isFinite(ka) || ka < 1) return;
     input.value = ka.toFixed(2);
-    render();
+    scheduleCouplingRender();
   });
 });
 
+wireLabCopyLink('cpCopyLinkBtn', 'cpCopyToast');
+
 render();
+mountLabCloudSaveBar('Acoplamientos');

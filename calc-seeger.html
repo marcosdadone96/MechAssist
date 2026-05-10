@@ -135,6 +135,10 @@
           <strong>codificaci&oacute;n de pedido</strong> (tipo <em>Anillo Seeger DIN 471 - 20</em> o <em>- INOX</em>), la norma y las <strong>cotas de ranura</strong> seg&uacute;n tablas de referencia (extracto 3&ndash;100 mm). Verifique siempre con el
           pliego y el fabricante antes de mecanizar.
         </p>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="sgPresetsBar"></div>
+        </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
@@ -246,6 +250,11 @@
           </div>
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
             <div id="sgHero"></div>
+            <div id="sgAlerts" class="lab-alerts"></div>
+            <div class="lab-results-share" id="sgShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn" id="sgCopyLinkBtn">Copiar enlace</button>
+              <div class="lab-copy-toast" id="sgCopyToast" role="status">¡Enlace copiado!</div>
+            </div>
             <div class="lab-results-wrap" id="sgResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
@@ -266,8 +275,10 @@
       </section>
     </main>
 
-
-
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
 
     <script type="module" src="js/ui/homeI18n.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>

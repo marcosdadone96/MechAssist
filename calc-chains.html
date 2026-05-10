@@ -53,6 +53,10 @@
           Cadena de rodillos según <strong>DIN 8187 / ISO 606</strong> (paso métrico) y referencias <strong>ANSI B29.1</strong> en el catálogo demo. Longitud en <strong>pasos</strong> con centro fijo; cinemática en primitivos
           <code>D = p / sin(π/z)</code>.
         </p>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="cPresetsBar"></div>
+        </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
@@ -236,6 +240,11 @@
               <summary>Resultados por elemento</summary>
               <div id="cElementResults" class="lab-element-columns"></div>
             </details>
+            <div id="cAlerts" class="lab-alerts"></div>
+            <div class="lab-results-share" id="cShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn" id="cCopyLinkBtn">Copiar enlace</button>
+              <div class="lab-copy-toast" id="cCopyToast" role="status">¡Enlace copiado!</div>
+            </div>
             <div class="lab-results-wrap" id="cResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
@@ -251,7 +260,6 @@
                 <div class="lab-results" id="cResults"></div>
               </details>
             </div>
-            <div id="cAlerts" class="lab-alerts"></div>
             <div id="cSubstitution"></div>
             <div class="lab-results lab-results--note" id="cAssembly"></div>
             <div id="labPurchaseSuggestions" hidden></div>
@@ -260,8 +268,10 @@
       </section>
     </main>
 
-
-
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
 
     <script type="module" src="js/ui/homeI18n.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>

@@ -1,7 +1,9 @@
+import { bindInputValidation } from './labCalcUx.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 const G = 9.81;
 const PI = Math.PI;
@@ -477,6 +479,22 @@ document.getElementById('hppLabTier')?.addEventListener('change', () => {
 syncLabTierUi();
 syncModeUi();
 mountCompactLabFieldHelp();
+
+bindInputValidation([
+  { id: 'hppColLengthMm', min: 50, max: 50000, label: 'Longitud columna' },
+  { id: 'hppEGpa', min: 70, max: 220, label: 'E módulo' },
+  { id: 'hppForceTon', min: 0.01, max: 50000, label: 'Fuerza' },
+  { id: 'hppDiagPistonMm', min: 10, max: 5000, label: 'Ø pistón' },
+  { id: 'hppPressureBar', min: 1, max: 600, label: 'Presión' },
+  { id: 'hppStrokeMm', min: 10, max: 100000, label: 'Carrera' },
+  { id: 'hppCycleS', min: 0.1, max: 86400, label: 'Tiempo ciclo' },
+  { id: 'hppApproachFactor', min: 1, max: 20, label: 'Factor aproximación' },
+  { id: 'hppPumpFlowLmin', min: 0.01, max: 500000, label: 'Caudal bomba' },
+  { id: 'hppSteelMpa', min: 50, max: 2000, label: 'σ acero' },
+  { id: 'hppUserColumnMm', min: 10, max: 5000, label: 'Columna usuario' },
+  { id: 'hppDiagColumnMm', min: 10, max: 5000, label: 'Ø columna' },
+]);
+
 computeAndRender();
 
 mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMount'), {
@@ -486,3 +504,4 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMount'), {
     return svg instanceof SVGSVGElement ? [svg] : [];
   },
 });
+mountLabCloudSaveBar('Prensa hidr\u00e1ulica');

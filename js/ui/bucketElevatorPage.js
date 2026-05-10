@@ -28,6 +28,7 @@ import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
 import { BUCKET_ELEVATOR_LANG_EVENT } from './bucketElevatorStaticI18n.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 let animPhase = 0;
 let animId = 0;
@@ -488,5 +489,5 @@ setStep(1);
 computeAndRender();
 initInfoChipPopovers(document.body);
 
-
+mountLabCloudSaveBar('Elevador de cangilones');
 

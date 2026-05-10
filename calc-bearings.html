@@ -50,6 +50,10 @@
           Aquí se obtiene la vida nominal básica L10 de un rodamiento rígido de bolas o rodillos a partir de la carga dinámica de catálogo C, la carga equivalente P en servicio y la velocidad de giro, siguiendo la línea del método ISO 281 en versión docente y simplificada. Sirve para comparar diseños y sensibilizar qué ocurre si sube la carga radial o mixta antes de pedir el detalle al fabricante. Es útil para ingenieros de mantenimiento, diseño de máquinas y compras técnicas que deben justificar un cambio de talla. Un caso típico es ver si un ventilador industrial alcanza las horas objetivo cuando la correa queda más tensa tras un alineado incorrecto.
         </p>
         <p class="lab-lead">L₁₀ en millones de revoluciones: L = (C/P)<sup>p</sup> con p = 3 (bolas) o 10/3 (rodillos). Sin factores a<sub>ISO</sub>, temperatura ni confiabilidad distinta del 90%.</p>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="brgPresetsBar"></div>
+        </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated lab-diagram-wrap--bearing">
@@ -201,6 +205,10 @@
               </label>
             </div>
             <div id="brgHero"></div>
+            <div class="lab-results-share" id="brgShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn" id="brgCopyLinkBtn">Copiar enlace</button>
+              <div class="lab-copy-toast" id="brgCopyToast" role="status">¡Enlace copiado!</div>
+            </div>
             <div class="lab-results-wrap" id="brgResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
@@ -219,8 +227,10 @@
       </section>
     </main>
 
-
-
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
 
     <script type="module" src="js/ui/homeI18n.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>

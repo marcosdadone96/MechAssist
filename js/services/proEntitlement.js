@@ -4,6 +4,7 @@
  */
 
 import { FEATURES } from '../config/features.js';
+import { getCurrentUser } from './localAuth.js';
 
 const LS_JWT = 'mdr-pro-jwt-v1';
 /** Unix ms hasta el cual la cache de tier es valida (renovar con pro-verify). */
@@ -67,9 +68,15 @@ export function hasProductionProSessionCache() {
 }
 
 export async function claimProToken(email) {
+  const u = getCurrentUser();
+  const tok =
+    u && u.serverAuth && u.authToken ? String(u.authToken).trim() : '';
+  /** @type {Record<string, string>} */
+  const headers = { 'Content-Type': 'application/json' };
+  if (tok) headers.Authorization = `Bearer ${tok}`;
   const res = await fetch(`${functionsBase()}/pro-claim`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ email: String(email || '').trim() }),
   });
   const data = await res.json().catch(() => ({}));

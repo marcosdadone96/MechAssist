@@ -1,6 +1,7 @@
 {
   "name": "cursor",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -22,6 +23,7 @@
     "@netlify/blobs": "^10.7.4",
     "@supabase/supabase-js": "^2.105.4",
     "bcryptjs": "^2.4.3",
+    "dotenv": "^17.4.2",
     "resend": "^6.12.3"
   }
 }

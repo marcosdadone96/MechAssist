@@ -53,6 +53,10 @@
           Grados <strong>8.8 · 10.9 · 12.9</strong>. Precarga y par de apriete <strong>orientativos</strong> (estilo datos de montaje). La fuerza introducida es la
           <strong>tracción de cálculo</strong> que debe soportar el tornillo (simplificado).
         </p>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="blPresetsBar"></div>
+        </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
@@ -138,6 +142,10 @@
             </div>
           </div>
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
+            <div class="lab-results-share" id="blShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn" id="blCopyLinkBtn">Copiar enlace</button>
+              <div class="lab-copy-toast" id="blCopyToast" role="status">¡Enlace copiado!</div>
+            </div>
             <div id="blOut"></div>
             <div id="blTable"></div>
             <p class="lab-small-print">Hipótesis: el modelo no incluye cargas de cortante combinadas ni fatiga de uniones atornilladas (VDI 2230).</p>
@@ -146,8 +154,10 @@
       </section>
     </main>
 
-
-
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
 
     <script type="module" src="js/ui/homeI18n.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>

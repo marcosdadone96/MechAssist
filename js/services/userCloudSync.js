@@ -1,11 +1,35 @@
 /**
- * Sincroniza biblioteca de motorreductores y configuraciones de maquina con Netlify Blobs
- * cuando hay sesion servidor (JWT auth-login). Sin cuenta / sin token: solo localStorage.
+ * Sincroniza configuraciones de maquina con Netlify Blobs cuando hay sesion servidor (JWT auth-login).
+ * Los motorreductores del usuario viven en Supabase (TheMechAssist Cloud), no en este payload.
  */
 
 import { FEATURES } from '../config/features.js';
 import { getCurrentUser } from './localAuth.js';
-import { listUserGearmotors, replaceUserGearmotorsList } from './userGearmotorLibrary.js';
+
+function _handleExpiredSession() {
+  try {
+    // Limpiar sesión local
+    localStorage.removeItem('mdr-local-user-v1');
+    localStorage.removeItem('mdr-user-sync-meta-v1');
+    // Redirigir con mensaje
+    const lang =
+      typeof document !== 'undefined'
+        ? String(document.documentElement.lang || 'es').toLowerCase()
+        : 'es';
+    const msg = lang.startsWith('en')
+      ? 'Your session has expired. Please sign in again.'
+      : 'Tu sesión ha expirado. Por favor, inicia sesión de nuevo.';
+    // Mostrar aviso si hay toast disponible; si no, usar sessionStorage
+    try {
+      sessionStorage.setItem('mdr-session-expired-msg', msg);
+    } catch (_) {}
+    if (typeof window !== 'undefined' && window.location) {
+      window.location.href = '/register.html?session=expired';
+    }
+  } catch (_) {
+    /* ignorar si no hay window */
+  }
+}
 
 /** Mantener alineado con clearLocalUser si cambia. */
 export const USER_SYNC_META_KEY = 'mdr-user-sync-meta-v1';
@@ -110,8 +134,6 @@ function localStorageHasMachineData() {
 }
 
 function applyServerDoc(doc) {
-  const g = Array.isArray(doc.gearmotors) ? doc.gearmotors : [];
-  replaceUserGearmotorsList(g, { skipCloudSync: true });
   replaceMachineConfigRoot(
     doc.machineConfigs && typeof doc.machineConfigs === 'object' ? doc.machineConfigs : {},
   );
@@ -123,9 +145,8 @@ function applyServerDoc(doc) {
 }
 
 function serverDocHasData(doc) {
-  const g = Array.isArray(doc.gearmotors) && doc.gearmotors.length > 0;
   const mc = doc.machineConfigs && typeof doc.machineConfigs === 'object' && Object.keys(doc.machineConfigs).length > 0;
-  return g || mc;
+  return mc;
 }
 
 /**
@@ -149,7 +170,6 @@ let pushTimer = null;
 
 async function pushUserData() {
   if (!FEATURES.useServerAuth || !getBearer()) return;
-  const gearmotors = listUserGearmotors();
   const machineConfigs = readMachineConfigRoot();
   let res;
   try {
@@ -159,9 +179,13 @@ async function pushUserData() {
         Authorization: `Bearer ${getBearer()}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ gearmotors, machineConfigs }),
+      body: JSON.stringify({ gearmotors: [], machineConfigs }),
     });
   } catch (_) {
+    return;
+  }
+  if (res.status === 401) {
+    _handleExpiredSession();
     return;
   }
   let data = {};
@@ -201,7 +225,10 @@ export function initUserCloudSync() {
       const res = await fetch(`${fnBase()}/user-data`, {
         headers: { Authorization: `Bearer ${getBearer()}` },
       });
-      if (res.status === 401) return;
+      if (res.status === 401) {
+        _handleExpiredSession();
+        return;
+      }
       if (!res.ok) return;
       doc = await res.json();
     } catch (_) {
@@ -220,7 +247,7 @@ export function initUserCloudSync() {
       return;
     }
 
-    if (!serverDocHasData(doc) && (listUserGearmotors().length > 0 || localStorageHasMachineData())) {
+    if (!serverDocHasData(doc) && localStorageHasMachineData()) {
       await pushUserData();
       return;
     }

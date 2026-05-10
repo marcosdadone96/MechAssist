@@ -4,6 +4,7 @@
 
 import { registerAccount, loginAccount } from '../services/accountAuth.js';
 import { FEATURES } from '../config/features.js';
+import { showToast } from './toast.js';
 
 const AUTH_TAB_LOGIN = 'login';
 const AUTH_TAB_REGISTER = 'register';
@@ -39,7 +40,7 @@ function clearAuthFormError() {
 function showAuthFormError(message) {
   const errEl = getAuthErrorEl();
   if (!(errEl instanceof HTMLElement)) {
-    window.alert(message);
+    showToast(message, { variant: 'error' });
     return;
   }
   errEl.textContent = message;

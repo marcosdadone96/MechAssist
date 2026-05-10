@@ -53,6 +53,10 @@
           Cálculo orientativo de límites dimensionales y tipo de ajuste (juego, transición, apriete) a partir del diámetro nominal, posición de tolerancia (agujero
           A-H, JS; eje a-h, js, k, m, n, p) y grado IT. Basado en tablas tipo ISO 286; no sustituye la norma completa.
         </p>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="isoPresetsBar"></div>
+        </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
@@ -129,8 +133,12 @@
             </div>
           </div>
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
-            <div id="isoVerdict" class="lab-verdict-slot"></div>
             <div id="isoHero"></div>
+            <div id="isoAlerts" class="lab-alerts"></div>
+            <div class="lab-results-share" id="isoShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn" id="isoCopyLinkBtn">Copiar enlace</button>
+              <div class="lab-copy-toast" id="isoCopyToast" role="status">¡Enlace copiado!</div>
+            </div>
             <div class="lab-results-wrap" id="isoResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
@@ -143,7 +151,6 @@
               </div>
               <div class="lab-results" id="isoResults"></div>
             </div>
-            <div id="isoAlerts" class="lab-alerts"></div>
             <p class="lab-small-print">
               Hipótesis: este módulo cubre el extracto de 1 a 500 mm. Para rangos, materiales o condiciones especiales, consulte ISO 286-1 completa.
             </p>
@@ -152,8 +159,10 @@
       </section>
     </main>
 
-
-
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
 
     <script type="module" src="js/ui/homeI18n.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>

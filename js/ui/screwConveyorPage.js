@@ -22,6 +22,7 @@ import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 const inputIds = [
   'screwCap',
@@ -567,6 +568,8 @@ window.addEventListener(SCREW_LANG_EVENT, () => {
 
 syncLoadDutyUi();
 refresh();
+
+mountLabCloudSaveBar('Transportador de tornillo sin fin', { scopeSelector: 'main.app-main' });
 
 
 

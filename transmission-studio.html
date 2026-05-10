@@ -148,11 +148,17 @@
             <pre id="studioJson" class="studio-json-pre"></pre>
           </details>
           <button type="button" class="lab-btn studio-copy-btn" id="studioCopy">Copiar JSON</button>
+          <button type="button" class="lab-btn studio-copy-btn" id="studioCloudSave" style="margin-top: 0.5rem">
+            Guardar en la nube
+          </button>
         </aside>
       </div>
     </main>
 
-
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
 
     <script type="module" src="js/ui/homeI18n.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>

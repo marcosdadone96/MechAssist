@@ -1,28 +1,22 @@
 /**
- * Pagina dedicada: biblioteca local de motorreductores (misma clave localStorage que driveSelection).
+ * Pagina dedicada: biblioteca de motorreductores en Supabase (TheMechAssist Cloud).
  */
 
 import { getCurrentLang, setCurrentLang } from '../config/locales.js';
-import { supabase } from '@/lib/supabaseClient';
 import {
   listUserGearmotors,
   addUserGearmotor,
   removeUserGearmotor,
   updateUserGearmotor,
-  replaceUserGearmotorsList,
-  mergeUserGearmotorsList,
-  exportUserGearmotorsJson,
-  extractGearmotorImportItems,
-  normalizeImportRows,
   USER_GEARMOTOR_CHANGED_EVENT,
   MAX_USER_GEARMOTORS,
+  ensureGearmotorsCacheLoaded,
+  subscribeUserGearmotorsRealtime,
 } from '../services/userGearmotorLibrary.js';
 import { isPremiumEffective } from '../services/accessTier.js';
-import { isPremiumViaQueryProUiAllowed } from '../config/features.js';
+import { isPremiumViaQueryProUiAllowed, isPublicFreeRelease } from '../config/features.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { startProCheckoutFlow, buildRegisterUrlWithNextCheckout } from '../services/proCheckoutFlow.js';
-
-const GM_IMPORT_MAX_BYTES = 512 * 1024;
 
 const LEMON_CHECKOUT_MONTHLY_URL =
   'https://mechassist.lemonsqueezy.com/checkout/buy/acd30d30-72e7-4434-827e-e51487e492ca';
@@ -36,8 +30,8 @@ const PAYWALL = {
     eyebrow: 'Plan Pro',
     h1: 'Biblioteca de motorreductores',
     lead:
-      'Guarde datos de placa, importe o exporte JSON y reutilice sus equipos en todas las calculadoras. Funci\u00f3n incluida en TheMechAssist Pro.',
-    unlockHint: 'Elija una suscripci\u00f3n mensual o anual para desbloquear esta biblioteca en su navegador.',
+      'Guarde placas y datos de ficha en TheMechAssist Cloud y reutilice sus equipos en todas las calculadoras. Funci\u00f3n incluida en TheMechAssist Pro.',
+    unlockHint: 'Elija una suscripci\u00f3n mensual o anual para desbloquear esta biblioteca.',
     monthlyPlan: 'Plan mensual \u2014 9 \u20ac/mes',
     annualPlan: 'Plan anual \u2014 79 \u20ac/a\u00f1o',
     secureNote: 'Pago seguro procesado por Lemon Squeezy.',
@@ -51,8 +45,8 @@ const PAYWALL = {
     eyebrow: 'Pro plan',
     h1: 'Gearmotor library',
     lead:
-      'Save nameplate data, import/export JSON and reuse units on every calculator. Included with TheMechAssist Pro.',
-    unlockHint: 'Choose monthly or yearly billing to unlock this library in your browser.',
+      'Save nameplate data to TheMechAssist Cloud and reuse units on every calculator. Included with TheMechAssist Pro.',
+    unlockHint: 'Choose monthly or yearly billing to unlock this library.',
     monthlyPlan: 'Monthly plan \u2014 \u20ac9/month',
     annualPlan: 'Annual plan \u2014 \u20ac79/year',
     secureNote: 'Secure checkout powered by Lemon Squeezy.',
@@ -68,9 +62,9 @@ const TX = {
   es: {
     title: 'Mis motorreductores',
     lead:
-      'Cree aqu\u00ed su propia lista (placa / ficha). Los datos se guardan solo en este navegador. En cada calculadora elija <strong>Marca \u2192 Mis motorreductores guardados</strong> para comprobar frente a la m\u00e1quina.',
-    leadBackup:
-      '<br><br><strong>Respaldo:</strong> exporte su lista peri\u00f3dicamente con <em>Exportar JSON</em>.',
+      'Cree aqu\u00ed su lista desde datos de placa o ficha. Los registros se guardan en <strong>TheMechAssist Cloud</strong> y puede usarlos en cada calculadora con <strong>Marca \u2192 Mis motorreductores guardados</strong>.',
+    cloudStrip:
+      'Sincronizado en tiempo real con TheMechAssist Cloud (Supabase): los cambios se reflejan entre pesta\u00f1as cuando hay conexi\u00f3n.',
     formH: 'A\u00f1adir o editar',
     label: 'Referencia / ubicaci\u00f3n',
     labelHint: 'Nombre para reconocerlo en la lista.',
@@ -79,18 +73,13 @@ const TX = {
     t2peakHint: 'Opcional.',
     nmotorHint: 'Opcional.',
     etaHint: 'Opcional. Vac\u00edo: se usa 0,92 en verificaci\u00f3n. Puede escribir 0\u20131 o porcentaje (p. ej. 92).',
-    submitAdd: 'Guardar en mi base',
-    submitEdit: 'Actualizar',
-    saveCloud: 'Guardar actual',
+    submitAdd: 'Guardar en la nube',
+    submitEdit: 'Actualizar en la nube',
     cancelEdit: 'Cancelar edici\u00f3n',
-    listH: 'Lista guardada',
+    listH: 'Lista en la nube',
     countLine: 'Entradas: {n} / {max}',
-    export: 'Exportar JSON',
-    import: 'Importar JSON',
-    importNote:
-      'Sin <em>Fusionar</em>, la importaci\u00f3n <strong>sustituye</strong> la lista actual en este navegador. Con <em>Fusionar</em> se unen por identificador (mismo <code>id</code> actualiza; nuevos se a\u00f1aden). L\u00edmite total {max} entradas.',
-    importMergeLabel: 'Fusionar con la lista actual (no borrar lo que no venga en el archivo)',
-    exportName: 'mechassist-motorreductores.json',
+    loadCloudErr: 'No se pudo cargar desde la nube. Revise la conexi\u00f3n y la configuraci\u00f3n de Supabase.',
+    saveCloudErr: 'No se pudo guardar en la nube (red o permisos).',
     thRef: 'Referencia',
     thPkW: '<em>P</em> (kW)',
     thN2: '<em>n</em><sub>2</sub> (min<sup>&minus;1</sup>)',
@@ -107,18 +96,9 @@ const TX = {
     edit: 'Editar',
     delete: 'Eliminar',
     empty: 'No hay motorreductores guardados todav\u00eda.',
-    savedAdd: 'Guardado.',
-    savedEdit: 'Actualizado.',
+    savedAdd: 'Guardado en TheMechAssist Cloud.',
+    savedEdit: 'Actualizado en TheMechAssist Cloud.',
     deleted: 'Eliminado.',
-    importOk: 'Lista importada.',
-    importOkMerge: 'Lista fusionada.',
-    importFail: 'No se pudo importar (JSON inv\u00e1lido).',
-    importNoItems: 'El archivo no contiene filas v\u00e1lidas.',
-    importNoValidRows: 'No se encontraron filas v\u00e1lidas (compruebe kW, n\u2082 y T\u2082).',
-    importFileTooLarge: 'Archivo demasiado grande (m\u00e1x. 512 KB).',
-    confirmImport: '\u00bfSustituir toda la lista por el contenido del archivo?',
-    confirmImportMerge:
-      '\u00bfFusionar? Se actualizar\u00e1n entradas con el mismo id y se a\u00f1adir\u00e1n nuevas. El total se limita a {max}.',
     confirmDelete: '\u00bfEliminar este motorreductor de la lista?',
     docTitle: 'Mis motorreductores \u2014 TheMechAssist',
     ariaLang: 'Selector de idioma',
@@ -128,16 +108,15 @@ const TX = {
     errT2peak: 'Si rellena T\u2082 pico, debe ser mayor que 0.',
     errNmotor: 'Si rellena n motor, debe ser al menos 1 min\u207b\u00b9.',
     errEta: 'Si rellena \u03b7, use un valor entre 0 y 1 (o porcentaje 1\u2013100).',
-    maxListReached:
-      'La lista est\u00e1 llena ({max} entradas). Elimine o exporte antes de a\u00f1adir m\u00e1s.',
-    signInToSave:
-      'Inicie sesi\u00f3n para guardar o importar motorreductores en este navegador.',
+    maxListReached: 'La lista est\u00e1 llena ({max} entradas). Elimine una antes de a\u00f1adir m\u00e1s.',
+    signInToSave: 'Inicie sesi\u00f3n para guardar motorreductores en TheMechAssist Cloud.',
   },
   en: {
     title: 'My gearmotors',
     lead:
-      'Build your own list from nameplate / datasheet data. Stored only in this browser. On each calculator choose <strong>Brand \u2192 My saved gearmotors</strong> to verify against the machine.',
-    leadBackup: '<br><br><strong>Backup:</strong> export your list periodically with <em>Export JSON</em>.',
+      'Build your list from nameplate or datasheet data. Records are stored in <strong>TheMechAssist Cloud</strong> and available on every calculator via <strong>Brand \u2192 My saved gearmotors</strong>.',
+    cloudStrip:
+      'Real-time sync with TheMechAssist Cloud (Supabase): changes propagate across tabs when online.',
     formH: 'Add or edit',
     label: 'Reference / location',
     labelHint: 'Label used in dropdown lists.',
@@ -146,18 +125,13 @@ const TX = {
     t2peakHint: 'Optional.',
     nmotorHint: 'Optional.',
     etaHint: 'Optional. Empty defaults to 0.92 in verification. Enter 0\u20131 or percent (e.g. 92).',
-    submitAdd: 'Save to my library',
-    submitEdit: 'Update',
-    saveCloud: 'Save current (cloud)',
+    submitAdd: 'Save to cloud',
+    submitEdit: 'Update in cloud',
     cancelEdit: 'Cancel edit',
-    listH: 'Saved list',
+    listH: 'Cloud list',
     countLine: 'Entries: {n} / {max}',
-    export: 'Export JSON',
-    import: 'Import JSON',
-    importNote:
-      'Without <em>Merge</em>, import <strong>replaces</strong> the current list in this browser. With <em>Merge</em>, rows are combined by <code>id</code> (same id updates; new ids append). Maximum {max} entries total.',
-    importMergeLabel: 'Merge with current list (do not remove entries missing from the file)',
-    exportName: 'mechassist-gearmotors.json',
+    loadCloudErr: 'Could not load from cloud. Check your connection and Supabase configuration.',
+    saveCloudErr: 'Could not save to cloud (network or permissions).',
     thRef: 'Reference',
     thPkW: '<em>P</em> (kW)',
     thN2: '<em>n</em><sub>2</sub> (min<sup>&minus;1</sup>)',
@@ -174,18 +148,9 @@ const TX = {
     edit: 'Edit',
     delete: 'Remove',
     empty: 'No saved gearmotors yet.',
-    savedAdd: 'Saved.',
-    savedEdit: 'Updated.',
+    savedAdd: 'Saved to TheMechAssist Cloud.',
+    savedEdit: 'Updated in TheMechAssist Cloud.',
     deleted: 'Removed.',
-    importOk: 'List imported.',
-    importOkMerge: 'List merged.',
-    importFail: 'Could not import (invalid JSON).',
-    importNoItems: 'The file has no valid rows.',
-    importNoValidRows: 'No valid rows found (check kW, n\u2082, and T\u2082).',
-    importFileTooLarge: 'File too large (max 512 KB).',
-    confirmImport: 'Replace the entire list with this file?',
-    confirmImportMerge:
-      'Merge? Entries with the same id will update; new ids will be added. Total is capped at {max}.',
     confirmDelete: 'Remove this gearmotor from the list?',
     docTitle: 'My gearmotors \u2014 TheMechAssist',
     ariaLang: 'Language selector',
@@ -195,8 +160,8 @@ const TX = {
     errT2peak: 'If T\u2082 peak is filled, it must be greater than 0.',
     errNmotor: 'If motor speed is filled, use at least 1 min\u207b\u00b9.',
     errEta: 'If efficiency is filled, use 0\u20131 or a percent between 1 and 100.',
-    maxListReached: 'The list is full ({max} entries). Remove or export before adding more.',
-    signInToSave: 'Sign in to save or import gearmotors in this browser.',
+    maxListReached: 'The list is full ({max} entries). Remove one before adding more.',
+    signInToSave: 'Sign in to save gearmotors to TheMechAssist Cloud.',
   },
 };
 
@@ -224,8 +189,10 @@ function applyStaticCopy() {
   const titleEl = document.getElementById('gmPageTitle');
   const leadEl = document.getElementById('gmPageLead');
   if (titleEl) titleEl.textContent = t('title');
-  if (leadEl) leadEl.innerHTML = t('lead') + t('leadBackup');
+  if (leadEl) leadEl.innerHTML = t('lead');
 
+  const cloudStrip = document.getElementById('gmCloudStrip');
+  if (cloudStrip) cloudStrip.innerHTML = t('cloudStrip');
   const formH = document.getElementById('gmFormHeading');
   const listH = document.getElementById('gmListHeading');
   if (formH) formH.textContent = t('formH');
@@ -255,12 +222,6 @@ function applyStaticCopy() {
   document.getElementById('gmNmotorHint')?.replaceChildren(document.createTextNode(t('nmotorHint')));
   document.getElementById('gmEtaHint')?.replaceChildren(document.createTextNode(t('etaHint')));
 
-  document.getElementById('gmExportBtn')?.replaceChildren(document.createTextNode(t('export')));
-  document.getElementById('gmImportLbl')?.replaceChildren(document.createTextNode(t('import')));
-  setHtml('gmImportNote', t('importNote', { max: MAX_USER_GEARMOTORS }));
-  const mergeTxt = document.getElementById('gmImportMergeText');
-  if (mergeTxt) mergeTxt.textContent = t('importMergeLabel');
-
   document.getElementById('gmThRef')?.replaceChildren(document.createTextNode(t('thRef')));
   setHtml('gmThPkW', t('thPkW'));
   setHtml('gmThN2', t('thN2'));
@@ -272,7 +233,6 @@ function applyStaticCopy() {
   if (navSelf) navSelf.textContent = t('title');
 
   document.getElementById('gmCancelBtn')?.replaceChildren(document.createTextNode(t('cancelEdit')));
-  document.getElementById('gmSaveCloudBtn')?.replaceChildren(document.createTextNode(t('saveCloud')));
   syncSubmitLabel();
 
   const host = document.getElementById('gmLangHost');
@@ -335,77 +295,6 @@ function readFormRaw() {
   if (notes) o.notes = notes.slice(0, 500);
   return o;
 }
-/**
- * Env\u00eda el estado actual del formulario a Supabase (tabla proyectos_transmision).
- */
-async function handleGuardarEnSupabase() {
-  const v = validateForm();
-  if (!v.ok) {
-    flashStatus(t(v.key), 'warn');
-    return;
-  }
-  const datos = v.payload;
-
-  const {
-    data: { user },
-    error: authErr,
-  } = await supabase.auth.getUser();
-
-  if (authErr || !user) {
-    flashStatus(
-      lang() === 'en' ? 'Sign in to save to the cloud.' : 'Inicie sesi\u00f3n para guardar en la nube.',
-      'warn',
-    );
-    return;
-  }
-
-  let eta = datos.eta_g;
-  if (eta != null && Number.isFinite(eta) && eta > 1 && eta <= 100) eta /= 100;
-
-  const row = {
-    user_id: user.id,
-    referencia: datos.label ?? null,
-    p_motor: datos.motor_kW,
-    n2_salida: datos.n2_rpm,
-    t2_nominal: datos.T2_nom_Nm,
-    n_motor: datos.motor_rpm_nom ?? null,
-    eficiencia_reductor: eta != null && Number.isFinite(eta) ? eta : null,
-    notas: datos.notes ?? null,
-  };
-
-  const { error } = await supabase.from('proyectos_transmision').insert(row);
-
-  if (error) {
-    flashStatus((lang() === 'en' ? 'Cloud save failed: ' : 'Error al guardar: ') + error.message, 'warn');
-    return;
-  }
-
-  const added =
-    String(getCurrentUser()?.email || '').trim() ? addUserGearmotor(datos) : null;
-
-  if (added) {
-    clearForm();
-    renderTable();
-  }
-
-  const hasLocal = Boolean(String(getCurrentUser()?.email || '').trim());
-
-  flashStatus(
-    added
-      ? lang() === 'en'
-        ? 'Saved to cloud and library.'
-        : 'Guardado en la nube y en la lista.'
-      : hasLocal
-        ? lang() === 'en'
-          ? 'Saved to cloud (library full - export or remove entries).'
-          : 'Guardado en la nube (lista local llena - exporte o elimine entradas).'
-        : lang() === 'en'
-          ? 'Saved to cloud. Sign in on this site to add entries to your local library.'
-          : 'Guardado en la nube. Inicie sesi\u00f3n en esta web para a\u00f1adir entradas a la lista local.',
-    'info',
-  );
-}
-
 function clearForm() {
   const edit = document.getElementById('gmEditId');
   if (edit instanceof HTMLInputElement) edit.value = '';
@@ -515,14 +404,19 @@ function renderTable() {
   });
   tbody.querySelectorAll('[data-gm-del]').forEach((b) => {
     b.addEventListener('click', () => {
-      const id = b.getAttribute('data-gm-del');
-      if (!id || !window.confirm(t('confirmDelete'))) return;
-      if (removeUserGearmotor(id)) {
-        flashStatus(t('deleted'), 'info');
-        renderTable();
-        const editing = document.getElementById('gmEditId')?.value;
-        if (editing === id) clearForm();
-      }
+      void (async () => {
+        const id = b.getAttribute('data-gm-del');
+        if (!id || !window.confirm(t('confirmDelete'))) return;
+        const removed = await removeUserGearmotor(id);
+        if (removed) {
+          flashStatus(t('deleted'), 'info');
+          renderTable();
+          const editing = document.getElementById('gmEditId')?.value;
+          if (editing === id) clearForm();
+        } else {
+          flashStatus(t('saveCloudErr'), 'warn');
+        }
+      })();
     });
   });
   updateCountLine();
@@ -639,97 +533,40 @@ function mountGearmotorsPaywall() {
 function wireGearmotorPageHandlers() {
   document.getElementById('gmForm')?.addEventListener('submit', (ev) => {
     ev.preventDefault();
-    if (!String(getCurrentUser()?.email || '').trim()) {
-      flashStatus(t('signInToSave'), 'warn');
-      return;
-    }
-    const v = validateForm();
-    if (!v.ok) {
-      flashStatus(t(v.key), 'warn');
-      return;
-    }
-    const p = v.payload;
-    const editId = document.getElementById('gmEditId')?.value?.trim();
-    let ok = null;
-    if (editId) {
-      ok = updateUserGearmotor(editId, p);
-      if (ok) flashStatus(t('savedEdit'), 'info');
-      else flashStatus(t('importFail'), 'warn');
-    } else {
-      if (listUserGearmotors().length >= MAX_USER_GEARMOTORS) {
-        flashStatus(t('maxListReached', { max: MAX_USER_GEARMOTORS }), 'warn');
+    void (async () => {
+      if (!String(getCurrentUser()?.email || '').trim()) {
+        flashStatus(t('signInToSave'), 'warn');
         return;
       }
-      ok = addUserGearmotor(p);
-      if (ok) flashStatus(t('savedAdd'), 'info');
-      else flashStatus(t('importFail'), 'warn');
-    }
-    if (ok) {
-      clearForm();
-      renderTable();
-    }
+      const v = validateForm();
+      if (!v.ok) {
+        flashStatus(t(v.key), 'warn');
+        return;
+      }
+      const p = v.payload;
+      const editId = document.getElementById('gmEditId')?.value?.trim();
+      let ok = null;
+      if (editId) {
+        ok = await updateUserGearmotor(editId, p);
+        if (ok) flashStatus(t('savedEdit'), 'info');
+        else flashStatus(t('saveCloudErr'), 'warn');
+      } else {
+        if (listUserGearmotors().length >= MAX_USER_GEARMOTORS) {
+          flashStatus(t('maxListReached', { max: MAX_USER_GEARMOTORS }), 'warn');
+          return;
+        }
+        ok = await addUserGearmotor(p);
+        if (ok) flashStatus(t('savedAdd'), 'info');
+        else flashStatus(t('saveCloudErr'), 'warn');
+      }
+      if (ok) {
+        clearForm();
+        renderTable();
+      }
+    })();
   });
 
   document.getElementById('gmCancelBtn')?.addEventListener('click', () => clearForm());
-
-  document.getElementById('gmSaveCloudBtn')?.addEventListener('click', () => void handleGuardarEnSupabase());
-
-  document.getElementById('gmExportBtn')?.addEventListener('click', () => {
-    const blob = new Blob([exportUserGearmotorsJson()], { type: 'application/json;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = t('exportName');
-    a.rel = 'noopener';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
-
-  document.getElementById('gmImportInput')?.addEventListener('change', async (ev) => {
-    const input = /** @type {HTMLInputElement} */ (ev.target);
-    const file = input.files?.[0];
-    input.value = '';
-    if (!file) return;
-    if (!String(getCurrentUser()?.email || '').trim()) {
-      flashStatus(t('signInToSave'), 'warn');
-      return;
-    }
-    if (file.size > GM_IMPORT_MAX_BYTES) {
-      flashStatus(t('importFileTooLarge'), 'warn');
-      return;
-    }
-    try {
-      const text = await file.text();
-      const data = JSON.parse(text);
-      const arr = extractGearmotorImportItems(data);
-      if (!Array.isArray(arr)) {
-        flashStatus(t('importFail'), 'warn');
-        return;
-      }
-      if (!arr.length) {
-        flashStatus(t('importNoItems'), 'warn');
-        return;
-      }
-      const validCount = normalizeImportRows(arr).length;
-      if (!validCount) {
-        flashStatus(t('importNoValidRows'), 'warn');
-        return;
-      }
-      const mergeEl = document.getElementById('gmImportMerge');
-      const merge = mergeEl instanceof HTMLInputElement && mergeEl.checked;
-      const okConfirm = merge
-        ? window.confirm(t('confirmImportMerge', { max: MAX_USER_GEARMOTORS }))
-        : window.confirm(t('confirmImport'));
-      if (!okConfirm) return;
-      const done = merge ? mergeUserGearmotorsList(arr) : replaceUserGearmotorsList(arr);
-      if (done) {
-        flashStatus(merge ? t('importOkMerge') : t('importOk'), 'info');
-        clearForm();
-        renderTable();
-      } else flashStatus(t('importFail'), 'warn');
-    } catch (_) {
-      flashStatus(t('importFail'), 'warn');
-    }
-  });
 
   window.addEventListener(USER_GEARMOTOR_CHANGED_EVENT, () => {
     renderTable();
@@ -738,15 +575,35 @@ function wireGearmotorPageHandlers() {
   });
 }
 
-function boot() {
-  if (!isPremiumEffective()) {
+/** @type {(() => void) | null} */
+let unsubRealtime = null;
+
+async function boot() {
+  if (!isPremiumEffective() && !isPublicFreeRelease()) {
     mountGearmotorsPaywall();
     return;
   }
   initLangChrome();
   applyStaticCopy();
   wireGearmotorPageHandlers();
+  try {
+    await ensureGearmotorsCacheLoaded();
+  } catch (_) {
+    flashStatus(t('loadCloudErr'), 'warn');
+  }
   renderTable();
+  unsubRealtime = subscribeUserGearmotorsRealtime();
+  window.addEventListener(
+    'beforeunload',
+    () => {
+      try {
+        unsubRealtime?.();
+      } catch (_) {
+        /* ignore */
+      }
+    },
+    { once: true },
+  );
 }
 
 boot();

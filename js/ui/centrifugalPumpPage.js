@@ -23,6 +23,7 @@ import { applyMachinePremiumGates } from './machinePremiumGates.js';
 import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 const pumpInputIds = [
   'pumpNameplateKw',
@@ -991,5 +992,5 @@ window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
   location.reload();
 });
 
-
+mountLabCloudSaveBar('Bomba centrífuga');
 

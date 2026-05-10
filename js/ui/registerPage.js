@@ -253,6 +253,30 @@ function showError(msg) {
 }
 
 export function mountRegisterPage() {
+  // Mostrar aviso si la sesión expiró
+  try {
+    const expiredMsg = sessionStorage.getItem('mdr-session-expired-msg');
+    if (expiredMsg) {
+      sessionStorage.removeItem('mdr-session-expired-msg');
+      // Busca el contenedor de mensajes de error/aviso que ya existe en la página
+      // (el mismo que muestra errores de login). Si no existe, crea un banner.
+      const msgEl =
+        document.getElementById('registerError') ||
+        document.getElementById('registerMsg') ||
+        document.getElementById('loginMsg') ||
+        document.querySelector('.register-msg, .login-msg, [data-msg]');
+      if (msgEl) {
+        msgEl.textContent = expiredMsg;
+        msgEl.style.color = '#92400e';
+        msgEl.style.background = '#fef3c7';
+        msgEl.style.padding = '0.6rem 1rem';
+        msgEl.style.borderRadius = '6px';
+        msgEl.style.marginBottom = '1rem';
+        msgEl.hidden = false;
+      }
+    }
+  } catch (_) {}
+
   applyTx();
 
   window.addEventListener('home-language-changed', () => applyTx());

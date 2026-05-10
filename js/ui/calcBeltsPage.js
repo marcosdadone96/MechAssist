@@ -16,12 +16,17 @@ import {
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
+  bindInputValidation,
+  createLabUrlSync,
   debounce,
   executiveSummaryAlert,
   labAlert,
   metricHtml,
+  mountLabPresetsBar,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  updateLabShareVisibility,
+  wireLabCopyLink,
 } from './labCalcUx.js';
 import { commerceIdForBeltSelection } from '../data/commerceCatalog.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
@@ -33,6 +38,7 @@ import { LAB_AFFILIATE } from '../config/labAffiliate.js';
 import { getLabLang } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { BELTS_PAGE_EN } from '../lab/i18n/pages/beltsEn.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 function bx(es, en) {
   return getLabLang() === 'en' ? en : es;
@@ -76,6 +82,55 @@ function beltSpeedVerdictUi(r) {
     detail: `${bands.min} m/s \u2264 v \u2264 ${bands.maxRec} m/s for ${bands.label}.`,
   };
 }
+
+function beltLabFinalVerdict(r) {
+  if (r.geometryValid === false) return 'error';
+  const sk = r.speedVerdict?.key;
+  if (sk === 'critical') return 'error';
+  if (sk === 'low') return 'warn';
+  if (sk === 'optimal') return 'ok';
+  return undefined;
+}
+
+const BELT_PRESETS = [
+  {
+    label: 'Motor → ventilador industrial',
+    values: {
+      bBeltType: 'v_trapezoidal',
+      bVProfile: 'SPA',
+      bD1: 125,
+      bD2: 280,
+      bC: 520,
+      bN1: 1455,
+      bPowerKw: 7.5,
+      bSlip: 1.5,
+    },
+  },
+  {
+    label: 'Servomotor → husillo CNC',
+    values: {
+      bBeltType: 'synchronous',
+      bSyncPitch: '5',
+      bZ1: 20,
+      bZ2: 40,
+      bC: 300,
+      bN1: 3000,
+    },
+  },
+  {
+    label: 'Motor → bomba centrífuga',
+    values: {
+      bBeltType: 'v_trapezoidal',
+      bVProfile: 'SPB',
+      bD1: 160,
+      bD2: 315,
+      bC: 600,
+      bN1: 1450,
+      bPowerKw: 15,
+      bSlip: 1.5,
+    },
+  },
+];
 
 mountTierStatusBar();
 bootSmartDashboardIfEnabled('Correas · laboratorio');
@@ -133,6 +188,17 @@ const syncSel = document.getElementById('bSyncPitch');
 if (syncSel instanceof HTMLSelectElement) syncSel.value = '5';
 
 mountCompactLabFieldHelp();
+
+bindInputValidation([
+  { id: 'bD1', min: 10, max: 2000, label: 'Diámetro motriz d₁' },
+  { id: 'bD2', min: 10, max: 2000, label: 'Diámetro conducida d₂' },
+  { id: 'bC', min: 50, max: 5000, label: 'Distancia entre centros C' },
+  { id: 'bN1', min: 0, max: 30000, label: 'RPM motrices n₁' },
+  { id: 'bPowerKw', min: 0, max: 10000, label: 'Potencia' },
+  { id: 'bSlip', min: 0, max: 15, label: 'Deslizamiento' },
+  { id: 'bZ1', min: 6, max: 200, label: 'Dientes Z₁' },
+  { id: 'bZ2', min: 6, max: 200, label: 'Dientes Z₂' },
+]);
 
 /** @returns {import('../lab/beltDrives.js').BeltDriveType} */
 function currentBeltType() {
@@ -249,7 +315,9 @@ function refreshCore() {
             'Incluye modelo de deslizamiento en la polea conducida (V / plana / Poly-V).',
             'Includes slip model on the driven pulley (V / flat / Poly-V).',
           );
-    heroEl.innerHTML = renderResultHero([
+    const bv = beltLabFinalVerdict(r);
+    heroEl.innerHTML = renderResultHero(
+      [
       {
         label: bx(
           'ω₂ — velocidad angular · polea 2 (conducida)',
@@ -269,7 +337,9 @@ function refreshCore() {
           'v = \u03c9\u2081 · r\u2081 = \u03c0 d\u2081 n\u2081 / 60 000 (d\u2081 in mm, n\u2081 in RPM \u2192 m/s).',
         ),
       },
-    ]);
+    ],
+      bv ? { verdict: bv } : {},
+    );
   }
 
   renderSpeedVerdictEl(r);
@@ -633,18 +703,67 @@ function refreshCore() {
           'Amazon search links are informational only. You can configure an affiliate ID in site settings.',
         ),
   });
+
+  updateLabShareVisibility('bShareLinkWrap', 'bResults');
+  beltUrl.serializeToUrl();
 }
 
+/** Query param → element id (short keys for shareable URLs). */
+const BELT_URL_PARAM_TO_ID = {
+  beltType: 'bBeltType',
+  vProfile: 'bVProfile',
+  polyProfile: 'bPolyProfile',
+  syncPitch: 'bSyncPitch',
+  d1: 'bD1',
+  d2: 'bD2',
+  C: 'bC',
+  n1: 'bN1',
+  slip: 'bSlip',
+  powerKw: 'bPowerKw',
+  z1: 'bZ1',
+  z2: 'bZ2',
+};
+
+const beltUrl = createLabUrlSync(BELT_URL_PARAM_TO_ID, {
+  hydrateOrder: [
+    'beltType',
+    'vProfile',
+    'polyProfile',
+    'syncPitch',
+    'd1',
+    'd2',
+    'C',
+    'n1',
+    'slip',
+    'powerKw',
+    'z1',
+    'z2',
+  ],
+  afterHydrate: () => {
+    syncBeltFormUi();
+  },
+});
+
+beltUrl.hydrateFromUrl();
 syncBeltFormUi();
 
 const wrap = document.getElementById('bResultsWrap');
 const debounced = debounce(() => runCalcWithIndustrialFeedback(wrap, refreshCore), 55);
 
-bindLabUnitSelectors(debounced);
+const beltPresets = mountLabPresetsBar('bPresetsBar', BELT_PRESETS, debounced);
+
+function scheduleBeltRecalc() {
+  if (!beltPresets.applying && !beltUrl.hydrating) {
+    beltPresets.clearActive();
+  }
+  debounced();
+}
+
+bindLabUnitSelectors(scheduleBeltRecalc);
 
 document.getElementById('bBeltType')?.addEventListener('change', () => {
   syncBeltFormUi();
-  debounced();
+  scheduleBeltRecalc();
 });
 
 [
@@ -660,10 +779,13 @@ document.getElementById('bBeltType')?.addEventListener('change', () => {
   'bSlip',
   'bPowerKw',
 ].forEach((id) => {
-  document.getElementById(id)?.addEventListener('input', debounced);
-  document.getElementById(id)?.addEventListener('change', debounced);
+  document.getElementById(id)?.addEventListener('input', scheduleBeltRecalc);
+  document.getElementById(id)?.addEventListener('change', scheduleBeltRecalc);
 });
 
-watchLangAndApply(BELTS_PAGE_EN, { onEnApplied: () => debounced() });
+watchLangAndApply(BELTS_PAGE_EN, { onEnApplied: () => scheduleBeltRecalc() });
+
+wireLabCopyLink('bCopyLinkBtn', 'bCopyToast');
 
 runCalcWithIndustrialFeedback(wrap, refreshCore);
+mountLabCloudSaveBar('Correas de transmisi\u00f3n');

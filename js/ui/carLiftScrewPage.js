@@ -17,6 +17,7 @@ import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels, getCurrentLang } from '../config/i18nLabels.js';
 import { HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
 import { FEATURES } from '../config/features.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 function recoCopyCarLift(en) {
   return en
@@ -731,3 +732,5 @@ refresh();
 window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
   location.reload();
 });
+
+mountLabCloudSaveBar('Elevador de autos (husillo)');

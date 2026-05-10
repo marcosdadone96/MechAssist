@@ -178,6 +178,9 @@ export function clearPremiumPersistent() {
 }
 
 export function isPremiumEffective() {
+  if (FEATURES.publicFreeRelease === true) return true;
+  if (FEATURES.devSimulatePremium) return true;
+  if (FEATURES.proClientPolicy === 'production' && hasProductionProSessionCache()) return true;
   return getEffectiveTier() === 'premium';
 }
 

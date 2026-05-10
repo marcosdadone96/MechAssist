@@ -3,6 +3,14 @@
  */
 
 import {
+  bindInputValidation,
+  createLabUrlSync,
+  mountLabPresetsBar,
+  updateLabShareVisibility,
+  wireLabCopyLink,
+} from './labCalcUx.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
+import {
   DIN6885_FORM_A_ROWS,
   DIN6885_STANDARD_LENGTHS,
   KEY_MATERIAL_ALLOWABLE_MPA,
@@ -33,6 +41,32 @@ function nextStandardLength(l_need_mm) {
   return DIN6885_STANDARD_LENGTHS[DIN6885_STANDARD_LENGTHS.length - 1];
 }
 
+const KY_PRESETS = [
+  {
+    label: 'Eje Ø32 · C45',
+    values: { kyD: 32, kyT: 180, kyL: '', kyMat: 'c45' },
+  },
+  {
+    label: 'Eje Ø50 · alto par',
+    values: { kyD: 50, kyT: 420, kyL: 70, kyMat: 'c45' },
+  },
+  {
+    label: 'Eje Ø25 · ac.inox',
+    values: { kyD: 25, kyT: 95, kyL: '', kyMat: 'inox' },
+  },
+];
+
+const KY_URL_PARAM_TO_ID = {
+  d: 'kyD',
+  T: 'kyT',
+  L: 'kyL',
+  mat: 'kyMat',
+};
+
+const kyUrl = createLabUrlSync(KY_URL_PARAM_TO_ID, {
+  hydrateOrder: ['d', 'T', 'L', 'mat'],
+});
+
 function render() {
   const d = parseFloat(document.getElementById('kyD')?.value || '0');
   const T = parseFloat(document.getElementById('kyT')?.value || '0');
@@ -48,6 +82,8 @@ function render() {
   if (!row) {
     out.innerHTML = '<p class="lab-verdict lab-verdict--err">Diámetro fuera de tabla (mín. 6 mm en este extracto).</p>';
     tbl.innerHTML = '';
+    updateLabShareVisibility('kyShareLinkWrap', 'kyOut');
+    if (!kyUrl.hydrating) kyUrl.serializeToUrl();
     return;
   }
 
@@ -111,9 +147,32 @@ function render() {
         <tr><td>Veredicto aplastamiento</td><td><strong>${ok ? 'APTO' : 'INSUFICIENTE'}</strong></td></tr>
       </tbody>
     </table>`;
+
+  updateLabShareVisibility('kyShareLinkWrap', 'kyOut');
+  if (!kyUrl.hydrating) kyUrl.serializeToUrl();
 }
 
-['kyD', 'kyT', 'kyL', 'kyMat'].forEach((id) => document.getElementById(id)?.addEventListener('input', render));
-document.getElementById('kyMat')?.addEventListener('change', render);
+bindInputValidation([
+  { id: 'kyD', min: 6, max: 500, label: 'Ø eje' },
+  { id: 'kyT', min: 0, max: 1e9, label: 'Par' },
+  { id: 'kyL', min: 1, max: 5000, label: 'Longitud L' },
+]);
+
+kyUrl.hydrateFromUrl();
+
+mountLabPresetsBar('kyPresetsBar', KY_PRESETS, render);
+
+function scheduleKyRender() {
+  if (!kyUrl.hydrating) {
+    document.querySelectorAll('#kyPresetsBar .lab-preset-btn').forEach((b) => b.classList.remove('is-active'));
+  }
+  render();
+}
+
+['kyD', 'kyT', 'kyL', 'kyMat'].forEach((id) => document.getElementById(id)?.addEventListener('input', scheduleKyRender));
+document.getElementById('kyMat')?.addEventListener('change', scheduleKyRender);
+
+wireLabCopyLink('kyCopyLinkBtn', 'kyCopyToast');
 
 render();
+mountLabCloudSaveBar('Chavetas paralelas DIN 6885');

@@ -12,11 +12,25 @@ const {
 } = require('./lib/proEntitlementLogic.js');
 const { verifyJwt } = require('./lib/proJwt.js');
 
-function corsHeaders() {
+function corsHeaders(event) {
+  const allowed = [
+    'https://www.themechassist.com',
+    'https://themechassist.com',
+  ];
+  // En desarrollo local o deploy preview de Netlify, permitir el origen del request
+  const origin = (event && event.headers)
+    ? (event.headers.origin || event.headers.Origin || '')
+    : '';
+  const isNetlifyPreview = origin.includes('.netlify.app');
+  const isLocalhost = origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1');
+  const allowedOrigin = allowed.includes(origin) || isNetlifyPreview || isLocalhost
+    ? origin
+    : 'https://www.themechassist.com';
   return {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Headers': 'Authorization, Content-Type',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Vary': 'Origin',
   };
 }
 
@@ -28,7 +42,7 @@ function getAuthBearer(event) {
 }
 
 exports.handler = async (event) => {
-  const cors = corsHeaders();
+  const cors = corsHeaders(event);
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: cors };
   }

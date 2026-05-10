@@ -12,20 +12,26 @@ import {
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
+  bindInputValidation,
+  createLabUrlSync,
   debounce,
   executiveSummaryAlert,
   labAlert,
   labHelpTooltipMarkup,
   metricHtml,
+  mountLabPresetsBar,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  updateLabShareVisibility,
   uxCopy,
+  wireLabCopyLink,
 } from './labCalcUx.js';
 import { commerceIdForChainRef } from '../data/commerceCatalog.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
 import { bindCommerceFilteredSelect } from './commerceSelectBind.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 mountTierStatusBar();
 bootSmartDashboardIfEnabled('Cadenas · laboratorio');
@@ -71,6 +77,61 @@ function elementCardHtml(title, rows) {
   return `<article class="lab-element-card"><h4 class="lab-element-card__title">${esc(title)}</h4><dl class="lab-element-card__kv">${body}</dl></article>`;
 }
 
+const CHAIN_PRESETS = [
+  {
+    label: 'ISO 12B · centrado',
+    values: {
+      cManualPitch: false,
+      cChainRef: 'iso-12b-1',
+      cPitch: 19.05,
+      cZ1: 17,
+      cZ2: 25,
+      cCenter: 450,
+      cN1: 1455,
+    },
+  },
+  {
+    label: 'ISO 08B · lento',
+    values: {
+      cManualPitch: false,
+      cChainRef: 'iso-08b-1',
+      cPitch: 12.7,
+      cZ1: 15,
+      cZ2: 38,
+      cCenter: 380,
+      cN1: 900,
+    },
+  },
+  {
+    label: 'Paso manual 15 mm',
+    values: {
+      cManualPitch: true,
+      cPitch: 15,
+      cZ1: 19,
+      cZ2: 57,
+      cCenter: 520,
+      cN1: 720,
+    },
+  },
+];
+
+const CHAIN_URL_PARAM_TO_ID = {
+  mp: 'cManualPitch',
+  chain: 'cChainRef',
+  p: 'cPitch',
+  z1: 'cZ1',
+  z2: 'cZ2',
+  a: 'cCenter',
+  n1: 'cN1',
+};
+
+const chainUrl = createLabUrlSync(CHAIN_URL_PARAM_TO_ID, {
+  hydrateOrder: ['mp', 'chain', 'p', 'z1', 'z2', 'a', 'n1'],
+  afterHydrate: () => {
+    syncPitchDisabled();
+  },
+});
+
 bindCommerceFilteredSelect(
   'cChainRef',
   CHAIN_CATALOG,
@@ -82,6 +143,14 @@ const sel = document.getElementById('cChainRef');
 if (sel instanceof HTMLSelectElement) sel.value = 'iso-12b-1';
 
 mountCompactLabFieldHelp();
+
+bindInputValidation([
+  { id: 'cPitch', min: 4, max: 200, label: 'Paso p' },
+  { id: 'cZ1', min: 6, max: 200, label: 'z₁' },
+  { id: 'cZ2', min: 6, max: 200, label: 'z₂' },
+  { id: 'cCenter', min: 50, max: 50000, label: 'Distancia entre centros' },
+  { id: 'cN1', min: 0, max: 30000, label: 'RPM n₁' },
+]);
 
 const manualEl = document.getElementById('cManualPitch');
 const pitchEl = document.getElementById('cPitch');
@@ -139,9 +208,15 @@ function refreshCore() {
   };
   const r = computeRollerChain(p);
 
+  const hasPolyWarn = Boolean(r.polygonalEffect?.active);
+  const articDanger = r.articulationFrequency_Hz != null && r.articulationFrequency_Hz > 50;
+  const chainVerdict =
+    validationMsgs.length || articDanger ? 'error' : hasPolyWarn ? 'warn' : 'ok';
+
   const heroEl = document.getElementById('cHero');
   if (heroEl) {
-    heroEl.innerHTML = renderResultHero([
+    heroEl.innerHTML = renderResultHero(
+      [
       {
         label: 'ω₂ — velocidad angular · piñón 2 (conducido, z₂)',
         display: r.n2_rpm != null ? formatRotation(r.n2_rpm, u.rotation) : '—',
@@ -152,7 +227,9 @@ function refreshCore() {
         display: formatLinearSpeed(r.linearSpeed_m_s, u.linear),
         hint: 'Media en el primitivo del piñón motor (piñón 1, z₁).',
       },
-    ]);
+    ],
+      { verdict: chainVerdict },
+    );
   }
 
   const box = document.getElementById('cResults');
@@ -243,7 +320,6 @@ function refreshCore() {
   if (alerts) {
     const parts = [];
     const hasValidation = validationMsgs.length > 0;
-    const hasPolyWarn = Boolean(r.polygonalEffect?.active);
     parts.push(
       executiveSummaryAlert({
         level: hasValidation ? 'danger' : hasPolyWarn ? 'warn' : 'ok',
@@ -376,14 +452,32 @@ function refreshCore() {
   setLabPurchaseFromShoppingLines(document.getElementById('labPurchaseSuggestions'), shoppingLines, [
     { label: 'Piñon cadena a juego', searchQuery: 'piñon cadena rodillos acero' },
   ]);
+
+  updateLabShareVisibility('cShareLinkWrap', 'cResults');
+  chainUrl.serializeToUrl();
 }
 
 const wrap = document.getElementById('cResultsWrap');
 const debounced = debounce(() => runCalcWithIndustrialFeedback(wrap, refreshCore), 55);
-bindLabUnitSelectors(debounced);
+
+const chainPresets = mountLabPresetsBar('cPresetsBar', CHAIN_PRESETS, debounced);
+
+function scheduleChainRecalc() {
+  if (!chainPresets.applying && !chainUrl.hydrating) {
+    chainPresets.clearActive();
+  }
+  debounced();
+}
+
+chainUrl.hydrateFromUrl();
+syncPitchDisabled();
+
+bindLabUnitSelectors(scheduleChainRecalc);
 ['cPitch', 'cZ1', 'cZ2', 'cCenter', 'cN1', 'cChainRef', 'cManualPitch'].forEach((id) => {
-  document.getElementById(id)?.addEventListener('input', debounced);
-  document.getElementById(id)?.addEventListener('change', debounced);
+  document.getElementById(id)?.addEventListener('input', scheduleChainRecalc);
+  document.getElementById(id)?.addEventListener('change', scheduleChainRecalc);
 });
-manualEl?.addEventListener('change', debounced);
+manualEl?.addEventListener('change', scheduleChainRecalc);
+wireLabCopyLink('cCopyLinkBtn', 'cCopyToast');
 runCalcWithIndustrialFeedback(wrap, refreshCore);
+mountLabCloudSaveBar('Cadenas de transmisi\u00f3n');

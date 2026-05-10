@@ -13,26 +13,43 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
 import {
+  bindInputValidation,
+  createLabUrlSync,
   debounce,
   executiveSummaryAlert,
   labAlert,
   metricHtml,
+  mountLabPresetsBar,
   renderMotorPowerRuler,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  updateLabShareVisibility,
   uxCopy,
+  wireLabCopyLink,
 } from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { metricsFromGears } from '../services/iaAdvisor.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { LAB_LANG_EVENT, getLabLang } from '../lab/i18n/labLang.js';
 import { gearsRuntimeStrings } from '../lab/i18n/runtime/gearsRuntime.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 mountTierStatusBar();
 bootSmartDashboardIfEnabled(gearsRuntimeStrings(getLabLang()).dashboardBoot);
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
 mountCompactLabFieldHelp();
+
+bindInputValidation([
+  { id: 'gM', min: 0.2, max: 50, label: 'Módulo m' },
+  { id: 'gZ1', min: 6, max: 500, label: 'Dientes Z₁' },
+  { id: 'gZ2', min: 6, max: 500, label: 'Dientes Z₂' },
+  { id: 'gFace', min: 1, max: 500, label: 'Ancho de cara b' },
+  { id: 'gAlpha', min: 0, max: 45, label: 'Presión α' },
+  { id: 'gN1', min: 0, max: 30000, label: 'RPM motrices n₁' },
+  { id: 'gPower', min: 0, max: 1e7, label: 'Potencia' },
+  { id: 'gTorque', min: 0, max: 1e9, label: 'Par' },
+]);
 
 function read(id, fallback) {
   const el = document.getElementById(id);
@@ -81,6 +98,54 @@ function elementCardHtml(title, rows) {
     .join('');
   return `<article class="lab-element-card"><h4 class="lab-element-card__title">${esc(title)}</h4><dl class="lab-element-card__kv">${body}</dl></article>`;
 }
+
+const GEAR_PRESETS = [
+  {
+    label: 'Reducción 3:1 paso 1',
+    values: {
+      gCalcMode: 'diagnostic',
+      gZ1: 20,
+      gZ2: 60,
+      gM: 1,
+      gFace: 32,
+      gAlpha: 20,
+      gN1: 1455,
+      gPower: 5.5,
+      gTorque: '',
+      gLube: 'oil',
+    },
+  },
+  {
+    label: 'Par elevado paso 2.5',
+    values: {
+      gCalcMode: 'diagnostic',
+      gZ1: 18,
+      gZ2: 45,
+      gM: 2.5,
+      gFace: 55,
+      gAlpha: 20,
+      gN1: 720,
+      gTorque: 2200,
+      gPower: '',
+      gLube: 'oil',
+    },
+  },
+  {
+    label: 'Alta velocidad módulo 1',
+    values: {
+      gCalcMode: 'diagnostic',
+      gZ1: 24,
+      gZ2: 36,
+      gM: 1,
+      gFace: 20,
+      gAlpha: 20,
+      gN1: 6000,
+      gPower: 8,
+      gTorque: '',
+      gLube: 'oil',
+    },
+  },
+];
 
 function powerKwFromInputs(n1_rpm, Topt, Popt) {
   if (Topt != null && Topt > 0 && n1_rpm > 0) {
@@ -169,6 +234,15 @@ function refreshCore() {
     lubrication: lube,
   });
 
+  const hasValidationG = validationMsgs.length > 0;
+  const sfCriticalG = agma.hasLoad && agma.bendingSafety_SF < 1.05;
+  const shCriticalG = agma.hasLoad && agma.contactSafety_SH < 1.05;
+  const gearsHasCritical = hasValidationG || sfCriticalG || shCriticalG;
+  const gearsHasWarn =
+    !gearsHasCritical &&
+    (agma.velocityAlerts.some((a) => a.level !== 'danger') ||
+      (agma.hasLoad && (agma.bendingSafety_SF < 1.4 || agma.contactSafety_SH < 1.2)));
+
   const heroEl = document.getElementById('gHero');
   if (heroEl) {
     const heroItems = [];
@@ -193,7 +267,8 @@ function refreshCore() {
         hint: 'Opcional: potencia o par para AGMA y regla de motor.',
       });
     }
-    heroEl.innerHTML = renderResultHero(heroItems);
+    const gv = gearsHasCritical ? 'error' : gearsHasWarn ? 'warn' : 'ok';
+    heroEl.innerHTML = renderResultHero(heroItems, { verdict: gv });
   }
 
   const motorEl = document.getElementById('gMotorCompare');
@@ -254,31 +329,23 @@ function refreshCore() {
   const alerts = document.getElementById('gAlerts');
   if (alerts) {
     const parts = [];
-    const hasValidation = validationMsgs.length > 0;
-    const sfCritical = agma.hasLoad && agma.bendingSafety_SF < 1.05;
-    const shCritical = agma.hasLoad && agma.contactSafety_SH < 1.05;
-    const hasCritical = hasValidation || sfCritical || shCritical;
-    const hasWarn =
-      !hasCritical &&
-      (agma.velocityAlerts.some((a) => a.level !== 'danger') ||
-        (agma.hasLoad && (agma.bendingSafety_SF < 1.4 || agma.contactSafety_SH < 1.2)));
     parts.push(
       executiveSummaryAlert({
-        level: hasCritical ? 'danger' : hasWarn ? 'warn' : 'ok',
-        titleEs: hasCritical
+        level: gearsHasCritical ? 'danger' : gearsHasWarn ? 'warn' : 'ok',
+        titleEs: gearsHasCritical
           ? 'Resumen ejecutivo: revisar el diseño antes de liberar.'
-          : hasWarn
+          : gearsHasWarn
             ? 'Resumen ejecutivo: diseño usable con revisiones recomendadas.'
             : 'Resumen ejecutivo: diseño base consistente para iterar.',
-        titleEn: hasCritical
+        titleEn: gearsHasCritical
           ? 'Executive summary: review design before release.'
-          : hasWarn
+          : gearsHasWarn
             ? 'Executive summary: workable design with recommended checks.'
             : 'Executive summary: baseline design is consistent for iteration.',
-        actionsEs: hasCritical
+        actionsEs: gearsHasCritical
           ? ['Corregir los campos en rojo.', 'Aumentar módulo o ancho de cara para subir márgenes AGMA.']
           : ['Confirmar lubricación y régimen real.', 'Validar con catálogo/fabricante antes de compra.'],
-        actionsEn: hasCritical
+        actionsEn: gearsHasCritical
           ? ['Fix the fields marked in red.', 'Increase module or face width to raise AGMA margins.']
           : ['Confirm lubrication and real duty point.', 'Validate with supplier catalogue before purchase.'],
       }),
@@ -386,7 +453,32 @@ function refreshCore() {
       searchQuery: t.shopQ(r.module_mm),
     },
   ]);
+
+  updateLabShareVisibility('gShareLinkWrap', 'gResults');
+  gearUrl.serializeToUrl();
 }
+
+/** Short query keys; `module` maps to #gM, `face` / `faceWidth` hydrate to #gFace. */
+const GEAR_URL_PARAM_TO_ID = {
+  calcMode: 'gCalcMode',
+  z1: 'gZ1',
+  z2: 'gZ2',
+  module: 'gM',
+  face: 'gFace',
+  alpha: 'gAlpha',
+  n1: 'gN1',
+  lube: 'gLube',
+  power: 'gPower',
+  torque: 'gTorque',
+};
+
+const gearUrl = createLabUrlSync(GEAR_URL_PARAM_TO_ID, {
+  hydrateOrder: ['calcMode', 'z1', 'z2', 'module', 'face', 'alpha', 'n1', 'lube', 'power', 'torque'],
+  hydrateKeyAliases: { face: ['faceWidth'] },
+  afterHydrate: () => {
+    syncGearCalcModeUi();
+  },
+});
 
 function buildCopyResultsText() {
   const u = getLabUnitPrefs();
@@ -413,17 +505,33 @@ function buildCopyResultsText() {
 const resultsWrap = document.getElementById('gResultsWrap');
 const debounced = debounce(() => runCalcWithIndustrialFeedback(resultsWrap, refreshCore), 55);
 
-bindLabUnitSelectors(debounced);
+const gearPresets = mountLabPresetsBar('gPresetsBar', GEAR_PRESETS, debounced);
 
-['gCalcMode', 'gZ1', 'gZ2', 'gM', 'gFace', 'gAlpha', 'gN1', 'gPower', 'gTorque', 'gLube'].forEach((id) => {
-  document.getElementById(id)?.addEventListener('input', debounced);
-  document.getElementById(id)?.addEventListener('change', () => {
-    if (id === 'gCalcMode') syncGearCalcModeUi();
-    debounced();
-  });
-});
+function scheduleGearRecalc() {
+  if (!gearPresets.applying && !gearUrl.hydrating) {
+    gearPresets.clearActive();
+  }
+  debounced();
+}
+
+gearUrl.hydrateFromUrl();
 syncGearCalcModeUi();
+
+bindLabUnitSelectors(scheduleGearRecalc);
+
+['gZ1', 'gZ2', 'gM', 'gFace', 'gAlpha', 'gN1', 'gPower', 'gTorque', 'gLube'].forEach((id) => {
+  document.getElementById(id)?.addEventListener('input', scheduleGearRecalc);
+  document.getElementById(id)?.addEventListener('change', scheduleGearRecalc);
+});
+
+document.getElementById('gCalcMode')?.addEventListener('change', () => {
+  syncGearCalcModeUi();
+  scheduleGearRecalc();
+});
 applyGearsHelpI18n();
+
+wireLabCopyLink('gCopyLinkBtn', 'gCopyToast');
+
 document.getElementById('gCopyResults')?.addEventListener('click', async () => {
   const btn = document.getElementById('gCopyResults');
   if (!(btn instanceof HTMLButtonElement)) return;
@@ -443,6 +551,7 @@ document.getElementById('gCopyResults')?.addEventListener('click', async () => {
 window.addEventListener(LAB_LANG_EVENT, () => {
   bootSmartDashboardIfEnabled(gearsRuntimeStrings(getLabLang()).dashboardBoot);
   applyGearsHelpI18n();
-  debounced();
+  scheduleGearRecalc();
 });
 runCalcWithIndustrialFeedback(resultsWrap, refreshCore);
+mountLabCloudSaveBar('Engranajes cil\u00edndricos rectos');

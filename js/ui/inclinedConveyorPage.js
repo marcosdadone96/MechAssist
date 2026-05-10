@@ -20,6 +20,7 @@ import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 const inputIds = [
   'incLength',
@@ -884,6 +885,8 @@ bindIncRangeSlider('incRollerDR', 'incRollerD', 50, 1200, 1);
 bindIncRangeSlider('incFrictionR', 'incFriction', 0.15, 0.65, 0.01);
 
 refresh();
+
+mountLabCloudSaveBar('Cinta transportadora inclinada', { scopeSelector: 'main.app-main' });
 
 window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
   location.reload();

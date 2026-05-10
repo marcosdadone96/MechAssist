@@ -4,6 +4,7 @@
  */
 import { svgToPngData } from './reportPdfExport.js';
 import { getCurrentLang, formatDateTimeLocale, t } from '../config/locales.js';
+import { showToast } from '../ui/toast.js';
 
 const JSPDF_CDN = 'https://esm.sh/jspdf@2.5.2';
 
@@ -283,12 +284,14 @@ export function mountLabFluidPdfExportBar(el, { getPayload, getDiagramElements }
     try {
       const payload = getPayload();
       if (payload && payload.valid === false) {
-        window.alert(en ? 'Fix input errors before exporting.' : 'Corrija errores de entrada antes de exportar.');
+        showToast(en ? 'Fix input errors before exporting.' : 'Corrija errores de entrada antes de exportar.', {
+          variant: 'error',
+        });
         return;
       }
       await exportLabFluidReportPdf(payload, { diagramEls: getDiagramElements() });
     } catch (e) {
-      window.alert(String(e?.message || e));
+      showToast(String(e?.message || e), { variant: 'error', duration: 8000 });
     }
   });
 }

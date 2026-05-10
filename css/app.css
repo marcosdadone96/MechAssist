@@ -4636,3 +4636,48 @@ html[data-conveyor-tool='screw'] #screwMotorBlock .motor-card-grid {
   color: var(--muted, #5c6d82);
 }
 
+/* Toasts (reemplazo de alert) */
+.mdr-toast-host {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 100002;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+  max-width: min(420px, calc(100vw - 2rem));
+}
+
+.mdr-toast {
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: auto;
+}
+
+.mdr-toast--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mdr-toast--info {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+.mdr-toast--success {
+  background: #14532d;
+  color: #ecfdf5;
+}
+
+.mdr-toast--error {
+  background: #7f1d1d;
+  color: #fef2f2;
+}
+

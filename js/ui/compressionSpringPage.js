@@ -9,6 +9,7 @@ import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
 import { bindLabUnitSelectors, formatLength, getLabUnitPrefs } from '../lab/labUnitPrefs.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
+  bindInputValidation,
   debounce,
   executiveSummaryAlert,
   labAlert,
@@ -18,6 +19,7 @@ import {
   uxCopy,
 } from './labCalcUx.js';
 import { setLabPurchaseSuggestions } from './labPurchaseSuggestions.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 /** @type {object | null} */
 let springPdfSnapshot = null;
@@ -500,6 +502,15 @@ function computeCore() {
   const ratioOp = tauOp != null ? tauOp / tauAllowEff : null;
   const ratioGovern = ratioOp != null ? ratioOp : ratioBlock;
 
+  const bucklingBad = bucklingFailBlock || bucklingFailOp;
+  const fatigueFailHard = labTier === 'project' && Number.isFinite(fat.U) && fat.U > 1.05;
+  const level = sMax <= 0 || !Number.isFinite(Fn) || bucklingBad || fatigueFailHard || ratioGovern > 0.85
+    ? 'danger'
+    : ratioGovern > 0.55
+      ? 'warn'
+      : 'ok';
+  const springVerdict = level === 'danger' ? 'error' : level === 'warn' ? 'warn' : 'ok';
+
   const heroItems = [];
   heroItems.push({
     label: 'k - rigidez',
@@ -524,7 +535,7 @@ function computeCore() {
     display: `${fmt(Fn, 0)} N | ${fmt(tauBlock, 1)} MPa`,
     hint: `s_max = ${fmt(Math.max(0, sMax), 2)} mm. tau/tau_adm = ${fmt(ratioBlock, 2)}.`,
   });
-  if (heroEl) heroEl.innerHTML = renderResultHero(heroItems);
+  if (heroEl) heroEl.innerHTML = renderResultHero(heroItems, { verdict: springVerdict });
 
   const buckNote = bucklingFailBlock || bucklingFailOp
     ? 'REVISAR PANDEO'
@@ -617,13 +628,6 @@ function computeCore() {
   }
 
   const alertParts = [];
-  const bucklingBad = bucklingFailBlock || bucklingFailOp;
-  const fatigueFailHard = labTier === 'project' && Number.isFinite(fat.U) && fat.U > 1.05;
-  const level = sMax <= 0 || !Number.isFinite(Fn) || bucklingBad || fatigueFailHard || ratioGovern > 0.85
-    ? 'danger'
-    : ratioGovern > 0.55
-      ? 'warn'
-      : 'ok';
   alertParts.push(
     executiveSummaryAlert({
       level,
@@ -886,6 +890,19 @@ const debounced = debounce(() => runCalcWithIndustrialFeedback(resultsWrap, comp
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
 mountCompactLabFieldHelp();
+
+bindInputValidation([
+  { id: 'springTauAdmMpa', min: 0, max: 5000, label: 'τ adm' },
+  { id: 'springTauW', min: 0, max: 5000, label: 'τ W' },
+  { id: 'springDWire', min: 0.2, max: 200, label: 'd hilo' },
+  { id: 'springDiaValue', min: 1, max: 5000, label: 'Diámetro bobina' },
+  { id: 'springNActive', min: 1, max: 500, label: 'Vueltas activas' },
+  { id: 'springL0', min: 1, max: 10000, label: 'L₀' },
+  { id: 'springSWork', min: 0, max: 1e6, label: 's trabajo' },
+  { id: 'springFWork', min: 0, max: 1e9, label: 'F trabajo' },
+  { id: 'springFMin', min: 0, max: 1e9, label: 'F mín' },
+]);
+
 syncSpringLabTierUi();
 syncSpringWorkInputsUi();
 bindLabUnitSelectors(debounced);
@@ -971,3 +988,4 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountSpring'), {
     return [a, b].filter((el) => el instanceof SVGSVGElement);
   },
 });
+mountLabCloudSaveBar('Resorte de compresi\u00f3n');

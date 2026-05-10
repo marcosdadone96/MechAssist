@@ -2,6 +2,14 @@
  * Tornillería ISO 898-1 — verificación simplificada tracción + par de apriete catálogo.
  */
 
+import {
+  bindInputValidation,
+  createLabUrlSync,
+  mountLabPresetsBar,
+  updateLabShareVisibility,
+  wireLabCopyLink,
+} from './labCalcUx.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 import { BOLT_DIAMETERS, boltRowCatalog } from '../data/metricBoltGrades.js';
 import { renderBoltedJointDiagram } from '../lab/diagramCatalogModules.js';
 
@@ -39,6 +47,54 @@ function syncBoltCalcModeUi() {
   if (gSel instanceof HTMLSelectElement) gSel.disabled = design;
 }
 
+const BL_PRESETS = [
+  {
+    label: 'Diagnóstico M12 · 60 kN',
+    values: {
+      blCalcMode: 'diagnostic',
+      blD: 12,
+      blGrade: '10.9',
+      blF: 60,
+      blMu: 0.12,
+    },
+  },
+  {
+    label: 'Diseño · 95 kN',
+    values: {
+      blCalcMode: 'design',
+      blD: 12,
+      blGrade: '10.9',
+      blF: 95,
+      blMu: 0.14,
+    },
+  },
+  {
+    label: 'Junta seca μ 0.18',
+    values: {
+      blCalcMode: 'diagnostic',
+      blD: 16,
+      blGrade: '8.8',
+      blF: 42,
+      blMu: 0.18,
+    },
+  },
+];
+
+const BL_URL_PARAM_TO_ID = {
+  mode: 'blCalcMode',
+  d: 'blD',
+  g: 'blGrade',
+  F: 'blF',
+  mu: 'blMu',
+};
+
+const blUrl = createLabUrlSync(BL_URL_PARAM_TO_ID, {
+  hydrateOrder: ['mode', 'd', 'g', 'F', 'mu'],
+  afterHydrate: () => {
+    syncBoltCalcModeUi();
+  },
+});
+
 function render() {
   const mode = document.getElementById('blCalcMode')?.value === 'design' ? 'design' : 'diagnostic';
   let d = parseInt(document.getElementById('blD')?.value || '12', 10);
@@ -66,6 +122,8 @@ function render() {
     out.innerHTML = `<p class="lab-verdict lab-verdict--err">No hay combinación M6–M36 en grados 8.8/10.9/12.9 que cubra ${F_kN.toFixed(2)} kN en este modelo. Considere mayor diámetro fuera de tabla, rosca fina o más tornillos en paralelo.</p>`;
     tbl.innerHTML = '';
     renderBoltedJointDiagram(document.getElementById('blDiagram'), 12);
+    updateLabShareVisibility('blShareLinkWrap', 'blOut');
+    if (!blUrl.hydrating) blUrl.serializeToUrl();
     return;
   }
 
@@ -74,6 +132,8 @@ function render() {
 
   if (!row) {
     out.innerHTML = '<p class="lab-verdict lab-verdict--err">Combinación no disponible.</p>';
+    updateLabShareVisibility('blShareLinkWrap', 'blOut');
+    if (!blUrl.hydrating) blUrl.serializeToUrl();
     return;
   }
 
@@ -83,7 +143,7 @@ function render() {
   const ok = F_N <= 0 || SF >= 1;
   const preloadN = row.F_preload_N;
   const ratioVsPreload = preloadN > 0 ? F_N / preloadN : 0;
-  const K_mu = 0.9 * mu + 0.092; // aproxima K para cambiar sensible con μ
+  const K_mu = 0.9 * mu + 0.092;
   const T_mu_Nm = (K_mu * preloadN * d) / 1000;
 
   if (F_N <= 0) {
@@ -124,15 +184,36 @@ function render() {
       </tbody>
     </table>
     <p class="lab-small-print">No sustituye EN 1993-1-8 ni instrucciones Würth/Bossard; valores de precarga/par son orientativos.</p>`;
+
+  updateLabShareVisibility('blShareLinkWrap', 'blOut');
+  if (!blUrl.hydrating) blUrl.serializeToUrl();
 }
 
 fillSelects();
+
+bindInputValidation([{ id: 'blF', min: 0, max: 1e9, label: 'Fuerza' }]);
+
+blUrl.hydrateFromUrl();
+syncBoltCalcModeUi();
+
+mountLabPresetsBar('blPresetsBar', BL_PRESETS, render);
+
+function scheduleBlRender() {
+  if (!blUrl.hydrating) {
+    document.querySelectorAll('#blPresetsBar .lab-preset-btn').forEach((b) => b.classList.remove('is-active'));
+  }
+  render();
+}
+
 ['blCalcMode', 'blD', 'blGrade', 'blF', 'blMu'].forEach((id) => {
-  document.getElementById(id)?.addEventListener('input', render);
+  document.getElementById(id)?.addEventListener('input', scheduleBlRender);
   document.getElementById(id)?.addEventListener('change', () => {
     if (id === 'blCalcMode') syncBoltCalcModeUi();
-    render();
+    scheduleBlRender();
   });
 });
-syncBoltCalcModeUi();
+
+wireLabCopyLink('blCopyLinkBtn', 'blCopyToast');
+
 render();
+mountLabCloudSaveBar('Torniller\u00eda ISO 898');

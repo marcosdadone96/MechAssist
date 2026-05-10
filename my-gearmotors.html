@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mis motorreductores &#8212; MechAssist</title>
-    <meta name="description" content="Biblioteca local: guarde placas, exporte JSON y use los datos en las calculadoras de mùquinas." />
+    <meta name="description" content="Biblioteca en TheMechAssist Cloud: guarde placas y reutilice los datos en las calculadoras." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -14,11 +14,11 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="" id="mdr-og-url" />
     <meta property="og:title" content="Mis motorreductores &#8212; MechAssist" />
-    <meta property="og:description" content="Biblioteca local: guarde placas, exporte JSON y use los datos en las calculadoras de mùquinas." />
+    <meta property="og:description" content="Biblioteca en TheMechAssist Cloud: guarde placas y reutilice los datos en las calculadoras." />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Mis motorreductores &#8212; MechAssist" />
     <link rel="stylesheet" href="css/app.css" />
-    <!-- Import map: alias @/ ? js/ (Supabase y otros mùdulos) -->
+    <!-- Import map: alias @/ ? js/ (Supabase y otros m?dulos) -->
     <script type="importmap">
       {
         "imports": {
@@ -26,7 +26,7 @@
         }
       }
     </script>
-    <!-- Opcional: URL y anon key de Supabase (o defina window.__SUPABASE_URL__ / __SUPABASE_ANON_KEY__ antes de los mùdulos) -->
+    <!-- Opcional: URL y anon key de Supabase (o defina window.__SUPABASE_URL__ / __SUPABASE_ANON_KEY__ antes de los m?dulos) -->
     <!-- <meta name="supabase-url" content="https://YOUR_PROJECT.supabase.co" /> -->
     <!-- <meta name="supabase-anon-key" content="YOUR_ANON_KEY" /> -->
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -52,7 +52,7 @@
         <span class="site-nav__title">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">M·quinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">M?quinas</a>
         <a class="site-nav__link" href="my-gearmotors.html" aria-current="page"><span class="mygm-nav-txt" data-gm-nav-title data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -117,7 +117,6 @@
                 </div>
                 <div class="field gearmotor-db__form-actions" style="grid-column: 1 / -1">
                   <button type="submit" class="btn-calc" id="gmSubmitBtn"></button>
-                  <button type="button" class="btn-calc button--ghost" id="gmSaveCloudBtn">Guardar actual</button>
                   <button type="button" class="button button--ghost" id="gmCancelBtn" hidden></button>
                 </div>
               </form>
@@ -126,23 +125,10 @@
 
           <div class="gearmotor-db__col gearmotor-db__col--list">
             <section class="gearmotor-db__section" aria-labelledby="gmListHeading">
-              <div class="gearmotor-db__toolbar">
+              <div class="gearmotor-db__toolbar gearmotor-db__toolbar--cloud">
                 <h2 id="gmListHeading" class="gearmotor-db__h2"></h2>
-                <div class="gearmotor-db__io">
-                  <button type="button" class="button button--ghost" id="gmExportBtn"></button>
-                  <label class="button button--ghost gearmotor-db__file-label">
-                    <span id="gmImportLbl"></span>
-                    <input id="gmImportInput" type="file" accept=".json,application/json" hidden />
-                  </label>
-                </div>
               </div>
-              <p class="muted gearmotor-db__import-note" id="gmImportNote"></p>
-              <p class="muted gearmotor-db__import-merge">
-                <label class="gearmotor-db__merge-label">
-                  <input type="checkbox" id="gmImportMerge" />
-                  <span id="gmImportMergeText"></span>
-                </label>
-              </p>
+              <p class="muted gearmotor-db__cloud-strip" id="gmCloudStrip" aria-live="polite"></p>
               <p class="muted" id="gmCount"></p>
               <div class="gearmotor-db__table-wrap">
                 <table class="gearmotor-db__table" id="gmTable">
@@ -168,11 +154,16 @@
     <footer class="app-legal-foot">
       <nav class="app-legal-foot__links" aria-label="Legal">
         <a href="privacy.html">Privacidad</a>
-        <a href="terms.html">Tùrminos</a>
+        <a href="terms.html">T?rminos</a>
       </nav>
     </footer>
 
     <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
+
     <script type="module" src="js/ui/homeI18n.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/myGearmotorsPage.js"></script>

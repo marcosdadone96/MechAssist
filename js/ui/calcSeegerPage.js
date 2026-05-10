@@ -2,23 +2,34 @@ import { mountTierStatusBar } from './paywallMount.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
+  bindInputValidation,
+  createLabUrlSync,
   debounce,
   executiveSummaryAlert,
   metricHtml,
+  mountLabPresetsBar,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  updateLabShareVisibility,
   uxCopy,
+  wireLabCopyLink,
 } from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { lookupSeeger } from '../lab/seegerDinTables.js';
 import { renderSeegerDiagram } from '../lab/diagramSeeger.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 mountTierStatusBar();
 bootSmartDashboardIfEnabled('Anillos Seeger \u00b7 laboratorio');
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
 mountCompactLabFieldHelp();
+
+bindInputValidation([
+  { id: 'sgD', min: 3, max: 1000, label: 'Diámetro d' },
+  { id: 'sgFaxWork', min: 0, max: 1e9, label: 'Fax trabajo' },
+]);
 
 function readD() {
   const el = document.getElementById('sgD');
@@ -104,25 +115,26 @@ function refreshCore() {
   const faxWork = readFaxWork();
 
   const heroEl = document.getElementById('sgHero');
+  const alertsEl = document.getElementById('sgAlerts');
   const box = document.getElementById('sgResults');
   const svg = document.getElementById('sgDiagram');
 
   if (!hit.row || !Number.isFinite(d)) {
     if (heroEl) heroEl.innerHTML = '';
+    if (alertsEl) {
+      alertsEl.innerHTML = executiveSummaryAlert({
+        level: 'danger',
+        titleEs: 'Resumen ejecutivo: datos insuficientes para seleccionar anillo.',
+        titleEn: 'Executive summary: insufficient data to select retaining ring.',
+        actionsEs: ['Introducir diámetro nominal válido.', 'Elegir eje (DIN 471) o agujero (DIN 472).'],
+        actionsEn: ['Enter a valid nominal diameter.', 'Choose shaft (DIN 471) or bore (DIN 472).'],
+      });
+    }
     if (box) {
-      box.innerHTML = [
-        executiveSummaryAlert({
-          level: 'danger',
-          titleEs: 'Resumen ejecutivo: datos insuficientes para seleccionar anillo.',
-          titleEn: 'Executive summary: insufficient data to select retaining ring.',
-          actionsEs: ['Introducir diámetro nominal válido.', 'Elegir eje (DIN 471) o agujero (DIN 472).'],
-          actionsEn: ['Enter a valid nominal diameter.', 'Choose shaft (DIN 471) or bore (DIN 472).'],
-        }),
-        `<div class="lab-metric lab-metric--wide"><div class="lab-metric__text">${uxCopy(
-          'Introduzca un diámetro válido (mm) y el tipo de alojamiento.',
-          'Enter a valid diameter (mm) and housing type.',
-        )}</div></div>`,
-      ].join('');
+      box.innerHTML = `<div class="lab-metric lab-metric--wide"><div class="lab-metric__text">${uxCopy(
+        'Introduzca un diámetro válido (mm) y el tipo de alojamiento.',
+        'Enter a valid diameter (mm) and housing type.',
+      )}</div></div>`;
     }
     if (svg) {
       svg.removeAttribute('viewBox');
@@ -135,6 +147,8 @@ function refreshCore() {
       shoppingLines: [],
       metrics: [],
     });
+    updateLabShareVisibility('sgShareLinkWrap', 'sgResults');
+    sgUrl.serializeToUrl();
     return;
   }
 
@@ -147,8 +161,12 @@ function refreshCore() {
   const faxAdm = interpFaxOrient(row.d1);
   const hintPedido = `${refCorta} \u00b7 ${norm} ${form}. En comercio tambi\u00e9n: circlip, anillo de retenci\u00f3n. Confirme referencia en cat\u00e1logo.`;
 
+  const sgVerdict =
+    faxWork != null && Number.isFinite(faxAdm) && faxWork > faxAdm ? 'error' : 'ok';
+
   if (heroEl) {
-    heroEl.innerHTML = renderResultHero([
+    heroEl.innerHTML = renderResultHero(
+      [
       {
         label: 'C\u00f3digo de pedido (referencia)',
         display: pedidoCompacto,
@@ -167,25 +185,44 @@ function refreshCore() {
         display: Number.isFinite(faxAdm) ? `${Math.round(faxAdm)} N` : 'No disponible',
         hint: 'Escalado orientativo con tabla DIN 471 (acero estándar). Confirmar en fabricante.',
       },
-    ]);
+    ],
+      { verdict: sgVerdict },
+    );
+  }
+
+  if (alertsEl) {
+    const alertParts = [];
+    alertParts.push(
+      executiveSummaryAlert({
+        level: sgVerdict === 'error' ? 'danger' : 'ok',
+        titleEs:
+          sgVerdict === 'error'
+            ? 'Resumen ejecutivo: revise la carga axial frente a la referencia orientativa.'
+            : 'Resumen ejecutivo: referencia DIN localizada para preselección.',
+        titleEn:
+          sgVerdict === 'error'
+            ? 'Executive summary: review axial load against the orientation reference.'
+            : 'Executive summary: DIN reference found for preselection.',
+        actionsEs:
+          sgVerdict === 'error'
+            ? ['Reducir Fax de trabajo o seleccionar mayor capacidad.', 'Confirmar en tabla completa del fabricante.']
+            : ['Verificar tolerancias y material final.', 'Confirmar referencia exacta en catálogo de proveedor.'],
+        actionsEn:
+          sgVerdict === 'error'
+            ? ['Reduce working Fax or pick a higher-capacity ring.', 'Confirm with the manufacturer full table.']
+            : ['Verify final tolerances and material.', 'Confirm exact reference in supplier catalogue.'],
+      }),
+    );
+    if (hit.hint) {
+      alertParts.push(
+        `<div class="lab-alert lab-alert--info">${esc(hit.hint).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`,
+      );
+    }
+    alertsEl.innerHTML = alertParts.join('');
   }
 
   if (box) {
     const parts = [];
-    parts.push(
-      executiveSummaryAlert({
-        level: 'ok',
-        titleEs: 'Resumen ejecutivo: referencia DIN localizada para preselección.',
-        titleEn: 'Executive summary: DIN reference found for preselection.',
-        actionsEs: ['Verificar tolerancias y material final.', 'Confirmar referencia exacta en catálogo de proveedor.'],
-        actionsEn: ['Verify final tolerances and material.', 'Confirm exact reference in supplier catalogue.'],
-      }),
-    );
-    if (hit.hint) {
-      parts.push(
-        `<div class="lab-alert lab-alert--info">${esc(hit.hint).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`,
-      );
-    }
     parts.push(
       metricHtml(
         'Referencia t\u00e9cnica compacta',
@@ -252,19 +289,60 @@ function refreshCore() {
       { label: 'd1 mm', value: String(row.d1) },
     ],
   });
+
+  updateLabShareVisibility('sgShareLinkWrap', 'sgResults');
+  sgUrl.serializeToUrl();
 }
+
+const SG_PRESETS = [
+  {
+    label: 'Eje Ø25 · acero',
+    values: { sgKind: 'shaft', sgD: 25, sgMaterial: 'carbon', sgFaxWork: '' },
+  },
+  {
+    label: 'Eje Ø40 + Fax',
+    values: { sgKind: 'shaft', sgD: 40, sgMaterial: 'carbon', sgFaxWork: 2500 },
+  },
+  {
+    label: 'Agujero Ø62',
+    values: { sgKind: 'bore', sgD: 62, sgMaterial: 'carbon', sgFaxWork: '' },
+  },
+];
+
+const SG_URL_PARAM_TO_ID = {
+  kind: 'sgKind',
+  d: 'sgD',
+  mat: 'sgMaterial',
+  fax: 'sgFaxWork',
+};
+
+const sgUrl = createLabUrlSync(SG_URL_PARAM_TO_ID, {
+  hydrateOrder: ['kind', 'd', 'mat', 'fax'],
+});
 
 const wrap = document.getElementById('sgResultsWrap');
 const debounced = debounce(() => runCalcWithIndustrialFeedback(wrap, refreshCore), 55);
+
+const sgPresets = mountLabPresetsBar('sgPresetsBar', SG_PRESETS, debounced);
+
+function scheduleSgRecalc() {
+  if (!sgPresets.applying && !sgUrl.hydrating) {
+    sgPresets.clearActive();
+  }
+  debounced();
+}
+
+sgUrl.hydrateFromUrl();
+
 document.getElementById('sgSizePreset')?.addEventListener('change', () => {
   const sel = document.getElementById('sgSizePreset');
   const dInput = document.getElementById('sgD');
   if (sel instanceof HTMLSelectElement && dInput instanceof HTMLInputElement && sel.value) {
     dInput.value = sel.value;
   }
-  debounced();
+  scheduleSgRecalc();
 });
-document.getElementById('sgD')?.addEventListener('input', debounced);
+document.getElementById('sgD')?.addEventListener('input', scheduleSgRecalc);
 document.getElementById('sgD')?.addEventListener('change', () => {
   const dInput = document.getElementById('sgD');
   const preset = document.getElementById('sgSizePreset');
@@ -272,10 +350,12 @@ document.getElementById('sgD')?.addEventListener('change', () => {
     const v = String(Math.round(parseFloat(dInput.value || '')));
     preset.value = Array.from(preset.options).some((o) => o.value === v) ? v : '';
   }
-  debounced();
+  scheduleSgRecalc();
 });
-document.getElementById('sgKind')?.addEventListener('change', debounced);
-document.getElementById('sgMaterial')?.addEventListener('change', debounced);
-document.getElementById('sgFaxWork')?.addEventListener('input', debounced);
-document.getElementById('sgFaxWork')?.addEventListener('change', debounced);
+document.getElementById('sgKind')?.addEventListener('change', scheduleSgRecalc);
+document.getElementById('sgMaterial')?.addEventListener('change', scheduleSgRecalc);
+document.getElementById('sgFaxWork')?.addEventListener('input', scheduleSgRecalc);
+document.getElementById('sgFaxWork')?.addEventListener('change', scheduleSgRecalc);
+wireLabCopyLink('sgCopyLinkBtn', 'sgCopyToast');
 runCalcWithIndustrialFeedback(wrap, refreshCore);
+mountLabCloudSaveBar('Anillos el\u00e1sticos (Seeger)');

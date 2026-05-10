@@ -1,9 +1,15 @@
 /**
- * Guardado/carga local de configuraciones por maquina.
+ * Guardado/carga local de configuraciones por maquina + envío a Supabase (calculos_mecanicos).
  */
 
+import { isPublicFreeRelease } from '../config/features.js';
 import { isPremiumEffective } from '../services/accessTier.js';
 import { getCurrentUser } from '../services/localAuth.js';
+import {
+  collectInputsFromScope,
+  collectResultsFromScope,
+  insertCalculoMecanico,
+} from '../services/calculosMecanicosSave.js';
 
 function touchMachineConfigCloudSync() {
   import('../services/userCloudSync.js')
@@ -22,19 +28,26 @@ function getLang() {
 }
 
 function getTx(lang, isPro, hasAccount) {
+  const free = isPublicFreeRelease();
   if (lang === 'en') {
     return {
-      panelTitle: '<span class="premium-flag">Pro</span> Machine Configuration',
+      panelTitle: free
+        ? 'Machine configuration'
+        : '<span class="premium-flag">Pro</span> Machine Configuration',
       namePlaceholder: 'Name (e.g. Production 1)',
       saveCurrent: 'Save Current',
       savedConfigs: 'Saved Configurations',
       load: 'Load',
       remove: 'Delete',
-      hint: !isPro
-        ? 'Pro feature: activate Pro version to save and load configurations.'
-        : !hasAccount
+      hint: free
+        ? !hasAccount
           ? 'Sign in to save and load configurations in this browser.'
-          : 'Saved in this browser (localStorage) for your signed-in account.',
+          : 'Saved in this browser (localStorage) for your signed-in account.'
+        : !isPro
+          ? 'Pro feature: activate Pro version to save and load configurations.'
+          : !hasAccount
+            ? 'Sign in to save and load configurations in this browser.'
+            : 'Saved in this browser (localStorage) for your signed-in account.',
       promptName: 'Enter a name to save.',
       saved: (name) => `Configuration "${name}" saved.`,
       pickToLoad: 'Select a configuration to load.',
@@ -46,17 +59,23 @@ function getTx(lang, isPro, hasAccount) {
     };
   }
   return {
-    panelTitle: '<span class="premium-flag">Pro</span> Configuraci\u00f3n de la m\u00e1quina',
+    panelTitle: free
+      ? 'Configuraci\u00f3n de la m\u00e1quina'
+      : '<span class="premium-flag">Pro</span> Configuraci\u00f3n de la m\u00e1quina',
     namePlaceholder: 'Nombre (ej. Producci\u00f3n 1)',
     saveCurrent: 'Guardar actual',
     savedConfigs: 'Configuraciones guardadas',
     load: 'Cargar',
     remove: 'Eliminar',
-    hint: !isPro
-      ? 'Funci\u00f3n Pro: active la versi\u00f3n Pro para guardar y cargar configuraciones.'
-      : !hasAccount
+    hint: free
+      ? !hasAccount
         ? 'Inicie sesi\u00f3n para guardar y cargar configuraciones en este navegador.'
-        : 'Se guardan en este navegador (localStorage) asociadas a su cuenta.',
+        : 'Se guardan en este navegador (localStorage) asociadas a su cuenta.'
+      : !isPro
+        ? 'Funci\u00f3n Pro: active la versi\u00f3n Pro para guardar y cargar configuraciones.'
+        : !hasAccount
+          ? 'Inicie sesi\u00f3n para guardar y cargar configuraciones en este navegador.'
+          : 'Se guardan en este navegador (localStorage) asociadas a su cuenta.',
     promptName: 'Indique un nombre para guardar.',
     saved: (name) => `Configuraci\u00f3n "${name}" guardada.`,
     pickToLoad: 'Seleccione una configuraci\u00f3n para cargar.',
@@ -85,6 +104,22 @@ function getToolKey() {
   if (p.includes('flat-conveyor')) return 'flat';
   if (p.includes('inclined-conveyor')) return 'inclined';
   return 'machine';
+}
+
+function getTipoMaquinaLabel(tool) {
+  /** @type {Record<string, string>} */
+  const map = {
+    flat: 'Cinta plana',
+    inclined: 'Cinta inclinada',
+    roller: 'Transportador de rodillos',
+    screw: 'Transportador sin fin',
+    bucket: 'Elevador de cangilones',
+    traction: 'Elevador de tracción',
+    carLift: 'Ascensor de tornillo',
+    pump: 'Bomba centrífuga',
+    machine: 'Máquina',
+  };
+  return map[tool] || map.machine;
 }
 
 function accountEmail() {
@@ -192,6 +227,7 @@ export function mountMachineConfigBar() {
   const tool = getToolKey();
   const isPro = isPremiumEffective();
   const hasAccount = Boolean(accountEmail());
+  /** Modo gratuito total: Pro efectivo para todos; solo hace falta sesión para guardar. */
   const controlsEnabled = isPro && hasAccount;
   const tx = getTx(getLang(), isPro, hasAccount);
   const host = document.createElement('section');
@@ -244,12 +280,25 @@ export function mountMachineConfigBar() {
     refreshSelect(select, getToolConfigs(), tx);
   });
 
-  saveBtn.addEventListener('click', () => {
+  saveBtn.addEventListener('click', async () => {
     const name = String(nameIn.value || '').trim();
     if (!name) {
       msg.textContent = tx.promptName;
       return;
     }
+    const datos_entrada = {
+      ...collectInputsFromScope(main),
+      _nombrePreset: name,
+    };
+    const resultados = collectResultsFromScope(main);
+    const tipo_maquina = getTipoMaquinaLabel(tool);
+    const cloudOk = await insertCalculoMecanico({
+      tipo_maquina,
+      datos_entrada,
+      resultados,
+    });
+    if (!cloudOk.ok) return;
+
     const store = readStore();
     const byTool = store[tool] && typeof store[tool] === 'object' ? store[tool] : {};
     byTool[name] = {

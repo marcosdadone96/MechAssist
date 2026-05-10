@@ -16,6 +16,8 @@
  * - legalContactEmail, legalEntityName, legalEntityAddress: datos del responsable RGPD.
  * - subscriptionManageUrl: portal de gestion Lemon `https://TU-TIENDA.lemonsqueezy.com/billing` (o dominio custom + `/billing`).
  * - cookiesAndAnalyticsBoot.js: confirme el ID de Google Analytics si cambia de propiedad.
+ * - SUPABASE_SERVICE_ROLE_KEY + SUPABASE_URL (o NEXT_PUBLIC_SUPABASE_URL): insert tabla proyectos_transmision solo desde transmission-project-save (nunca en cliente).
+ * - SQL en docs/supabase/proyectos_transmision_server_only.sql (columna owner_email + RLS) antes de usar guardado en la nube.
  *
  * Freemium: cinta plana e inclinada accesibles sin Pro; `whichCalculatorIsFree` afecta sobre todo mensajes legacy / pruebas.
  * Pruebas locales: ponga `proClientPolicy: 'development'`, `allowPremiumViaQueryPro: true`, etc.; `?freeTool=flat|inclined`, sesion Pro `?pro=1`, boton «Activar Pro» (licencia: clave v2 vía `getProPersistentStorageKey` en `accessTier.js`) o barra dev en cabecera.
@@ -24,7 +26,9 @@
  * Futuro (placeholders):
  * - gearmotorDatabase, pdfExport, userAuth, stripePayments (Checkout solo servidor)
  *
- * Modo publico gratuito (`publicFreeRelease: true`): todo desbloqueado, sin UI de planes/pago.
+ * Modo publico gratuito (`publicFreeRelease: true`): mismo efecto que Pro en cliente (calculadoras,
+ * CFG máquina, motorreductores en nube); la cuenta sigue siendo necesaria para guardar datos con
+ * sesión / sync. Sin UI agresiva de planes (checkout opcional más adelante).
  * Restauracion de billing: ver `js/config/BILLING_RESTORE.txt`.
  */
 export const FEATURES = Object.freeze({
@@ -58,7 +62,7 @@ export const FEATURES = Object.freeze({
    * Correo público para solicitudes RGPD / privacidad (se muestra en textos legales).
    * Ej.: 'privacy@su-dominio.com'
    */
-  legalContactEmail: 'marcosdadone96@gmail.com',
+  legalContactEmail: 'hola@themechassist.com',
 
   /**
    * Identificacion del responsable (RGPD / transparencia). Si rellena legalEntityName,
@@ -66,7 +70,7 @@ export const FEATURES = Object.freeze({
    */
   legalEntityName: 'Marcos',
   /** Direccion postal; puede usar varias lineas separadas por \n */
-  legalEntityAddress: 'Pol\u00edgono 16, Parcela 86 (C\u00e1lig)',
+  legalEntityAddress: 'Castell\u00f3n, Espa\u00f1a',
   /** Opcional: NIF-IVA, registro mercantil, nota de representante, etc. */
   legalRegistrationNote: '',
 
@@ -76,14 +80,6 @@ export const FEATURES = Object.freeze({
    * Ej.: 'https://www.mechassist.com'. Vacio: el script escribe el marcador REPLACE-WITH-YOUR-DOMAIN.
    */
   publicSiteBaseUrl: 'https://www.themechassist.com',
-
-  /**
-   * Sugerencias (feedback.html): clave de https://web3forms.com (gratis).
-   * Con una clave configurada, el envío funciona aunque el sitio no use Netlify Forms
-   * (p. ej. solo hosting estático o dominio sin formularios Netlify).
-   * Vacío: solo función Netlify (Resend) + Netlify Forms. Con clave: envío principal vía Web3Forms.
-   */
-  feedbackWeb3FormsAccessKey: 'e6895fd1-92f4-4a29-a1a9-0dd3b80f2ccd',
 
   /**
    * Registro e inicio de sesión con servidor Netlify (correo de verificación + Blobs + JWT).
@@ -175,6 +171,12 @@ export const FEATURES = Object.freeze({
   showLabDonationBanner: false,
 
   /**
+   * Botón «Guardar en la nube» en laboratorio/máquinas (instantáneas en tabla calculos_mecanicos;
+   * hoy sin UI para listar o restaurar). false: el valor para el usuario es CFG máquina + motorreductores.
+   */
+  showLabCloudSnapshotButton: false,
+
+  /**
    * Enlaces de compra Amazon / panel laboratorio: ver `js/config/labAffiliate.js` (tag Associates, dominio).
    */
 
@@ -205,6 +207,23 @@ export const FEATURES = Object.freeze({
     }),
   }),
 });
+
+/**
+ * Clave Web3Forms para feedback.html. No versionar la clave; inyectar en runtime
+ * (p. ej. `globalThis.__FEEDBACK_WEB3FORMS_KEY__` desde plantilla/Netlify).
+ * Vacío: se usan email-feedback y Netlify Forms.
+ * @returns {string}
+ */
+export function getFeedbackWeb3FormsAccessKey() {
+  try {
+    const g = /** @type {{ __FEEDBACK_WEB3FORMS_KEY__?: string }} */ (globalThis);
+    if (typeof g.__FEEDBACK_WEB3FORMS_KEY__ === 'string') {
+      const s = g.__FEEDBACK_WEB3FORMS_KEY__.trim();
+      if (s) return s;
+    }
+  } catch (_) {}
+  return '';
+}
 
 /**
  * Helper for template / DOM: show element only if feature is on.

@@ -1,7 +1,9 @@
+import { bindInputValidation } from './labCalcUx.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 /** @type {object | null} */
 let pcPdfSnapshot = null;
@@ -1111,6 +1113,17 @@ applyStaticI18n();
 syncPcLabTierUi();
 syncCalcModeUi();
 mountCompactLabFieldHelp();
+
+bindInputValidation([
+  { id: 'pcPatmBar', min: 0.5, max: 1.2, label: 'Patm' },
+  { id: 'pcPressureBar', min: 1, max: 20, label: 'Presión' },
+  { id: 'pcBoreManual', min: 8, max: 1000, label: 'Ø cilindro (manual)' },
+  { id: 'pcRodManual', min: 4, max: 500, label: 'Ø vástago (manual)' },
+  { id: 'pcStrokeMm', min: 10, max: 100000, label: 'Carrera' },
+  { id: 'pcLoadKg', min: 0.01, max: 1e9, label: 'Carga' },
+  { id: 'pcCyclesMin', min: 0.01, max: 60000, label: 'Ciclos/min' },
+]);
+
 computeAndRender();
 
 mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountPc'), {
@@ -1120,3 +1133,4 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountPc'), {
     return svg instanceof SVGSVGElement ? [svg] : [];
   },
 });
+mountLabCloudSaveBar('Cilindro neum\u00e1tico');

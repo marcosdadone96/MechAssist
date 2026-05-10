@@ -8,6 +8,7 @@ import { getCurrentLang, t, formatNumberLocale, formatDateTimeLocale } from '../
 import { FEATURES, isPremiumViaQueryProUiAllowed } from '../config/features.js';
 import { buildRegisterUrlWithNextCheckout } from './proCheckoutFlow.js';
 import { LOAD_DUTY_OPTIONS, LOAD_DUTY_OPTIONS_EN } from '../modules/serviceFactorByDuty.js';
+import { showToast } from '../ui/toast.js';
 
 const JSPDF_CDN = 'https://esm.sh/jspdf@2.5.2';
 const REPORT_CFG_KEY = 'drivelab.reportConfig.v1';
@@ -1230,7 +1231,7 @@ export function mountPremiumPdfExportBar(el, opts) {
           reportConfig: reportCfg,
         });
       } catch (e) {
-        window.alert(String(e?.message || e));
+        showToast(String(e?.message || e), { variant: 'error', duration: 8000 });
       }
     });
   } else {

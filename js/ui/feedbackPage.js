@@ -1,10 +1,10 @@
 /**
- * Sugerencias: 1) funciÛn Netlify email-feedback (Resend), 2) Web3Forms si hay clave en features,
- * 3) Netlify Forms (POST a /feedback.html y, si falla, a /).
+ * Sugerencias: 1) funciÛn Netlify email-feedback (Resend), 2) Web3Forms si hay clave en runtime
+ * (`getFeedbackWeb3FormsAccessKey`), 3) Netlify Forms (POST a /feedback.html y, si falla, a /).
  */
 
 import { HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
-import { FEATURES } from '../config/features.js';
+import { getFeedbackWeb3FormsAccessKey } from '../config/features.js';
 
 function syncDocTitle() {
   const t = window.__t;
@@ -49,7 +49,7 @@ async function submitViaEmailFunction(form) {
 }
 
 /**
- * EnvÌo independiente del hosting (requiere clave en features.js).
+ * Envùo independiente del hosting (requiere clave en features.js).
  * @param {HTMLFormElement} form
  * @param {string} accessKey
  */
@@ -65,7 +65,7 @@ async function submitViaWeb3Forms(form, accessKey) {
     access_key: accessKey,
     subject: '[TheMechAssist] Sugerencia',
     message: lines.join('\n'),
-    from_name: name || 'AnÛnimo',
+    from_name: name || 'Anùnimo',
   };
   if (email) payload.email = email;
 
@@ -79,7 +79,7 @@ async function submitViaWeb3Forms(form, accessKey) {
 }
 
 /**
- * Netlify Forms: mismo cuerpo en la acciÛn del form y, si falla, en la raÌz del sitio.
+ * Netlify Forms: mismo cuerpo en la acciùn del form y, si falla, en la raùz del sitio.
  * @param {HTMLFormElement} form
  */
 async function submitViaNetlifyForms(form) {
@@ -130,7 +130,7 @@ function mountFeedbackPage() {
         errBox.textContent =
           msg && msg !== 'feedback.errorFile'
             ? msg
-            : 'Abre esta p·gina desde la web publicada (no desde un archivo local).';
+            : 'Abre esta pùgina desde la web publicada (no desde un archivo local).';
         errBox.hidden = false;
       }
     };
@@ -144,10 +144,7 @@ function mountFeedbackPage() {
     try {
       let sent = false;
 
-      const w3key =
-        typeof FEATURES.feedbackWeb3FormsAccessKey === 'string'
-          ? FEATURES.feedbackWeb3FormsAccessKey.trim()
-          : '';
+      const w3key = getFeedbackWeb3FormsAccessKey();
 
       /** Si hay clave Web3Forms, enviar primero (evita esperar a Netlify/Resend). */
       if (w3key) {
@@ -159,7 +156,7 @@ function mountFeedbackPage() {
           const fnRes = await submitViaEmailFunction(form);
           if (fnRes.ok) sent = true;
         } catch (_) {
-          /* funciÛn no desplegada o red */
+          /* funciùn no desplegada o red */
         }
       }
 

@@ -2,12 +2,19 @@
  * Selector catálogo SKF/FAG simulado + L10h ISO 281 simplificada (bolas p=3).
  */
 
+import {
+  bindInputValidation,
+  createLabUrlSync,
+  mountLabPresetsBar,
+  updateLabShareVisibility,
+  wireLabCopyLink,
+} from './labCalcUx.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 import { DEEP_GROOVE_SERIES } from '../data/skfFagDeepGroove.js';
 import { renderCatalogDeepGrooveSection } from '../lab/diagramCatalogModules.js';
 
 function l10_revolutions(C, P) {
   if (P <= 0) return Infinity;
-  // ISO 281: L10 [revoluciones] = (C/P)^p * 10^6 (bolas p=3)
   return Math.pow(C / P, 3) * 1e6;
 }
 
@@ -31,6 +38,71 @@ function fillBearingSelect(seriesId) {
     .join('');
 }
 
+const BC_PRESETS = [
+  {
+    label: '6205-2Z · servicio medio',
+    values: {
+      bcSeries: '6200',
+      bcBearing: '6205-2Z',
+      bcP: 3200,
+      bcN: 1455,
+      bcLreq: 20000,
+      bcHpd: 16,
+    },
+  },
+  {
+    label: '6308-2Z · alta carga',
+    values: {
+      bcSeries: '6300',
+      bcBearing: '6308-2Z',
+      bcP: 12000,
+      bcN: 720,
+      bcLreq: 40000,
+      bcHpd: 12,
+    },
+  },
+];
+
+const BC_URL_PARAM_TO_ID = {
+  ser: 'bcSeries',
+  P: 'bcP',
+  n: 'bcN',
+  L: 'bcLreq',
+  hpd: 'bcHpd',
+};
+
+const bcUrl = createLabUrlSync(BC_URL_PARAM_TO_ID, {
+  hydrateOrder: ['ser', 'P', 'n', 'L', 'hpd'],
+  afterHydrate: () => {
+    const sid = document.getElementById('bcSeries') instanceof HTMLSelectElement ? document.getElementById('bcSeries').value : '';
+    if (sid) fillBearingSelect(sid);
+    const q = new URLSearchParams(location.search);
+    const des = q.get('br');
+    const bel = document.getElementById('bcBearing');
+    if (des && bel instanceof HTMLSelectElement) bel.value = des;
+  },
+});
+
+function serializeBcFullUrl() {
+  if (bcUrl.hydrating) return;
+  const params = new URLSearchParams();
+  const ser = document.getElementById('bcSeries');
+  const br = document.getElementById('bcBearing');
+  const p = document.getElementById('bcP');
+  const n = document.getElementById('bcN');
+  const L = document.getElementById('bcLreq');
+  const hpd = document.getElementById('bcHpd');
+  if (ser instanceof HTMLSelectElement) params.set('ser', ser.value);
+  if (br instanceof HTMLSelectElement && br.value) params.set('br', br.value);
+  if (p instanceof HTMLInputElement) params.set('P', p.value);
+  if (n instanceof HTMLInputElement) params.set('n', n.value);
+  if (L instanceof HTMLInputElement) params.set('L', L.value);
+  if (hpd instanceof HTMLInputElement) params.set('hpd', hpd.value);
+  const qs = params.toString();
+  const path = `${location.pathname}${location.hash || ''}`;
+  history.replaceState(null, '', qs ? `${path}?${qs}` : path);
+}
+
 function render() {
   const seriesId = document.getElementById('bcSeries')?.value;
   const des = document.getElementById('bcBearing')?.value;
@@ -49,6 +121,8 @@ function render() {
     out.innerHTML = '';
     tbl.innerHTML = '';
     if (autoGeom) autoGeom.textContent = 'Geometría y C del rodamiento seleccionado.';
+    updateLabShareVisibility('bcShareLinkWrap', 'bcOut');
+    if (!bcUrl.hydrating) serializeBcFullUrl();
     return;
   }
   if (autoGeom) {
@@ -71,6 +145,8 @@ function render() {
   if (nUse == null || hpdUse == null) {
     out.innerHTML = '<p class=\"lab-verdict lab-verdict--err\">Entrada no válida: use n &gt; 0 min⁻¹ y horas/día &gt; 0.</p>';
     tbl.innerHTML = '';
+    updateLabShareVisibility('bcShareLinkWrap', 'bcOut');
+    if (!bcUrl.hydrating) serializeBcFullUrl();
     return;
   }
   const Lyears = Lh / (hpdUse * 365);
@@ -110,19 +186,43 @@ function render() {
       </tbody>
     </table>
     <p class="lab-small-print">C y C₀ son valores demostrativos (±10%). Vida según L = (C/P)³ y horas = L/(60n).</p>`;
+
+  updateLabShareVisibility('bcShareLinkWrap', 'bcOut');
+  if (!bcUrl.hydrating) serializeBcFullUrl();
 }
 
 fillSeriesSelect();
 fillBearingSelect(DEEP_GROOVE_SERIES[0].id);
 
+bindInputValidation([
+  { id: 'bcP', min: 0.01, max: 1e12, label: 'P' },
+  { id: 'bcN', min: 1, max: 1e7, label: 'RPM' },
+  { id: 'bcLreq', min: 100, max: 1e9, label: 'L req' },
+  { id: 'bcHpd', min: 1, max: 24, label: 'h/día' },
+]);
+
+bcUrl.hydrateFromUrl();
+
+mountLabPresetsBar('bcPresetsBar', BC_PRESETS, render);
+
+function scheduleBcRender() {
+  if (!bcUrl.hydrating) {
+    document.querySelectorAll('#bcPresetsBar .lab-preset-btn').forEach((b) => b.classList.remove('is-active'));
+  }
+  render();
+}
+
 document.getElementById('bcSeries')?.addEventListener('change', (e) => {
   fillBearingSelect(e.target.value);
-  render();
+  scheduleBcRender();
 });
-document.getElementById('bcBearing')?.addEventListener('change', render);
+document.getElementById('bcBearing')?.addEventListener('change', scheduleBcRender);
 ['bcP', 'bcN', 'bcLreq', 'bcHpd'].forEach((id) => {
-  document.getElementById(id)?.addEventListener('input', render);
-  document.getElementById(id)?.addEventListener('change', render);
+  document.getElementById(id)?.addEventListener('input', scheduleBcRender);
+  document.getElementById(id)?.addEventListener('change', scheduleBcRender);
 });
 
+wireLabCopyLink('bcCopyLinkBtn', 'bcCopyToast');
+
 render();
+mountLabCloudSaveBar('Cat\u00e1logo rodamientos');

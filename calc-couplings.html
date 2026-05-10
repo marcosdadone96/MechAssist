@@ -53,6 +53,10 @@
           Introduzca <strong>potencia</strong> y <strong>rpm</strong>; el par de diseño es <code>T = P/ω</code> con factor de servicio <strong>K</strong>. El sistema contrasta
           <strong>T<sub>nom</sub></strong> del modelo elegido (datos demostrativos tipo Lovejoy / KTR / Flender).
         </p>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="cpPresetsBar"></div>
+        </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
@@ -142,6 +146,10 @@
             </details>
           </div>
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
+            <div class="lab-results-share" id="cpShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn" id="cpCopyLinkBtn">Copiar enlace</button>
+              <div class="lab-copy-toast" id="cpCopyToast" role="status">¡Enlace copiado!</div>
+            </div>
             <div id="cpOut"></div>
             <p class="lab-small-print">
               Desalineación admisible orientativa: acoplamientos de mandíbula suelen admitir angular ≤ 1° y radial ≤ 0.1–0.3 mm.
@@ -153,8 +161,10 @@
       </section>
     </main>
 
-
-
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
 
     <script type="module" src="js/ui/homeI18n.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>
