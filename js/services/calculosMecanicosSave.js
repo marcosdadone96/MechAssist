@@ -5,6 +5,8 @@
 
 import { supabase } from '../../scripts/supabaseClient.mjs';
 import { getCurrentUser } from './localAuth.js';
+import { FEATURES } from '../config/features.js';
+import { syncSupabaseSessionFromNetlifyJwt } from './supabaseSessionSync.js';
 import { showToast } from '../ui/labToast.js';
 
 /** Tabla `calculos_mecanicos` en Supabase (nombre f�sico sin acentos). */
@@ -86,19 +88,45 @@ export async function insertCalculoMecanico(opts) {
       .startsWith('en');
 
   const u = getCurrentUser();
-  const owner_email =
+  const owner_email_legacy =
     u && typeof u.email === 'string' && String(u.email).trim()
       ? String(u.email).trim().toLowerCase()
       : null;
 
   try {
-    const { error } = await supabase.from(CALCULOS_TABLE).insert({
-      tipo_maquina: String(tipo_maquina || '').slice(0, 200),
-      datos_entrada: datos_entrada ?? {},
-      resultados: resultados ?? {},
-      owner_email,
-    });
-    if (error) throw error;
+    if (FEATURES.useSupabaseRLS) {
+      let { data: authData } = await supabase.auth.getUser();
+      let user = authData?.user;
+      if (!user && u?.serverAuth && u?.authToken) {
+        await syncSupabaseSessionFromNetlifyJwt();
+        ({ data: authData } = await supabase.auth.getUser());
+        user = authData?.user;
+      }
+      if (!user) {
+        showToast(
+          langEs()
+            ? 'Inicie sesión y sincronice la nube para guardar (sesión Supabase).'
+            : 'Sign in and sync the cloud session to save (Supabase session).',
+          { type: 'error', durationMs: 5000 },
+        );
+        return { ok: false };
+      }
+
+      const { error } = await supabase.from(CALCULOS_TABLE).insert({
+        tipo_maquina: String(tipo_maquina || '').slice(0, 200),
+        datos_entrada: datos_entrada ?? {},
+        resultados: resultados ?? {},
+      });
+      if (error) throw error;
+    } else {
+      const { error } = await supabase.from(CALCULOS_TABLE).insert({
+        tipo_maquina: String(tipo_maquina || '').slice(0, 200),
+        datos_entrada: datos_entrada ?? {},
+        resultados: resultados ?? {},
+        owner_email: owner_email_legacy,
+      });
+      if (error) throw error;
+    }
     if (!silent) {
       showToast(
         langEs() ? 'Guardado en la nube ✓' : 'Saved to cloud ✓',

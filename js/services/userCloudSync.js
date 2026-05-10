@@ -5,6 +5,7 @@
 
 import { FEATURES } from '../config/features.js';
 import { getCurrentUser } from './localAuth.js';
+import { syncSupabaseSessionFromNetlifyJwt } from './supabaseSessionSync.js';
 
 function _handleExpiredSession() {
   try {
@@ -216,6 +217,9 @@ export function initUserCloudSync() {
   if (initPromise) return initPromise;
 
   initPromise = (async () => {
+    if (FEATURES.useSupabaseRLS && getBearer()) {
+      await syncSupabaseSessionFromNetlifyJwt();
+    }
     const meta = readMeta();
     const localTs = meta.lastLocalModifyAt || 0;
     const appliedTs = meta.lastSyncFromServerAt || 0;

@@ -17,6 +17,7 @@
  * - subscriptionManageUrl: portal de gestion Lemon `https://TU-TIENDA.lemonsqueezy.com/billing` (o dominio custom + `/billing`).
  * - cookiesAndAnalyticsBoot.js: confirme el ID de Google Analytics si cambia de propiedad.
  * - SUPABASE_SERVICE_ROLE_KEY + SUPABASE_URL (o NEXT_PUBLIC_SUPABASE_URL): insert tabla proyectos_transmision solo desde transmission-project-save (nunca en cliente).
+ * - La funcion supabase-session-mint necesita en Netlify las mismas vars que el front (NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY) mas SUPABASE_SERVICE_ROLE_KEY (emitir sesion Supabase tras login Netlify).
  * - SQL en docs/supabase/proyectos_transmision_server_only.sql (columna owner_email + RLS) antes de usar guardado en la nube.
  *
  * Freemium: cinta plana e inclinada accesibles sin Pro; `whichCalculatorIsFree` afecta sobre todo mensajes legacy / pruebas.
@@ -87,6 +88,12 @@ export const FEATURES = Object.freeze({
    * Si false: comportamiento anterior solo en localStorage (demo en este navegador).
    */
   useServerAuth: true,
+
+  /**
+   * RLS en Supabase con auth.uid(): filas ligadas al usuario Auth, sin confiar en email enviado por el cliente.
+   * Tras login Netlify, `supabase-session-mint` entrega tokens; en modo solo-local, login/registro llaman a Supabase Auth.
+   */
+  useSupabaseRLS: true,
 
   /**
    * Atajos "demo" de Pro. En produccion suele ir todo false y showDemoCheckoutCompleteButton

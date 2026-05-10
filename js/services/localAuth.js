@@ -1,3 +1,5 @@
+import { FEATURES } from '../config/features.js';
+
 const LS_USER = 'mdr-local-user-v1';
 
 /** Demo-local fingerprint (not cryptography); enough to verify repeat logins in this browser. */
@@ -26,7 +28,7 @@ export function getCurrentUser() {
  * @param {{ name: string, email: string, password: string }} fields
  * @param {{ lang?: 'es'|'en' }} [opts]
  */
-export function registerLocalUser({ name, email, password }, opts = {}) {
+export async function registerLocalUser({ name, email, password }, opts = {}) {
   const lang = opts.lang === 'en' ? 'en' : 'es';
   const msg = {
     incomplete:
@@ -58,6 +60,21 @@ export function registerLocalUser({ name, email, password }, opts = {}) {
   } catch (_) {
     /* ignore */
   }
+
+  if (FEATURES.useSupabaseRLS && !FEATURES.useServerAuth) {
+    try {
+      const { supabase } = await import('../../scripts/supabaseClient.mjs');
+      const { error } = await supabase.auth.signUp({
+        email: em,
+        password: pw,
+        options: { data: { full_name: nm } },
+      });
+      if (error) console.warn('[localAuth] Supabase signUp', error.message);
+    } catch (e) {
+      console.warn('[localAuth] Supabase signUp', e);
+    }
+  }
+
   return user;
 }
 
@@ -65,7 +82,7 @@ export function registerLocalUser({ name, email, password }, opts = {}) {
  * @param {{ email: string, password: string }} fields
  * @param {{ lang?: 'es'|'en' }} [opts]
  */
-export function loginLocalUser({ email, password }, opts = {}) {
+export async function loginLocalUser({ email, password }, opts = {}) {
   const lang = opts.lang === 'en' ? 'en' : 'es';
   const msg = {
     incomplete:
@@ -102,6 +119,17 @@ export function loginLocalUser({ email, password }, opts = {}) {
       /* ignore */
     }
   }
+
+  if (FEATURES.useSupabaseRLS && !FEATURES.useServerAuth) {
+    try {
+      const { supabase } = await import('../../scripts/supabaseClient.mjs');
+      const { error } = await supabase.auth.signInWithPassword({ email: em, password: pw });
+      if (error) console.warn('[localAuth] Supabase signIn', error.message);
+    } catch (e) {
+      console.warn('[localAuth] Supabase signIn', e);
+    }
+  }
+
   return user;
 }
 
@@ -128,6 +156,13 @@ export function persistServerSession({ name, email, authToken }) {
 }
 
 export function clearLocalUser() {
+  try {
+    import('../../scripts/supabaseClient.mjs')
+      .then(({ supabase }) => supabase.auth.signOut())
+      .catch(() => {});
+  } catch (_) {
+    /* ignore */
+  }
   try {
     localStorage.removeItem(LS_USER);
     window.dispatchEvent(new CustomEvent('mdr-clear-user-sync'));

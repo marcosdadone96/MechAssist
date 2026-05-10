@@ -33,6 +33,7 @@ import {
   buildSavedGearmotorModel,
   MAX_USER_GEARMOTORS,
   ensureGearmotorsCacheLoaded,
+  takeLastGearmotorCloudErrorMessage,
 } from '../services/userGearmotorLibrary.js';
 import { shaftSizingFromDrive } from '../modules/shaftSizing.js';
 import { getCurrentUser } from '../services/localAuth.js';
@@ -602,6 +603,12 @@ function wireUserGearmotorDelegation(root) {
         const label =
           labelEl instanceof HTMLInputElement ? String(labelEl.value || '').trim().slice(0, 160) : '';
 
+        const brandEl = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-brand]'));
+        let brandId = 'custom';
+        if (brandEl && brandEl.value && brandEl.value !== USER_SAVED_BRAND_VALUE) {
+          brandId = String(brandEl.value).trim() || 'custom';
+        }
+
         try {
           await ensureGearmotorsCacheLoaded();
         } catch (_) {
@@ -621,6 +628,7 @@ function wireUserGearmotorDelegation(root) {
           motor_rpm_nom: raw.motor_rpm_nom,
           eta_g: raw.eta_g,
           label: label || undefined,
+          brandId,
         });
         if (!rec) {
           if (out) {
@@ -632,13 +640,15 @@ function wireUserGearmotorDelegation(root) {
               return;
             }
             const atCap = listUserGearmotors().length >= MAX_USER_GEARMOTORS;
+            const cloudDetail = takeLastGearmotorCloudErrorMessage().trim();
+            const cloudSuffix = cloudDetail ? ` — ${escapeHtml(cloudDetail)}` : '';
             out.innerHTML = atCap
               ? en
                 ? `<p class="verify-result verify-result--warn">Saved list is full (${MAX_USER_GEARMOTORS} entries). Remove one in <a href="my-gearmotors.html">My gearmotors</a> or delete from the list here.</p>`
                 : `<p class="verify-result verify-result--warn">La lista guardada est\u00e1 llena (${MAX_USER_GEARMOTORS} entradas). Elimine una en <a href="my-gearmotors.html">Mis motorreductores</a> o desde la lista aqu\u00ed.</p>`
               : en
-                ? `<p class="verify-result verify-result--warn">Could not save to TheMechAssist Cloud (network or permissions).</p>`
-                : `<p class="verify-result verify-result--warn">No se pudo guardar en TheMechAssist Cloud (red o permisos).</p>`;
+                ? `<p class="verify-result verify-result--warn">Could not save to TheMechAssist Cloud (network or permissions).${cloudSuffix}</p>`
+                : `<p class="verify-result verify-result--warn">No se pudo guardar en TheMechAssist Cloud (red o permisos).${cloudSuffix}</p>`;
           }
           return;
         }

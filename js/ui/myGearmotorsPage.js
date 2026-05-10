@@ -12,11 +12,13 @@ import {
   MAX_USER_GEARMOTORS,
   ensureGearmotorsCacheLoaded,
   subscribeUserGearmotorsRealtime,
+  takeLastGearmotorCloudErrorMessage,
 } from '../services/userGearmotorLibrary.js';
 import { isPremiumEffective } from '../services/accessTier.js';
 import { isPremiumViaQueryProUiAllowed, isPublicFreeRelease } from '../config/features.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { startProCheckoutFlow, buildRegisterUrlWithNextCheckout } from '../services/proCheckoutFlow.js';
+import { BRANDS } from '../data/gearmotorCatalog.js';
 
 const LEMON_CHECKOUT_MONTHLY_URL =
   'https://mechassist.lemonsqueezy.com/checkout/buy/acd30d30-72e7-4434-827e-e51487e492ca';
@@ -92,6 +94,9 @@ const TX = {
     lblNmotor: '<em>n</em> motor (min<sup>&minus;1</sup>)',
     lblEta: '&eta; reductor (0&ndash;1 o %)',
     phLabel: 'ej. Nord SK42 \u00B7 l\u00EDnea 3',
+    lblBrand: 'Marca (carpeta)',
+    brandHint: 'Agrupa sus equipos por fabricante en la lista de la derecha.',
+    folderUncategorized: 'Sin marca / otro',
     navMachines: 'M\u00e1quinas',
     edit: 'Editar',
     delete: 'Eliminar',
@@ -144,6 +149,9 @@ const TX = {
     lblNmotor: 'Motor <em>n</em> (min<sup>&minus;1</sup>)',
     lblEta: '&eta; gearbox (0\u20131 or %)',
     phLabel: 'e.g. Nord SK42 &middot; line 3',
+    lblBrand: 'Brand (folder)',
+    brandHint: 'Groups your entries by manufacturer in the list.',
+    folderUncategorized: 'Unspecified / other',
     navMachines: 'Machines',
     edit: 'Edit',
     delete: 'Remove',
@@ -164,6 +172,24 @@ const TX = {
     signInToSave: 'Sign in to save gearmotors to TheMechAssist Cloud.',
   },
 };
+
+function fillBrandSelect() {
+  const sel = document.getElementById('gmBrand');
+  if (!(sel instanceof HTMLSelectElement)) return;
+  const cur = sel.value;
+  sel.innerHTML = '';
+  const unc = document.createElement('option');
+  unc.value = '';
+  unc.textContent = t('folderUncategorized');
+  sel.appendChild(unc);
+  for (const b of BRANDS) {
+    const o = document.createElement('option');
+    o.value = b.id;
+    o.textContent = b.region && b.region !== '\u2014' ? `${b.name} (${b.region})` : b.name;
+    sel.appendChild(o);
+  }
+  if (cur && [...sel.options].some((op) => op.value === cur)) sel.value = cur;
+}
 
 function lang() {
   return getCurrentLang() === 'en' ? 'en' : 'es';
@@ -221,6 +247,10 @@ function applyStaticCopy() {
   document.getElementById('gmT2peakHint')?.replaceChildren(document.createTextNode(t('t2peakHint')));
   document.getElementById('gmNmotorHint')?.replaceChildren(document.createTextNode(t('nmotorHint')));
   document.getElementById('gmEtaHint')?.replaceChildren(document.createTextNode(t('etaHint')));
+
+  document.getElementById('gmBrandLbl')?.replaceChildren(document.createTextNode(t('lblBrand')));
+  document.getElementById('gmBrandHint')?.replaceChildren(document.createTextNode(t('brandHint')));
+  fillBrandSelect();
 
   document.getElementById('gmThRef')?.replaceChildren(document.createTextNode(t('thRef')));
   setHtml('gmThPkW', t('thPkW'));
@@ -287,12 +317,16 @@ function readFormRaw() {
   const etaStr = String(document.getElementById('gmEta')?.value || '').trim();
   const etaRaw = etaStr ? parseFloat(etaStr.replace(',', '.')) : NaN;
   const notes = String(document.getElementById('gmNotes')?.value || '').trim();
-  /** @type {{ label?: string; motor_kW: number; n2_rpm: number; T2_nom_Nm: number; T2_peak_Nm?: number; motor_rpm_nom?: number; eta_g?: number; notes?: string }} */
+  const brandSel = document.getElementById('gmBrand');
+  const brandId =
+    brandSel instanceof HTMLSelectElement ? String(brandSel.value || '').trim() : '';
+  /** @type {{ label?: string; motor_kW: number; n2_rpm: number; T2_nom_Nm: number; T2_peak_Nm?: number; motor_rpm_nom?: number; eta_g?: number; notes?: string; brandId?: string }} */
   const o = { label: label || undefined, motor_kW, n2_rpm, T2_nom_Nm };
   if (Number.isFinite(T2_peak_Nm) && T2_peak_Nm > 0) o.T2_peak_Nm = T2_peak_Nm;
   if (Number.isFinite(motor_rpm_nom) && motor_rpm_nom > 0) o.motor_rpm_nom = motor_rpm_nom;
   if (Number.isFinite(etaRaw) && etaRaw > 0) o.eta_g = etaRaw;
   if (notes) o.notes = notes.slice(0, 500);
+  if (brandId) o.brandId = brandId;
   return o;
 }
 function clearForm() {
@@ -303,6 +337,8 @@ function clearForm() {
     const el = document.getElementById(id);
     if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) el.value = '';
   }
+  const gb = document.getElementById('gmBrand');
+  if (gb instanceof HTMLSelectElement) gb.value = '';
   const cancel = document.getElementById('gmCancelBtn');
   if (cancel instanceof HTMLElement) cancel.hidden = true;
   syncSubmitLabel();
@@ -332,6 +368,11 @@ function fillForm(rec) {
   );
   setVal('gmEta', rec.eta_g != null && Number.isFinite(rec.eta_g) ? String(rec.eta_g) : '');
   setVal('gmNotes', rec.notes ? String(rec.notes) : '');
+  const bEl = document.getElementById('gmBrand');
+  if (bEl instanceof HTMLSelectElement) {
+    const bid = rec.brandId ? String(rec.brandId) : '';
+    bEl.value = bid && [...bEl.options].some((op) => op.value === bid) ? bid : '';
+  }
   const cancel = document.getElementById('gmCancelBtn');
   if (cancel instanceof HTMLElement) cancel.hidden = false;
   syncSubmitLabel();
@@ -356,6 +397,20 @@ function truncateNotes(s, max) {
   return `${t0.slice(0, max - 1)}\u2026`;
 }
 
+function brandGroupSortKey(brandId) {
+  const id = brandId || '';
+  if (!id) return 9999;
+  const i = BRANDS.findIndex((b) => b.id === id);
+  return i >= 0 ? i : 8888;
+}
+
+function folderHeadingForBrandId(brandId) {
+  const id = brandId || '';
+  if (!id) return t('folderUncategorized');
+  const b = BRANDS.find((x) => x.id === id);
+  return b ? b.name : id;
+}
+
 function renderTable() {
   const tbody = document.getElementById('gmTableBody');
   const empty = document.getElementById('gmEmpty');
@@ -372,18 +427,39 @@ function renderTable() {
   empty.hidden = true;
   table.hidden = false;
 
+  /** @type {Map<string, typeof rows>} */
+  const groups = new Map();
   for (const r of rows) {
-    const peakHtml =
-      r.T2_peak_Nm != null && Number.isFinite(r.T2_peak_Nm)
-        ? ` <span class="muted">&middot;</span> <em>T</em><sub>2p</sub> ${escapeHtml(Number(r.T2_peak_Nm).toFixed(1))}`
+    const k = r.brandId ? String(r.brandId) : '';
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k)?.push(r);
+  }
+  const keys = [...groups.keys()].sort((a, b) => {
+    if (a === '' && b === '') return 0;
+    if (a === '') return 1;
+    if (b === '') return -1;
+    return brandGroupSortKey(a) - brandGroupSortKey(b);
+  });
+
+  for (const key of keys) {
+    const list = groups.get(key) || [];
+    const headTr = document.createElement('tr');
+    headTr.className = 'gearmotor-db__folder-row';
+    headTr.innerHTML = `<td colspan="5" class="gearmotor-db__folder-heading">${escapeHtml(folderHeadingForBrandId(key))}</td>`;
+    tbody.appendChild(headTr);
+
+    for (const r of list) {
+      const peakHtml =
+        r.T2_peak_Nm != null && Number.isFinite(r.T2_peak_Nm)
+          ? ` <span class="muted">&middot;</span> <em>T</em><sub>2p</sub> ${escapeHtml(Number(r.T2_peak_Nm).toFixed(1))}`
+          : '';
+      const noteRaw = r.notes ? String(r.notes) : '';
+      const noteShort = noteRaw ? truncateNotes(noteRaw, 72) : '';
+      const notesBlock = noteShort
+        ? `<div class="muted" style="font-size:0.82em;margin-top:0.25rem" title="${escapeAttr(noteRaw)}">${escapeHtml(noteShort)}</div>`
         : '';
-    const noteRaw = r.notes ? String(r.notes) : '';
-    const noteShort = noteRaw ? truncateNotes(noteRaw, 72) : '';
-    const notesBlock = noteShort
-      ? `<div class="muted" style="font-size:0.82em;margin-top:0.25rem" title="${escapeAttr(noteRaw)}">${escapeHtml(noteShort)}</div>`
-      : '';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
       <td>${escapeHtml(r.label)}${notesBlock}</td>
       <td>${escapeHtml(String(r.motor_kW))}</td>
       <td>${escapeHtml(Number(r.n2_rpm).toFixed(1))}</td>
@@ -392,7 +468,8 @@ function renderTable() {
         <button type="button" class="button button--ghost gearmotor-db__btn-icon" data-gm-edit="${escapeAttr(r.id)}">${escapeHtml(t('edit'))}</button>
         <button type="button" class="button button--ghost gearmotor-db__btn-icon" data-gm-del="${escapeAttr(r.id)}">${escapeHtml(t('delete'))}</button>
       </td>`;
-    tbody.appendChild(tr);
+      tbody.appendChild(tr);
+    }
   }
 
   tbody.querySelectorAll('[data-gm-edit]').forEach((b) => {
@@ -414,12 +491,18 @@ function renderTable() {
           const editing = document.getElementById('gmEditId')?.value;
           if (editing === id) clearForm();
         } else {
-          flashStatus(t('saveCloudErr'), 'warn');
+          flashCloudOpErr('saveCloudErr');
         }
       })();
     });
   });
   updateCountLine();
+}
+
+/** Muestra el aviso genérico y, si Supabase devolvió detalle, lo añade (útil para diagnosticar permisos/tablas). */
+function flashCloudOpErr(genericKey) {
+  const detail = takeLastGearmotorCloudErrorMessage().trim();
+  flashStatus(detail ? `${t(genericKey)} — ${detail}` : t(genericKey), 'warn');
 }
 
 /**
@@ -549,7 +632,7 @@ function wireGearmotorPageHandlers() {
       if (editId) {
         ok = await updateUserGearmotor(editId, p);
         if (ok) flashStatus(t('savedEdit'), 'info');
-        else flashStatus(t('saveCloudErr'), 'warn');
+        else flashCloudOpErr('saveCloudErr');
       } else {
         if (listUserGearmotors().length >= MAX_USER_GEARMOTORS) {
           flashStatus(t('maxListReached', { max: MAX_USER_GEARMOTORS }), 'warn');
@@ -557,7 +640,7 @@ function wireGearmotorPageHandlers() {
         }
         ok = await addUserGearmotor(p);
         if (ok) flashStatus(t('savedAdd'), 'info');
-        else flashStatus(t('saveCloudErr'), 'warn');
+        else flashCloudOpErr('saveCloudErr');
       }
       if (ok) {
         clearForm();
@@ -592,7 +675,7 @@ async function boot() {
     flashStatus(t('loadCloudErr'), 'warn');
   }
   renderTable();
-  unsubRealtime = subscribeUserGearmotorsRealtime();
+  unsubRealtime = await subscribeUserGearmotorsRealtime();
   window.addEventListener(
     'beforeunload',
     () => {

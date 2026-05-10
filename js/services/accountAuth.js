@@ -9,6 +9,7 @@ import {
   persistServerSession,
   getCurrentUser,
 } from './localAuth.js';
+import { syncSupabaseSessionFromNetlifyJwt } from './supabaseSessionSync.js';
 
 function fnBase() {
   return `${window.location.origin}/.netlify/functions`;
@@ -79,7 +80,7 @@ function mapLoginError(code, lang) {
  */
 export async function registerAccount(fields, opts = {}) {
   if (!FEATURES.useServerAuth) {
-    return registerLocalUser(fields, opts);
+    return await registerLocalUser(fields, opts);
   }
   const lang = opts.lang === 'en' ? 'en' : 'es';
   const res = await fetch(`${fnBase()}/auth-register`, {
@@ -105,7 +106,7 @@ export async function registerAccount(fields, opts = {}) {
  */
 export async function loginAccount(fields, opts = {}) {
   if (!FEATURES.useServerAuth) {
-    return loginLocalUser(fields, opts);
+    return await loginLocalUser(fields, opts);
   }
   const lang = opts.lang === 'en' ? 'en' : 'es';
   const res = await fetch(`${fnBase()}/auth-login`, {
@@ -125,6 +126,9 @@ export async function loginAccount(fields, opts = {}) {
     email: data.user?.email,
     authToken: data.token,
   });
+  if (FEATURES.useSupabaseRLS) {
+    await syncSupabaseSessionFromNetlifyJwt();
+  }
   return getCurrentUser();
 }
 

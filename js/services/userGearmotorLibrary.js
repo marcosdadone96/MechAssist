@@ -5,6 +5,7 @@
 
 import { buildManualGearmotorModel } from '../modules/motorVerify.js';
 import { getCurrentUser } from './localAuth.js';
+import { supabase } from '../../scripts/supabaseClient.mjs';
 import {
   fetchMisMotorreductoresRows,
   insertMisMotorreductorRow,
@@ -27,19 +28,36 @@ export const MAX_USER_GEARMOTORS = 200;
  * @property {number} [motor_rpm_nom]
  * @property {number} [eta_g]
  * @property {string} [notes]
+ * @property {string} [brandId] Marca / carpeta (id catálogo: sew, nord, …).
  */
 
 export const USER_SAVED_BRAND_VALUE = '__user_saved__';
 
 export const USER_GEARMOTOR_CHANGED_EVENT = 'mdr-user-gearmotors-changed';
 
+/** Último error de Supabase al guardar/editar/borrar (para mensajes en UI). */
+let lastGearmotorCloudErrorMessage = '';
+
+/**
+ * Mensaje de error de la última operación cloud (si hubo), y se limpia al leer.
+ * @returns {string}
+ */
+export function takeLastGearmotorCloudErrorMessage() {
+  const m = lastGearmotorCloudErrorMessage;
+  lastGearmotorCloudErrorMessage = '';
+  return m;
+}
+
+function setLastGearmotorCloudError(err) {
+  if (err && typeof err === 'object' && 'message' in err) {
+    lastGearmotorCloudErrorMessage = String(/** @type {{ message?: string }} */ (err).message || '');
+  } else {
+    lastGearmotorCloudErrorMessage = '';
+  }
+}
+
 /** @type {UserGearmotorRecord[]} */
 let gearmotorCache = [];
-
-function accountEmail() {
-  const u = getCurrentUser();
-  return u?.email ? String(u.email).trim().toLowerCase() : '';
-}
 
 function notifyGearmotorChanged(detail = {}) {
   try {
@@ -54,14 +72,14 @@ function notifyGearmotorChanged(detail = {}) {
  * @returns {Promise<void>}
  */
 export async function refreshUserGearmotorsFromCloud() {
-  const em = accountEmail();
-  if (!em) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
     gearmotorCache = [];
     notifyGearmotorChanged({ replace: true });
     return;
   }
   try {
-    gearmotorCache = await fetchMisMotorreductoresRows(em);
+    gearmotorCache = await fetchMisMotorreductoresRows();
   } catch (e) {
     console.warn('[userGearmotorLibrary] refresh', e);
     throw e;
@@ -76,8 +94,7 @@ let loadPromise = null;
  * @returns {Promise<void>}
  */
 export function ensureGearmotorsCacheLoaded() {
-  const em = accountEmail();
-  if (!em) {
+  if (!getCurrentUser()?.email) {
     gearmotorCache = [];
     return Promise.resolve();
   }
@@ -119,11 +136,12 @@ export function getUserGearmotor(id) {
  * @param {number} [p.T2_peak_Nm]
  * @param {number} [p.motor_rpm_nom]
  * @param {number} [p.eta_g]
+ * @param {string} [p.brandId]
  * @returns {Promise<UserGearmotorRecord | null>}
  */
 export async function addUserGearmotor(p) {
-  const em = accountEmail();
-  if (!em) return null;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
 
   const motor_kW = Number(p.motor_kW);
   const n2_rpm = Number(p.n2_rpm);
@@ -134,11 +152,13 @@ export async function addUserGearmotor(p) {
 
   if (gearmotorCache.length >= MAX_USER_GEARMOTORS) return null;
 
-  const rec = await insertMisMotorreductorRow(em, p);
-  if (!rec) return null;
-  gearmotorCache = [rec, ...gearmotorCache.filter((r) => r.id !== rec.id)];
-  notifyGearmotorChanged({ id: rec.id });
-  return rec;
+  setLastGearmotorCloudError(null);
+  const { record, error } = await insertMisMotorreductorRow(p);
+  if (error) setLastGearmotorCloudError(error);
+  if (!record) return null;
+  gearmotorCache = [record, ...gearmotorCache.filter((r) => r.id !== record.id)];
+  notifyGearmotorChanged({ id: record.id });
+  return record;
 }
 
 /**
@@ -146,10 +166,11 @@ export async function addUserGearmotor(p) {
  * @returns {Promise<boolean>}
  */
 export async function removeUserGearmotor(id) {
-  const em = accountEmail();
-  if (!id || !em) return false;
-  const ok = await deleteMisMotorreductorRow(em, id);
-  if (!ok) return false;
+  if (!id) return false;
+  setLastGearmotorCloudError(null);
+  const del = await deleteMisMotorreductorRow(id);
+  if (del.error) setLastGearmotorCloudError(del.error);
+  if (!del.ok) return false;
   gearmotorCache = gearmotorCache.filter((r) => r.id !== id);
   notifyGearmotorChanged({ id });
   return true;
@@ -161,8 +182,7 @@ export async function removeUserGearmotor(id) {
  * @returns {Promise<UserGearmotorRecord | null>}
  */
 export async function updateUserGearmotor(id, p) {
-  const em = accountEmail();
-  if (!id || !em) return null;
+  if (!id) return null;
 
   const motor_kW = Number(p.motor_kW);
   const n2_rpm = Number(p.n2_rpm);
@@ -171,13 +191,15 @@ export async function updateUserGearmotor(id, p) {
   if (!Number.isFinite(n2_rpm) || n2_rpm <= 0) return null;
   if (!Number.isFinite(T2_nom_Nm) || T2_nom_Nm <= 0) return null;
 
-  const rec = await updateMisMotorreductorRow(em, id, p);
-  if (!rec) return null;
+  setLastGearmotorCloudError(null);
+  const { record, error } = await updateMisMotorreductorRow(id, p);
+  if (error) setLastGearmotorCloudError(error);
+  if (!record) return null;
   const idx = gearmotorCache.findIndex((r) => r.id === id);
-  if (idx >= 0) gearmotorCache[idx] = rec;
-  else gearmotorCache = [rec, ...gearmotorCache];
+  if (idx >= 0) gearmotorCache[idx] = record;
+  else gearmotorCache = [record, ...gearmotorCache];
   notifyGearmotorChanged({ id });
-  return rec;
+  return record;
 }
 
 /**
@@ -200,15 +222,16 @@ export function buildSavedGearmotorModel(entry) {
 }
 
 /**
- * Cambios en tiempo real (Supabase Realtime). Si la tabla no tiene Realtime activado, no falla.
+ * Cambios en tiempo real (Supabase Realtime).
  * @param {() => void} [onAfterRefresh]
- * @returns {() => void}
+ * @returns {Promise<() => void>}
  */
-export function subscribeUserGearmotorsRealtime(onAfterRefresh) {
-  const em = accountEmail();
-  if (!em) return () => {};
+export async function subscribeUserGearmotorsRealtime(onAfterRefresh) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const uid = session?.user?.id;
+  if (!uid) return () => {};
 
-  return subscribeMisMotorreductoresRealtime(em, async () => {
+  return subscribeMisMotorreductoresRealtime(uid, async () => {
     try {
       await refreshUserGearmotorsFromCloud();
     } catch (_) {

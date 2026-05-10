@@ -878,6 +878,20 @@ body {
   border-bottom: none;
 }
 
+.gearmotor-db__folder-row td {
+  border-bottom: none;
+  padding-top: 0.85rem;
+  padding-bottom: 0.35rem;
+}
+
+.gearmotor-db__folder-heading {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  background: rgba(0, 0, 0, 0.04);
+}
+
 .gearmotor-db__actions {
   white-space: nowrap;
 }
