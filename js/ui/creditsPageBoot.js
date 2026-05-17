@@ -33,6 +33,10 @@ export function wrapCalcRefresh(fn) {
       fn(...args);
       return;
     }
+    if (shouldLockCalcInputsForCredits()) {
+      syncNoCreditsInputLock();
+      return;
+    }
     void withCalcCredits(() => fn(...args));
   };
   /** Vista inicial (diagrama, PDF, resultados) sin consumir creditos si el saldo esta agotado. */

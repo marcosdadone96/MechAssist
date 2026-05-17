@@ -4938,6 +4938,18 @@ html[data-conveyor-tool='screw'] #screwMotorBlock .motor-card-grid {
   color: var(--text);
 }
 
+.checkout-page .register-card.checkout-card {
+  width: min(920px, 100%);
+  padding: 1.85rem 1.65rem 2rem;
+}
+
+.checkout-page .button--block {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
 .checkout-user {
   margin: 0 0 1rem;
   font-size: 0.88rem;
@@ -4945,42 +4957,58 @@ html[data-conveyor-tool='screw'] #screwMotorBlock .motor-card-grid {
   color: var(--accent-dark);
 }
 
-.checkout-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  margin-bottom: 0.75rem;
+.checkout-choices {
+  margin: 0 0 1.15rem;
+  padding: 0.75rem 0.9rem;
+  list-style: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(238, 242, 255, 0.7) 0%, rgba(240, 253, 250, 0.65) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.28);
 }
 
-.checkout-plan-block {
-  margin: 1.1rem 0 0;
-  padding: 1rem 0 0;
-  border-top: 1px solid rgba(148, 163, 184, 0.35);
+.checkout-choices__item {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: #334155;
 }
 
-.checkout-plan-block:first-of-type {
-  margin-top: 0.5rem;
-  padding-top: 0.35rem;
-  border-top: none;
+.checkout-choices__item + .checkout-choices__item {
+  margin-top: 0.4rem;
 }
 
-.checkout-plan-block__title {
+.checkout-section {
+  margin-top: 1.35rem;
+}
+
+.checkout-section__title {
   margin: 0 0 0.35rem;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--text, #0f172a);
 }
 
-.checkout-plan-block__hint {
-  margin: 0 0 0.75rem;
+.checkout-section__lead {
+  margin: 0 0 0.85rem;
   font-size: 0.86rem;
   line-height: 1.45;
+  color: var(--muted, #64748b);
+}
+
+.checkout-section--unlock {
+  padding-top: 0.25rem;
+}
+
+.checkout-section--highlight {
+  border-radius: 16px;
+  outline: 2px solid rgba(13, 148, 136, 0.45);
+  outline-offset: 6px;
 }
 
 .checkout-plans {
   display: grid;
   gap: 1rem;
-  margin-top: 0.5rem;
   align-items: stretch;
 }
 
@@ -4994,17 +5022,19 @@ html[data-conveyor-tool='screw'] #screwMotorBlock .motor-card-grid {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 100%;
   border: 1px solid rgba(148, 163, 184, 0.35);
   border-radius: 14px;
-  padding: 1rem 1.05rem 1.15rem;
+  padding: 1rem 1.05rem 1.1rem;
   background: #fff;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.checkout-plan-card .checkout-actions--subs {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
+.checkout-plan-card--highlight {
+  border-color: rgba(79, 70, 229, 0.55);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
 }
 
 .checkout-plan-card--starter {
@@ -5016,12 +5046,36 @@ html[data-conveyor-tool='screw'] #screwMotorBlock .motor-card-grid {
   background: linear-gradient(180deg, rgba(240, 253, 250, 0.65) 0%, #fff 42%);
 }
 
+.checkout-plan-card--unlimited.checkout-plan-card--highlight {
+  border-color: rgba(13, 148, 136, 0.65);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.16);
+}
+
+.checkout-plan-card--unlock {
+  border-style: dashed;
+  border-color: rgba(13, 148, 136, 0.38);
+  padding: 1rem 1.05rem 1.15rem;
+}
+
 .checkout-plan-card__head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 0.75rem;
   margin-bottom: 0.35rem;
+}
+
+.checkout-plan-card__name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text, #0f172a);
+}
+
+.checkout-plan-card__hint {
+  margin: 0 0 0.65rem;
+  font-size: 0.86rem;
+  line-height: 1.45;
 }
 
 .checkout-plan-card__price {
@@ -5036,34 +5090,125 @@ html[data-conveyor-tool='screw'] #screwMotorBlock .motor-card-grid {
   color: #0f766e;
 }
 
+.checkout-plan-card__price--unlock {
+  font-size: 1.35rem;
+  margin-bottom: 0.5rem;
+  color: #0f766e;
+}
+
 .checkout-plan-card__list {
-  margin: 0 0 0.85rem;
+  margin: 0 0 0.65rem;
   padding-left: 1.15rem;
   font-size: 0.84rem;
   line-height: 1.45;
   color: #475569;
+  flex: 1;
+}
+
+.checkout-plan-card__list--unlock {
+  margin-bottom: 0.85rem;
 }
 
 .checkout-plan-card__list li + li {
   margin-top: 0.35rem;
 }
 
-.checkout-plan-card__btn-secondary {
-  margin-top: 0.15rem;
-}
-
-.checkout-plan-card__pending {
-  margin: 0;
+.checkout-plan-card__annual-line {
+  margin: 0 0 0.75rem;
+  min-height: 2.35rem;
   font-size: 0.82rem;
   line-height: 1.4;
 }
 
-.checkout-plan-block--unlock {
-  background: rgba(248, 250, 252, 0.85);
-  border: 1px solid rgba(148, 163, 184, 0.28);
-  border-radius: 12px;
-  padding: 1rem 1rem 1.1rem;
-  margin-top: 1.25rem;
+.checkout-plan-card__annual-line--spacer {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.checkout-plan-card__annual-link {
+  font-weight: 700;
+  color: #4338ca;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.checkout-plan-card__annual-link:hover {
+  color: #312e81;
+}
+
+.checkout-plan-card__annual-note {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.checkout-plan-card__foot {
+  margin-top: auto;
+  padding-top: 0.15rem;
+}
+
+.checkout-plan-card__cta {
+  text-align: center;
+}
+
+.checkout-plan-card__cta--unlimited {
+  background: linear-gradient(165deg, #0f766e 0%, #14b8a6 100%);
+  border-color: transparent;
+}
+
+.checkout-plan-card__cta--unlimited:hover {
+  filter: brightness(1.04);
+}
+
+.checkout-plan-card__pending {
+  margin: 0.55rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.checkout-pay-note {
+  margin: 0.85rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.checkout-unlock-row {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 560px) {
+  .checkout-unlock-row {
+    grid-template-columns: 1fr minmax(11rem, 14rem);
+    align-items: end;
+  }
+}
+
+.checkout-unlock-row__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.checkout-unlock-row__label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.checkout-unlock-row__select {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  font-size: 0.92rem;
+  background: #fff;
+}
+
+.checkout-unlock-row__btn {
+  align-self: stretch;
 }
 
 .hub-pricing-card--unlimited {
@@ -5087,26 +5232,6 @@ html[data-conveyor-tool='screw'] #screwMotorBlock .motor-card-grid {
 .hub-pricing-card__cta--unlimited:hover {
   background: #115e59;
   border-color: #115e59;
-}
-
-.checkout-unlock-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-}
-
-.checkout-unlock-row__label {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #475569;
-}
-
-.checkout-unlock-row__select {
-  width: 100%;
-  padding: 0.5rem 0.65rem;
-  border-radius: 8px;
-  border: 1px solid rgba(148, 163, 184, 0.55);
-  font-size: 0.92rem;
 }
 
 .hub-pricing__grid {

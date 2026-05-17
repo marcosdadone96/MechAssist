@@ -21,8 +21,15 @@ const TX = {
     navRegister: 'Registro',
     eyebrow: 'TheMechAssist',
     title: 'Planes y cr\u00e9ditos',
-    lead:
-      'Tres opciones independientes: suscripci\u00f3n Starter (9 \u20ac/mes), plan Ilimitado (25 \u20ac/mes) o desbloqueo de una sola calculadora (1 \u20ac/mes, uso ilimitado en esa herramienta durante 30 d\u00edas). No necesita suscripci\u00f3n para el desbloqueo puntual.',
+    lead: 'Elija una opci\u00f3n y pulse el bot\u00f3n para abrir el pago seguro en Lemon Squeezy.',
+    choicesAria: 'Opciones disponibles',
+    choices: [
+      { label: 'Starter', detail: '9 \u20ac/mes \u00b7 cr\u00e9ditos y hasta 30 PDF/mes' },
+      { label: 'Ilimitado', detail: '25 \u20ac/mes \u00b7 cat\u00e1logo sin gastar cr\u00e9ditos' },
+      { label: 'Una calculadora', detail: '1 \u20ac/30 d\u00edas \u00b7 sin suscripci\u00f3n' },
+    ],
+    subsHeading: 'Suscripciones',
+    subsLead: 'Mismo bot\u00f3n principal en cada tarjeta. El plan anual de Starter es un enlace aparte.',
     starterHeading: 'Starter',
     starterPrice: '9 \u20ac/mes',
     starterHint: 'Cr\u00e9ditos de bienvenida renovados con el plan y hasta 30 PDF/mes en todo el cat\u00e1logo.',
@@ -43,22 +50,27 @@ const TX = {
     ],
     unlimitedPending:
       'Enlace de pago en configuraci\u00f3n. A\u00f1ada la URL Lemon del plan 25 \u20ac en features.js (unlimitedMonthly).',
-    unlockHeading: 'Solo una calculadora',
-    unlockHint:
-      '1 \u20ac/mes por calculadora elegida. Uso ilimitado (c\u00e1lculos y PDF) en esa p\u00e1gina durante 30 d\u00edas. Puede combinar varias compras puntuales sin contratar Starter.',
+    unlockHeading: 'Compra puntual',
+    unlockHint: 'Sin suscripci\u00f3n. Elija la herramienta y pague una sola vez.',
+    unlockPrice: '1 \u20ac / 30 d\u00edas',
+    unlockBullets: [
+      'Uso ilimitado en esa calculadora durante 30 d\u00edas',
+      'C\u00e1lculos y PDF en esa p\u00e1gina sin gastar cr\u00e9ditos',
+      'Puede comprar varias herramientas por separado',
+    ],
     unlockPick: 'Elija la calculadora',
-    unlockBtn: 'Desbloquear por 1 \u20ac/mes',
+    unlockBtn: 'Desbloquear por 1 \u20ac',
     unlockFor: (name) => `Desbloquear: ${name}`,
     starterMonthly: 'Starter \u2014 9 \u20ac/mes',
     starterAnnual: 'Starter anual \u2014 79 \u20ac/a\u00f1o',
+    starterAnnualNote: '(\u2248 6,58 \u20ac/mes de media)',
     unlimitedMonthly: 'Ilimitado \u2014 25 \u20ac/mes',
     creditsNote: '',
     signedAs: (name, email) => `Sesion: ${name} (${email})`,
     stripeBtn: 'Pagar con tarjeta (Stripe)',
     monthlyPlan: 'Starter \u2014 9 \u20ac/mes',
     annualPlan: 'Starter anual \u2014 79 \u20ac/a\u00f1o',
-    checkoutPayNote:
-      'El cobro lo gestiona Lemon Squeezy (checkout seguro). Use uno de los planes anteriores; si tambien ve la opcion Stripe, sera alternativa segun configuracion.',
+    checkoutPayNote: 'Pago seguro con Lemon Squeezy. IVA seg\u00fan pa\u00eds en la pasarela.',
     withdrawalLabelHtml:
       'Solicito el <strong>suministro inmediato</strong> del contenido digital (acceso Pro en este navegador) y, cuando act\u00fae como consumidor en la UE, <strong>renuncio expresamente</strong> al derecho de desistimiento respecto de ese suministro inmediato, en los t\u00e9rminos previstos por la normativa aplicable. He le\u00eddo los <a href="terms.html" target="_blank" rel="noopener">T\u00e9rminos</a>.',
     withdrawalHelp:
@@ -93,8 +105,15 @@ const TX = {
     navRegister: 'Register',
     eyebrow: 'TheMechAssist',
     title: 'Plans & credits',
-    lead:
-      'Three independent options: Starter subscription (\u20ac9/mo), Unlimited plan (\u20ac25/mo), or unlock a single calculator (\u20ac1/mo, unlimited use on that tool for 30 days). No subscription required for pay-per-calculator.',
+    lead: 'Pick an option and use the button to open secure checkout on Lemon Squeezy.',
+    choicesAria: 'Available options',
+    choices: [
+      { label: 'Starter', detail: '\u20ac9/mo \u00b7 credits and up to 30 PDFs/month' },
+      { label: 'Unlimited', detail: '\u20ac25/mo \u00b7 full catalog without credits' },
+      { label: 'Single calculator', detail: '\u20ac1/30 days \u00b7 no subscription' },
+    ],
+    subsHeading: 'Subscriptions',
+    subsLead: 'Each card has one main button. Starter annual billing is a separate link.',
     starterHeading: 'Starter',
     starterPrice: '\u20ac9/month',
     starterHint: 'Plan credits renewed monthly and up to 30 PDFs/month across the catalog.',
@@ -123,14 +142,14 @@ const TX = {
     unlockFor: (name) => `Unlock: ${name}`,
     starterMonthly: 'Starter \u2014 \u20ac9/month',
     starterAnnual: 'Starter annual \u2014 \u20ac79/year',
+    starterAnnualNote: '(avg. \u2248 \u20ac6.58/month)',
     unlimitedMonthly: 'Unlimited \u2014 \u20ac25/month',
     creditsNote: '',
     signedAs: (name, email) => `Signed in: ${name} (${email})`,
     stripeBtn: 'Pay with card (Stripe)',
     monthlyPlan: 'Starter \u2014 \u20ac9/month',
     annualPlan: 'Starter annual \u2014 \u20ac79/year',
-    checkoutPayNote:
-      'Checkout is handled by Lemon Squeezy (secure). Use one of the plan buttons above; if a Stripe option appears, it is an alternative depending on configuration.',
+    checkoutPayNote: 'Secure checkout via Lemon Squeezy. VAT by country at payment.',
     withdrawalLabelHtml:
       'I request <strong>immediate supply</strong> of the digital content (Pro access in this browser) and, where I qualify as an EU consumer, I <strong>expressly waive</strong> the 14-day right of withdrawal once access is activated, as permitted for digital content (see your Terms). I have read the <a href="terms.html" target="_blank" rel="noopener">Terms</a>.',
     withdrawalHelp:
@@ -234,7 +253,24 @@ function applyTx(t) {
   set('coEyebrow', t.eyebrow);
   set('coTitle', t.title);
   set('coLead', t.lead);
+  set('coSubsHeading', t.subsHeading);
+  set('coSubsLead', t.subsLead);
   set('coDemoNote', t.checkoutPayNote);
+  set('coStarterAnnualNote', t.starterAnnualNote || '');
+  set('coUnlockPrice', t.unlockPrice || '');
+  const choicesEl = document.getElementById('coChoices');
+  if (choicesEl instanceof HTMLUListElement && Array.isArray(t.choices)) {
+    if (t.choicesAria) choicesEl.setAttribute('aria-label', t.choicesAria);
+    choicesEl.replaceChildren();
+    for (const item of t.choices) {
+      const li = document.createElement('li');
+      li.className = 'checkout-choices__item';
+      const strong = document.createElement('strong');
+      strong.textContent = item.label;
+      li.append(strong, document.createTextNode(` \u2014 ${item.detail}`));
+      choicesEl.appendChild(li);
+    }
+  }
   const m = document.getElementById('coLemonMonthly');
   const ann = document.getElementById('coLemonAnnual');
   const unl = document.getElementById('coLemonUnlimited');
@@ -259,6 +295,7 @@ function applyTx(t) {
   };
   fillBullets('coStarterBullets', t.starterBullets);
   fillBullets('coUnlimitedBullets', t.unlimitedBullets);
+  fillBullets('coUnlockBullets', t.unlockBullets);
   const pending = document.getElementById('coUnlimitedPending');
   if (pending) pending.textContent = t.unlimitedPending || '';
   set('coUnlockHeading', t.unlockHeading);
@@ -285,6 +322,23 @@ function applyTx(t) {
   if (f4) f4.textContent = t.footCookiePrefs;
   const stripeBtn = document.getElementById('coPayStripe');
   if (stripeBtn) stripeBtn.textContent = t.stripeBtn;
+}
+
+/** Resalta tarjeta o sección según hash (#starter, #unlimited, #unlock). */
+function highlightCheckoutFocus() {
+  document
+    .querySelectorAll('.checkout-plan-card--highlight, .checkout-section--highlight')
+    .forEach((el) => {
+      el.classList.remove('checkout-plan-card--highlight', 'checkout-section--highlight');
+    });
+  const hash = (window.location.hash || '').toLowerCase();
+  if (hash === '#unlimited') {
+    document.getElementById('coUnlimitedBlock')?.classList.add('checkout-plan-card--highlight');
+  } else if (hash === '#unlock') {
+    document.getElementById('coUnlockBlock')?.classList.add('checkout-section--highlight');
+  } else if (hash === '#starter') {
+    document.getElementById('coStarterBlock')?.classList.add('checkout-plan-card--highlight');
+  }
 }
 
 function assertWithdrawalOrShowError(t) {
@@ -337,6 +391,8 @@ export async function mountCheckoutPage() {
   }
 
   applyTx(t);
+  highlightCheckoutFocus();
+  window.addEventListener('hashchange', highlightCheckoutFocus);
   applyManageSubscriptionBlock(t);
 
   const lemon = FEATURES.lemonCheckout || {};
@@ -358,8 +414,8 @@ export async function mountCheckoutPage() {
       if (unlimitedPending instanceof HTMLElement) unlimitedPending.hidden = false;
     }
   }
-  if (unlimitedBlock instanceof HTMLElement && window.location.hash === '#unlimited') {
-    unlimitedBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (unlimitedBlock instanceof HTMLElement && window.location.hash.toLowerCase() === '#unlimited') {
+    unlimitedBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   if (isCreditsSystemEnabled()) {
@@ -368,8 +424,8 @@ export async function mountCheckoutPage() {
     await fetchCreditsBalance(unlockSlug).catch(() => {});
     await refreshCreditsAfterAuth().catch(() => {});
     mountCalcUnlockCheckoutBlock(t, unlockSlug);
-    if (window.location.hash === '#unlock') {
-      document.getElementById('coUnlockBlock')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (window.location.hash.toLowerCase() === '#unlock') {
+      document.getElementById('coUnlockBlock')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
 

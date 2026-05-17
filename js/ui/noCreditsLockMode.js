@@ -50,9 +50,12 @@ function wireNoCreditsFocusBlock(root) {
       const t = ev.target;
       if (!(t instanceof HTMLElement)) return;
       if (!t.matches('input, select, textarea, button')) return;
-      if (!t.classList.contains('calc-input-locked')) return;
-      showNoCreditsModal();
-      t.blur();
+      if (t.classList.contains('calc-input-locked') || t.disabled) {
+        showNoCreditsModal();
+        t.blur();
+        ev.preventDefault();
+        ev.stopPropagation();
+      }
     },
     true,
   );
@@ -72,7 +75,7 @@ export function syncNoCreditsInputLock() {
 
   if (shouldLockCalcInputsForCredits()) {
     document.documentElement.setAttribute('data-no-credits-lock', '1');
-    lockCalcInputs(root, { allowPresets: false });
+    lockCalcInputs(root, { allowPresets: false, useDisabled: true });
     mountNoCreditsBanner(root);
     wireNoCreditsFocusBlock(root);
     return;

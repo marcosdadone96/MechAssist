@@ -65,6 +65,7 @@
         <p class="register-card__eyebrow" id="coEyebrow">TheMechAssist</p>
         <h1 class="register-card__title" id="coTitle">Planes y créditos</h1>
         <p class="register-card__lead" id="coLead"></p>
+        <ul class="checkout-choices" id="coChoices" aria-label="Opciones disponibles"></ul>
         <p class="checkout-user" id="coUserLine"></p>
 
         <p id="coProWelcome" class="checkout-pro-welcome" role="status" hidden></p>
@@ -80,65 +81,88 @@
         </div>
         <p id="coWithdrawalError" class="register-error" hidden role="alert"></p>
 
-        <div class="checkout-plans">
-          <section class="checkout-plan-block checkout-plan-card checkout-plan-card--starter" aria-labelledby="coStarterHeading">
-            <div class="checkout-plan-card__head">
-              <h2 class="checkout-plan-block__title" id="coStarterHeading">Starter</h2>
-              <p class="checkout-plan-card__price" id="coStarterPrice">9 &#8364;/mes</p>
-            </div>
-            <p class="checkout-plan-block__hint muted" id="coStarterHint"></p>
-            <ul class="checkout-plan-card__list" id="coStarterBullets"></ul>
-            <div class="checkout-actions checkout-actions--subs">
-              <button type="button" class="button button--accent" id="coPayStripe" hidden>Pagar con tarjeta (Stripe)</button>
-              <a
-                id="coLemonMonthly"
-                href="https://mechassist.lemonsqueezy.com/checkout/buy/acd30d30-72e7-4434-827e-e51487e492ca"
-                class="button button--accent"
-                data-lemon-squeezy
-                >Starter &#8212; 9 &#8364;/mes</a>
-              <a
-                id="coLemonAnnual"
-                href="https://mechassist.lemonsqueezy.com/checkout/buy/bfd83e87-ac81-46ad-a5cf-2c2c94b1d70d"
-                class="button button--ghost checkout-plan-card__btn-secondary"
-                data-lemon-squeezy
-                >Starter anual &#8212; 79 &#8364;/a&#241;o</a>
-            </div>
-          </section>
+        <section class="checkout-section" aria-labelledby="coSubsHeading">
+          <h2 class="checkout-section__title" id="coSubsHeading">Suscripciones</h2>
+          <p class="checkout-section__lead" id="coSubsLead"></p>
+          <div class="checkout-plans">
+            <article
+              class="checkout-plan-card checkout-plan-card--starter"
+              id="coStarterBlock"
+              aria-labelledby="coStarterHeading"
+            >
+              <header class="checkout-plan-card__head">
+                <h3 class="checkout-plan-card__name" id="coStarterHeading">Starter</h3>
+                <p class="checkout-plan-card__price" id="coStarterPrice">9 &#8364;/mes</p>
+              </header>
+              <p class="checkout-plan-card__hint muted" id="coStarterHint"></p>
+              <ul class="checkout-plan-card__list" id="coStarterBullets"></ul>
+              <p class="checkout-plan-card__annual-line">
+                <a
+                  id="coLemonAnnual"
+                  href="https://mechassist.lemonsqueezy.com/checkout/buy/bfd83e87-ac81-46ad-a5cf-2c2c94b1d70d"
+                  class="checkout-plan-card__annual-link"
+                  data-lemon-squeezy
+                  >Starter anual &#8212; 79 &#8364;/a&#241;o</a
+                ><span class="checkout-plan-card__annual-note" id="coStarterAnnualNote"></span>
+              </p>
+              <footer class="checkout-plan-card__foot">
+                <button type="button" class="button button--accent button--block" id="coPayStripe" hidden>
+                  Pagar con tarjeta (Stripe)
+                </button>
+                <a
+                  id="coLemonMonthly"
+                  href="https://mechassist.lemonsqueezy.com/checkout/buy/acd30d30-72e7-4434-827e-e51487e492ca"
+                  class="button button--accent button--block checkout-plan-card__cta"
+                  data-lemon-squeezy
+                  >Starter &#8212; 9 &#8364;/mes</a
+                >
+              </footer>
+            </article>
 
-          <section
-            class="checkout-plan-block checkout-plan-card checkout-plan-card--unlimited"
-            id="coUnlimitedBlock"
-            aria-labelledby="coUnlimitedHeading"
-          >
-            <div class="checkout-plan-card__head">
-              <h2 class="checkout-plan-block__title" id="coUnlimitedHeading">Ilimitado</h2>
-              <p class="checkout-plan-card__price" id="coUnlimitedPrice">25 &#8364;/mes</p>
-            </div>
-            <p class="checkout-plan-block__hint muted" id="coUnlimitedHint"></p>
-            <ul class="checkout-plan-card__list" id="coUnlimitedBullets"></ul>
-            <div class="checkout-actions checkout-actions--subs">
-              <a
-                id="coLemonUnlimited"
-                href=""
-                class="button button--accent checkout-plan-card__btn-unlimited"
-                data-lemon-squeezy
-                hidden
-                >Ilimitado &#8212; 25 &#8364;/mes</a>
-              <p class="checkout-plan-card__pending muted" id="coUnlimitedPending" hidden></p>
-            </div>
-          </section>
-        </div>
-
-        <section class="checkout-plan-block checkout-plan-block--unlock" id="coUnlockBlock" hidden aria-labelledby="coUnlockHeading">
-          <h2 class="checkout-plan-block__title" id="coUnlockHeading">Solo una calculadora</h2>
-          <p class="checkout-plan-block__hint muted" id="coUnlockHint"></p>
-          <div class="checkout-unlock-row">
-            <label class="checkout-unlock-row__label" for="coUnlockCalc">Elija la calculadora</label>
-            <select id="coUnlockCalc" class="checkout-unlock-row__select"></select>
-            <button type="button" class="button button--ghost checkout-unlock-row__btn" id="coUnlockCalcBtn">
-              Desbloquear por 1 &#8364;/mes
-            </button>
+            <article
+              class="checkout-plan-card checkout-plan-card--unlimited"
+              id="coUnlimitedBlock"
+              aria-labelledby="coUnlimitedHeading"
+            >
+              <header class="checkout-plan-card__head">
+                <h3 class="checkout-plan-card__name" id="coUnlimitedHeading">Ilimitado</h3>
+                <p class="checkout-plan-card__price" id="coUnlimitedPrice">25 &#8364;/mes</p>
+              </header>
+              <p class="checkout-plan-card__hint muted" id="coUnlimitedHint"></p>
+              <ul class="checkout-plan-card__list" id="coUnlimitedBullets"></ul>
+              <p class="checkout-plan-card__annual-line checkout-plan-card__annual-line--spacer" aria-hidden="true"></p>
+              <footer class="checkout-plan-card__foot">
+                <a
+                  id="coLemonUnlimited"
+                  href=""
+                  class="button button--accent button--block checkout-plan-card__cta checkout-plan-card__cta--unlimited"
+                  data-lemon-squeezy
+                  hidden
+                  >Ilimitado &#8212; 25 &#8364;/mes</a
+                >
+                <p class="checkout-plan-card__pending muted" id="coUnlimitedPending" hidden></p>
+              </footer>
+            </article>
           </div>
+          <p class="checkout-pay-note" id="coDemoNote"></p>
+        </section>
+
+        <section class="checkout-section checkout-section--unlock" id="coUnlockBlock" hidden aria-labelledby="coUnlockHeading">
+          <h2 class="checkout-section__title" id="coUnlockHeading">Solo una calculadora</h2>
+          <p class="checkout-section__lead" id="coUnlockHint"></p>
+          <article class="checkout-plan-card checkout-plan-card--unlock">
+            <p class="checkout-plan-card__price checkout-plan-card__price--unlock" id="coUnlockPrice">1 &#8364; / 30 d&#237;as</p>
+            <ul class="checkout-plan-card__list checkout-plan-card__list--unlock" id="coUnlockBullets"></ul>
+            <div class="checkout-unlock-row">
+              <div class="checkout-unlock-row__field">
+                <label class="checkout-unlock-row__label" for="coUnlockCalc">Elija la calculadora</label>
+                <select id="coUnlockCalc" class="checkout-unlock-row__select"></select>
+              </div>
+              <button type="button" class="button button--accent button--block checkout-unlock-row__btn" id="coUnlockCalcBtn">
+                Desbloquear por 1 &#8364;
+              </button>
+            </div>
+          </article>
         </section>
         <p class="register-card__terms checkout-credits-note" id="coCreditsNote" hidden></p>
         <p class="register-card__terms" id="coLegalLinks"></p>
@@ -156,7 +180,6 @@
           <p id="coManageMail" class="checkout-manage__mail"></p>
           <p id="coManageTermsRef" class="register-card__terms checkout-manage__terms"></p>
         </section>
-        <p class="register-card__terms checkout-demo-note" id="coDemoNote"></p>
         <div class="register-card__actions">
           <a class="button button--ghost" href="index.html" id="coBackHome">Inicio</a>
         </div>

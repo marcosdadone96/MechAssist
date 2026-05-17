@@ -60,6 +60,15 @@ export async function ensureCalcSessionCharged() {
   if (cached?.unlimited || isCalcSlugUnlocked(calcSlug, cached)) return { allowed: true };
 
   const sessionKey = `${SS_PREFIX}${pool}:${calcSlug}`;
+
+  if (shouldLockCalcInputsForCredits()) {
+    try {
+      sessionStorage.removeItem(sessionKey);
+    } catch (_) {
+      /* ignore */
+    }
+    return { allowed: false, reason: 'no_credits' };
+  }
   let session = null;
   try {
     session = JSON.parse(sessionStorage.getItem(sessionKey) || 'null');
@@ -154,6 +163,11 @@ export async function ensurePdfExportCharged() {
 export async function withCalcCredits(fn) {
   if (!isCreditsSystemEnabled()) {
     fn();
+    return;
+  }
+  if (shouldLockCalcInputsForCredits()) {
+    const { syncNoCreditsInputLock } = await import('../ui/noCreditsLockMode.js');
+    syncNoCreditsInputLock();
     return;
   }
   const gate = await ensureCalcSessionCharged();
