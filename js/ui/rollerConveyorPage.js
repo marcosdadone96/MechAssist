@@ -4,7 +4,7 @@
 
 import { FEATURES } from '../config/features.js';
 import { isFreeMachineFullAccess } from '../config/freemium.js';
-import { isPremiumEffective } from '../services/accessTier.js';
+import { isPremiumEffective, isPdfReportUiUnlocked } from '../services/accessTier.js';
 import { computeRollerConveyor } from '../modules/rollerConveyor.js';
 import { LOAD_DUTY_OPTIONS, LOAD_DUTY_OPTIONS_EN } from '../modules/serviceFactorByDuty.js';
 import { renderRollerConveyorDiagram } from './diagramRoller.js';
@@ -547,8 +547,8 @@ function localizeRollerStaticContent() {
   );
   const pdfH2 = document.querySelector('#premiumPdfExportMount')?.closest('section.panel')?.querySelector('h2');
   if (pdfH2) {
-    pdfH2.innerHTML =
-      '<span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Export report';
+    const proFlag = isPremiumEffective() ? '<span class="premium-flag">Pro</span> ' : '';
+    pdfH2.innerHTML = `${proFlag}<span class="panel-icon">PDF</span> Export report`;
   }
   setHtml(
     '#verifyPanel h2',
@@ -604,7 +604,7 @@ function localizeRollerStaticContent() {
 
 function refreshCore() {
   const conveyorExtrasUnlocked = isPremiumEffective() || isFreeMachineFullAccess();
-  const pdfReportUnlocked = isPremiumEffective();
+  const pdfReportUnlocked = isPdfReportUiUnlocked();
   const LBL = getI18nLabels();
   const lang = getCurrentLang();
   const en = lang === 'en';

@@ -699,7 +699,6 @@ function refresh() {
 
     if (els.premiumPdfMount) {
       mountPremiumPdfExportBar(els.premiumPdfMount, {
-        isPremium: isPremiumEffective(),
         getPayload: () => buildScrewPdfPayload(raw, r),
         getDiagramElement: () => els.diagram,
         diagramTitle: TX.machineDiagram,

@@ -89,7 +89,7 @@ export async function ensurePdfExportCharged() {
   if (!isCreditsSystemEnabled()) return { allowed: true };
 
   const user = getCurrentUser();
-  if (!user?.email) return { allowed: false, reason: 'guest' };
+  if (!user?.email || !user?.serverAuth) return { allowed: false, reason: 'guest' };
 
   const pool = creditPoolFromPath();
   const calcSlug = calcSlugFromPath();

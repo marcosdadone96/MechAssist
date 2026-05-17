@@ -866,7 +866,6 @@ function refreshCore() {
   const pdfMount = document.getElementById('premiumPdfExportMount');
   if (pdfMount) {
     mountPremiumPdfExportBar(pdfMount, {
-      isPremium: isPremiumEffective(),
       getPayload: () => buildCarLiftPdfPayload(p, r),
       getDiagramElement: () => (svg instanceof SVGSVGElement ? svg : null),
       diagramTitle: TX.pdfDiag,

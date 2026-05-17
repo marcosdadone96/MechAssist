@@ -1047,7 +1047,6 @@ function refreshCore() {
 
     if (els.premiumPdfMount) {
       mountPremiumPdfExportBar(els.premiumPdfMount, {
-        isPremium: isPremiumEffective(),
         getPayload: () => buildPumpPdfPayload(raw, r),
         getDiagramElement: () => els.diagram,
         diagramTitle: en ? 'Machine diagram' : 'Diagrama de la máquina',

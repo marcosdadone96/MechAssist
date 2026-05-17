@@ -6,6 +6,10 @@ import { BRANDS } from '../data/gearmotorCatalog.js';
 import { getBestCatalogPick } from '../ui/driveSelection.js';
 import { getCurrentLang, t, formatNumberLocale, formatDateTimeLocale } from '../config/locales.js';
 import { FEATURES, isPremiumViaQueryProUiAllowed } from '../config/features.js';
+import { isCreditsSystemEnabled, getCreditCosts } from '../config/credits.js';
+import { isPremiumEffective, isPdfReportUiUnlocked } from './accessTier.js';
+import { ensurePdfExportCharged } from './creditSession.js';
+import { labPdfSignInMessage, labPdfSignInUrl } from './labPdfAuth.js';
 import { buildRegisterUrlWithNextCheckout } from './proCheckoutFlow.js';
 import { LOAD_DUTY_OPTIONS, LOAD_DUTY_OPTIONS_EN } from '../modules/serviceFactorByDuty.js';
 import { showToast } from '../ui/toast.js';
@@ -1111,12 +1115,16 @@ export function buildTractionPdfPayload(raw, r, driveReq) {
 
 /**
  * @param {HTMLElement | null} el
- * @param {{ isPremium: boolean; getPayload: () => object }} opts
+ * @param {{ isPremium?: boolean; getPayload: () => object; getDiagramElement?: () => Element|null; diagramTitle?: string }} opts
  */
 export function mountPremiumPdfExportBar(el, opts) {
   if (!el) return;
   const lang = getCurrentLang();
   const en = lang === 'en';
+  const pdfUnlocked = opts.isPremium === true || isPdfReportUiUnlocked();
+  const proBadge = isPremiumEffective();
+  const creditsPdf = isCreditsSystemEnabled() && pdfUnlocked && !proBadge;
+  const pdfCost = getCreditCosts().pdf;
   let reportCfg = {};
   try {
     reportCfg = JSON.parse(window.localStorage.getItem(REPORT_CFG_KEY) || '{}') || {};
@@ -1124,11 +1132,13 @@ export function mountPremiumPdfExportBar(el, opts) {
     reportCfg = {};
   }
 
-  if (opts.isPremium) {
+  if (pdfUnlocked) {
     const copy = en
       ? {
           title: 'Export PDF report',
-          hint: 'Includes inputs, results, assumptions, reasoning, and step summary. Internet connection required to generate the file.',
+          hint: creditsPdf
+            ? `Includes inputs, results, assumptions and diagram. Uses ${pdfCost} credits from this hub when you download (Starter: first PDFs each month may be included). Internet required.`
+            : 'Includes inputs, results, assumptions, reasoning, and step summary. Internet connection required to generate the file.',
           cfgSummary: 'Report settings (Premium)',
           projectName: 'Project name',
           preparedFor: 'Prepared for',
@@ -1143,7 +1153,9 @@ export function mountPremiumPdfExportBar(el, opts) {
         }
       : {
           title: 'Exportar informe PDF',
-          hint: 'Incluye entradas, resultados, hip\u00f3tesis, razonamiento y resumen de pasos. Requiere conexi\u00f3n para generar el archivo.',
+          hint: creditsPdf
+            ? `Incluye entradas, resultados, hip\u00f3tesis y diagrama. Al descargar se consumen ${pdfCost} cr\u00e9ditos de este hub (plan Starter: primeros PDF del mes pueden ir incluidos). Requiere conexi\u00f3n.`
+            : 'Incluye entradas, resultados, hip\u00f3tesis, razonamiento y resumen de pasos. Requiere conexi\u00f3n para generar el archivo.',
           cfgSummary: 'Configuraci\u00f3n de informe (Premium)',
           projectName: 'Nombre del proyecto',
           preparedFor: 'Preparado para',
@@ -1159,7 +1171,7 @@ export function mountPremiumPdfExportBar(el, opts) {
     el.innerHTML = `
       <div class="premium-export premium-export--active">
         <div class="premium-export__copy">
-          <span class="premium-export__badge">Pro</span>
+          <span class="premium-export__badge">${proBadge ? 'Pro' : 'PDF'}</span>
           <div>
             <strong>${copy.title}</strong>
             <p class="premium-export__hint">${copy.hint}</p>
@@ -1224,6 +1236,18 @@ export function mountPremiumPdfExportBar(el, opts) {
     const btn = el.querySelector('[data-pdf-export]');
     btn?.addEventListener('click', async () => {
       try {
+        if (isCreditsSystemEnabled() && !isPremiumEffective()) {
+          const gate = await ensurePdfExportCharged();
+          if (!gate.allowed) {
+            if (gate.reason === 'no_credits') {
+              const { showNoCreditsModal } = await import('../ui/creditsUi.js');
+              showNoCreditsModal();
+            } else {
+              showToast(labPdfSignInMessage(en), { variant: 'error', duration: 8000 });
+            }
+            return;
+          }
+        }
         readCfgFromDom();
         await exportEngineeringReportPdf(opts.getPayload(), {
           diagramEl: opts.getDiagramElement?.() || null,
@@ -1236,21 +1260,39 @@ export function mountPremiumPdfExportBar(el, opts) {
     });
   } else {
     el.hidden = false;
-    const proHref = isPremiumViaQueryProUiAllowed() ? '?pro=1' : buildRegisterUrlWithNextCheckout();
-    const proLabelEn = isPremiumViaQueryProUiAllowed() ? 'Try Pro access' : 'Get Pro';
-    const proLabelEs = isPremiumViaQueryProUiAllowed() ? 'Probar acceso Pro' : 'Obtener Pro';
+    const signUrl = isCreditsSystemEnabled()
+      ? labPdfSignInUrl(en)
+      : isPremiumViaQueryProUiAllowed()
+        ? '?pro=1'
+        : buildRegisterUrlWithNextCheckout();
+    const teaserEn = isCreditsSystemEnabled()
+      ? `Sign in to export the full <strong>PDF</strong> report (${pdfCost} credits per download from this hub, or included with Starter / Unlimited).`
+      : 'Full <strong>PDF</strong> report export is available on the Pro plan.';
+    const teaserEs = isCreditsSystemEnabled()
+      ? `Inicie sesi\u00f3n para exportar el informe <strong>PDF</strong> (${pdfCost} cr\u00e9ditos por descarga en este hub, o incluido en Starter / Ilimitado).`
+      : 'La exportaci\u00f3n completa del informe en <strong>PDF</strong> est\u00e1 disponible con el plan Pro.';
+    const linkEn = isCreditsSystemEnabled()
+      ? 'Sign in / Register'
+      : isPremiumViaQueryProUiAllowed()
+        ? 'Try Pro access'
+        : 'Get Pro';
+    const linkEs = isCreditsSystemEnabled()
+      ? 'Iniciar sesi\u00f3n / Registrarse'
+      : isPremiumViaQueryProUiAllowed()
+        ? 'Probar acceso Pro'
+        : 'Obtener Pro';
     el.innerHTML = en
       ? `
       <div class="premium-export premium-export--teaser">
-        <span class="premium-export__badge premium-export__badge--muted">Pro</span>
-        <p class="premium-export__teaser-text">Full <strong>PDF</strong> report export is available on the Pro plan.</p>
-        <a class="premium-export__link" href="${proHref}">${proLabelEn}</a>
+        <span class="premium-export__badge premium-export__badge--muted">PDF</span>
+        <p class="premium-export__teaser-text">${teaserEn}</p>
+        <a class="premium-export__link" href="${signUrl}">${linkEn}</a>
       </div>`
       : `
       <div class="premium-export premium-export--teaser">
-        <span class="premium-export__badge premium-export__badge--muted">Pro</span>
-        <p class="premium-export__teaser-text">La exportaci\u00f3n completa del informe en <strong>PDF</strong> est\u00e1 disponible con el plan Pro.</p>
-        <a class="premium-export__link" href="${proHref}">${proLabelEs}</a>
+        <span class="premium-export__badge premium-export__badge--muted">PDF</span>
+        <p class="premium-export__teaser-text">${teaserEs}</p>
+        <a class="premium-export__link" href="${signUrl}">${linkEs}</a>
       </div>`;
   }
 }

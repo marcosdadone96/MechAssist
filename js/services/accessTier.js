@@ -201,6 +201,17 @@ export function isPremiumEffective() {
   return getEffectiveTier() === 'premium';
 }
 
+/**
+ * Muestra y permite exportar PDF (máquinas e informes Pro): Pro/ilimitado o cuenta con créditos.
+ * @returns {boolean}
+ */
+export function isPdfReportUiUnlocked() {
+  if (isPremiumEffective()) return true;
+  if (!isCreditsSystemEnabled()) return false;
+  const u = getCurrentUser();
+  return Boolean(u?.email && u?.serverAuth);
+}
+
 /** Motorreductores en TheMechAssist Cloud (Pro o registro con flag de créditos). */
 export function canUseGearmotorCloudSave() {
   if (FEATURES.publicFreeRelease === true) return true;

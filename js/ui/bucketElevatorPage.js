@@ -531,7 +531,6 @@ function computeAndRenderCore() {
   if (pdfMount) {
     const driveReq = getDriveRequirements();
     mountPremiumPdfExportBar(pdfMount, {
-      isPremium: isPremiumEffective(),
       getPayload: () => buildBucketPdfPayload(p, r, driveReq),
       getDiagramElement: () => {
         const el = document.getElementById('beDiagram');

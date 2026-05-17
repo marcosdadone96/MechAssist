@@ -518,7 +518,6 @@ function computeAndRenderCore() {
   if (pdfMount) {
     const driveReq = getDriveRequirements();
     mountPremiumPdfExportBar(pdfMount, {
-      isPremium: isPremiumEffective(),
       getPayload: () => buildTractionPdfPayload(p, r, driveReq),
       getDiagramElement: () => {
         const el = document.getElementById('teDiagram');

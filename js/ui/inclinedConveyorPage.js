@@ -4,7 +4,7 @@
 
 import { FEATURES } from '../config/features.js';
 import { isFreeMachineFullAccess } from '../config/freemium.js';
-import { isPremiumEffective } from '../services/accessTier.js';
+import { isPremiumEffective, isPdfReportUiUnlocked } from '../services/accessTier.js';
 import { computeInclinedConveyor } from '../modules/inclinedConveyor.js';
 import { LOAD_DUTY_OPTIONS, LOAD_DUTY_OPTIONS_EN } from '../modules/serviceFactorByDuty.js';
 import { buildInputPhaseAlerts, buildResultPhaseAlerts } from '../modules/conveyorDesignAlerts.js';
@@ -701,8 +701,8 @@ function localizeInclinedStaticContent() {
   const pdfSection = document.querySelector('#premiumPdfExportMount')?.closest('section.panel');
   const pdfH2 = pdfSection?.querySelector('h2');
   if (pdfH2) {
-    pdfH2.innerHTML =
-      '<span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Export report';
+    const proFlag = isPremiumEffective() ? '<span class="premium-flag">Pro</span> ' : '';
+    pdfH2.innerHTML = `${proFlag}<span class="panel-icon">PDF</span> Export report`;
   }
   if (location.protocol === 'file:') {
     const fpw = document.getElementById('fileProtoWarn');
@@ -729,7 +729,7 @@ function localizeInclinedStaticContent() {
 
 function refreshCore() {
   const conveyorExtrasUnlocked = isPremiumEffective() || isFreeMachineFullAccess();
-  const pdfReportUnlocked = isPremiumEffective();
+  const pdfReportUnlocked = isPdfReportUiUnlocked();
   const LBL = getI18nLabels();
   const lang = getCurrentLang();
   const en = lang === 'en';

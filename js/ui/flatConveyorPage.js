@@ -4,7 +4,7 @@
 
 import { FEATURES } from '../config/features.js';
 import { isFreeMachineFullAccess } from '../config/freemium.js';
-import { isPremiumEffective } from '../services/accessTier.js';
+import { isPremiumEffective, isPdfReportUiUnlocked } from '../services/accessTier.js';
 import { computeFlatConveyor } from '../modules/flatConveyor.js';
 import { FLAT_PRESET_BY_ID } from '../modules/flatConveyorUxConfig.js';
 import {
@@ -495,7 +495,7 @@ function initAdvancedDetailsPersistence() {
 
 function refreshCore() {
   const conveyorExtrasUnlocked = isPremiumEffective() || isFreeMachineFullAccess();
-  const pdfReportUnlocked = isPremiumEffective();
+  const pdfReportUnlocked = isPdfReportUiUnlocked();
   const LBL = getI18nLabels();
   const lang = getCurrentLang();
   const TX = lang === 'en'
