@@ -62,7 +62,9 @@ function buildDiagramInner(cfg, calcId) {
     if (preparedDiagramHasShapes(prepared)) return prepared;
   }
 
-  return `<span class="lab-card--hub__glyph">${getHubMinimalGlyph(calcId, theme)}</span>`;
+  const glyphTheme =
+    calcId && HUB_MACHINE_ART_SVG[calcId] ? 'machine' : theme;
+  return `<span class="lab-card--hub__glyph">${getHubMinimalGlyph(calcId, glyphTheme)}</span>`;
 }
 
 /**
@@ -86,7 +88,7 @@ function prepareHubDiagramSvg(raw) {
  * @param {string} calcId
  */
 function applyMinimalCard(card, cfg, calcId) {
-  if (card.dataset.hubArtReady === '3') return;
+  if (card.dataset.hubArtReady === '4') return;
 
   const resolved = resolveCardArt(calcId, cfg);
   const badge = card.querySelector('.lab-badge');
@@ -118,7 +120,7 @@ function applyMinimalCard(card, cfg, calcId) {
 
   card.classList.add('lab-card--hub--minimal');
   card.classList.remove('lab-card--hub--illustrated');
-  card.dataset.hubArtReady = '3';
+  card.dataset.hubArtReady = '4';
 }
 
 /**

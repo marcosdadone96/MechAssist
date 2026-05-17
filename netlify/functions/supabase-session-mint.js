@@ -83,7 +83,22 @@ function normalizeSupabaseUrl(raw) {
 }
 
 /**
- * Emite access/refresh con service role (no usa anon key de Netlify).
+ * @param {import('@supabase/supabase-js').SupabaseClient} admin
+ * @param {string} email
+ * @param {string} password
+ */
+async function mintSessionViaPassword(admin, email, password) {
+  if (!password) return { session: null, error: new Error('no_password') };
+  const { data, error } = await admin.auth.signInWithPassword({ email, password });
+  if (error || !data?.session) {
+    return { session: null, error: error || new Error('sign_in_password_failed') };
+  }
+  return { session: data.session, error: null };
+}
+
+/**
+ * Emite access/refresh con service role (generateLink + verifyOtp).
+ * Solo token_hash y type (magiclink); no pasar email (Supabase lo rechaza).
  * @param {import('@supabase/supabase-js').SupabaseClient} admin
  * @param {string} email
  */
@@ -97,9 +112,8 @@ async function mintSessionViaAdminLink(admin, email) {
     return { session: null, error: linkErr || new Error('generate_link_failed') };
   }
   const { data: verifyData, error: verifyErr } = await admin.auth.verifyOtp({
-    email,
     token_hash: hashed,
-    type: 'email',
+    type: 'magiclink',
   });
   if (verifyErr || !verifyData?.session) {
     return { session: null, error: verifyErr || new Error('verify_otp_failed') };
@@ -197,7 +211,13 @@ exports.handler = async (event) => {
     };
   }
 
-  let { session: mintedSession, error: mintErr } = await mintSessionViaAdminLink(admin, email);
+  let { session: mintedSession, error: mintErr } = { session: null, error: null };
+  if (shadowPw) {
+    ({ session: mintedSession, error: mintErr } = await mintSessionViaPassword(admin, email, shadowPw));
+  }
+  if (mintErr || !mintedSession) {
+    ({ session: mintedSession, error: mintErr } = await mintSessionViaAdminLink(admin, email));
+  }
 
   if ((mintErr || !mintedSession) && shadowPw) {
     const uid = await findAuthUserIdByEmail(admin, email);
