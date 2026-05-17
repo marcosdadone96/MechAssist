@@ -1,10 +1,10 @@
 /**
  * Hub cards: icono distintivo + titulo (layout minimal).
  */
-import { getHubCardArt } from '../lab/hubCardIllustrations.js';
+import { getHubCardArt, normalizeHubCalcId } from '../lab/hubCardIllustrations.js';
 import { getHubMinimalGlyph } from '../lab/hubCardMinimalGlyphs.js';
 
-/** Calculadoras del hub M·quinas (y mismas rutas en otros hubs). */
+/** Calculadoras del hub Mùquinas (y mismas rutas en otros hubs). */
 export const MACHINE_HUB_SLUGS = new Set([
   'centrifugal-pump.html',
   'flat-conveyor.html',
@@ -16,7 +16,15 @@ export const MACHINE_HUB_SLUGS = new Set([
   'car-lift-screw.html',
 ]);
 
-const HUB_ART_VERSION = '5';
+const HUB_ART_VERSION = '6';
+
+/** @type {0|1|2|3} 0=default, 1=calc svg, 2=glyph, 3=machine diagram */
+const ART_TIER = {
+  default: 0,
+  calcSvg: 1,
+  glyph: 2,
+  machineDiagram: 3,
+};
 
 /** @type {Record<string, string> | null} */
 let machineArtCache = null;
@@ -37,13 +45,7 @@ async function loadMachineArt() {
 
 /** @param {string} href */
 function calcIdFromHref(href) {
-  if (!href) return '';
-  try {
-    const path = new URL(href, window.location.href).pathname;
-    return (path.split('/').pop() || '').split('?')[0].split('#')[0];
-  } catch {
-    return (href.split('/').pop() || href).split('?')[0].split('#')[0];
-  }
+  return normalizeHubCalcId(href);
 }
 
 /**
@@ -60,6 +62,33 @@ function resolveCardArt(calcId, cfg, machineArt) {
     return { theme: 'machine', type: 'svg', svg: '' };
   }
   return cfg;
+}
+
+/**
+ * @param {string} calcId
+ * @param {import('../lab/hubCardIllustrations.js').HubCardArt} cfg
+ * @param {Record<string, string>} machineArt
+ * @returns {0|1|2|3}
+ */
+function targetArtTier(calcId, cfg, machineArt) {
+  const machineSvg = calcId && machineArt[calcId];
+  if (machineSvg && preparedDiagramHasShapes(prepareHubDiagramSvg(machineSvg))) {
+    return ART_TIER.machineDiagram;
+  }
+  if (MACHINE_HUB_SLUGS.has(calcId)) return ART_TIER.glyph;
+  if (cfg.type === 'svg' && cfg.svg) return ART_TIER.calcSvg;
+  return ART_TIER.default;
+}
+
+/**
+ * @param {HTMLElement} card
+ * @returns {0|1|2|3}
+ */
+function currentArtTier(card) {
+  const raw = card.dataset.hubArtTier;
+  const n = raw != null ? Number(raw) : 0;
+  if (n === 1 || n === 2 || n === 3) return n;
+  return 0;
 }
 
 /**
@@ -134,6 +163,13 @@ function mountGlyphInDiagram(diagram, calcId, theme) {
  * @param {Record<string, string>} machineArt
  */
 function fillDiagram(diagram, cfg, calcId, machineArt) {
+  if (MACHINE_HUB_SLUGS.has(calcId)) {
+    const machineSvg = machineArt[calcId];
+    if (machineSvg && mountSvgInDiagram(diagram, machineSvg)) return;
+    mountGlyphInDiagram(diagram, calcId, 'machine');
+    return;
+  }
+
   if (cfg.type === 'img' && cfg.src) {
     const img = document.createElement('img');
     img.src = cfg.src;
@@ -160,8 +196,39 @@ function fillDiagram(diagram, cfg, calcId, machineArt) {
  * @param {string} calcId
  * @param {Record<string, string>} machineArt
  */
+function upgradeCardDiagram(card, cfg, calcId, machineArt) {
+  const resolved = resolveCardArt(calcId, cfg, machineArt);
+  const visual = card.querySelector('.lab-card--hub__visual');
+  const diagram = card.querySelector('.lab-card--hub__diagram');
+  if (!(visual instanceof HTMLElement) || !(diagram instanceof HTMLElement)) return false;
+
+  visual.className = `lab-card--hub__visual lab-card--hub__visual--${resolved.theme}`;
+  fillDiagram(diagram, cfg, calcId, machineArt);
+  return true;
+}
+
+/**
+ * @param {HTMLElement} card
+ * @param {import('../lab/hubCardIllustrations.js').HubCardArt} cfg
+ * @param {string} calcId
+ * @param {Record<string, string>} machineArt
+ */
 function applyMinimalCard(card, cfg, calcId, machineArt) {
-  if (card.dataset.hubArtReady === HUB_ART_VERSION) return;
+  const tier = targetArtTier(calcId, cfg, machineArt);
+  const prevTier = currentArtTier(card);
+  const hasLayout = card.classList.contains('lab-card--hub--minimal');
+
+  if (hasLayout && prevTier >= tier && card.dataset.hubArtReady === HUB_ART_VERSION) {
+    return;
+  }
+
+  if (hasLayout && prevTier < tier) {
+    if (upgradeCardDiagram(card, cfg, calcId, machineArt)) {
+      card.dataset.hubArtTier = String(tier);
+      card.dataset.hubArtReady = HUB_ART_VERSION;
+    }
+    return;
+  }
 
   const resolved = resolveCardArt(calcId, cfg, machineArt);
   const badge = card.querySelector('.lab-badge');
@@ -193,17 +260,15 @@ function applyMinimalCard(card, cfg, calcId, machineArt) {
 
   card.classList.add('lab-card--hub--minimal');
   card.classList.remove('lab-card--hub--illustrated');
+  card.dataset.hubArtTier = String(tier);
   card.dataset.hubArtReady = HUB_ART_VERSION;
 }
 
 /**
  * @param {ParentNode} root
+ * @param {Record<string, string>} machineArt
  */
-export async function initLabHubCardArt(root) {
-  if (!(root instanceof HTMLElement)) return;
-
-  const machineArt = await loadMachineArt();
-
+function paintHubCards(root, machineArt) {
   root.querySelectorAll('a.lab-card--hub[href]').forEach((card) => {
     if (!(card instanceof HTMLElement)) return;
     const href = card.getAttribute('href');
@@ -216,4 +281,38 @@ export async function initLabHubCardArt(root) {
     if (!(card instanceof HTMLElement)) return;
     applyMinimalCard(card, getHubCardArt('_soon'), '_soon', machineArt);
   });
+}
+
+/**
+ * @param {ParentNode} root
+ */
+async function applyHubCardArt(root) {
+  if (!(root instanceof HTMLElement)) return;
+  const machineArt = await loadMachineArt();
+  paintHubCards(root, machineArt);
+}
+
+/**
+ * @param {ParentNode} root
+ */
+export async function initLabHubCardArt(root) {
+  if (!(root instanceof HTMLElement)) return;
+
+  await applyHubCardArt(root);
+
+  requestAnimationFrame(() => {
+    void applyHubCardArt(root);
+  });
+
+  window.setTimeout(() => {
+    void applyHubCardArt(root);
+  }, 120);
+
+  window.addEventListener(
+    'pageshow',
+    (ev) => {
+      if (ev.persisted) void applyHubCardArt(root);
+    },
+    { once: true },
+  );
 }

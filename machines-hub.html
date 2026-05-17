@@ -158,16 +158,16 @@
     <script type="module">
       import { initLabHubCardFilter } from './js/ui/labHubFilter.js';
       import { initLabHubFavorites } from './js/ui/labHubFavorites.js';
-      import { initLabHubCardArt } from './js/ui/labHubCardArt.js?v=hub5';
+      import { initLabHubCardArt } from './js/ui/labHubCardArt.js?v=hub6';
 
       const root = document.getElementById('lab-hub-root');
       if (root) {
-        await initLabHubCardArt(root);
         initLabHubFavorites(root);
         initLabHubCardFilter(root);
         const { applyHubCalcCreditBadges, watchHubCalcCreditBadges } = await import('./js/ui/hubCreditsBadges.js');
         applyHubCalcCreditBadges(root);
         watchHubCalcCreditBadges(root);
+        await initLabHubCardArt(root);
       }
     </script>
   </body>
