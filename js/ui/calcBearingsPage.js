@@ -22,15 +22,23 @@ import {
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { commerceIdForBearingC } from '../data/commerceCatalog.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { getLabLang } from '../lab/i18n/labLang.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { BEARINGS_PAGE_EN } from '../lab/i18n/pages/bearingsPageEn.js';
+
+function bx(es, en) {
+  return getLabLang() === 'en' ? en : es;
+}
 
 mountTierStatusBar();
-bootSmartDashboardIfEnabled('Rodamientos · laboratorio');
+bootSmartDashboardIfEnabled(bx('Rodamientos · laboratorio', 'Bearings · lab'));
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
 mountCompactLabFieldHelp();
@@ -69,9 +77,9 @@ function parseNumberInput(id) {
 }
 
 function lifeMetricTitle(life) {
-  if (life === 'Mrev') return 'Vida L₁₀ (millones de vueltas)';
-  if (life === 'rev') return 'Vida L₁₀ (vueltas totales)';
-  return 'Vida L₁₀ (horas de servicio)';
+  if (life === 'Mrev') return bx('Vida L₁₀ (millones de vueltas)', 'L\u2081\u2080 life (millions of revolutions)');
+  if (life === 'rev') return bx('Vida L₁₀ (vueltas totales)', 'L\u2081\u2080 life (total revolutions)');
+  return bx('Vida L₁₀ (horas de servicio)', 'L\u2081\u2080 life (service hours)');
 }
 
 function syncBrgCalcModeUi() {
@@ -86,6 +94,7 @@ function syncBrgCalcModeUi() {
 const BRG_PRESETS = [
   {
     label: 'Diagnóstico · servicio',
+    labelKey: 'brg.preset1',
     values: {
       brgCalcMode: 'diagnostic',
       brgC: 52000,
@@ -98,6 +107,7 @@ const BRG_PRESETS = [
   },
   {
     label: 'Diseño · 20 kh',
+    labelKey: 'brg.preset2',
     values: {
       brgCalcMode: 'design',
       brgC: 32500,
@@ -110,6 +120,7 @@ const BRG_PRESETS = [
   },
   {
     label: 'Rodillos · carga alta',
+    labelKey: 'brg.preset3',
     values: {
       brgCalcMode: 'diagnostic',
       brgC: 98000,
@@ -161,17 +172,58 @@ function refreshCore() {
     (l10TargetParsed.empty || l10TargetParsed.value == null || l10TargetParsed.value <= 0);
   const nInvalidDesign = mode === 'design' && !(nRaw != null && nRaw > 0);
 
-  markFieldInvalid('brgC', cInvalidDiag, 'Dynamic load C must be greater than 0');
-  markFieldInvalid('brgP', pInvalid, 'Equivalent load P must be greater than 0');
-  markFieldInvalid('brgN', nInvalid || nInvalidDesign, 'Speed must be > 0 in design mode');
-  markFieldInvalid('brgDuty', dutyInvalid, 'Duty hours/day must be between 0 and 24');
-  markFieldInvalid('brgL10TargetH', l10InvalidDesign, 'Target L10 hours must be > 0');
-  if (cInvalidDiag) validationMsgs.push('Revise C (dynamic load): enter a value greater than 0 N.');
-  if (pInvalid) validationMsgs.push('Revise P (equivalent load): enter a value greater than 0 N.');
-  if (nInvalid) validationMsgs.push('Revise speed n: it cannot be negative.');
-  if (nInvalidDesign) validationMsgs.push('En modo diseño indique velocidad n > 0 para la conversión horas–revoluciones.');
-  if (l10InvalidDesign) validationMsgs.push('Revise L₁₀ objetivo (horas): debe ser mayor que 0.');
-  if (dutyInvalid) validationMsgs.push('Revise duty hours/day: use a value from 0 to 24.');
+  markFieldInvalid(
+    'brgC',
+    cInvalidDiag,
+    bx('La carga dinámica C debe ser mayor que 0', 'Dynamic load C must be greater than 0'),
+  );
+  markFieldInvalid(
+    'brgP',
+    pInvalid,
+    bx('La carga equivalente P debe ser mayor que 0', 'Equivalent load P must be greater than 0'),
+  );
+  markFieldInvalid(
+    'brgN',
+    nInvalid || nInvalidDesign,
+    bx(
+      'Revise velocidad n: no puede ser negativa; en modo diseño se requiere n > 0.',
+      'Check speed n: cannot be negative; design mode requires n > 0.',
+    ),
+  );
+  markFieldInvalid(
+    'brgDuty',
+    dutyInvalid,
+    bx('Horas/día de servicio: use un valor entre 0 y 24.', 'Duty hours/day must be between 0 and 24.'),
+  );
+  markFieldInvalid(
+    'brgL10TargetH',
+    l10InvalidDesign,
+    bx('L\u2081\u2080 objetivo (horas) debe ser mayor que 0.', 'Target L\u2081\u2080 hours must be > 0.'),
+  );
+  if (cInvalidDiag)
+    validationMsgs.push(
+      bx('Revise C (carga dinámica): indique un valor mayor que 0 N.', 'Check C (dynamic load): enter a value > 0 N.'),
+    );
+  if (pInvalid)
+    validationMsgs.push(
+      bx('Revise P (carga equivalente): indique un valor mayor que 0 N.', 'Check P (equivalent load): enter a value > 0 N.'),
+    );
+  if (nInvalid) validationMsgs.push(bx('Revise velocidad n: no puede ser negativa.', 'Check speed n: it cannot be negative.'));
+  if (nInvalidDesign)
+    validationMsgs.push(
+      bx(
+        'En modo diseño indique velocidad n > 0 para la conversión horas–revoluciones.',
+        'In design mode enter speed n > 0 for the hours–revolutions conversion.',
+      ),
+    );
+  if (l10InvalidDesign)
+    validationMsgs.push(
+      bx('Revise L\u2081\u2080 objetivo (horas): debe ser mayor que 0.', 'Check target L\u2081\u2080 (hours): must be > 0.'),
+    );
+  if (dutyInvalid)
+    validationMsgs.push(
+      bx('Revise horas/día de servicio: use un valor de 0 a 24.', 'Check duty hours/day: use a value from 0 to 24.'),
+    );
 
   const typeEl = document.getElementById('brgType');
   const type = typeEl instanceof HTMLSelectElement && typeEl.value === 'roller' ? 'roller' : 'ball';
@@ -219,29 +271,38 @@ function refreshCore() {
       mode === 'design' && cRequired_N != null && Number.isFinite(cRequired_N)
         ? [
             {
-              label: 'C dinámica mínima (catálogo ≥)',
+              label: bx('C dinámica mínima (catálogo ≥)', 'Minimum dynamic C (catalogue \u2265)'),
               display: `${cRequired_N.toFixed(0)} N`,
-              hint: 'ISO 281 básica: seleccione en catálogo C ≥ este valor para el L₁₀ objetivo indicado.',
+              hint: bx(
+                'ISO 281 básica: seleccione en catálogo C ≥ este valor para el L₁₀ objetivo indicado.',
+                'Basic ISO 281: pick catalogue C \u2265 this value for the stated L\u2081\u2080 target.',
+              ),
             },
             {
-              label: 'L₁₀ objetivo (entrada)',
+              label: bx('L₁₀ objetivo (entrada)', 'Target L\u2081\u2080 (input)'),
               display: `${(l10TargetParsed.value ?? read('brgL10TargetH', 20000)).toFixed(0)} h`,
-              hint: 'A n y P constantes; sin factores térmicos ni a_ISO.',
+              hint: bx('A n y P constantes; sin factores térmicos ni a_ISO.', 'At constant n and P; no thermal factors or a_ISO.'),
             },
           ]
         : [
             {
-              label: 'Vida básica L₁₀',
+              label: bx('Vida básica L₁₀', 'Basic rating life L\u2081\u2080'),
               display: formatBearingLifeDisplay(r, lifePref),
               hint:
                 lifePref === 'hours' && r.nominalLife_hours == null
-                  ? 'Indique giro &gt; 0 para estimar horas a partir de las revoluciones.'
-                  : '90% de confiabilidad, ISO 281 simplificada (sin factores térmicos).',
+                  ? bx(
+                      'Indique giro > 0 para estimar horas a partir de las revoluciones.',
+                      'Enter speed > 0 to estimate hours from revolutions.',
+                    )
+                  : bx(
+                      '90% de confiabilidad, ISO 281 simplificada (sin factores térmicos).',
+                      '90% reliability, simplified ISO 281 (no thermal factors).',
+                    ),
             },
             {
-              label: 'ω — velocidad angular del eje',
+              label: bx('ω — velocidad angular del eje', '\u03c9 \u2014 shaft angular speed'),
               display: formatRotation(r.speed_rpm, u.rotation),
-              hint: 'Velocidad del eje que usa la conversión a horas.',
+              hint: bx('Velocidad del eje que usa la conversión a horas.', 'Shaft speed used for the hours conversion.'),
             },
           ];
     heroEl.innerHTML = renderResultHero(heroItems, { verdict: brgVerdict });
@@ -253,56 +314,65 @@ function refreshCore() {
       mode === 'design' && cRequired_N != null && Number.isFinite(cRequired_N)
         ? [
             metricHtml(
-              'C requerida (mín.)',
+              bx('C requerida (mín.)', 'Required C (min.)'),
               `${cRequired_N.toFixed(0)} N`,
-              'Elija rodamiento con C del catálogo igual o superior.',
+              bx(
+                'Elija rodamiento con C del catálogo igual o superior.',
+                'Select a bearing with catalogue C equal or higher.',
+              ),
             ),
             metricHtml(
-              'L₁₀ objetivo',
+              bx('L₁₀ objetivo', 'Target L\u2081\u2080'),
               `${(l10TargetParsed.value ?? read('brgL10TargetH', 20000)).toFixed(0)} h`,
-              'Verificación: con C = C_req, L₁₀ coincide con este objetivo en el modelo básico.',
+              bx(
+                'Verificación: con C = C_req, L₁₀ coincide con este objetivo en el modelo básico.',
+                'Check: at C = C_req, L\u2081\u2080 matches this target in the basic model.',
+              ),
             ),
             metricHtml(
-              'Carga equivalente P',
+              bx('Carga equivalente P', 'Equivalent load P'),
               `${r.equivalentLoad_N.toFixed(2)} N`,
-              'Caso de carga de su cálculo (simplificado).',
+              bx('Caso de carga de su cálculo (simplificado).', 'Your duty case (simplified).'),
             ),
             metricHtml(
-              'Exponente de vida p',
+              bx('Exponente de vida p', 'Life exponent p'),
               type === 'roller' ? '10/3' : '3',
-              'En L = (C/P)^p: rodillos ≠ bolas.',
+              bx('En L = (C/P)^p: rodillos ≠ bolas.', 'In L = (C/P)^p: rollers \u2260 balls.'),
             ),
             metricHtml(
-              'ω — velocidad angular del eje',
+              bx('ω — velocidad angular del eje', '\u03c9 \u2014 shaft angular speed'),
               formatRotation(r.speed_rpm, u.rotation),
-              'Misma entrada en las unidades elegidas arriba.',
+              bx('Misma entrada en las unidades elegidas arriba.', 'Same input in the units selected above.'),
             ),
           ]
         : [
             metricHtml(
               lifeMetricTitle(lifePref),
               formatBearingLifeDisplay(r, lifePref),
-              'Cambie “Vida L₁₀” en la barra superior para ver el mismo dato en horas, millones de vueltas o vueltas totales.',
+              bx(
+                'Cambie “Vida L₁₀” en la barra superior para ver el mismo dato en horas, millones de vueltas o vueltas totales.',
+                'Change \u201cL\u2081\u2080 life\u201d in the bar above to view the same value in hours, millions of revolutions or total revolutions.',
+              ),
             ),
             metricHtml(
-              'Carga dinámica C (catálogo)',
+              bx('Carga dinámica C (catálogo)', 'Dynamic load C (catalogue)'),
               `${r.dynamicLoad_N.toFixed(2)} N`,
-              'Capacidad de referencia del rodamiento elegido.',
+              bx('Capacidad de referencia del rodamiento elegido.', 'Reference capacity of the selected bearing.'),
             ),
             metricHtml(
-              'Carga equivalente P',
+              bx('Carga equivalente P', 'Equivalent load P'),
               `${r.equivalentLoad_N.toFixed(2)} N`,
-              'Caso de carga de su cálculo (simplificado).',
+              bx('Caso de carga de su cálculo (simplificado).', 'Your duty case (simplified).'),
             ),
             metricHtml(
-              'Exponente de vida p',
+              bx('Exponente de vida p', 'Life exponent p'),
               type === 'roller' ? '10/3' : '3',
-              'En L = (C/P)^p: rodillos ≠ bolas.',
+              bx('En L = (C/P)^p: rodillos ≠ bolas.', 'In L = (C/P)^p: rollers \u2260 balls.'),
             ),
             metricHtml(
-              'ω — velocidad angular del eje',
+              bx('ω — velocidad angular del eje', '\u03c9 \u2014 shaft angular speed'),
               formatRotation(r.speed_rpm, u.rotation),
-              'Misma entrada en las unidades elegidas arriba.',
+              bx('Misma entrada en las unidades elegidas arriba.', 'Same input in the units selected above.'),
             ),
           ];
     box.innerHTML = metrics.join('');
@@ -354,13 +424,24 @@ function refreshCore() {
     );
     validationMsgs.forEach((msg) => parts.push(labAlert('danger', msg)));
     if (pOverC) {
-      parts.push(labAlert('warn', 'Equivalent load P exceeds C. Expect very low L10; check bearing size or loading assumptions.'));
+      parts.push(
+        labAlert(
+          'warn',
+          bx(
+            'P equivalente supera C. Espere L₁₀ muy bajo; revise tamaño de rodamiento o hipótesis de carga.',
+            'Equivalent load P exceeds C. Expect very low L\u2081\u2080; check bearing size or loading assumptions.',
+          ),
+        ),
+      );
     }
     if (mode === 'design' && designOk) {
       parts.push(
         labAlert(
           'info',
-          `Selección: cualquier rodamiento con C ≥ ${cRequired_N.toFixed(0)} N (mismo tipo bolas/rodillos) alcanza al menos el L₁₀ objetivo en este modelo básico.`,
+          bx(
+            `Selección: cualquier rodamiento con C ≥ ${cRequired_N.toFixed(0)} N (mismo tipo bolas/rodillos) alcanza al menos el L₁₀ objetivo en este modelo básico.`,
+            `Selection: any bearing with C \u2265 ${cRequired_N.toFixed(0)} N (same ball/roller type) meets at least the target L\u2081\u2080 in this basic model.`,
+          ),
         ),
       );
     }
@@ -369,15 +450,42 @@ function refreshCore() {
       parts.push(
         labAlert(
           'info',
-          'Set speed n > 0 to estimate L10 in hours (you can still review life in revolutions).',
+          bx(
+            'Indique giro n > 0 para estimar L₁₀ en horas (puede revisar la vida en revoluciones).',
+            'Set speed n > 0 to estimate L\u2081\u2080 in hours (you can still review life in revolutions).',
+          ),
         ),
       );
     } else if (mode === 'diagnostic' && r.nominalLife_hours < 2000) {
-      parts.push(labAlert('warn', 'L10 is low in hours: consider reducing P, changing bearing type, or selecting a higher C.'));
+      parts.push(
+        labAlert(
+          'warn',
+          bx(
+            'L₁₀ baja en horas: considere reducir P, cambiar tipo de rodamiento o elegir mayor C.',
+            'L\u2081\u2080 is low in hours: consider reducing P, changing bearing type or selecting higher C.',
+          ),
+        ),
+      );
     } else if (mode === 'diagnostic' && r.nominalLife_hours > 50000) {
-      parts.push(labAlert('ok', 'High L10 for these inputs. Confirm that P and n reflect your real duty point.'));
+      parts.push(
+        labAlert(
+          'ok',
+          bx(
+            'L₁₀ alta para estas entradas. Confirme que P y n reflejan el punto real de servicio.',
+            'High L\u2081\u2080 for these inputs. Confirm that P and n reflect your real duty point.',
+          ),
+        ),
+      );
     } else if (mode === 'diagnostic') {
-      parts.push(labAlert('info', 'Compare L10 with your application target and supplier/OEM criteria.'));
+      parts.push(
+        labAlert(
+          'info',
+          bx(
+            'Compare L₁₀ con el objetivo de su aplicación y criterios OEM/proveedor.',
+            'Compare L\u2081\u2080 with your application target and supplier/OEM criteria.',
+          ),
+        ),
+      );
     }
     parts.push(
       labAlert(
@@ -447,5 +555,13 @@ bindLabUnitSelectors(scheduleBrgRecalc, { life: true });
   });
 });
 wireLabCopyLink('brgCopyLinkBtn', 'brgCopyToast');
+wireLabCopyResultsButton('brgCopyResults', {
+  moduleTitle: uxCopy('Rodamientos (ISO 281)', 'Bearings (ISO 281)'),
+});
+watchLangAndApply(BEARINGS_PAGE_EN, { onEnApplied: () => scheduleBrgRecalc() });
 runCalcWithIndustrialFeedback(wrap, refreshCore);
-mountLabCloudSaveBar('Rodamientos (ISO 281)');
+mountLabCloudSaveBar(bx('Rodamientos (ISO 281)', 'Bearings (ISO 281)'));
+
+window.addEventListener('home-language-changed', () => {
+  scheduleBrgRecalc();
+});

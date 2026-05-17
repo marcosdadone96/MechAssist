@@ -8,12 +8,22 @@ import {
   mountLabPresetsBar,
   updateLabShareVisibility,
   wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { withCalcCredits } from '../services/creditSession.js';
+import { isCreditsSystemEnabled } from '../config/credits.js';
 import { BOLT_DIAMETERS, boltRowCatalog } from '../data/metricBoltGrades.js';
 import { renderBoltedJointDiagram } from '../lab/diagramCatalogModules.js';
+import { getLabLang } from '../lab/i18n/labLang.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { BOLTS_ISO_EN } from '../lab/i18n/pages/boltsIsoEn.js';
 
 const BOLT_GRADES_TRY = ['8.8', '10.9', '12.9'];
+
+function bx(es, en) {
+  return getLabLang() === 'en' ? en : es;
+}
 
 function fillSelects() {
   const dSel = document.getElementById('blD');
@@ -50,6 +60,7 @@ function syncBoltCalcModeUi() {
 const BL_PRESETS = [
   {
     label: 'Diagnóstico M12 · 60 kN',
+    labelKey: 'bolt.preset1',
     values: {
       blCalcMode: 'diagnostic',
       blD: 12,
@@ -60,6 +71,7 @@ const BL_PRESETS = [
   },
   {
     label: 'Diseño · 95 kN',
+    labelKey: 'bolt.preset2',
     values: {
       blCalcMode: 'design',
       blD: 12,
@@ -70,6 +82,7 @@ const BL_PRESETS = [
   },
   {
     label: 'Junta seca μ 0.18',
+    labelKey: 'bolt.preset3',
     values: {
       blCalcMode: 'diagnostic',
       blD: 16,
@@ -119,7 +132,10 @@ function render() {
   if (!out || !tbl) return;
 
   if (mode === 'design' && F_kN > 0 && !designSug) {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--err">No hay combinación M6–M36 en grados 8.8/10.9/12.9 que cubra ${F_kN.toFixed(2)} kN en este modelo. Considere mayor diámetro fuera de tabla, rosca fina o más tornillos en paralelo.</p>`;
+    out.innerHTML = `<p class="lab-verdict lab-verdict--err">${bx(
+      `No hay combinación M6–M36 en grados 8.8/10.9/12.9 que cubra ${F_kN.toFixed(2)} kN en este modelo. Considere mayor diámetro fuera de tabla, rosca fina o más tornillos en paralelo.`,
+      `No M6–M36 grade 8.8/10.9/12.9 combination covers ${F_kN.toFixed(2)} kN in this model. Consider larger diameter, fine thread, or more bolts in parallel.`,
+    )}</p>`;
     tbl.innerHTML = '';
     renderBoltedJointDiagram(document.getElementById('blDiagram'), 12);
     updateLabShareVisibility('blShareLinkWrap', 'blOut');
@@ -131,7 +147,7 @@ function render() {
   renderBoltedJointDiagram(document.getElementById('blDiagram'), d);
 
   if (!row) {
-    out.innerHTML = '<p class="lab-verdict lab-verdict--err">Combinación no disponible.</p>';
+    out.innerHTML = `<p class="lab-verdict lab-verdict--err">${bx('Combinación no disponible.', 'Combination not available.')}</p>`;
     updateLabShareVisibility('blShareLinkWrap', 'blOut');
     if (!blUrl.hydrating) blUrl.serializeToUrl();
     return;
@@ -147,43 +163,52 @@ function render() {
   const T_mu_Nm = (K_mu * preloadN * d) / 1000;
 
   if (F_N <= 0) {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--muted">Introduzca la fuerza de tracción de cálculo en la unión (kN).</p>`;
+    out.innerHTML = `<p class="lab-verdict lab-verdict--muted">${bx(
+      'Introduzca la fuerza de tracción de cálculo en la unión (kN).',
+      'Enter the design tension force on the joint (kN).',
+    )}</p>`;
   } else if (ratioVsPreload > 1) {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>Riesgo de apertura de junta:</strong> F = ${F_kN.toFixed(
+    out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>${bx('Riesgo de apertura de junta:', 'Joint opening risk:')}</strong> F = ${F_kN.toFixed(
       2,
-    )} kN supera la precarga orientativa F<sub>V</sub> = ${(preloadN / 1000).toFixed(2)} kN.</p>`;
+    )} kN ${bx('supera la precarga orientativa', 'exceeds indicative preload')} F<sub>V</sub> = ${(preloadN / 1000).toFixed(2)} kN.</p>`;
   } else if (ratioVsPreload > 0.9) {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--warn"><strong>Margen bajo:</strong> F = ${F_kN.toFixed(
+    out.innerHTML = `<p class="lab-verdict lab-verdict--warn"><strong>${bx('Margen bajo:', 'Low margin:')}</strong> F = ${F_kN.toFixed(
       2,
-    )} kN supera el 90% de la precarga (F/F<sub>V</sub> = ${ratioVsPreload.toFixed(2)}).</p>`;
+    )} kN ${bx('supera el 90% de la precarga', 'exceeds 90% of preload')} (F/F<sub>V</sub> = ${ratioVsPreload.toFixed(2)}).</p>`;
   } else if (ok) {
     const designNote =
       mode === 'design'
-        ? `<br/><span class="lab-small-print">Modo diseño: propuesta mínima en tabla M6–M36 (prioriza menor diámetro con grado 8.8→12.9).</span>`
+        ? `<br/><span class="lab-small-print">${bx(
+            'Modo diseño: propuesta mínima en tabla M6–M36 (prioriza menor diámetro con grado 8.8→12.9).',
+            'Design mode: minimum proposal in M6–M36 table (smallest diameter, grades 8.8→12.9).',
+          )}</span>`
         : '';
-    out.innerHTML = `<p class="lab-verdict lab-verdict--ok">El tornillo <strong>M${d} grado ${grade}</strong> es <strong>APTO</strong> frente a ${F_kN.toFixed(2)} kN con factor de seguridad <strong>≈ ${SF.toFixed(2)}</strong> (resistencia cálculo simplificada).<br/>
-      <strong>Torque de apriete (con μ seleccionado):</strong> ${T_mu_Nm.toFixed(1)} N·m (precarga ≈ 75% Rp·A<sub>s</sub>).${designNote}</p>`;
+    out.innerHTML = `<p class="lab-verdict lab-verdict--ok">${bx('El tornillo', 'Bolt')} <strong>M${d} ${bx('grado', 'grade')} ${grade}</strong> ${bx('es', 'is')} <strong>${bx('APTO', 'OK')}</strong> ${bx('frente a', 'for')} ${F_kN.toFixed(2)} kN ${bx('con factor de seguridad', 'with safety factor')} <strong>≈ ${SF.toFixed(2)}</strong> (${bx('resistencia cálculo simplificada', 'simplified design resistance')}).<br/>
+      <strong>${bx('Torque de apriete (con μ seleccionado):', 'Tightening torque (selected μ):')}</strong> ${T_mu_Nm.toFixed(1)} N·m (${bx('precarga ≈ 75% Rp·A', 'preload ≈ 75% Rp·A')}<sub>s</sub>).${designNote}</p>`;
   } else {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--err">El tornillo M${d} grado ${grade} <strong>no</strong> cumple: F<sub>req</sub> = ${F_kN.toFixed(2)} kN &gt; F<sub>Rd</sub> ≈ ${row.Ft_Rd_kN.toFixed(2)} kN. Suba diámetro o grado.</p>`;
+    out.innerHTML = `<p class="lab-verdict lab-verdict--err">${bx('El tornillo', 'Bolt')} M${d} ${bx('grado', 'grade')} ${grade} <strong>${bx('no', 'does not')}</strong> ${bx('cumple:', 'meet:')} F<sub>req</sub> = ${F_kN.toFixed(2)} kN &gt; F<sub>Rd</sub> ≈ ${row.Ft_Rd_kN.toFixed(2)} kN. ${bx('Suba diámetro o grado.', 'Increase diameter or grade.')}</p>`;
   }
 
   tbl.innerHTML = `
     <table class="lab-catalog-table">
-      <thead><tr><th>Dato</th><th>Valor</th></tr></thead>
+      <thead><tr><th>${bx('Dato', 'Item')}</th><th>${bx('Valor', 'Value')}</th></tr></thead>
       <tbody>
-        <tr><td>Paso P</td><td>${row.pitch_mm} mm</td></tr>
+        <tr><td>${bx('Paso P', 'Pitch P')}</td><td>${row.pitch_mm} mm</td></tr>
         <tr><td>A<sub>s</sub></td><td>${row.As_mm2.toFixed(1)} mm²</td></tr>
         <tr><td>Rp (ISO 898-1)</td><td>${row.Rp_MPa} MPa</td></tr>
-        <tr><td>μ (seleccionado)</td><td>${mu.toFixed(2)}</td></tr>
-        <tr><td>Precarga orientativa F<sub>V</sub></td><td>${(row.F_preload_N / 1000).toFixed(2)} kN</td></tr>
-        <tr><td>T apriete (μ sel.)</td><td>${T_mu_Nm.toFixed(1)} N·m</td></tr>
-        <tr><td>T apriete (ref. K≈0,2)</td><td>${row.T_tighten_Nm.toFixed(1)} N·m</td></tr>
-        <tr><td>F<sub>Rd</sub> (simpl.)</td><td>${row.Ft_Rd_kN.toFixed(2)} kN</td></tr>
-        <tr><td>F requerida</td><td>${F_kN.toFixed(2)} kN</td></tr>
+        <tr><td>μ (${bx('seleccionado', 'selected')})</td><td>${mu.toFixed(2)}</td></tr>
+        <tr><td>${bx('Precarga orientativa', 'Indicative preload')} F<sub>V</sub></td><td>${(row.F_preload_N / 1000).toFixed(2)} kN</td></tr>
+        <tr><td>T ${bx('apriete (μ sel.)', 'tighten (μ sel.)')}</td><td>${T_mu_Nm.toFixed(1)} N·m</td></tr>
+        <tr><td>T ${bx('apriete (ref. K≈0,2)', 'tighten (ref. K≈0.2)')}</td><td>${row.T_tighten_Nm.toFixed(1)} N·m</td></tr>
+        <tr><td>F<sub>Rd</sub> (${bx('simpl.', 'simpl.')})</td><td>${row.Ft_Rd_kN.toFixed(2)} kN</td></tr>
+        <tr><td>F ${bx('requerida', 'required')}</td><td>${F_kN.toFixed(2)} kN</td></tr>
         <tr><td>F/F<sub>V</sub></td><td>${F_N > 0 ? ratioVsPreload.toFixed(2) : '—'}</td></tr>
       </tbody>
     </table>
-    <p class="lab-small-print">No sustituye EN 1993-1-8 ni instrucciones Würth/Bossard; valores de precarga/par son orientativos.</p>`;
+    <p class="lab-small-print">${bx(
+      'No sustituye EN 1993-1-8 ni instrucciones Würth/Bossard; valores de precarga/par son orientativos.',
+      'Does not replace EN 1993-1-8 or manufacturer tightening specs; preload/torque values are indicative.',
+    )}</p>`;
 
   updateLabShareVisibility('blShareLinkWrap', 'blOut');
   if (!blUrl.hydrating) blUrl.serializeToUrl();
@@ -202,7 +227,8 @@ function scheduleBlRender() {
   if (!blUrl.hydrating) {
     document.querySelectorAll('#blPresetsBar .lab-preset-btn').forEach((b) => b.classList.remove('is-active'));
   }
-  render();
+  if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
+  else render();
 }
 
 ['blCalcMode', 'blD', 'blGrade', 'blF', 'blMu'].forEach((id) => {
@@ -214,6 +240,11 @@ function scheduleBlRender() {
 });
 
 wireLabCopyLink('blCopyLinkBtn', 'blCopyToast');
+wireLabCopyResultsButton('blCopyResults', {
+  moduleTitle: bx('Torniller\u00eda ISO 898', 'ISO 898 bolts'),
+});
 
-render();
-mountLabCloudSaveBar('Torniller\u00eda ISO 898');
+if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
+else render();
+mountLabCloudSaveBar(bx('Torniller\u00eda ISO 898', 'ISO 898 bolts'));
+watchLangAndApply(BOLTS_ISO_EN, { onEnApplied: () => scheduleBlRender() });

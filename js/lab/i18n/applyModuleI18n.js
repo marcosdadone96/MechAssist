@@ -3,12 +3,24 @@
  * ES is restored by reloading (source HTML is Spanish).
  */
 import { getLabLang } from './labLang.js';
+import { HOME_NAV_EN } from './homeNavEn.js';
+import { applyMachinePresetLabels } from './machineHubPresetLabels.js';
 
 /**
  * @param {Record<string, string>} dict
  */
 export function applyModuleTranslations(dict) {
   if (getLabLang() !== 'en') return;
+  const merged = { ...HOME_NAV_EN, ...dict };
+
+  document.querySelectorAll('[data-be-i18n]').forEach((el) => {
+    const key = el.getAttribute('data-be-i18n');
+    if (!key) return;
+    const txt = merged[key];
+    if (txt == null) return;
+    el.innerHTML = txt;
+  });
+
   document.querySelectorAll('[data-i18n], [data-i18n-attrs]').forEach((el) => {
     const bundle = el.getAttribute('data-i18n-attrs');
     if (bundle) {
@@ -20,14 +32,14 @@ export function applyModuleTranslations(dict) {
           if (eq === -1) return;
           const attrName = chunk.slice(0, eq);
           const mapKey = chunk.slice(eq + 1);
-          const mapped = dict[mapKey];
+          const mapped = merged[mapKey];
           if (mapped != null) el.setAttribute(attrName, mapped);
         });
     }
 
     const key = el.getAttribute('data-i18n');
     if (!key) return;
-    const txt = dict[key];
+    const txt = merged[key];
     if (txt == null) return;
     const attr = el.getAttribute('data-i18n-attr');
     if (attr) {
@@ -50,6 +62,7 @@ export function watchLangAndApply(dict, opts = {}) {
   function applyEn() {
     if (getLabLang() !== 'en') return;
     applyModuleTranslations(dict);
+    applyMachinePresetLabels('en');
     onEnApplied?.();
   }
 

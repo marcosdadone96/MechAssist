@@ -20,7 +20,19 @@ import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
-import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { incrementCalcCounter } from '../services/calcCounter.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
+import { INCLINED_CONVEYOR_EN } from '../lab/i18n/pages/inclinedConveyorEn.js';
+import {
+  applyInclinedConveyorPageLanguage,
+  applyInclinedConveyorStaticI18n,
+} from './inclinedConveyorStaticI18n.js';
+
+import { INCLINED_PRESET_BY_ID } from '../modules/machineHubPresets.js';
+
+const INC_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...INCLINED_CONVEYOR_EN };
 
 const inputIds = [
   'incLength',
@@ -310,6 +322,157 @@ function formatMounting(pref) {
   return `${typeMap[pref.mountingType] || pref.mountingType} · ${pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal'}`;
 }
 
+/**
+ * @param {ReturnType<typeof readInputs>} raw
+ * @param {ReturnType<typeof computeInclinedConveyor>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ * @param {'es'|'en'} lang
+ */
+function buildIncRfqPlainText(raw, r, mount, lang) {
+  const en = lang === 'en';
+  const d = r.detail || {};
+  const when = new Date().toISOString().slice(0, 19).replace('T', ' ') + ' UTC';
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const head = en
+    ? 'TheMechAssist — Inclined belt conveyor (indicative duty point)'
+    : 'TheMechAssist — Cinta transportadora inclinada (punto de trabajo orientativo)';
+  const hIn = en ? '== Inputs ==' : '== Entradas ==';
+  const hOut = en ? '== Results (indicative) ==' : '== Resultados (orientativos) ==';
+  const hMount = en ? '== Mounting preference (for RFQ) ==' : '== Preferencia de montaje (RFQ) ==';
+  const angNote =
+    raw.angle_deg != null && Number.isFinite(raw.angle_deg)
+      ? formatNum(raw.angle_deg, 2)
+      : en
+        ? '(from H, L)'
+        : '(por H, L)';
+  const disc = en
+    ? 'Disclaimer: simplified inclined model; does not replace manufacturer selection, full DIN/CEMA belt memos, or backstop/brake strategy validation.'
+    : 'Aviso: modelo en pendiente simplificado; no sustituye la selección del fabricante, memorias DIN/CEMA completas ni la validación de freno/autoretorno.';
+
+  const parts = [
+    head,
+    `${en ? 'Timestamp (UTC)' : 'Fecha (UTC)'}: ${when}`,
+  ];
+  if (url) parts.push(`${en ? 'Source' : 'Origen'}: ${url}`);
+  parts.push(
+    '',
+    hIn,
+    `${en ? 'Length L (along slope)' : 'Longitud L (siguiendo pendiente)'} (m): ${formatNum(raw.length_m, 3)}`,
+    `${en ? 'Lift H' : 'Desnivel H'} (m): ${formatNum(raw.height_m, 3)}`,
+    `${en ? 'Angle theta' : 'Ángulo θ'} (deg): ${angNote}`,
+    `${en ? 'Nominal load mass' : 'Masa de carga'} (kg): ${formatNum(raw.loadMass_kg, 1)}`,
+    `${en ? 'Belt width B' : 'Ancho banda B'} (m): ${formatNum(raw.beltWidth_m, 3)}`,
+    `${en ? 'Belt mass m_b' : 'Masa banda m_b'} (kg): ${formatNum(raw.beltMass_kg, 2)}`,
+    `${en ? 'Load distribution' : 'Fracción carga'}: ${formatNum(raw.loadDistribution, 3)}`,
+    `${en ? 'Belt on slope fraction' : 'Fracción banda en pendiente'}: ${formatNum(raw.beltSlopeParticipation, 3)}`,
+    `${en ? 'Belt speed v' : 'Velocidad v'} (m/s): ${formatNum(raw.beltSpeed_m_s, 3)}`,
+    `${en ? 'Drive drum D' : 'Diámetro tambor D'} (mm): ${formatNum(raw.rollerDiameter_mm, 1)}`,
+    `${en ? 'Friction mu' : 'Coeficiente μ'}: ${formatNum(raw.frictionCoeff, 3)}`,
+    `${en ? 'Efficiency eta' : 'Rendimiento η'} (%): ${formatNum(raw.efficiency_pct, 1)}`,
+    `${en ? 'Service factor' : 'Factor de servicio'}: ${formatNum(r.serviceFactorUsed ?? raw.serviceFactor, 3)}`,
+    `${en ? 'Load duty' : 'Tipo de carga'}: ${raw.loadDuty}`,
+    `${en ? 'Design standard' : 'Marco normativo'}: ${raw.designStandard}`,
+    `${en ? 'Additional resistance' : 'Resistencia adicional'} (N): ${formatNum(raw.additionalResistance_N, 1)}`,
+    `${en ? 'Accel time' : 'Tiempo aceleración'} (s): ${formatNum(raw.accelTime_s, 2)}`,
+    `${en ? 'Inertia factor' : 'Factor inercia'}: ${formatNum(raw.inertiaStartingFactor, 3)}`,
+    '',
+    hOut,
+    `${en ? 'Steady traction F' : 'Fuerza régimen F'} (N): ${formatNum(d.F_steady_N ?? r.totalForce_N, 2)}`,
+    `${en ? 'Design torque at drum (incl. SF)' : 'Par diseño en tambor (incl. SF)'} (N·m): ${formatNum(r.torqueWithService_Nm, 2)}`,
+    `${en ? 'Motor shaft power (sizing)' : 'Potencia eje motor (dimensionamiento)'} (kW): ${formatNum(r.requiredMotorPower_kW, 3)}`,
+    `${en ? 'Drum rpm' : 'Velocidad tambor'} (rpm): ${formatNum(r.drumRpm, 2)}`,
+    `${en ? 'Mass flow (model)' : 'Caudal másico (modelo)'} (kg/s): ${formatNum(r.massFlow_kg_s, 3)}`,
+    `${en ? 'Angle used' : 'Ángulo usado'} (deg): ${formatNum(r.angle_deg, 2)}`,
+    '',
+    hMount,
+    formatMounting(mount) +
+      (mount.machineShaftDiameter_mm != null
+        ? ` · ${en ? 'Machine shaft Ø' : 'Ø eje máquina'} ${formatNum(mount.machineShaftDiameter_mm, 1)} mm`
+        : ''),
+    '',
+    disc,
+  );
+  return parts.join('\n');
+}
+
+/**
+ * @param {ReturnType<typeof readInputs>} raw
+ * @param {ReturnType<typeof computeInclinedConveyor>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ */
+function buildIncRfqCsv(raw, r, mount) {
+  const d = r.detail || {};
+  const headers = [
+    'product',
+    'generated_utc',
+    'page_url',
+    'L_m',
+    'H_m',
+    'angle_deg_input',
+    'load_mass_kg',
+    'belt_width_m',
+    'belt_mass_kg',
+    'load_distribution',
+    'belt_slope_fraction',
+    'v_m_s',
+    'D_drum_mm',
+    'friction_mu',
+    'efficiency_pct',
+    'service_factor',
+    'load_duty',
+    'design_standard',
+    'additional_resistance_N',
+    'accel_time_s',
+    'inertia_factor',
+    'mounting',
+    'orientation',
+    'machine_shaft_d_mm',
+    'F_steady_N',
+    'T_drum_design_Nm',
+    'P_motor_kW',
+    'n_drum_rpm',
+    'mass_flow_kg_s',
+    'angle_deg_effective',
+  ];
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const when = new Date().toISOString();
+  const angleIn =
+    raw.angle_deg != null && Number.isFinite(raw.angle_deg) ? String(raw.angle_deg) : '';
+  const values = [
+    'TheMechAssist_inclined_belt',
+    when,
+    url,
+    raw.length_m,
+    raw.height_m,
+    angleIn,
+    raw.loadMass_kg,
+    raw.beltWidth_m,
+    raw.beltMass_kg,
+    raw.loadDistribution,
+    raw.beltSlopeParticipation,
+    raw.beltSpeed_m_s,
+    raw.rollerDiameter_mm,
+    raw.frictionCoeff,
+    raw.efficiency_pct,
+    r.serviceFactorUsed ?? raw.serviceFactor,
+    raw.loadDuty,
+    raw.designStandard,
+    raw.additionalResistance_N,
+    raw.accelTime_s,
+    raw.inertiaStartingFactor,
+    mount.mountingType,
+    mount.orientation,
+    mount.machineShaftDiameter_mm ?? '',
+    d.F_steady_N ?? r.totalForce_N,
+    r.torqueWithService_Nm,
+    r.requiredMotorPower_kW,
+    r.drumRpm,
+    r.massFlow_kg_s,
+    r.angle_deg,
+  ];
+  return `${headers.map(escapeCsvCell).join(',')}\n${values.map(escapeCsvCell).join(',')}`;
+}
+
 function clampNum(n, lo, hi) {
   return Math.min(hi, Math.max(lo, n));
 }
@@ -387,6 +550,48 @@ function bindIncRangeSlider(rangeId, numId, lo, hi, step = null) {
   syncRangeFromNum();
 }
 
+function writeIncFormValue(id, val) {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement) && !(el instanceof HTMLSelectElement)) return;
+  el.value = val === '' || val == null ? '' : String(val);
+}
+
+function syncIncRangeSlidersFromNumberInputs() {
+  const pairs = [
+    ['incLengthR', 'incLength', 2, 120, 0.1],
+    ['incHeightR', 'incHeight', 0, 40, 0.05],
+    ['incLoadMassR', 'incLoadMass', 10, 8000, 1],
+    ['incSpeedR', 'incSpeed', 0.05, 5, 0.01],
+    ['incRollerDR', 'incRollerD', 50, 1200, 1],
+    ['incFrictionR', 'incFriction', 0.15, 0.65, 0.01],
+  ];
+  for (const [rangeId, numId, lo, hi, step] of pairs) {
+    const range = document.getElementById(rangeId);
+    const num = document.getElementById(numId);
+    if (!(range instanceof HTMLInputElement) || !(num instanceof HTMLInputElement)) continue;
+    let v = parseFloat(String(num.value).replace(',', '.'));
+    if (!Number.isFinite(v)) v = lo;
+    v = clampNum(v, lo, hi);
+    if (step != null && step > 0) v = Math.round(v / step) * step;
+    num.value = String(v);
+    range.value = String(v);
+  }
+}
+
+function applyIncPresetFromId(presetId) {
+  const def = INCLINED_PRESET_BY_ID[presetId];
+  if (!def) return;
+  for (const [k, v] of Object.entries(def.values)) {
+    writeIncFormValue(k, v);
+  }
+  syncIncRangeSlidersFromNumberInputs();
+  syncIncLoadDutyUi();
+  syncAnglePriorityUi();
+  normalizePhysicalInputs();
+  syncIncRangeSlidersFromNumberInputs();
+  refresh();
+}
+
 function showRuntimeError(msg) {
   const box = document.getElementById('runtimeError');
   if (!box) return;
@@ -451,8 +656,9 @@ function localizeInclinedStaticContent() {
     if (el) el.innerHTML = html;
   };
   setText('.flat-sidebar__title', 'Inclined conveyor');
+  setText('details.flat-sidebar-intro .flat-sidebar-intro__summary', 'Calculator description and scope');
   setText(
-    '.flat-sidebar__lead',
+    'details.flat-sidebar-intro .flat-sidebar__lead',
     'Slope, friction and lift. Values recalculate instantly; the right panel shows the dashboard, schematic and gearmotors.',
   );
   setText('.help-details.flat-help > summary', 'Quick guide');
@@ -470,14 +676,7 @@ function localizeInclinedStaticContent() {
       <li><strong>Service factor</strong>: set by load duty; use Custom for a manual SF.</li>
     </ul>`,
   );
-  setText('.flat-accordion:nth-of-type(1) .flat-accordion__label', 'Standard and service factor');
-  setText('.flat-accordion:nth-of-type(2) .flat-accordion__label', 'Geometry and kinematics');
-  setText('.flat-accordion:nth-of-type(3) .flat-accordion__label', 'Load');
-  setText('.flat-accordion:nth-of-type(4) .flat-accordion__label', 'Friction and efficiency');
-  const isoOpt = document.querySelector('#incDesignStandard option[value="ISO5048"]');
-  const cemaOpt = document.querySelector('#incDesignStandard option[value="CEMA"]');
-  if (isoOpt) isoOpt.textContent = 'ISO 5048 / DIN 22101 - analytic approach';
-  if (cemaOpt) cemaOpt.textContent = 'CEMA - +6% margin on steady traction';
+  applyInclinedConveyorStaticI18n('en');
   setText('#btnCalcularInc', 'View suggested gearmotors');
   setText('.flat-dashboard__title', 'Sizing dashboard');
   setHtml(
@@ -614,6 +813,7 @@ function refresh() {
     normalizePhysicalInputs();
     const raw = readInputs();
     const r = computeInclinedConveyor(raw);
+    if (Number.isFinite(r.requiredMotorPower_kW)) incrementCalcCounter();
     syncAnglePriorityUi();
     syncAngleLimitWarning(r.angle_deg);
     const d = r.detail || {};
@@ -886,7 +1086,34 @@ bindIncRangeSlider('incFrictionR', 'incFriction', 0.15, 0.65, 0.01);
 
 refresh();
 
-mountLabCloudSaveBar('Cinta transportadora inclinada', { scopeSelector: 'main.app-main' });
+
+wireMachineRfqExport({
+  getPayload: () => {
+    const raw = readInputs();
+    return { raw, result: computeInclinedConveyor(raw), mount: readMountingPreferences() };
+  },
+  buildPlainText: buildIncRfqPlainText,
+  buildCsv: buildIncRfqCsv,
+  toastCopiedEn: MACHINE_HUB_UX_EN['machineHub.toastRfqCopied'],
+  toastErrEn: MACHINE_HUB_UX_EN['machineHub.toastRfqErr'],
+});
+
+watchLangAndApply(INC_PAGE_EN, {
+  onEnApplied: () => {
+    applyInclinedConveyorPageLanguage();
+    localizeInclinedStaticContent();
+    syncIncLoadDutyUi();
+    initInfoChipPopovers(document.body);
+    refresh();
+  },
+});
+
+document.querySelector('.flat-sidebar')?.addEventListener('click', (e) => {
+  const t = e.target instanceof Element ? e.target.closest('[data-inc-preset]') : null;
+  if (!(t instanceof HTMLButtonElement)) return;
+  const id = t.getAttribute('data-inc-preset');
+  if (id) applyIncPresetFromId(id);
+});
 
 window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
   location.reload();

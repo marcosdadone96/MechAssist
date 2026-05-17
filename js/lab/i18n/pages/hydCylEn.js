@@ -1,7 +1,12 @@
 /** English strings for calc-hydraulic-cylinder.html (`hydCyl.*` keys). ASCII-safe. */
 export const HYDRAULIC_CYLINDER_EN = {
   'hydCyl.docTitle': 'Hydraulic cylinder force and flow calculator online \u2014 TheMechAssist',
+  'fluids.scopeNote':
+    'Indicative calculation for preliminary sizing. Always confirm with the manufacturer catalogue and applicable standards (ISO 4413 / ISO 4414).',
   'hydCyl.h2': 'Hydraulic cylinder \u2014 force, flow and structural safety',
+  'hydCyl.heroLead':
+    'Push/pull force, required flow, rod buckling (Euler) and minimum wall thickness for safe operation at working pressure.',
+  'hydCyl.seoSummary': 'Expanded context and usage notes',
   'hydCyl.calcSeoIntro':
     'This section combines force from pressure on effective push and annulus areas with the flows required for each stroke time, and checks rod buckling and wall thickness using indicative strength criteria. Use it to size oleohydraulic actuators in presses, clamps and lift tables before ordering the full power unit. It helps fluid-power and industrial automation engineers compare working pressures. For example, it can show whether a shorter stroke allows a slimmer rod while staying within the Euler margin on a fast lift line.',
   'hydCyl.lead':
@@ -56,7 +61,7 @@ export const HYDRAULIC_CYLINDER_EN = {
   'hydCyl.labelLoad': 'Working load (kg)',
   'hydCyl.hintLoadExt': 'External mechanical load',
   'hydCyl.helpLoad':
-    'Converted to N to compare against available force and safety factor.',
+    'Converted to N to compare against available force and safety factor. Euler buckling uses this value as axial compression on the rod; if your linkage applies only part of that load to the rod, treat the buckling FS as conservative or reduce the entered load.',
   'hydCyl.labelTargetSpeed': 'Target speed (m/s)',
   'hydCyl.hintTargetSpeed': 'Defines required flow',
   'hydCyl.helpTargetSpeed':

@@ -9,7 +9,7 @@
  */
 export const LAB_AFFILIATE = Object.freeze({
   /** Mostrar bloque "Opciones de compra" y enlaces Amazon en Smart Dashboard. */
-  enabled: true,
+  enabled: false,
 
   /**
    * ID de seguimiento Amazon Associates (ej. misitio-21).

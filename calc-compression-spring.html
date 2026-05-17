@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Rigidez k, esfuerzo cortante tau con factor de Wahl y pandeo orientativo según planteamiento DIN 2089. Resortes helicoidales. Online gratis." />
+    <meta name="description" content="Resorte helicoidal: rigidez, esfuerzo tau, factor de Wahl, gráfico fuerza–deformación y simulación." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -12,13 +12,13 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/calc-compression-spring.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/calc-compression-spring.html" />
-    <meta property="og:title" content="Calculadora de muelle helicoidal compresión online" />
-    <meta property="og:description" content="Rigidez k, esfuerzo cortante tau con factor de Wahl y pandeo orientativo según planteamiento DIN 2089. Resortes helicoidales. Online gratis." />
+    <meta property="og:url" content="https://www.themechassist.com/calc-compression-spring.html" id="mdr-og-url" />
+    <meta property="og:title" content="Muelle compresión DIN 2089 — TheMechAssist" />
+    <meta property="og:description" content="Resorte helicoidal: rigidez, esfuerzo tau, factor de Wahl, gráfico fuerza–deformación y simulación." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de muelle helicoidal compresión online" />
+    <meta name="twitter:title" content="Muelle compresión DIN 2089 — TheMechAssist" />
 
-    <title>Calculadora de muelle helicoidal compresión online — TheMechAssist</title>
+    <title data-i18n="spring.docTitle">Muelle compresión DIN 2089 — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -159,6 +159,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -175,14 +177,27 @@
 
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2>Muelle helicoidal de compresi&oacute;n &middot; dise&ntilde;o y verificaci&oacute;n (DIN 2089 orientativo)</h2>
-        <p class="calc-seo-intro">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="spring.h2">Muelle helicoidal de compresi&oacute;n &middot; dise&ntilde;o y verificaci&oacute;n (DIN 2089 orientativo)</h2>
+          <p class="lab-calc-hero-lead" data-i18n="spring.heroLead" data-i18n-html>
+            Rigidez <strong>k</strong>, condici&oacute;n de servicio (<strong>s<sub>op</sub></strong> o <strong>F<sub>op</sub></strong>), tensi&oacute;n con <strong>K</strong> (Wahl), pandeo docente y bloqueo <strong>F<sub>n</sub></strong>; material y abacos simplificados.
+          </p>
+          <details class="lab-calc-seo">
+            <summary>Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro">
           Este módulo estima rigidez, deformación bajo carga y tensión cortante en alambre usando el factor de corrección de Wahl para espiras helicoidales en compresión alineado con la filosofía DIN 2089 en forma orientativa, incluyendo indicios de pandeo cuando la esbeltez es elevada. Sirve para resortes de válvulas, topes de seguridad y mecanismos de retorno antes de encargar material certificado. Es útil para ingenieros de producto y talleres que prototipan en serie corta. Por ejemplo, puede mostrar si conviene aumentar el índice de resorte C para bajar la tensión cuando la carrera libre es grande pero el hueco radial es pequeño.
-        </p>
-        <p class="lab-lead">
-          Rigidez <strong>k</strong>, condici&oacute;n de <strong>servicio</strong> (<strong>s<sub>op</sub></strong> o <strong>F<sub>op</sub></strong>), tensi&oacute;n con <strong>K</strong> (Wahl), comprobaci&oacute;n de <strong>pandeo</strong> (esbeltez docente), bloqueo <strong>F<sub>n</sub></strong> y datos opcionales de <strong>fatiga</strong>.
-          Valores de material y abacos simplificados; valide siempre con <strong>DIN/EN</strong>, dibujo y fabricante.
-        </p>
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="spring.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help">
+                Rigidez <strong>k</strong>, condici&oacute;n de <strong>servicio</strong> (<strong>s<sub>op</sub></strong> o <strong>F<sub>op</sub></strong>), tensi&oacute;n con <strong>K</strong> (Wahl), comprobaci&oacute;n de <strong>pandeo</strong> (esbeltez docente), bloqueo <strong>F<sub>n</sub></strong> y datos opcionales de <strong>fatiga</strong>.
+                Valores de material y abacos simplificados; valide siempre con <strong>DIN/EN</strong>, dibujo y fabricante.
+              </p>
+            </div>
+          </details>
+        </header>
 
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
@@ -480,10 +495,15 @@
                 </svg>
                 <span class="lab-results-computing__label">Recalculando</span>
               </div>
-              <details class="lab-results-details lab-results-details--chevron-end">
-                <summary>Resultado completo</summary>
+              <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked">
+                <summary data-i18n="spring.summaryFull">Resultado completo</summary>
                 <div class="lab-results" id="springResults"></div>
               </details>
+              <div class="lab-results-actions">
+                <button type="button" class="lab-btn lab-btn--block" id="springCopyResults" data-i18n="spring.copyResults">
+                  Copiar resultados
+                </button>
+              </div>
             </div>
 
             <div id="springSubstitution"></div>

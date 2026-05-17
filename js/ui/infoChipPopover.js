@@ -66,8 +66,8 @@ export function initInfoChipPopovers(root = document.body) {
     const chip = /** @type {HTMLElement | null} */ (e.target)?.closest?.('.info-chip');
     if (!chip || !root.contains(chip)) return;
     if (chip.classList.contains('info-chip--static')) return;
-    const text = chip.getAttribute('title') || chip.getAttribute('aria-label') || '';
-    if (!text.trim()) return;
+    const text = (chip.getAttribute('title') || chip.getAttribute('aria-label') || '').trim();
+    if (!text) return;
     e.preventDefault();
     e.stopPropagation();
 

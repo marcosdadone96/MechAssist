@@ -52,6 +52,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -71,12 +73,19 @@
         <header class="flat-sidebar__head">
           <p class="flat-sidebar__eyebrow">TheMechAssist</p>
           <h2 class="flat-sidebar__title" data-i18n="flatConv.flatSidebarTitle">Cinta plana</h2>
-          <p class="calc-seo-intro" data-i18n="flatConv.calcSeoIntro">
-            Esta calculadora integra la masa transportada, la velocidad de la cinta y el diámetro del tambor motriz con el fin de estimar la tensión efectiva, la potencia en el eje del tambor y el margen frente a un motorreductor concreto, apoyándose en enfoques analíticos simplificados alineados con la literatura ISO y con el recargo de servicio estilo CEMA que el módulo documenta. Es un apoyo inmediato para ingenieros de planta, integradores y responsables de mantenimiento que deben validar un punto de diseño cuando cambia el caudal o el ancho de lona. Un caso frecuente es comprobar si basta con tensar la banda o hace falta subir de potencia al ampliar el tramo de carga en una línea de alimentación.
-          </p>
-          <p class="flat-sidebar__lead" data-i18n="flatConv.leadHtml" data-i18n-html>
-            Par y potencia coherentes en el tambor. Los datos se recalculan al instante; use el panel derecho para el esquema y el dashboard de resultados.
-          </p>
+          <details class="flat-sidebar-intro">
+            <summary class="flat-sidebar-intro__summary" data-i18n="flatConv.introSummary">
+              Descripción y alcance de la calculadora
+            </summary>
+            <div class="flat-sidebar-intro__body">
+              <p class="calc-seo-intro" data-i18n="flatConv.calcSeoIntro">
+                Esta calculadora integra la masa transportada, la velocidad de la cinta y el diámetro del tambor motriz con el fin de estimar la tensión efectiva, la potencia en el eje del tambor y el margen frente a un motorreductor concreto, apoyándose en enfoques analíticos simplificados alineados con la literatura ISO y con el recargo de servicio estilo CEMA que el módulo documenta. Es un apoyo inmediato para ingenieros de planta, integradores y responsables de mantenimiento que deben validar un punto de diseño cuando cambia el caudal o el ancho de lona. Un caso frecuente es comprobar si basta con tensar la banda o hace falta subir de potencia al ampliar el tramo de carga en una línea de alimentación.
+              </p>
+              <p class="flat-sidebar__lead" data-i18n="flatConv.leadHtml" data-i18n-html>
+                Par y potencia coherentes en el tambor. Los resultados se actualizan al vuelo; el panel derecho muestra el veredicto de dimensionamiento, el esquema y el detalle.
+              </p>
+            </div>
+          </details>
         </header>
 
         <details class="help-details flat-help">
@@ -102,6 +111,53 @@
           </div>
         </details>
 
+        <section class="flat-ux-panel" aria-labelledby="flatUxGuideTitle">
+          <h3 id="flatUxGuideTitle" class="flat-ux-panel__title" data-i18n="flatConv.uxGuideTitle">Casos reales y validación guiada</h3>
+          <p class="flat-ux-panel__lead muted" data-i18n="flatConv.uxGuideLead">
+            Elija el tipo de instalación para ajustar rangos típicos y avisos. Use un preset para rellenar parámetros coherentes y recalcular al instante.
+          </p>
+          <div class="field flat-ux-profile-field">
+            <label for="flatAppProfile" data-i18n="flatConv.uxProfileLabel">Tipo de aplicación (rangos y avisos)</label>
+            <select id="flatAppProfile" name="flatAppProfile">
+              <option value="light" data-i18n="flatConv.optProfileLight">Ligera (checkout, cajas pequeñas)</option>
+              <option value="medium" selected data-i18n="flatConv.optProfileMedium">Media (cajas industriales)</option>
+              <option value="heavy" data-i18n="flatConv.optProfileHeavy">Pesada (granel, alto caudal)</option>
+            </select>
+          </div>
+          <p class="flat-ux-presets__label" data-i18n="flatConv.presetsLabel">Presets de ingeniería</p>
+          <div class="flat-ux-preset-row" role="group" aria-label="Presets">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-flat-preset="light_retail"
+              data-i18n-attrs="title=flatConv.presetLightTooltip"
+              title="Línea corta, tambor pequeño, baja velocidad; arrastre típico ~1,2 % (no entra en el modelo)."
+            >
+              <span class="btn-flat-preset__name" data-i18n="flatConv.presetLightBtn">Ligera · retail</span>
+            </button>
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-flat-preset="medium_industrial"
+              data-i18n-attrs="title=flatConv.presetMediumTooltip"
+              title="Cinta industrial media; tambor 400 mm, resistencias accesorias orientativas."
+            >
+              <span class="btn-flat-preset__name" data-i18n="flatConv.presetMediumBtn">Media · industrial</span>
+            </button>
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-flat-preset="heavy_duty"
+              data-i18n-attrs="title=flatConv.presetHeavyTooltip"
+              title="Alta masa y velocidad; tambor grande; arrastre típico ~1,8 % (referencia)."
+            >
+              <span class="btn-flat-preset__name" data-i18n="flatConv.presetHeavyBtn">Pesada</span>
+            </button>
+          </div>
+        </section>
+
+        <div id="flatInputFeedback" class="flat-input-feedback" aria-live="polite" hidden></div>
+
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
@@ -110,7 +166,7 @@
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
             <label for="carrySurface" data-i18n="flatConv.labelCarrySurfaceHtml" data-i18n-html
-              >Rama portante <span class="info-chip" title="Rodillos: carga apoyada en rodillos (μ típico menor). Plancha: banda desliza sobre chapa/UHMW (μ suele ser mayor; D sigue siendo el tambor motriz para par y rpm)." aria-label="Ayuda rama portante: rodillos vs plancha deslizante; μ y uso de D.">?</span></label
+              >Rama portante <span class="info-chip" data-i18n-attrs="title=flatConv.tipCarryStrand" title="Rodillos: carga apoyada en rodillos (μ típico menor). Plancha: banda desliza sobre chapa/UHMW (μ suele ser mayor; D sigue siendo el tambor motriz para par y rpm)." aria-label="Ayuda rama portante: rodillos vs plancha deslizante; μ y uso de D.">?</span></label
             >
             <select id="carrySurface">
               <option value="rollers" selected data-i18n="flatConv.optCarryRollers">Rodillos (apoyo rodante)</option>
@@ -119,33 +175,60 @@
           </div>
           <div class="field flat-field--slider">
             <label for="beltLength" data-i18n="flatConv.labelBeltLengthHtml" data-i18n-html
-              >Longitud L <span class="info-chip" title="Tramo de carga: el modelo reparte la masa m en L y obtiene caudal másico ≈ (m/L)·v. No tiene por qué ser la longitud total de la cinta en planta." aria-label="Ayuda L: tramo de carga para repartir masa m; caudal (m/L)·v; no es necesariamente longitud total.">?</span></label
+              >Longitud L <span class="info-chip" data-i18n-attrs="title=flatConv.tipLength" title="Tramo de carga: el modelo reparte la masa m en L y obtiene caudal másico ≈ (m/L)·v. No tiene por qué ser la longitud total de la cinta en planta." aria-label="Ayuda L: tramo de carga para repartir masa m; caudal (m/L)·v; no es necesariamente longitud total.">?</span></label
             >
             <input type="range" id="beltLengthR" class="flat-slider" min="2" max="80" step="0.1" value="30" data-i18n="flatConv.ariaSliderL" data-i18n-attr="aria-label" aria-label="L (deslizador)" />
             <div class="flat-field__num">
-              <input id="beltLength" type="number" step="0.1" min="0.1" value="30" />
+              <input
+                id="beltLength"
+                type="number"
+                step="0.1"
+                min="0.1"
+                value="30"
+                placeholder="p. ej. 8–35 m"
+                data-i18n-attrs="placeholder=flatConv.phBeltLength"
+              />
               <span class="field-hint">m</span>
             </div>
+            <p class="field-context muted" data-i18n="flatConv.typBeltLength">Tramo típico (industrial): 8–35 m sobre rodillos</p>
           </div>
           <div class="field flat-field--slider">
             <label for="rollerD" data-i18n="flatConv.labelRollerDHtml" data-i18n-html
-              >Diámetro tambor motriz D <span class="info-chip" title="Diámetro del tambor motriz (par T = F×R, R = D/2). En transporte ligero (cajas, poca potencia) son habituales Ø menores (p. ej. 80–200 mm); valide siempre el diámetro mínimo que exige el fabricante de la banda." aria-label="Ayuda tambor: T = F por R; tambores pequeños en líneas ligeras; mínimo de banda.">?</span></label
+              >Diámetro tambor motriz D <span class="info-chip" data-i18n-attrs="title=flatConv.tipDrum" title="Diámetro del tambor motriz (par T = F×R, R = D/2). En transporte ligero (cajas, poca potencia) son habituales Ø menores (p. ej. 80–200 mm); valide siempre el diámetro mínimo que exige el fabricante de la banda." aria-label="Ayuda tambor: T = F por R; tambores pequeños en líneas ligeras; mínimo de banda.">?</span></label
             >
             <input type="range" id="rollerDR" class="flat-slider" min="50" max="1200" step="1" value="500" data-i18n="flatConv.ariaSliderD" data-i18n-attr="aria-label" aria-label="D (deslizador)" />
             <div class="flat-field__num">
-              <input id="rollerD" type="number" step="1" min="50" value="500" />
+              <input
+                id="rollerD"
+                type="number"
+                step="1"
+                min="50"
+                value="500"
+                placeholder="p. ej. 200–500 mm"
+                data-i18n-attrs="placeholder=flatConv.phRollerD"
+              />
               <span class="field-hint">mm</span>
             </div>
+            <p class="field-context muted" data-i18n="flatConv.typRollerD">Tambor motriz típico: 200–630 mm (según banda y potencia)</p>
           </div>
           <div class="field flat-field--slider">
             <label for="beltSpeed" data-i18n="flatConv.labelBeltSpeedHtml" data-i18n-html
-              >Velocidad v <span class="info-chip" title="Velocidad lineal de la banda en régimen. Entra en potencia (F·v) y en rpm del tambor vía v y D." aria-label="Ayuda velocidad: lineal en régimen; potencia y rpm del tambor.">?</span></label
+              >Velocidad v <span class="info-chip" data-i18n-attrs="title=flatConv.tipSpeed" title="Velocidad lineal de la banda en régimen. Entra en potencia (F·v) y en rpm del tambor vía v y D." aria-label="Ayuda velocidad: lineal en régimen; potencia y rpm del tambor.">?</span></label
             >
             <input type="range" id="beltSpeedR" class="flat-slider" min="0.05" max="5" step="0.01" value="1.25" data-i18n="flatConv.ariaSliderV" data-i18n-attr="aria-label" aria-label="v (deslizador)" />
             <div class="flat-field__num">
-              <input id="beltSpeed" type="number" step="0.01" min="0" value="1.25" />
+              <input
+                id="beltSpeed"
+                type="number"
+                step="0.01"
+                min="0"
+                value="1.25"
+                placeholder="p. ej. 0.8–1.8 m/s"
+                data-i18n-attrs="placeholder=flatConv.phBeltSpeed"
+              />
               <span class="field-hint">m/s</span>
             </div>
+            <p class="field-context muted" data-i18n="flatConv.typBeltSpeed">Velocidad habitual cajas: 0.5–2.0 m/s (validar producto)</p>
           </div>
           </div>
         </details>
@@ -162,9 +245,18 @@
             >
             <input type="range" id="loadMassR" class="flat-slider" min="10" max="8000" step="1" value="800" data-i18n="flatConv.ariaSliderM" data-i18n-attr="aria-label" aria-label="m (deslizador)" />
             <div class="flat-field__num">
-              <input id="loadMass" type="number" step="1" min="0.1" value="800" />
+              <input
+                id="loadMass"
+                type="number"
+                step="1"
+                min="0.1"
+                value="800"
+                placeholder="p. ej. 150–2500 kg"
+                data-i18n-attrs="placeholder=flatConv.phLoadMass"
+              />
               <span class="field-hint">kg</span>
             </div>
+            <p class="field-context muted" data-i18n="flatConv.typLoadMass">Masa nominal en el tramo L (reparto uniforme del modelo)</p>
           </div>
           </div>
         </details>
@@ -177,13 +269,22 @@
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field flat-field--slider">
             <label for="friction" data-i18n="flatConv.labelFrictionHtml" data-i18n-html
-              >Coeficiente μ <span class="info-chip" title="Rozamiento global tipo Coulomb: en rodillos, banda–rodillo; en plancha deslizante, banda–placha/revestimiento (μ suele ser mayor). Si duda, elija un valor algo mayor (dimensiona más conservador). Use la tabla desplegable debajo." aria-label="Ayuda mu: Coulomb; rodillos vs plancha; tabla bajo el campo.">?</span></label
+              >Coeficiente μ <span class="info-chip" data-i18n-attrs="title=flatConv.tipFriction" title="Rozamiento global tipo Coulomb: en rodillos, banda–rodillo; en plancha deslizante, banda–placha/revestimiento (μ suele ser mayor). Si duda, elija un valor algo mayor (dimensiona más conservador). Use la tabla desplegable debajo." aria-label="Ayuda mu: Coulomb; rodillos vs plancha; tabla bajo el campo.">?</span></label
             >
             <input type="range" id="frictionR" class="flat-slider" min="0.15" max="0.65" step="0.01" value="0.35" data-i18n="flatConv.ariaSliderMu" data-i18n-attr="aria-label" aria-label="μ (deslizador)" />
             <div class="flat-field__num">
-              <input id="friction" type="number" step="0.01" min="0" value="0.35" />
+              <input
+                id="friction"
+                type="number"
+                step="0.01"
+                min="0"
+                value="0.35"
+                placeholder="p. ej. 0.28–0.40"
+                data-i18n-attrs="placeholder=flatConv.phFriction"
+              />
               <span class="field-hint">—</span>
             </div>
+            <p class="field-context muted" data-i18n="flatConv.typFriction">Rodillos secos: 0.22–0.35 · suciedad/humedad: mayor</p>
             <details class="friction-guide">
               <summary data-i18n="flatConv.muTableSummary">Tabla orientativa de μ</summary>
               <div class="friction-guide__body">
@@ -234,10 +335,22 @@
           </div>
           <div class="field">
             <label for="efficiency" data-i18n="flatConv.labelEfficiencyHtml" data-i18n-html
-              >Rendimiento η <span class="info-chip" title="De la potencia del motor eléctrico al tambor: incluye motorreductor, acople y lo que haya hasta el eje del tambor, en un solo valor. Ej.: ~88 % si pierde ~12 %. No descontar otra vez el rendimiento del motor. Si η &gt; 100 % el programa avisa." aria-label="Ayuda rendimiento eta: cadena motor a tambor, un solo valor; ejemplo 88 por ciento.">?</span></label
+              >Rendimiento η <span class="info-chip" data-i18n-attrs="title=flatConv.tipEfficiency" title="De la potencia del motor eléctrico al tambor: incluye motorreductor, acople y lo que haya hasta el eje del tambor, en un solo valor. Ej.: ~88 % si pierde ~12 %. No descontar otra vez el rendimiento del motor. Si η &gt; 100 % el programa avisa." aria-label="Ayuda rendimiento eta: cadena motor a tambor, un solo valor; ejemplo 88 por ciento.">?</span></label
             >
-            <input id="efficiency" type="number" step="1" min="1" max="150" value="88" />
-            <span class="field-hint">%</span>
+            <div class="flat-field__num">
+              <input
+                id="efficiency"
+                type="number"
+                step="1"
+                min="1"
+                max="150"
+                value="88"
+                placeholder="p. ej. 85–92 %"
+                data-i18n-attrs="placeholder=flatConv.phEfficiency"
+              />
+              <span class="field-hint">%</span>
+            </div>
+            <p class="field-context muted" data-i18n="flatConv.typEfficiency">Cadena motor → tambor: 85–92 % habitual</p>
           </div>
           </div>
         </details>
@@ -250,14 +363,14 @@
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
             <label for="serviceFactor" data-i18n="flatConv.labelServiceFactorHtml" data-i18n-html
-              >Factor de servicio (número) <span class="info-chip" title="Se sincroniza con Tipo de carga más abajo (solo lectura aquí salvo modo Personalizado en ese desplegable). Es el mismo factor que multiplica el par de diseño." aria-label="Ayuda factor servicio: sincronizado con tipo de carga debajo.">?</span></label
+              >Factor de servicio (número) <span class="info-chip" data-i18n-attrs="title=flatConv.tipServiceFactor" title="Se sincroniza con Tipo de carga más abajo (solo lectura aquí salvo modo Personalizado en ese desplegable). Es el mismo factor que multiplica el par de diseño." aria-label="Ayuda factor servicio: sincronizado con tipo de carga debajo.">?</span></label
             >
             <input id="serviceFactor" type="number" step="0.05" min="1" max="4" value="1.35" readonly class="input-synced" />
             <span class="field-hint">—</span>
           </div>
           <div class="field">
             <label for="designStandard" data-i18n="flatConv.labelDesignStandardHtml" data-i18n-html
-              >Norma de referencia <span class="info-chip" title="Para documentar el marco en informes. ISO/DIN: modelo analítico simplificado aquí (no memoria DIN 22101 completa). CEMA: +6 % solo sobre tracción de régimen. Límites: enlace Hipótesis del modelo al final de la página." aria-label="Ayuda norma: marco informe; modelo reducido; ver hipótesis.">?</span></label
+              >Norma de referencia <span class="info-chip" data-i18n-attrs="title=flatConv.tipStandard" title="Para documentar el marco en informes. ISO/DIN: modelo analítico simplificado aquí (no memoria DIN 22101 completa). CEMA: +6 % solo sobre tracción de régimen. Límites: enlace Hipótesis del modelo al final de la página." aria-label="Ayuda norma: marco informe; modelo reducido; ver hipótesis.">?</span></label
             >
             <select id="designStandard" name="designStandard">
               <option value="ISO5048" selected data-i18n="flatConv.optIso5048">ISO 5048 / DIN 22101 — enfoque analítico (predeterminado)</option>
@@ -267,7 +380,7 @@
           </div>
           <div class="field">
             <label for="loadDuty" data-i18n="flatConv.labelLoadDutyHtml" data-i18n-html
-              >Tipo de carga (fija el SF) <span class="info-chip" title="Clase de servicio orientativa (AGMA/ISO). Fija el factor numérico que ve arriba salvo Personalizado, donde puede editar el número manualmente." aria-label="Ayuda tipo de carga: fija factor salvo personalizado.">?</span></label
+              >Tipo de carga (fija el SF) <span class="info-chip" data-i18n-attrs="title=flatConv.tipLoadDuty" title="Clase de servicio orientativa (AGMA/ISO). Fija el factor numérico que ve arriba salvo Personalizado, donde puede editar el número manualmente." aria-label="Ayuda tipo de carga: fija factor salvo personalizado.">?</span></label
             >
             <select id="loadDuty" name="loadDuty">
               <option value="uniform" data-i18n="flatConv.optDutyUniform">Carga uniforme — SF ≈ 1,15</option>
@@ -297,51 +410,110 @@
             <div class="field-grid">
               <div class="field">
                 <label for="beltWidth" data-i18n="flatConv.labelBeltWidthHtml" data-i18n-html
-                  >Ancho de banda B <span class="info-chip" title="Referencia geométrica para informes o PDF. El coeficiente μ de esta calculadora no depende del ancho B." aria-label="Ayuda ancho: referencia; mu no usa B.">?</span></label
+                  >Ancho de banda B <span class="info-chip" data-i18n-attrs="title=flatConv.tipBeltWidth" title="Referencia geométrica para informes o PDF. El coeficiente μ de esta calculadora no depende del ancho B." aria-label="Ayuda ancho: referencia; mu no usa B.">?</span></label
                 >
-                <input id="beltWidth" type="number" step="0.01" min="0.1" value="0.8" />
+                <input
+                  id="beltWidth"
+                  type="number"
+                  step="0.01"
+                  min="0.1"
+                  value="0.8"
+                  placeholder="p. ej. 0.65–1.2 m"
+                  data-i18n-attrs="placeholder=flatConv.phBeltWidth"
+                />
                 <span class="field-hint">m</span>
               </div>
               <div class="field">
                 <label for="beltMass" data-i18n="flatConv.labelBeltMassHtml" data-i18n-html
-                  >Masa de banda m_b <span class="info-chip" title="Masa total de la banda. Añade rozamiento por peso propio (portante + retorno) y entra en la masa acelerada en arranque. 0 = se ignora por completo." aria-label="Ayuda masa banda: rozamiento y arranque; 0 ignora.">?</span></label
+                  >Masa de banda m_b <span class="info-chip" data-i18n-attrs="title=flatConv.tipBeltMass" title="Masa total de la banda. Añade rozamiento por peso propio (portante + retorno) y entra en la masa acelerada en arranque. 0 = se ignora por completo." aria-label="Ayuda masa banda: rozamiento y arranque; 0 ignora.">?</span></label
                 >
-                <input id="beltMass" type="number" step="1" min="0" value="0" />
+                <input
+                  id="beltMass"
+                  type="number"
+                  step="1"
+                  min="0"
+                  value="0"
+                  placeholder="0 = ignorar"
+                  data-i18n-attrs="placeholder=flatConv.phBeltMass"
+                />
                 <span class="field-hint">kg</span>
               </div>
               <div class="field">
                 <label for="loadDistribution" data-i18n="flatConv.labelLoadDistHtml" data-i18n-html
                   >Fracción carga activa f_dist <span class="info-chip" title="Parte de la masa m que genera normal sobre rodillos (0,05–1). 1 = toda la carga apoyada en rodillos; menor si parte del peso va a estructura, tolva, etc." aria-label="Ayuda fracción carga activa sobre rodillos.">?</span></label
                 >
-                <input id="loadDistribution" type="number" step="0.05" min="0.05" max="1" value="1" />
+                <input
+                  id="loadDistribution"
+                  type="number"
+                  step="0.05"
+                  min="0.05"
+                  max="1"
+                  value="1"
+                  placeholder="0.8–1.0 típ."
+                  data-i18n-attrs="placeholder=flatConv.phLoadDist"
+                />
                 <span class="field-hint">0,05–1</span>
               </div>
               <div class="field">
                 <label for="beltCarryFraction" data-i18n="flatConv.labelBeltCarryFracHtml" data-i18n-html
-                  >Banda en rama portante <span class="info-chip" title="Fracción de la masa de banda asignada a la rama superior; el resto se asume en retorno. Afecta normales y rozamiento por peso de banda." aria-label="Ayuda fracción banda portante vs retorno.">?</span></label
+                  >Banda en rama portante <span class="info-chip" data-i18n-attrs="title=flatConv.tipBeltFraction" title="Fracción de la masa de banda asignada a la rama superior; el resto se asume en retorno. Afecta normales y rozamiento por peso de banda." aria-label="Ayuda fracción banda portante vs retorno.">?</span></label
                 >
-                <input id="beltCarryFraction" type="number" step="0.05" min="0.1" max="0.9" value="0.5" />
+                <input
+                  id="beltCarryFraction"
+                  type="number"
+                  step="0.05"
+                  min="0.1"
+                  max="0.9"
+                  value="0.5"
+                  placeholder="0.45–0.55 típ."
+                  data-i18n-attrs="placeholder=flatConv.phBeltCarryFrac"
+                />
                 <span class="field-hint">0,1–0,9</span>
               </div>
               <div class="field">
                 <label for="additionalResistance" data-i18n="flatConv.labelAddResHtml" data-i18n-html
-                  >Resistencia adicional F_ad <span class="info-chip" title="Suma de fuerzas resistentes constantes en N no incluidas en μ: rascadores, guías, elementos de limpieza, etc." aria-label="Ayuda resistencia adicional newtons.">?</span></label
+                  >Resistencia adicional F_ad <span class="info-chip" data-i18n-attrs="title=flatConv.tipAdditional" title="Suma de fuerzas resistentes constantes en N no incluidas en μ: rascadores, guías, elementos de limpieza, etc." aria-label="Ayuda resistencia adicional newtons.">?</span></label
                 >
-                <input id="additionalResistance" type="number" step="1" min="0" value="0" />
+                <input
+                  id="additionalResistance"
+                  type="number"
+                  step="1"
+                  min="0"
+                  value="0"
+                  placeholder="p. ej. 0–800 N"
+                  data-i18n-attrs="placeholder=flatConv.phAddRes"
+                />
                 <span class="field-hint">N</span>
               </div>
               <div class="field">
                 <label for="accelTime" data-i18n="flatConv.labelAccelTimeHtml" data-i18n-html
-                  >Tiempo de aceleración t_ac <span class="info-chip" title="Tiempo para alcanzar la velocidad v desde parado. Más corto ⇒ mayor fuerza de aceleración sobre la masa carga + banda." aria-label="Ayuda tiempo aceleracion.">?</span></label
+                  >Tiempo de aceleración t_ac <span class="info-chip" data-i18n-attrs="title=flatConv.tipAccelTime" title="Tiempo para alcanzar la velocidad v desde parado. Más corto ⇒ mayor fuerza de aceleración sobre la masa carga + banda." aria-label="Ayuda tiempo aceleracion.">?</span></label
                 >
-                <input id="accelTime" type="number" step="0.1" min="0.05" value="3" />
+                <input
+                  id="accelTime"
+                  type="number"
+                  step="0.1"
+                  min="0.05"
+                  value="3"
+                  placeholder="p. ej. 2–8 s"
+                  data-i18n-attrs="placeholder=flatConv.phAccelTime"
+                />
                 <span class="field-hint">s</span>
               </div>
               <div class="field">
                 <label for="inertiaFactor" data-i18n="flatConv.labelInertiaHtml" data-i18n-html
-                  >Factor inercia k_in <span class="info-chip" title="≥1 amplía la fuerza de arranque más allá del bloque masa×aceleración: incluye de forma simplificada tambores, acoplamientos y masa rotativa." aria-label="Ayuda factor inercia arranque.">?</span></label
+                  >Factor inercia k_in <span class="info-chip" data-i18n-attrs="title=flatConv.tipInertiaFactor" title="≥1 amplía la fuerza de arranque más allá del bloque masa×aceleración: incluye de forma simplificada tambores, acoplamientos y masa rotativa." aria-label="Ayuda factor inercia arranque.">?</span></label
                 >
-                <input id="inertiaFactor" type="number" step="0.05" min="1" max="2" value="1.15" />
+                <input
+                  id="inertiaFactor"
+                  type="number"
+                  step="0.05"
+                  min="1"
+                  max="2"
+                  value="1.15"
+                  placeholder="1.1–1.25 típ."
+                  data-i18n-attrs="placeholder=flatConv.phInertia"
+                />
                 <span class="field-hint">1–2</span>
               </div>
             </div>
@@ -350,24 +522,67 @@
 
         <div id="mountingConfigHost" class="mounting-config-host"></div>
 
-        <button type="button" class="btn-calc" id="btnCalcular" data-i18n-attrs="title=flatConv.btnSuggestedMotorsTitle" title="Lleva al bloque de motorreductores sugeridos (el cálculo ya está actualizado)" data-i18n="flatConv.btnSuggestedMotors">
+        <button type="button" class="btn-calc" id="btnCalcular" data-i18n-attrs="title=flatConv.btnSuggestedMotorsTitle" title="Abre motorreductores sugeridos para el punto de cálculo actual (ya recalculado)" data-i18n="flatConv.btnSuggestedMotors">
           Ver motorreductores sugeridos
         </button>
         <p class="calc-hint flat-calc-hint" data-i18n="flatConv.calcHintHtml" data-i18n-html>
-          Los resultados y el diagrama se <strong>actualizan solos</strong>. Este botón despliega motorreductores sugeridos.
+          El diagrama y los KPI se <strong>actualizan en vivo</strong>. El botón lleva a motorreductores sugeridos para el punto actual.
         </p>
       </aside>
 
       <div class="flat-stage layout-right">
         <section class="panel flat-dashboard">
           <header class="flat-dashboard__head">
-            <h2 class="flat-dashboard__title" data-i18n="flatConv.dashboardTitle">Dashboard de dimensionamiento</h2>
+            <h2 class="flat-dashboard__title" data-i18n="flatConv.dashboardTitle">Resumen de dimensionamiento</h2>
             <p class="flat-dashboard__lead muted" data-i18n="flatConv.dashboardLeadHtml" data-i18n-html>
               Par de diseño = max(régimen, arranque) × SF. Potencia <strong>(T<sub>diseño</sub> × ω) / η</strong>.
               <a href="#flat-conveyor-assumptions">Hipótesis</a> · pase el ratón sobre <strong>L, D, F, v</strong> en el esquema.
             </p>
           </header>
+
+          <section class="flat-scope-panel" aria-labelledby="flatScopeTitle">
+            <h3 id="flatScopeTitle" class="flat-scope-panel__title" data-i18n="flatConv.scopeTitle">Qué resuelve esta herramienta</h3>
+            <p class="flat-scope-panel__intro muted" data-i18n="flatConv.scopeIntro">
+              Pensada para integradores y planta: un punto de trabajo coherente que puede copiar y enviar al proveedor. No sustituye la selección oficial del fabricante ni memorias de banda completas.
+            </p>
+            <ul class="flat-scope-panel__list">
+              <li data-i18n="flatConv.scopeLi1">Estima fuerza de tracción, par en tambor (con factor de servicio) y potencia en motor con η motor–tambor.</li>
+              <li data-i18n="flatConv.scopeLi2">Comprueba motorreductores de ejemplo o datos manuales frente a ese punto (potencia, T₂, n₂).</li>
+              <li data-i18n="flatConv.scopeLi3">Modelo horizontal simplificado (Coulomb); no calcula tensión de banda ni adherencia Euler.</li>
+              <li data-i18n="flatConv.scopeLi4">El PDF completo y la nube avanzada son Pro; el resumen copiable es gratuito.</li>
+            </ul>
+          </section>
+
           <div class="results-grid" id="resultsGrid"></div>
+
+          <section class="flat-rfq-panel" aria-labelledby="flatRfqTitle">
+            <h3 id="flatRfqTitle" class="flat-rfq-panel__title" data-i18n="flatConv.rfqTitle">Resumen para proveedor (gratis)</h3>
+            <p class="flat-rfq-panel__lead muted" data-i18n="flatConv.rfqLead">
+              Copie entradas y resultados orientativos en texto o CSV para pegar en un correo, Excel o solicitud de oferta. Los números dependen de los supuestos del modelo (sección Hipótesis).
+            </p>
+            <div class="flat-rfq-panel__actions">
+              <button
+                type="button"
+                id="machineRfqCopyText"
+                class="button button--secondary flat-rfq-panel__btn"
+                data-i18n="flatConv.rfqBtnText"
+                data-i18n-attrs="title=flatConv.rfqBtnTextTitle"
+                title="Copia un bloque de texto con el punto de trabajo actual"
+              >
+                Copiar texto
+              </button>
+              <button
+                type="button"
+                id="machineRfqCopyCsv"
+                class="button button--ghost flat-rfq-panel__btn"
+                data-i18n="flatConv.rfqBtnCsv"
+                data-i18n-attrs="title=flatConv.rfqBtnCsvTitle"
+                title="Copia una fila CSV (encabezado + valores)"
+              >
+                Copiar CSV
+              </button>
+            </div>
+          </section>
         </section>
 
         <section class="flat-visual flat-visual--integrated" data-i18n="flatConv.visualSectionAria" data-i18n-attr="aria-label" aria-label="Esquema y referencia fotográfica">
@@ -472,7 +687,7 @@
             <div class="verify-grid">
               <div class="field">
                 <label for="verifyBrand" data-i18n="flatConv.labelVerifyBrandHtml" data-i18n-html
-                  >Marca <span class="info-chip" title="Fabricante del catálogo de demostración. Filtra los modelos disponibles en la lista." aria-label="Ayuda marca comprobador.">?</span></label
+                  >Marca <span class="info-chip" data-i18n-attrs="title=flatConv.tipBrand" title="Fabricante del catálogo de demostración. Filtra los modelos disponibles en la lista." aria-label="Ayuda marca comprobador.">?</span></label
                 >
                 <select id="verifyBrand" data-verify-brand>
                   <option value="sew">SEW-Eurodrive</option>
@@ -485,7 +700,7 @@
               </div>
               <div class="field">
                 <label for="verifySearch" data-i18n="flatConv.labelVerifySearchHtml" data-i18n-html
-                  >Filtrar modelo <span class="info-chip" title="Búsqueda por código o texto en la designación; reduce el desplegable de modelos." aria-label="Ayuda filtro modelo.">?</span></label
+                  >Filtrar modelo <span class="info-chip" data-i18n-attrs="title=flatConv.tipFilterModel" title="Búsqueda por código o texto en la designación; reduce el desplegable de modelos." aria-label="Ayuda filtro modelo.">?</span></label
                 >
                 <input id="verifySearch" type="search" data-verify-search autocomplete="off" />
                 <span class="field-hint">—</span>
@@ -557,8 +772,11 @@
           </details>
         </section>
 
-        <section class="panel">
+        <section class="panel flat-pdf-section">
           <h2 data-i18n="flatConv.pdfExportH2Html" data-i18n-html><span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Exportar informe</h2>
+          <p class="muted flat-pdf-section__hint" data-i18n="flatConv.pdfSectionHint">
+            El bloque inferior muestra siempre la opción de informe: con plan Pro puede generar el PDF completo; en gratuito verá un resumen y el enlace para contratar.
+          </p>
           <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
         </section>
 

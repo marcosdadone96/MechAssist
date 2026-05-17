@@ -51,6 +51,7 @@ function navLabels(lang) {
   const l = lang === 'en';
   return {
     home: l ? 'Home' : 'Inicio',
+    trust: l ? 'Trust' : 'Confianza',
     privacy: l ? 'Privacy' : 'Privacidad',
     terms: l ? 'Terms' : 'T\u00e9rminos',
     cookies: 'Cookies',
@@ -74,6 +75,7 @@ function render() {
   document.querySelectorAll('[data-cookie-prefs-nav]').forEach((el) => {
     const k = el.getAttribute('data-cookie-prefs-nav');
     if (k === 'home') el.textContent = n.home;
+    if (k === 'trust') el.textContent = n.trust;
     if (k === 'privacy') el.textContent = n.privacy;
     if (k === 'terms') el.textContent = n.terms;
     if (k === 'cookies') el.textContent = n.cookies;

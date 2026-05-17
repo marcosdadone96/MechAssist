@@ -132,70 +132,84 @@ export function renderParallelKeyShaftDiagram(el, p) {
   if (!(el instanceof SVGSVGElement)) return;
   const g = uid();
   const { d, b, h, t1, t2, L } = p;
-  const cx = 198;
-  const cy = 202;
-  const R = Math.min(82, Math.max(46, d * 1.28));
+  /** Corte transversal (izquierda) */
+  const cx = 188;
+  let cy = 200;
+  const R = Math.min(86, Math.max(48, d * 0.92));
   const scale = R / (d / 2);
   const bw = (b / 2) * scale * 0.95;
   const keyH = h * scale * 0.9;
   const kwDepth = t1 * scale * 0.95;
-  const sideW = Math.min(200, L * 2);
-  const artRight = 408 + sideW;
-  const artLeft = Math.min(cx - bw - 44, cx - R);
-  const artShift = 320 - (artLeft + artRight) / 2;
   const largeD = d > 100;
+  const topAnnotation = cy - R - keyH - 46;
+  if (topAnnotation < 56) cy += 56 - topAnnotation;
 
-  el.setAttribute('viewBox', '0 0 640 360');
+  /** Vista axial fija a la derecha (no escala con L; evita solape con la vista lateral) */
+  const axCx = 568;
+  const axCy = cy;
+  const axR = 40;
+
+  /** Vista lateral L: título separado de la cota L (evita solape de baselines) */
+  const barW = Math.min(320, Math.max(72, 48 + L * 0.42));
+  const barX = cx - barW / 2;
+  const barY = Math.max(300, cy + R + 56);
+  const keyBarW = Math.max(36, barW - 44);
+  const sideTitleY = barY - 52;
+  const lLabelRelY = -24;
+
+  const vbH = Math.max(430, barY + 92);
+  el.setAttribute('viewBox', `0 0 720 ${vbH}`);
   el.setAttribute('preserveAspectRatio', 'xMidYMid meet');
   el.setAttribute('role', 'img');
   el.innerHTML = `
     <defs>
-      <linearGradient id="${g}bg" x1="0" y1="0" x2="640" y2="360"><stop offset="0%" stop-color="#f8fafc"/><stop offset="100%" stop-color="#e2e8f0"/></linearGradient>
+      <linearGradient id="${g}bg" x1="0" y1="0" x2="720" y2="${vbH}"><stop offset="0%" stop-color="#f8fafc"/><stop offset="100%" stop-color="#e2e8f0"/></linearGradient>
       <linearGradient id="${g}shaft" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#64748b"/></linearGradient>
       <filter id="${g}sh"><feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.15"/></filter>
     </defs>
-    <rect width="640" height="360" fill="url(#${g}bg)"/>
-    <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">Chaveta paralela forma A · DIN 6885-1 (referencia)</text>
-    <text x="320" y="44" text-anchor="middle" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif">Corte: t₁ · h · b · longitud útil L</text>
+    <rect width="720" height="${vbH}" fill="url(#${g}bg)"/>
+    <text x="360" y="28" text-anchor="middle" font-size="15" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">Chaveta paralela forma A · DIN 6885-1 (referencia)</text>
+    <text x="360" y="46" text-anchor="middle" font-size="10" fill="#475569" font-family="Inter,system-ui,sans-serif">Izquierda: corte · derecha: vista axial · abajo: longitud útil L</text>
 
-    <g transform="translate(${artShift.toFixed(2)}, 0)">
-    <!-- Eje circular -->
+    <!-- Zona 1: corte transversal -->
+    <text x="${cx}" y="78" text-anchor="middle" font-size="10" font-weight="800" fill="#334155" font-family="Inter,system-ui,sans-serif">Corte A–A (ranura + chaveta)</text>
     <circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#${g}shaft)" stroke="#334155" stroke-width="2.5" filter="url(#${g}sh)"/>
-    <!-- Ranura (wedge cut top) -->
     <path d="M ${cx - bw} ${cy - R} L ${cx + bw} ${cy - R} L ${cx + bw} ${cy - R + kwDepth} L ${cx} ${cy - R + kwDepth + 2} L ${cx - bw} ${cy - R + kwDepth} Z"
       fill="#1e293b" stroke="#0f172a" stroke-width="1.2" opacity="0.92"/>
-    <!-- Chaveta -->
     <rect x="${cx - bw}" y="${cy - R - keyH}" width="${bw * 2}" height="${keyH}" fill="#fbbf24" stroke="#b45309" stroke-width="2" rx="1" filter="url(#${g}sh)"/>
-    <!-- Cotas -->
-    <line x1="${cx - bw - 35}" y1="${cy - R - keyH}" x2="${cx - bw - 35}" y2="${cy - R + kwDepth}" stroke="#0d9488" stroke-width="1.2"/>
-    <line x1="${cx - bw - 40}" y1="${cy - R - keyH}" x2="${cx - bw - 30}" y2="${cy - R - keyH}" stroke="#0d9488"/>
-    <line x1="${cx - bw - 40}" y1="${cy - R + kwDepth}" x2="${cx - bw - 30}" y2="${cy - R + kwDepth}" stroke="#0d9488"/>
-    <text x="${cx - bw - 42}" y="${cy - R - keyH / 2 + kwDepth / 2}" text-anchor="end" font-size="11" font-weight="700" fill="#0f766e" font-family="Inter,system-ui,sans-serif">h</text>
 
-    <line x1="${cx - bw}" y1="${cy - R - keyH - 28}" x2="${cx + bw}" y2="${cy - R - keyH - 28}" stroke="#0d9488" stroke-width="1.2"/>
-    <line x1="${cx - bw}" y1="${cy - R - keyH - 32}" x2="${cx - bw}" y2="${cy - R - keyH - 22}" stroke="#0d9488"/>
-    <line x1="${cx + bw}" y1="${cy - R - keyH - 32}" x2="${cx + bw}" y2="${cy - R - keyH - 22}" stroke="#0d9488"/>
-    <text x="${cx}" y="${cy - R - keyH - 36}" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="Inter,system-ui,sans-serif">b</text>
+    <line x1="${cx - bw - 38}" y1="${cy - R - keyH}" x2="${cx - bw - 38}" y2="${cy - R + kwDepth}" stroke="#0d9488" stroke-width="1.2"/>
+    <line x1="${cx - bw - 44}" y1="${cy - R - keyH}" x2="${cx - bw - 32}" y2="${cy - R - keyH}" stroke="#0d9488"/>
+    <line x1="${cx - bw - 44}" y1="${cy - R + kwDepth}" x2="${cx - bw - 32}" y2="${cy - R + kwDepth}" stroke="#0d9488"/>
+    <text x="${cx - bw - 46}" y="${cy - R - keyH / 2 + kwDepth / 2}" text-anchor="end" font-size="11" font-weight="700" fill="#0f766e" font-family="Inter,system-ui,sans-serif">h</text>
 
-    <text x="${Math.min(cx + R + 10, 398)}" y="${cy - 8}" font-size="${largeD ? '10' : '11'}" font-weight="800" fill="#334155" font-family="Inter,system-ui,sans-serif">Ø d = ${d.toFixed(1)} mm</text>
-    <text x="${Math.min(cx + R + 10, 398)}" y="${cy + 10}" font-size="${largeD ? '8.8' : '9.5'}" fill="#64748b" font-family="Inter,system-ui,sans-serif">t₁ = ${t1} mm · t₂ = ${t2} mm</text>
+    <line x1="${cx - bw}" y1="${cy - R - keyH - 30}" x2="${cx + bw}" y2="${cy - R - keyH - 30}" stroke="#0d9488" stroke-width="1.2"/>
+    <line x1="${cx - bw}" y1="${cy - R - keyH - 36}" x2="${cx - bw}" y2="${cy - R - keyH - 24}" stroke="#0d9488"/>
+    <line x1="${cx + bw}" y1="${cy - R - keyH - 36}" x2="${cx + bw}" y2="${cy - R - keyH - 24}" stroke="#0d9488"/>
+    <text x="${cx}" y="${cy - R - keyH - 40}" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="Inter,system-ui,sans-serif">b</text>
 
-    <!-- Vista axial (eje + ranura) -->
-    <g transform="translate(486, 208)" filter="url(#${g}sh)">
-      <circle cx="0" cy="0" r="${Math.max(24, Math.min(44, R * 0.55)).toFixed(1)}" fill="#e2e8f0" stroke="#334155" stroke-width="2"/>
-      <rect x="-${Math.max(8, (bw * 0.42)).toFixed(1)}" y="-${Math.max(24, Math.min(44, R * 0.55)).toFixed(1)}" width="${Math.max(16, (bw * 0.84)).toFixed(1)}" height="${Math.max(6, (keyH * 0.26)).toFixed(1)}" fill="#fbbf24" stroke="#b45309" stroke-width="1.3" rx="1"/>
-      <text x="0" y="${(Math.max(24, Math.min(44, R * 0.55)) + 14).toFixed(1)}" text-anchor="middle" font-size="8.5" fill="#475569" font-family="Inter,system-ui,sans-serif">Vista axial · ranura chaveta</text>
+    <text x="${cx + R + 14}" y="${cy - 10}" font-size="${largeD ? '9.5' : '11'}" font-weight="800" fill="#334155" font-family="Inter,system-ui,sans-serif">Ø d = ${d.toFixed(1)} mm</text>
+    <text x="${cx + R + 14}" y="${cy + 10}" font-size="${largeD ? '8.5' : '9.5'}" fill="#64748b" font-family="Inter,system-ui,sans-serif">t₁ = ${t1} mm · t₂ = ${t2} mm</text>
+
+    <!-- Zona 2: vista axial (columna derecha, separada del corte) -->
+    <text x="${axCx}" y="78" text-anchor="middle" font-size="10" font-weight="800" fill="#334155" font-family="Inter,system-ui,sans-serif">Vista en planta del eje</text>
+    <g transform="translate(${axCx}, ${axCy})" filter="url(#${g}sh)">
+      <circle cx="0" cy="0" r="${axR}" fill="#e2e8f0" stroke="#334155" stroke-width="2"/>
+      <rect x="${(-(bw / R) * axR * 0.9).toFixed(1)}" y="${-axR}" width="${((2 * bw) / R * axR * 0.9).toFixed(1)}" height="${Math.max(7, (keyH / R) * axR * 0.35).toFixed(1)}"
+        fill="#fbbf24" stroke="#b45309" stroke-width="1.4" rx="1"/>
+      <text x="0" y="${axR + 22}" text-anchor="middle" font-size="8.8" fill="#475569" font-family="Inter,system-ui,sans-serif">Ranura y chaveta (esquema)</text>
     </g>
 
-    <!-- Vista lateral longitud L (encajada a la derecha sin salir del viewBox) -->
-    <g transform="translate(408, 148)" filter="url(#${g}sh)">
-      <rect x="0" y="0" width="${Math.min(200, L * 2)}" height="34" rx="4" fill="#64748b" stroke="#334155" stroke-width="2"/>
-      <rect x="18" y="-12" width="${Math.min(164, Math.max(40, L * 2 - 36))}" height="12" fill="#fbbf24" stroke="#b45309" stroke-width="1.5"/>
-      <text x="${(Math.min(200, L * 2) / 2).toFixed(1)}" y="-20" text-anchor="middle" font-size="10" font-weight="700" fill="#b45309" font-family="Inter,system-ui,sans-serif">L ≈ ${L} mm</text>
-      <text x="6" y="50" font-size="9" fill="#475569" font-family="Inter,system-ui,sans-serif">Vista lateral</text>
+    <!-- Zona 3: longitud L (título arriba; cota L sobre la chaveta, sin solaparse) -->
+    <text x="${cx}" y="${sideTitleY.toFixed(1)}" text-anchor="middle" font-size="10" font-weight="800" fill="#334155" font-family="Inter,system-ui,sans-serif">Vista lateral · longitud útil</text>
+    <g transform="translate(${barX.toFixed(1)}, ${barY})" filter="url(#${g}sh)">
+      <rect x="0" y="0" width="${barW.toFixed(1)}" height="32" rx="5" fill="#64748b" stroke="#334155" stroke-width="2"/>
+      <rect x="${((barW - keyBarW) / 2).toFixed(1)}" y="-11" width="${keyBarW.toFixed(1)}" height="11" fill="#fbbf24" stroke="#b45309" stroke-width="1.5" rx="1"/>
+      <text x="${(barW / 2).toFixed(1)}" y="${lLabelRelY}" text-anchor="middle" font-size="10.5" font-weight="800" fill="#b45309" font-family="Inter,system-ui,sans-serif">L = ${L} mm</text>
+      <text x="6" y="48" font-size="8.8" fill="#475569" font-family="Inter,system-ui,sans-serif">Ancho del dibujo acotado; la cota L es la real.</text>
     </g>
 
-    <text x="20" y="342" font-size="9" fill="#64748b" font-family="Inter,system-ui,sans-serif">Aplastamiento: σ ≈ 2|T| / (d · L · h/2); verificar norma y tolerancias.</text>
+    <text x="360" y="${vbH - 18}" text-anchor="middle" font-size="9" fill="#64748b" font-family="Inter,system-ui,sans-serif">Aplastamiento: σ ≈ 2|T| / (d · L · h/2); verificar norma y tolerancias.</text>
   `;
 }
 

@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Relación i, longitud primitiva y velocidad lineal en transmisión por correas V, síncrona, plana o Poly-V. Diseño de poleas. Online gratis." />
-    <title>Calculadora de transmisión por correas online — TheMechAssist</title>
+    <meta name="description" data-i18n="belt.metaDesc" data-i18n-attr="content" content="Correa V, síncrona, plana o Poly-V: relación, longitud, velocidad lineal y esquema. Orientativo." />
+    <title data-i18n="belt.docTitle">Correas — Laboratorio — TheMechAssist</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -12,11 +12,16 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/calc-belts.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/calc-belts.html" />
-    <meta property="og:title" content="Calculadora de transmisión por correas online" />
-    <meta property="og:description" content="Relación i, longitud primitiva y velocidad lineal en transmisión por correas V, síncrona, plana o Poly-V. Diseño de poleas. Online gratis." />
+    <meta property="og:url" content="https://www.themechassist.com/calc-belts.html" id="mdr-og-url" />
+    <meta property="og:title" data-i18n="belt.docTitle" data-i18n-attr="content" content="Correas — Laboratorio — TheMechAssist" />
+    <meta
+      property="og:description"
+      data-i18n="belt.metaDesc"
+      data-i18n-attr="content"
+      content="Correa V, síncrona, plana o Poly-V: relación, longitud, velocidad lineal y esquema. Orientativo."
+    />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de transmisión por correas online" />
+    <meta name="twitter:title" data-i18n="belt.docTitle" data-i18n-attr="content" content="Correas — Laboratorio — TheMechAssist" />
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
@@ -30,6 +35,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -45,19 +52,32 @@
     </header>
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2 data-i18n="belt.h2">Transmisión por correas · cinemática y régimen de velocidad</h2>
-        <p class="calc-seo-intro" data-i18n="belt.calcSeoIntro">
-          Esta calculadora aborda la cinemática de la transmisión por correas entre dos poleas: relación de velocidades, longitud primitiva de correa abierta y régimen admisible de velocidad lineal según el tipo de perfil. Combina criterios habituales de diseño para correa trapezoidal ISO 4184, correa síncrona por paso y número de dientes, así como modos planos y Poly-V orientativos. Es útil para ingenieros que dimensionan accionamientos compactos o revisan una sustitución en campo antes de pedir el conjunto al proveedor. Por ejemplo, puede contrastar si una correa más corta sigue manteniendo ángulo de abrazamiento suficiente cuando cambia la distancia entre ejes en un reconductor industrial.
-        </p>
-        <p class="lab-lead" data-i18n="belt.leadHtml" data-i18n-html>
-          Elige la <strong>familia de correa</strong>; el formulario adapta las entradas y el modelo:
-          <strong>correa trapezoidal</strong> (perfil ISO 4184 + 1–3&nbsp;% de deslizamiento),
-          <strong>síncrona</strong> (número de dientes Z y paso p, sin deslizamiento cinemático),
-          <strong>plana</strong> y <strong>Poly-V</strong> (énfasis en <strong>v</strong> y ángulo de abrazamiento).
-          Longitud primitiva para <strong>correa abierta</strong> y veredicto de <strong>velocidad lineal</strong> en el primitivo motriz.
-        </p>
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="belt.h2">Transmisión por correas · cinemática y régimen de velocidad</h2>
+          <p class="lab-calc-hero-lead" data-i18n="belt.heroLead">
+            Cinemática entre poleas (relación, longitud primitiva abierta, velocidad lineal) y veredicto por familia: V ISO 4184, síncrona, plana y Poly-V.
+          </p>
+          <details class="lab-calc-seo">
+            <summary data-i18n="belt.seoSummary">Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro" data-i18n="belt.calcSeoIntro">
+              Esta calculadora aborda la cinemática de la transmisión por correas entre dos poleas: relación de velocidades, longitud primitiva de correa abierta y régimen admisible de velocidad lineal según el tipo de perfil. Combina criterios habituales de diseño para correa trapezoidal ISO 4184, correa síncrona por paso y número de dientes, así como modos planos y Poly-V orientativos. Es útil para ingenieros que dimensionan accionamientos compactos o revisan una sustitución en campo antes de pedir el conjunto al proveedor. Por ejemplo, puede contrastar si una correa más corta sigue manteniendo ángulo de abrazamiento suficiente cuando cambia la distancia entre ejes en un reconductor industrial.
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="belt.methodSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help" data-i18n="belt.leadHtml" data-i18n-html>
+                Elige la <strong>familia de correa</strong>; el formulario adapta las entradas y el modelo:
+                <strong>correa trapezoidal</strong> (perfil ISO 4184 + 1–3&nbsp;% de deslizamiento),
+                <strong>síncrona</strong> (número de dientes Z y paso p, sin deslizamiento cinemático),
+                <strong>plana</strong> y <strong>Poly-V</strong> (énfasis en <strong>v</strong> y ángulo de abrazamiento).
+                Longitud primitiva para <strong>correa abierta</strong> y veredicto de <strong>velocidad lineal</strong> en el primitivo motriz.
+              </p>
+            </div>
+          </details>
+        </header>
         <div class="lab-presets-row">
-          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <span class="lab-presets-row__label" data-i18n="belt.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="bPresetsBar"></div>
         </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
@@ -322,10 +342,6 @@
               <div id="bElementResults" class="lab-element-columns"></div>
             </details>
             <div id="bAlerts" class="lab-alerts"></div>
-            <div class="lab-results-share" id="bShareLinkWrap" aria-live="polite">
-              <button type="button" class="lab-btn" id="bCopyLinkBtn">Copiar enlace</button>
-              <div class="lab-copy-toast" id="bCopyToast" role="status">¡Enlace copiado!</div>
-            </div>
             <div class="lab-results-wrap" id="bResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
@@ -336,13 +352,26 @@
                 </svg>
                 <span class="lab-results-computing__label" data-i18n="belt.recalculating">Recalculando</span>
               </div>
-              <details class="lab-results-details lab-results-details--chevron-end">
+              <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked">
                 <summary data-i18n="belt.summaryFull">Resultado completo</summary>
                 <div class="lab-results" id="bResults"></div>
               </details>
+              <div class="lab-results-actions">
+                <button type="button" class="lab-btn lab-btn--block" id="bCopyResults" data-i18n="belt.copyResults">
+                  Copiar resultados
+                </button>
+              </div>
             </div>
+            <p class="lab-related-hint" data-i18n="belt.relatedHintHtml" data-i18n-html>
+              ¿Dimensionando una transmisión completa?
+              <a href="machines-hub.html">Calcula también la máquina accionada →</a>
+            </p>
             <div id="bSubstitution"></div>
             <div id="labPurchaseSuggestions" hidden></div>
+            <div class="lab-results-share lab-results-share--footer" id="bShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="bCopyLinkBtn" data-i18n="belt.copyLink">Copiar enlace</button>
+              <div class="lab-copy-toast" id="bCopyToast" role="status" data-i18n="belt.copyToast">¡Enlace copiado!</div>
+            </div>
           </div>
         </div>
       </section>

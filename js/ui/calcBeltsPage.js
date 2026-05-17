@@ -27,6 +27,7 @@ import {
   runCalcWithIndustrialFeedback,
   updateLabShareVisibility,
   wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { commerceIdForBeltSelection } from '../data/commerceCatalog.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
@@ -95,6 +96,7 @@ function beltLabFinalVerdict(r) {
 const BELT_PRESETS = [
   {
     label: 'Motor → ventilador industrial',
+    labelKey: 'belt.preset1',
     values: {
       bBeltType: 'v_trapezoidal',
       bVProfile: 'SPA',
@@ -108,6 +110,7 @@ const BELT_PRESETS = [
   },
   {
     label: 'Servomotor → husillo CNC',
+    labelKey: 'belt.preset2',
     values: {
       bBeltType: 'synchronous',
       bSyncPitch: '5',
@@ -119,6 +122,7 @@ const BELT_PRESETS = [
   },
   {
     label: 'Motor → bomba centrífuga',
+    labelKey: 'belt.preset3',
     values: {
       bBeltType: 'v_trapezoidal',
       bVProfile: 'SPB',
@@ -786,6 +790,9 @@ document.getElementById('bBeltType')?.addEventListener('change', () => {
 watchLangAndApply(BELTS_PAGE_EN, { onEnApplied: () => scheduleBeltRecalc() });
 
 wireLabCopyLink('bCopyLinkBtn', 'bCopyToast');
+wireLabCopyResultsButton('bCopyResults', {
+  moduleTitle: bx('Correas de transmisi\u00f3n', 'Transmission belts'),
+});
 
 runCalcWithIndustrialFeedback(wrap, refreshCore);
 mountLabCloudSaveBar('Correas de transmisi\u00f3n');

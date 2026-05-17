@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Mis c&#225;lculos guardados &#8212; TheMechAssist</title>
+    <meta
+      name="description"
+      content="Instant&#225;neas guardadas en TheMechAssist Cloud: fecha, tipo y detalle JSON."
+    />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
+    <link rel="canonical" href="https://www.themechassist.com/my-saved-calcs.html" id="mdr-canonical" />
+    <link rel="stylesheet" href="css/app.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "@/lib/supabaseClient": "./js/lib/supabaseClient.js"
+        }
+      }
+    </script>
+    <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
+    <style>
+      .msc-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+      }
+      #mscDialog {
+        max-width: min(52rem, 96vw);
+        border: 1px solid rgba(15, 23, 42, 0.12);
+        border-radius: 0.5rem;
+        padding: 0;
+      }
+      #mscDialog::backdrop {
+        background: rgba(15, 23, 42, 0.35);
+      }
+      .msc-dialog__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+      }
+      .msc-dialog__body {
+        padding: 0.75rem 1rem 1rem;
+        max-height: min(70vh, 32rem);
+        overflow: auto;
+      }
+      #mscDialogPre {
+        margin: 0;
+        font-size: 0.78rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="fileProtoWarn" class="runtime-error" hidden role="alert"></div>
+    <script>
+      (function () {
+        if (location.protocol === 'file:') {
+          var el = document.getElementById('fileProtoWarn');
+          if (el) {
+            el.hidden = false;
+            el.textContent =
+              'Use un servidor HTTP (npx --yes serve .). Con file:// los modulos pueden no cargar.';
+          }
+        }
+      })();
+    </script>
+
+    <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
+        <span class="site-nav__title">The<em>MechAssist</em></span>
+      </a>
+      <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">M&#225;quinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidr&#225;ulica</a>
+        <a class="site-nav__link" href="my-gearmotors.html"
+          ><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a
+        >
+        <a class="site-nav__link" href="my-saved-calcs.html" aria-current="page" id="nav-saved" data-i18n="nav.mySavedCalcs"
+          >Mis c&#225;lculos guardados</a
+        >
+      </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">&#183;</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-main app-main--flat-wb gearmotor-db-main">
+      <div class="panel gearmotor-db">
+        <header class="gearmotor-db__head">
+          <p class="flat-sidebar__eyebrow">TheMechAssist Cloud</p>
+          <h1 class="flat-sidebar__title" id="mscTitle">Mis c&#225;lculos guardados</h1>
+          <p class="flat-sidebar__lead muted" id="mscLead"></p>
+          <div class="gearmotor-db__toolbar" style="margin-top: 0.5rem">
+            <button type="button" class="button button--ghost" id="mscRefresh">Actualizar</button>
+          </div>
+          <p class="muted" id="mscStatus" role="status" hidden></p>
+        </header>
+
+        <div class="gearmotor-db__table-wrap">
+          <table class="gearmotor-db__table" aria-describedby="mscStatus">
+            <thead>
+              <tr>
+                <th data-msc-tx="thWhen">Fecha</th>
+                <th data-msc-tx="thType">Tipo</th>
+                <th data-msc-tx="thActions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="mscTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <dialog id="mscDialog" aria-labelledby="mscDialogTitle">
+      <div class="msc-dialog__head">
+        <h2 id="mscDialogTitle" class="flat-sidebar__title" style="font-size: 1rem; margin: 0">Detalle</h2>
+        <button type="button" class="button button--ghost" id="mscDialogClose" data-msc-tx="dialogClose">Cerrar</button>
+      </div>
+      <div class="msc-dialog__body">
+        <pre id="mscDialogPre"></pre>
+      </div>
+    </dialog>
+
+    <footer class="app-legal-foot">
+      <nav class="app-legal-foot__links" aria-label="Legal">
+        <a href="trust.html" data-i18n="footer.trust">Confianza</a>
+        <a href="privacy.html" data-i18n="footer.privacy">Privacidad</a>
+        <a href="terms.html" data-i18n="footer.terms">T&#233;rminos</a>
+      </nav>
+    </footer>
+
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
+
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
+    <script type="module">
+      import { mountMySavedCalcsPage } from './js/ui/mySavedCalcsPage.js';
+      mountMySavedCalcsPage();
+    </script>
+  </body>
+</html>

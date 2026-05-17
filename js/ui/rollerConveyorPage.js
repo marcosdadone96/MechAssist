@@ -20,7 +20,15 @@ import { initInfoChipPopovers } from './infoChipPopover.js';
 import { mountMachineConfigBar } from './machineConfigMount.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
-import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { incrementCalcCounter } from '../services/calcCounter.js';
+import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
+import { ROLLER_CONVEYOR_EN } from '../lab/i18n/pages/rollerConveyorEn.js';
+import { applyRollerConveyorPageLanguage } from './rollerConveyorStaticI18n.js';
+import { ROLLER_PRESET_BY_ID } from '../modules/machineHubPresets.js';
+
+const ROLLER_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...ROLLER_CONVEYOR_EN };
 
 const inputIds = [
   'length',
@@ -92,6 +100,143 @@ function formatMounting(pref) {
     ? { B3: 'B3 foot', B5: 'B5 flange', B14: 'B14 flange', hollowShaft: 'Hollow shaft' }
     : { B3: 'B3 patas', B5: 'B5 brida', B14: 'B14 brida', hollowShaft: 'Eje hueco' };
   return `${typeMap[pref.mountingType] || pref.mountingType} · ${pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal'}`;
+}
+
+/**
+ * @param {ReturnType<typeof readInputs>} raw
+ * @param {ReturnType<typeof computeRollerConveyor>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ * @param {'es'|'en'} lang
+ */
+function buildRollerRfqPlainText(raw, r, mount, lang) {
+  const en = lang === 'en';
+  const d = r.detail || {};
+  const when = new Date().toISOString().slice(0, 19).replace('T', ' ') + ' UTC';
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const head = en
+    ? 'TheMechAssist — Motorized roller conveyor (indicative duty point)'
+    : 'TheMechAssist — Transportador de rodillos motorizado (punto orientativo)';
+  const hIn = en ? '== Inputs ==' : '== Entradas ==';
+  const hOut = en ? '== Results (indicative) ==' : '== Resultados (orientativos) ==';
+  const hMount = en ? '== Mounting preference (for RFQ) ==' : '== Preferencia de montaje (RFQ) ==';
+  const disc = en
+    ? 'Disclaimer: horizontal rolling-resistance model; does not replace OEM roller data or safety validation.'
+    : 'Aviso: modelo horizontal con rodadura equivalente; no sustituye datos OEM de rodillos ni validación de seguridad.';
+
+  const parts = [
+    head,
+    `${en ? 'Timestamp (UTC)' : 'Fecha (UTC)'}: ${when}`,
+  ];
+  if (url) parts.push(`${en ? 'Source' : 'Origen'}: ${url}`);
+  parts.push(
+    '',
+    hIn,
+    `${en ? 'Useful length L' : 'Longitud útil L'} (m): ${formatNum(raw.length_m, 3)}`,
+    `${en ? 'Total load mass m' : 'Masa total m'} (kg): ${formatNum(raw.loadMass_kg, 1)}`,
+    `${en ? 'Line speed v' : 'Velocidad v'} (m/s): ${formatNum(raw.speed_m_s, 3)}`,
+    `${en ? 'Drive roller D' : 'Rodillo motriz D'} (mm): ${formatNum(raw.rollerDiameter_mm, 1)}`,
+    `${en ? 'Roller pitch' : 'Paso rodillos'} (mm): ${formatNum(raw.rollerPitch_mm, 0)}`,
+    `${en ? 'Load support mode' : 'Modo apoyo carga'}: ${raw.loadSupportMode}`,
+    `${en ? 'Pallet preset' : 'Paleta'}: ${raw.palletPreset}`,
+    `${en ? 'Pallet orientation' : 'Orientación paleta'}: ${raw.palletOrientation}`,
+    `${en ? 'Uniform rollers override' : 'Rodillos bajo carga (manual)'}: ${raw.uniformRollersOverride || '—'}`,
+    `${en ? 'Rolling resistance Crr' : 'Rodadura Crr'}: ${formatNum(raw.rollingResistanceCoeff, 4)}`,
+    `${en ? 'Efficiency motor to shaft eta' : 'Rendimiento η motor–eje'} (%): ${formatNum(raw.efficiency_pct, 1)}`,
+    `${en ? 'Service factor' : 'Factor de servicio'}: ${formatNum(r.serviceFactorUsed ?? raw.serviceFactor, 3)}`,
+    `${en ? 'Load duty' : 'Tipo de carga'}: ${raw.loadDuty}`,
+    `${en ? 'Design standard' : 'Marco normativo'}: ${raw.designStandard}`,
+    `${en ? 'Additional resistance' : 'Resistencia adicional'} (N): ${formatNum(raw.additionalResistance_N, 1)}`,
+    `${en ? 'Accel time' : 'Tiempo aceleración'} (s): ${formatNum(raw.accelTime_s, 2)}`,
+    `${en ? 'Inertia factor' : 'Factor inercia'}: ${formatNum(raw.inertiaStartingFactor, 3)}`,
+    '',
+    hOut,
+    `${en ? 'Steady traction F' : 'Fuerza régimen F'} (N): ${formatNum(d.F_steady_N ?? r.totalForce_N, 2)}`,
+    `${en ? 'Design torque (incl. SF)' : 'Par diseño (incl. SF)'} (N·m): ${formatNum(r.torqueWithService_Nm, 2)}`,
+    `${en ? 'Motor shaft power (sizing)' : 'Potencia eje motor'} (kW): ${formatNum(r.requiredMotorPower_kW, 3)}`,
+    `${en ? 'Drum rpm' : 'rpm tambor'}: ${formatNum(r.drumRpm, 2)}`,
+    `${en ? 'Mass flow (model)' : 'Caudal másico (modelo)'} (kg/s): ${formatNum(r.massFlow_kg_s, 3)}`,
+    '',
+    hMount,
+    formatMounting(mount) +
+      (mount.machineShaftDiameter_mm != null
+        ? ` · ${en ? 'Machine shaft Ø' : 'Ø eje máquina'} ${formatNum(mount.machineShaftDiameter_mm, 1)} mm`
+        : ''),
+    '',
+    disc,
+  );
+  return parts.join('\n');
+}
+
+/**
+ * @param {ReturnType<typeof readInputs>} raw
+ * @param {ReturnType<typeof computeRollerConveyor>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ */
+function buildRollerRfqCsv(raw, r, mount) {
+  const d = r.detail || {};
+  const headers = [
+    'product',
+    'generated_utc',
+    'page_url',
+    'L_m',
+    'load_mass_kg',
+    'v_m_s',
+    'D_roller_mm',
+    'roller_pitch_mm',
+    'load_support_mode',
+    'pallet_preset',
+    'pallet_orientation',
+    'uniform_rollers_override',
+    'Crr',
+    'efficiency_pct',
+    'service_factor',
+    'load_duty',
+    'design_standard',
+    'additional_resistance_N',
+    'accel_time_s',
+    'inertia_factor',
+    'mounting',
+    'orientation',
+    'machine_shaft_d_mm',
+    'F_steady_N',
+    'T_design_Nm',
+    'P_motor_kW',
+    'n_drum_rpm',
+    'mass_flow_kg_s',
+  ];
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const when = new Date().toISOString();
+  const values = [
+    'TheMechAssist_roller_conveyor',
+    when,
+    url,
+    raw.length_m,
+    raw.loadMass_kg,
+    raw.speed_m_s,
+    raw.rollerDiameter_mm,
+    raw.rollerPitch_mm,
+    raw.loadSupportMode,
+    raw.palletPreset,
+    raw.palletOrientation,
+    raw.uniformRollersOverride || '',
+    raw.rollingResistanceCoeff,
+    raw.efficiency_pct,
+    r.serviceFactorUsed ?? raw.serviceFactor,
+    raw.loadDuty,
+    raw.designStandard,
+    raw.additionalResistance_N,
+    raw.accelTime_s,
+    raw.inertiaStartingFactor,
+    mount.mountingType,
+    mount.orientation,
+    mount.machineShaftDiameter_mm ?? '',
+    d.F_steady_N ?? r.totalForce_N,
+    r.torqueWithService_Nm,
+    r.requiredMotorPower_kW,
+    r.drumRpm,
+    r.massFlow_kg_s,
+  ];
+  return `${headers.map(escapeCsvCell).join(',')}\n${values.map(escapeCsvCell).join(',')}`;
 }
 
 function clampNum(n, lo, hi) {
@@ -221,6 +366,47 @@ function syncLoadSupportUi() {
   if (customDims) customDims.hidden = preset !== 'custom';
 }
 
+function writeRollerFormValue(id, val) {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement) && !(el instanceof HTMLSelectElement)) return;
+  el.value = val === '' || val == null ? '' : String(val);
+}
+
+function syncRollerRangeSlidersFromNumberInputs() {
+  const pairs = [
+    ['lengthR', 'length', 0.5, 80, 0.1],
+    ['loadMassR', 'loadMass', 1, 8000, 1],
+    ['speedR', 'speed', 0.05, 3, 0.01],
+    ['rollerDR', 'rollerD', 40, 400, 1],
+    ['rollingResistanceR', 'rollingResistance', 0.01, 0.12, 0.001],
+    ['efficiencyR', 'efficiency', 70, 99, 0.5],
+    ['rollerPitchR', 'rollerPitch', 50, 250, 1],
+  ];
+  for (const [rangeId, numId, lo, hi, step] of pairs) {
+    const range = document.getElementById(rangeId);
+    const num = document.getElementById(numId);
+    if (!(range instanceof HTMLInputElement) || !(num instanceof HTMLInputElement)) continue;
+    let v = parseFloat(String(num.value).replace(',', '.'));
+    if (!Number.isFinite(v)) v = lo;
+    v = clampNum(v, lo, hi);
+    if (step != null && step > 0) v = Math.round(v / step) * step;
+    num.value = String(v);
+    range.value = String(v);
+  }
+}
+
+function applyRollerPresetFromId(presetId) {
+  const def = ROLLER_PRESET_BY_ID[presetId];
+  if (!def) return;
+  for (const [k, v] of Object.entries(def.values)) {
+    writeRollerFormValue(k, v);
+  }
+  syncRollerRangeSlidersFromNumberInputs();
+  syncLoadDutyUi();
+  syncLoadSupportUi();
+  refresh();
+}
+
 function getPalletAlongTransportMm() {
   const mode = readSelect('loadSupportMode', 'uniform');
   if (mode !== 'pallet') return null;
@@ -302,8 +488,9 @@ function localizeRollerStaticContent() {
     if (el) el.innerHTML = h;
   };
   setText('.flat-sidebar__title', 'Motorized roller line');
+  setText('details.flat-sidebar-intro .flat-sidebar-intro__summary', 'Calculator description and scope');
   setText(
-    '.flat-sidebar__lead',
+    'details.flat-sidebar-intro .flat-sidebar__lead',
     'Horizontal line with rolling resistance and extra drag. Same workflow as flat belt: results panel and schematic on the right.',
   );
   setText('.help-details.flat-help > summary', 'Quick guide');
@@ -496,6 +683,7 @@ function refresh() {
   const els = getEls();
   const raw = readInputs();
   const r = computeRollerConveyor(raw);
+  if (Number.isFinite(r.requiredMotorPower_kW)) incrementCalcCounter();
   const d = r.detail || {};
 
   if (els.diagram) {
@@ -722,11 +910,42 @@ bindRollerRangeSlider('rollerPitchR', 'rollerPitch', 50, 250, 1);
 
 localizeRollerStaticContent();
 refresh();
+
+wireMachineRfqExport({
+  getPayload: () => {
+    const raw = readInputs();
+    return { raw, result: computeRollerConveyor(raw), mount: readMountingPreferences() };
+  },
+  buildPlainText: buildRollerRfqPlainText,
+  buildCsv: buildRollerRfqCsv,
+  toastCopiedEn: MACHINE_HUB_UX_EN['machineHub.toastRfqCopied'],
+  toastErrEn: MACHINE_HUB_UX_EN['machineHub.toastRfqErr'],
+});
+
+watchLangAndApply(ROLLER_PAGE_EN, {
+  onEnApplied: () => {
+    document.documentElement.lang = 'en';
+    applyRollerConveyorPageLanguage();
+    localizeRollerStaticContent();
+    syncLoadDutyUi();
+    syncLoadSupportUi();
+    syncRollersSuggestion();
+    initInfoChipPopovers(document.body);
+    refresh();
+  },
+});
+
+document.querySelector('.flat-sidebar')?.addEventListener('click', (e) => {
+  const t = e.target instanceof Element ? e.target.closest('[data-roller-preset]') : null;
+  if (!(t instanceof HTMLButtonElement)) return;
+  const id = t.getAttribute('data-roller-preset');
+  if (id) applyRollerPresetFromId(id);
+});
+
 mountMachineConfigBar();
 
 window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
   location.reload();
 });
 
-mountLabCloudSaveBar('Transportador de rodillos');
 

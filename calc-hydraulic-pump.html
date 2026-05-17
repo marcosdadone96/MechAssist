@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculadora de bomba hidráulica potencia y caudal online — TheMechAssist</title>
+    <title data-i18n="hpump.docTitle">Calculadora de bomba hidráulica potencia y caudal online — TheMechAssist</title>
     <meta
       name="description"
       content="Caudal, presión, potencia del grupo y pérdidas en tuberías según Darcy-Weisbach orientativo. Oleohidráulica. Gratis online."
@@ -221,6 +221,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -236,13 +238,30 @@
     </header>
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2>Bomba Hidráulica · Potencia y conducciones oleohidráulicas</h2>
-        <p class="calc-seo-intro">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="hpump.h2">Bomba Hidráulica · Potencia y conducciones oleohidráulicas</h2>
+          <p class="lab-scope-note" data-i18n="hpump.scopeNote">
+            Cálculo orientativo para dimensionado previo. Confirma siempre con catálogo de fabricante y normativa aplicable (ISO 4413 / ISO 4414).
+          </p>
+          <p class="lab-calc-hero-lead" data-i18n="hpump.heroLead">
+            Desplazamiento, caudal, potencia y pérdidas en tuberías (Darcy simplificado); modos diseño/diagnóstico y alertas orientativas (cavitación, NPSH en modo proyecto).
+          </p>
+          <details class="lab-calc-seo">
+            <summary>Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro">
           Aquí se enlazan el desplazamiento y el régimen de la bomba con el caudal efectivo, la potencia absorbida y la línea de presión de trabajo, incorporando un balance simplificado de pérdidas en tuberías por fricción según Reynolds y Darcy-Weisbach con visualización del régimen laminar o turbulento. El marco sirve para dimensionar grupos oleohidráulicos móviles y estacionarios antes de confirmar curvas con el fabricante. Es útil para ingenieros de mantenimiento que sustituyen mangueras y racores y necesitan saber si suben las pérdidas locales por culpa del nuevo trazado. Considere validar la temperatura del aceite cuando el circuito se alarga en una prensa que trabaja en tres turnos.
-        </p>
-        <p class="lab-lead">
-          Módulo avanzado para análisis de bomba y líneas oleohidráulicas, con asesor IA de cavitación, pérdida de carga y criterio final de seguridad y eficiencia.
-        </p>
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="hpump.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help" id="hpMethodologyLead">
+                Módulo avanzado para análisis de bomba y líneas oleohidráulicas, con <strong>reglas y alertas</strong> de cavitación, pérdida de carga y veredicto orientativo de seguridad y eficiencia.
+                Darcy–Weisbach y Reynolds simplificados; en <strong>modo proyecto</strong> rho y Pv del aceite siguen una tendencia aproximada con la temperatura introducida (no son datos de ficha). NPSHa y curvas son <strong>orientativos</strong> — confirme con ficha de bomba y aceite.
+              </p>
+            </div>
+          </details>
+        </header>
         <div class="lab-alert lab-alert--info" style="margin-bottom: 0.7rem">
           <div class="lab-alert__body">
             <strong>Cómo obtener datos clave:</strong> la <strong>viscosidad cinemática (cSt)</strong> sale de la ficha del aceite (normalmente a 40 °C y 100 °C, ISO VG), y el
@@ -292,7 +311,7 @@
                   <div class="lab-field">
                     <label for="hpOilTempC">Temperatura aceite (°C)</label>
                     <input id="hpOilTempC" type="number" step="any" value="46" />
-                    <span class="hint">Trazabilidad; Pv fija simplificada en módulo</span>
+                    <span class="hint">Modo proyecto: rho y Pv(T) aproximados para NPSHa; no sustituyen ficha ISO VG del aceite.</span>
                   </div>
                 </div>
               </div>
@@ -332,23 +351,23 @@
                     <p class="lab-field-help">Puede introducir presión en bar o PSI; el cálculo se unifica en bar para las ecuaciones del módulo.</p>
                   </div>
                   <div class="lab-field">
-                    <label for="hpPressure">Presión de trabajo</label>
+                    <label for="hpPressure" data-i18n="hpump.labelPressure">Presión de trabajo</label>
                     <input id="hpPressure" type="number" min="1" step="any" value="180" />
                     <span class="hint">Presión efectiva de operación</span>
                     <div id="hpPressureZone" class="hp-pressure-zone hp-pressure-zone--green" aria-live="polite"></div>
-                    <p class="lab-field-help">Indicador respecto al rango típico del tipo de bomba seleccionado (orientativo).</p>
+                    <p class="lab-field-help" data-i18n="hpump.helpPressure">Indicador respecto al rango típico del tipo de bomba seleccionado (orientativo).</p>
                   </div>
                   <div class="lab-field">
-                    <label for="hpRpm">RPM motor</label>
+                    <label for="hpRpm" data-i18n="hpump.labelSpeed">RPM motor</label>
                     <input id="hpRpm" type="number" min="100" step="any" value="1450" />
                     <span class="hint">Velocidad del eje primario</span>
-                    <p class="lab-field-help">Con el desplazamiento define el caudal teórico de bomba y el par requerido en el eje.</p>
+                    <p class="lab-field-help" data-i18n="hpump.helpSpeed">Con el desplazamiento define el caudal teórico de bomba y el par requerido en el eje.</p>
                   </div>
                   <div class="lab-field">
-                    <label for="hpDispCm3Rev">Desplazamiento (cm³/rev)</label>
+                    <label for="hpDispCm3Rev" data-i18n="hpump.labelDisplacement">Desplazamiento (cm³/rev)</label>
                     <input id="hpDispCm3Rev" type="number" min="0.1" step="any" value="32" />
                     <span class="hint">Volumen por vuelta</span>
-                    <p class="lab-field-help">Determina el caudal teórico Q<sub>teo</sub> = D×n; el caudal real incorpora eficiencia volumétrica.</p>
+                    <p class="lab-field-help" data-i18n="hpump.helpDisplacement">Determina el caudal teórico Q<sub>teo</sub> = D×n; el caudal real incorpora eficiencia volumétrica.</p>
                   </div>
                   <div class="lab-field lab-field--wide">
                     <label for="hpSuctionIn">Diámetro de succión a bomba</label>
@@ -393,7 +412,7 @@
 
               <div class="hp-block hp-block--pipes">
                 <div class="hp-block__head">
-                  <h3 class="hp-block__title">② Conducciones — mapa de pérdida de carga</h3>
+                  <h3 class="hp-block__title" data-i18n="hpump.sectionPipe">② Conducciones — mapa de pérdida de carga</h3>
                   <p class="hp-block__sub">Tipo de línea, caudal en conducción, viscosidad, longitud, diámetro interior, codos y válvulas.</p>
                 </div>
                 <div class="lab-grid lab-grid--2">
@@ -435,13 +454,13 @@
                     </table>
                   </div>
                   <div class="lab-field">
-                    <label for="pipeLengthM">Longitud de línea (m)</label>
+                    <label for="pipeLengthM" data-i18n="hpump.labelPipeLen">Longitud de línea (m)</label>
                     <input id="pipeLengthM" type="number" min="0.5" step="any" value="12" />
                     <span class="hint">Pérdida lineal principal</span>
                     <p class="lab-field-help">Incrementa la pérdida de carga proporcionalmente en el término f·(L/D) de Darcy-Weisbach.</p>
                   </div>
                   <div class="lab-field">
-                    <label for="pipeDiaIn">Diámetro interior actual</label>
+                    <label for="pipeDiaIn" data-i18n="hpump.labelPipeDiam">Diámetro interior actual</label>
                     <select id="pipeDiaIn" class="hp-dia-select">
                       <option value="0.125">1/8"</option>
                       <option value="0.25">1/4"</option>

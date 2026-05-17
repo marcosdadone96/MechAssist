@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Tensión, potencia y elevación en cinta inclinada según pendiente y rozamiento. Check motorreductor orientativo. Herramienta online gratuita." />
+    <meta name="description" content="Tensión, potencia y factor de uso en transportador en pendiente. Comprobación orientativa de motorreductor." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,13 +11,13 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/inclined-conveyor.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/inclined-conveyor.html" />
-    <meta property="og:title" content="Calculadora de cinta transportadora inclinada online" />
-    <meta property="og:description" content="Tensión, potencia y elevación en cinta inclinada según pendiente y rozamiento. Check motorreductor orientativo. Herramienta online gratuita." />
+    <meta property="og:url" content="https://www.themechassist.com/inclined-conveyor.html" id="mdr-og-url" />
+    <meta property="og:title" content="Cinta inclinada — TheMechAssist" />
+    <meta property="og:description" content="Tensión, potencia y factor de uso en transportador en pendiente. Comprobación orientativa de motorreductor." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de cinta transportadora inclinada online" />
+    <meta name="twitter:title" content="Cinta inclinada — TheMechAssist" />
 
-    <title>Calculadora de cinta transportadora inclinada online — TheMechAssist</title>
+    <title>Cinta inclinada — TheMechAssist</title>
     <link rel="stylesheet" href="css/app.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
@@ -43,6 +43,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -61,18 +63,25 @@
       <aside class="panel flat-sidebar">
         <header class="flat-sidebar__head">
           <p class="flat-sidebar__eyebrow">TheMechAssist</p>
-          <h2 class="flat-sidebar__title">Cinta inclinada</h2>
-          <p class="calc-seo-intro">
-            El módulo suma el efecto de la pendiente y la elevación vertical del material sobre la tracción necesaria en la banda, combinándolo con la potencia del tambor y la verificación orientativa del motorreductor cuando la instalación trabaja en plano inclinado o con trochas camilla. La base teórica sigue los mismos esquemas analíticos que la cinta horizontal más los términos gravi metricos habituales en bibliografía de transporte a granel. Sirve a proyectistas de canteras, plantas de áridos y logística intraplanta que deben decidir si una pendiente mayor sigue siendo viable con el mismo grupo motriz. Imagine revisar una subida corta hacia silo cuando aumenta la humedad del producto y sube el coeficiente de rozamiento equivalente.
-          </p>
-          <p class="flat-sidebar__lead">
-            Pendiente, rozamiento y elevación de carga. Los datos se recalculan al instante; el panel derecho muestra el dashboard, el esquema y motorreductores.
-          </p>
+          <h2 class="flat-sidebar__title"><span data-i18n="incConv.h2">Cinta inclinada</span></h2>
+          <details class="flat-sidebar-intro">
+            <summary class="flat-sidebar-intro__summary" data-i18n="incConv.introSummary">
+              Descripción y alcance de la calculadora
+            </summary>
+            <div class="flat-sidebar-intro__body">
+              <p class="calc-seo-intro" data-i18n="incConv.calcSeoIntro">
+                El módulo suma el efecto de la pendiente y la elevación vertical del material sobre la tracción necesaria en la banda, combinándolo con la potencia del tambor y la verificación orientativa del motorreductor cuando la instalación trabaja en plano inclinado o con trochas camilla. La base teórica sigue los mismos esquemas analíticos que la cinta horizontal más los términos gravi metricos habituales en bibliografía de transporte a granel. Sirve a proyectistas de canteras, plantas de áridos y logística intraplanta que deben decidir si una pendiente mayor sigue siendo viable con el mismo grupo motriz. Imagine revisar una subida corta hacia silo cuando aumenta la humedad del producto y sube el coeficiente de rozamiento equivalente.
+              </p>
+              <p class="flat-sidebar__lead" data-i18n="incConv.heroLead">
+                Pendiente, rozamiento y elevación de carga. Los datos se recalculan al instante; el panel derecho muestra el dashboard, el esquema y motorreductores.
+              </p>
+            </div>
+          </details>
         </header>
 
         <details class="help-details flat-help">
-          <summary>Guía rápida de cada magnitud</summary>
-          <div class="help-details__body">
+          <summary data-i18n="incConv.helpSummary">Guía rápida de cada magnitud</summary>
+          <div class="help-details__body" data-i18n="incConv.helpBodyHtml" data-i18n-html>
             <p class="help-details__lead muted">
               Junto a casi cada etiqueta hay un <span class="info-chip info-chip--static" aria-hidden="true">?</span>: en escritorio, sitúe el cursor encima; en táctil, <strong>pulse</strong> el mismo símbolo para leer la ayuda sin alargar el formulario.
             </p>
@@ -87,10 +96,28 @@
           </div>
         </details>
 
+        <section class="flat-ux-panel" aria-labelledby="incUxPresetsTitle">
+          <h3 id="incUxPresetsTitle" class="flat-ux-panel__title" data-i18n="machineHub.uxPresetsTitle">Casos reales (un clic)</h3>
+          <p class="flat-ux-panel__lead muted" data-i18n="machineHub.uxPresetsLead">
+            Rellena parámetros coherentes por sector; puede ajustar después.
+          </p>
+          <div class="flat-ux-preset-row" role="group" aria-label="Presets cinta inclinada">
+            <button type="button" class="btn-flat-preset" data-inc-preset="quarry_short" title="Cantera, L~35 m, carga variada">
+              <span class="btn-flat-preset__name">Cantera · corta</span>
+            </button>
+            <button type="button" class="btn-flat-preset" data-inc-preset="sand_wet" title="Arena húmeda, mayor μ y resistencia adicional">
+              <span class="btn-flat-preset__name">Arena · húmeda</span>
+            </button>
+            <button type="button" class="btn-flat-preset" data-inc-preset="warehouse_feed" title="Alimentación a silo, cinta más corta y ligera">
+              <span class="btn-flat-preset__name">Alimentación · silo</span>
+            </button>
+          </div>
+        </section>
+
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label">Norma y factor de servicio</span>
+            <span class="flat-accordion__label" data-i18n="incConv.accNormSf">Norma y factor de servicio</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field">
@@ -122,28 +149,30 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label">Geometría y cinemática</span>
+            <span class="flat-accordion__label" data-i18n="incConv.accGeom">Geometría y cinemática</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
               <label for="incLength">Longitud L (pendiente) <span class="info-chip" title="Longitud útil de transporte medida sobre la pendiente de la cinta." aria-label="Ayuda longitud de cinta.">?</span></label>
               <input type="range" id="incLengthR" class="flat-slider" min="2" max="120" step="0.1" value="24" aria-label="L" />
               <div class="flat-field__num">
-                <input id="incLength" type="number" step="0.1" min="0.1" value="24" />
+                <input id="incLength" type="number" step="0.1" min="0.1" value="24" placeholder="ej. 14–80 m" />
                 <span class="field-hint">m</span>
               </div>
+              <p class="field-context muted">Típ. 12–80 m (áridos / alimentación)</p>
             </div>
             <div class="field flat-field--slider">
               <label for="incHeight">Desnivel H <span class="info-chip" title="Altura vertical entre carga y descarga. Si θ está vacío, se calcula con arcsin(H/L)." aria-label="Ayuda desnivel.">?</span></label>
               <input type="range" id="incHeightR" class="flat-slider" min="0" max="40" step="0.05" value="4.5" aria-label="H" />
               <div class="flat-field__num">
-                <input id="incHeight" type="number" step="0.01" min="0" value="4.5" />
-                <span class="field-hint">m · θ vacío → arcsin(H/L)</span>
+                <input id="incHeight" type="number" step="0.01" min="0" value="4.5" placeholder="ej. 2–12 m" />
+                <span class="field-hint">m</span>
               </div>
+              <p class="field-context muted">Típ. 2–15 m (cantera / reciclaje). Si θ está vacío → arcsin(H/L)</p>
             </div>
             <div class="field">
               <label for="incAngle">Ángulo θ (opcional) <span class="info-chip" title="Si lo rellena, el cálculo usa este ángulo en lugar de derivarlo desde H y L." aria-label="Ayuda ángulo.">?</span></label>
-              <input id="incAngle" type="number" step="0.1" min="0" max="89" value="" />
+              <input id="incAngle" type="number" step="0.1" min="0" max="89" value="" placeholder="vacío = arcsin(H/L)" />
               <span class="field-hint">° — si se rellena, sustituye a H</span>
               <span class="field-hint inc-angle-warning" id="incAngleWarn" hidden>⚠ θ &gt; 18°: usar banda con perfiles/nervios antideslizantes.</span>
             </div>
@@ -151,25 +180,28 @@
               <label for="incLoadMass">Masa m <span class="info-chip" title="Masa total de material transportado en el tramo considerado por el modelo." aria-label="Ayuda masa de carga.">?</span></label>
               <input type="range" id="incLoadMassR" class="flat-slider" min="10" max="8000" step="1" value="900" aria-label="m" />
               <div class="flat-field__num">
-                <input id="incLoadMass" type="number" step="1" min="0.1" value="900" />
+                <input id="incLoadMass" type="number" step="1" min="0.1" value="900" placeholder="ej. 400–5200 kg" />
                 <span class="field-hint">kg</span>
               </div>
+              <p class="field-context muted">Masa en el tramo modelado; reparto uniforme como en cinta plana</p>
             </div>
             <div class="field flat-field--slider">
               <label for="incSpeed">Velocidad v <span class="info-chip" title="Velocidad lineal de la banda. Afecta rpm de tambor y potencia de motor." aria-label="Ayuda velocidad de banda.">?</span></label>
               <input type="range" id="incSpeedR" class="flat-slider" min="0.05" max="5" step="0.01" value="1" aria-label="v" />
               <div class="flat-field__num">
-                <input id="incSpeed" type="number" step="0.01" min="0" value="1.0" />
+                <input id="incSpeed" type="number" step="0.01" min="0" value="1.0" placeholder="ej. 0,8–2 m/s" />
                 <span class="field-hint">m/s</span>
               </div>
+              <p class="field-context muted">Velocidad habitual cajas y granel: 0,5–2,0 m/s (validar producto y normativa)</p>
             </div>
             <div class="field flat-field--slider">
               <label for="incRollerD">Diámetro tambor motriz D <span class="info-chip" title="Diámetro primitivo del tambor de accionamiento. Convierte fuerza en par (T=F·D/2)." aria-label="Ayuda diámetro de tambor.">?</span></label>
               <input type="range" id="incRollerDR" class="flat-slider" min="50" max="1200" step="1" value="500" aria-label="D" />
               <div class="flat-field__num">
-                <input id="incRollerD" type="number" step="1" min="50" value="500" />
+                <input id="incRollerD" type="number" step="1" min="50" value="500" placeholder="ej. 400–800 mm" />
                 <span class="field-hint">mm</span>
               </div>
+              <p class="field-context muted">Tambor motriz típico: 200–630 mm (según banda y potencia)</p>
             </div>
           </div>
         </details>
@@ -177,16 +209,17 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label">Fricción y rendimiento</span>
+            <span class="flat-accordion__label" data-i18n="incConv.accFriction">Fricción y rendimiento</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
               <label for="incFriction">Coeficiente μ <span class="info-chip" title="Coeficiente efectivo de rozamiento global en la pendiente. Orientativo típico: 0,25–0,60 según estado." aria-label="Ayuda coeficiente de fricción.">?</span></label>
               <input type="range" id="incFrictionR" class="flat-slider" min="0.15" max="0.65" step="0.01" value="0.4" aria-label="μ" />
               <div class="flat-field__num">
-                <input id="incFriction" type="number" step="0.01" min="0" value="0.4" />
+                <input id="incFriction" type="number" step="0.01" min="0" value="0.4" placeholder="ej. 0,35–0,50" />
                 <span class="field-hint">—</span>
               </div>
+              <p class="field-context muted">Rodillos secos: 0,22–0,35 · suciedad/humedad: mayor (ver tabla desplegable)</p>
               <details class="friction-guide">
                 <summary>¿Qué μ poner? (inclinada)</summary>
                 <div class="friction-guide__body">
@@ -228,13 +261,13 @@
             </div>
             <div class="field">
               <label for="incEfficiency">Rendimiento η (hasta el tambor) <span class="info-chip" title="Rendimiento mecánico total desde motor hasta tambor. Habitual 80–95% según transmisión." aria-label="Ayuda rendimiento.">?</span></label>
-              <input id="incEfficiency" type="number" step="1" min="1" max="150" value="86" />
+              <input id="incEfficiency" type="number" step="1" min="1" max="150" value="86" placeholder="ej. 85–92" />
               <span class="field-hint">% — &gt;100 % inválido; cálculo limita a 99 %</span>
             </div>
           </div>
         </details>
 
-        <p class="muted form-model-scope flat-model-scope">
+        <p class="muted form-model-scope flat-model-scope" data-i18n="incConv.modelScopeHtml" data-i18n-html>
           <strong>Modelo:</strong> inclinada · Coulomb · peso en pendiente + rozamiento · sin Euler.
           <a href="#inclined-conveyor-assumptions">Hipótesis y exclusiones</a>
         </p>
@@ -242,18 +275,18 @@
         <div id="incDesignAlerts" class="design-alerts" aria-live="polite"></div>
 
         <details class="adv-details">
-          <summary>Opciones avanzadas — banda, reparto, arranque <span class="field-badge field-badge--optional">Avanzado</span></summary>
+          <summary data-i18n="incConv.advSummary" data-i18n-html>Opciones avanzadas — banda, reparto, arranque <span class="field-badge field-badge--optional">Avanzado</span></summary>
           <div class="adv-details__body">
             <p class="adv-details__note">Masa de banda <strong>0</strong> la excluye del modelo.</p>
             <div class="field-grid">
               <div class="field">
                 <label for="incBeltWidth">Ancho de banda B <span class="info-chip" title="Ancho nominal de cinta. Ayuda a contextualizar caudal y familia de banda." aria-label="Ayuda ancho de banda.">?</span></label>
-                <input id="incBeltWidth" type="number" step="0.01" min="0.1" value="0.8" />
+                <input id="incBeltWidth" type="number" step="0.01" min="0.1" value="0.8" placeholder="ej. 0,65–1,0 m" />
                 <span class="field-hint">m</span>
               </div>
               <div class="field">
                 <label for="incBeltMass">Masa de banda m_b <span class="info-chip" title="Masa propia de la banda usada en el término gravitatorio/rozamiento del modelo extendido." aria-label="Ayuda masa de banda.">?</span></label>
-                <input id="incBeltMass" type="number" step="1" min="0" value="0" />
+                <input id="incBeltMass" type="number" step="1" min="0" value="0" placeholder="ej. 45–320 kg" />
                 <span class="field-hint">kg</span>
               </div>
               <div class="field">
@@ -268,7 +301,7 @@
               </div>
               <div class="field">
                 <label for="incAdditionalResistance">Resistencia adicional <span class="info-chip" title="Pérdidas extra no modeladas (rascadores, sellos, puntos duros, etc.) en Newton." aria-label="Ayuda resistencia adicional.">?</span></label>
-                <input id="incAdditionalResistance" type="number" step="1" min="0" value="0" />
+                <input id="incAdditionalResistance" type="number" step="1" min="0" value="0" placeholder="ej. 0–2500 N" />
                 <span class="field-hint">N</span>
               </div>
               <div class="field">
@@ -287,22 +320,72 @@
 
         <div id="mountingConfigHost" class="mounting-config-host"></div>
 
-        <button type="button" class="btn-calc" id="btnCalcularInc" title="Despliega motorreductores sugeridos">
+        <button type="button" class="btn-calc" id="btnCalcularInc" title="Despliega motorreductores sugeridos" data-i18n="incConv.btnMotors">
           Ver motorreductores sugeridos
         </button>
-        <p class="calc-hint flat-calc-hint">Los resultados y el diagrama se <strong>actualizan solos</strong>. Este botón abre el bloque de recomendaciones.</p>
+        <p class="calc-hint flat-calc-hint" data-i18n="incConv.calcHintHtml" data-i18n-html>Los resultados y el diagrama se <strong>actualizan solos</strong>. Este botón abre el bloque de recomendaciones.</p>
       </aside>
 
       <div class="flat-stage layout-right">
         <section class="panel flat-dashboard">
           <header class="flat-dashboard__head">
-            <h2 class="flat-dashboard__title">Dashboard de dimensionamiento</h2>
-            <p class="flat-dashboard__lead muted">
+            <h2 class="flat-dashboard__title" data-i18n="incConv.dashboardTitle">Dashboard de dimensionamiento</h2>
+            <p class="flat-dashboard__lead muted" data-i18n="incConv.dashboardLeadHtml" data-i18n-html>
               Par de diseño = max(régimen, arranque) × SF. Potencia <strong>(T<sub>diseño</sub> × ω) / η</strong>.
               <a href="#inclined-conveyor-assumptions">Hipótesis</a> · pase el ratón sobre el esquema inclinado.
             </p>
           </header>
+
+          <section class="flat-scope-panel" aria-labelledby="incScopeTitle">
+            <h3 id="incScopeTitle" class="flat-scope-panel__title" data-i18n="incConv.scopeTitle">Qué resuelve esta herramienta</h3>
+            <p class="flat-scope-panel__intro muted" data-i18n="incConv.scopeIntro">
+              Para cintas en pendiente: un punto de trabajo coherente (tracción, par en tambor con factor de servicio, potencia de motor) que puede copiar y enviar al proveedor. No sustituye la selección oficial del fabricante ni memorias de banda completas.
+            </p>
+            <ul class="flat-scope-panel__list">
+              <li data-i18n="incConv.scopeLi1">
+                Combina pendiente, elevación y rozamiento tipo Coulomb con la misma lógica de factor de servicio que la cinta plana.
+              </li>
+              <li data-i18n="incConv.scopeLi2">
+                Comprueba motorreductores de ejemplo o datos manuales frente a ese punto (potencia, T₂, n₂).
+              </li>
+              <li data-i18n="incConv.scopeLi3">
+                Modelo simplificado; no calcula tensión de banda ni adherencia Euler completas.
+              </li>
+              <li data-i18n="incConv.scopeLi4">El PDF completo y la nube avanzada son Pro; el resumen copiable es gratuito.</li>
+            </ul>
+          </section>
+
           <div class="results-grid" id="incResultsGrid"></div>
+
+          <section class="flat-rfq-panel" aria-labelledby="incRfqTitle">
+            <h3 id="incRfqTitle" class="flat-rfq-panel__title" data-i18n="incConv.rfqTitle">Resumen para proveedor (gratis)</h3>
+            <p class="flat-rfq-panel__lead muted" data-i18n="incConv.rfqLead">
+              Copie entradas y resultados orientativos en texto o CSV para pegar en un correo o solicitud de oferta. Los números dependen de los supuestos del modelo (sección Hipótesis).
+            </p>
+            <div class="flat-rfq-panel__actions">
+              <button
+                type="button"
+                id="machineRfqCopyText"
+                class="button button--secondary flat-rfq-panel__btn"
+                data-i18n="incConv.rfqBtnText"
+                data-i18n-attrs="title=incConv.rfqBtnTextTitle"
+                title="Copia un bloque de texto con el punto de trabajo actual"
+              >
+                Copiar texto
+              </button>
+              <button
+                type="button"
+                id="machineRfqCopyCsv"
+                class="button button--ghost flat-rfq-panel__btn"
+                data-i18n="incConv.rfqBtnCsv"
+                data-i18n-attrs="title=incConv.rfqBtnCsvTitle"
+                title="Copia una fila CSV (encabezado + valores)"
+              >
+                Copiar CSV
+              </button>
+            </div>
+          </section>
+
           <div id="incQualityChecklist" class="design-alerts" aria-live="polite" style="margin-top: 0.9rem"></div>
         </section>
 
@@ -324,7 +407,7 @@
                 />
                 <div id="incReferencePlaceholder" class="machine-photo-placeholder" hidden>Imagen: cinta inclinada en obra</div>
               </div>
-              <figcaption class="flat-visual__caption">
+              <figcaption class="flat-visual__caption" data-i18n="incConv.photoCaptionHtml" data-i18n-html>
                 Cinta inclinada en obra.
                 <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.
               </figcaption>
@@ -334,8 +417,8 @@
 
         <section class="panel flat-panel--verify">
           <div class="verify-panel" id="incVerifyPanel">
-            <h2><span class="panel-icon">✓</span> Comprobar un motorreductor que ya tengo</h2>
-            <p class="muted panel-lead">Comparación con el punto de diseño calculado para <strong>esta</strong> inclinación (misma lógica que cinta plana).</p>
+            <h2 data-i18n="incConv.verifyH2Html" data-i18n-html><span class="panel-icon">✓</span> Comprobar un motorreductor que ya tengo</h2>
+            <p class="muted panel-lead" data-i18n="incConv.verifyLeadHtml" data-i18n-html>Comparación con el punto de diseño calculado para <strong>esta</strong> inclinación (misma lógica que cinta plana).</p>
             <div class="verify-grid">
               <div class="field">
                 <label for="incVerifyBrand">Marca <span class="info-chip" title="Fabricante del catálogo ejemplo para comprobación rápida." aria-label="Ayuda marca verificador.">?</span></label>
@@ -356,7 +439,7 @@
                 <select id="incVerifyModel" data-verify-model></select>
               </div>
             </div>
-            <button type="button" data-verify-run style="margin-top: 1rem; width: 100%">Comprobar para esta máquina</button>
+            <button type="button" data-verify-run style="margin-top: 1rem; width: 100%" data-i18n="incConv.verifyRunBtn">Comprobar para esta máquina</button>
             <div data-verify-out></div>
           </div>
         </section>
@@ -367,8 +450,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">⌗</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title">Desglose de ingeniería</span>
-                  <span class="motors-details__hint">Plegado por defecto — informe detallado</span>
+                  <span class="motors-details__title" data-i18n="incConv.engTitle">Desglose de ingeniería</span>
+                  <span class="motors-details__hint" data-i18n="incConv.engHint">Plegado por defecto — informe detallado</span>
                 </span>
               </span>
             </summary>
@@ -384,8 +467,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">◎</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title">Motorreductores (catálogo ejemplo)</span>
-                  <span class="motors-details__hint">Recomendaciones, exportación y comprobador</span>
+                  <span class="motors-details__title" data-i18n="incConv.motorsTitle">Motorreductores (catálogo ejemplo)</span>
+                  <span class="motors-details__hint" data-i18n="incConv.motorsHint">Recomendaciones, exportación y comprobador</span>
                 </span>
               </span>
             </summary>
@@ -401,8 +484,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">※</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title">Hipótesis del modelo</span>
-                  <span class="motors-details__hint">Supuestos y límites</span>
+                  <span class="motors-details__title" data-i18n="incConv.assumptionsTitle">Hipótesis del modelo</span>
+                  <span class="motors-details__hint" data-i18n="incConv.assumptionsHint">Supuestos y límites</span>
                 </span>
               </span>
             </summary>
@@ -413,7 +496,7 @@
         </section>
 
         <section class="panel">
-          <h2><span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Exportar informe</h2>
+          <h2 data-i18n="incConv.pdfExportH2Html" data-i18n-html><span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Exportar informe</h2>
           <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
         </section>
 

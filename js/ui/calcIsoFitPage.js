@@ -23,13 +23,26 @@ import {
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { getLabLang } from '../lab/i18n/labLang.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { ISO_FIT_PAGE_EN } from '../lab/i18n/pages/isoFitPageEn.js';
+import { isoRecTableNoteSuffix, localizedIsoFitRec } from '../lab/i18n/runtime/iso286RecRuntime.js';
+
+function bx(es, en) {
+  return getLabLang() === 'en' ? en : es;
+}
+
+function langCode() {
+  return getLabLang() === 'en' ? 'en' : 'es';
+}
 
 mountTierStatusBar();
-bootSmartDashboardIfEnabled('ISO 286 · ajustes');
+bootSmartDashboardIfEnabled(bx('ISO 286 \u00b7 ajustes', 'ISO 286 \u00b7 fits'));
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
 mountCompactLabFieldHelp();
@@ -89,36 +102,41 @@ function mountAppPresetSelect() {
   const presetSel = document.getElementById('isoAppPreset');
   if (!presetSel || !(presetSel instanceof HTMLSelectElement)) return;
   presetSel.innerHTML = [
-    '<option value="">Elija una aplicación (manual o tabla)</option>',
-    ...ISO286_FIT_RECOMMENDATIONS.map(
-      (r) => `<option value="${escapeHtml(r.id)}">${escapeHtml(r.label)}</option>`,
-    ),
+    `<option value="">${bx('Elija una aplicaci\u00f3n (manual o tabla)', 'Choose an application (manual or table)')}</option>`,
+    ...ISO286_FIT_RECOMMENDATIONS.map((r) => {
+      const loc = localizedIsoFitRec(r, langCode());
+      return `<option value="${escapeHtml(r.id)}">${escapeHtml(loc.label)}</option>`;
+    }),
   ].join('');
 }
 
 function renderRecommendationTable() {
   const tbody = document.querySelector('#isoRecTable tbody');
   if (!tbody) return;
-  tbody.innerHTML = ISO286_FIT_RECOMMENDATIONS.map(
-    (r) => `
+  const exLabel = bx('Ej.', 'e.g.');
+  const applyLabel = bx('Aplicar:', 'Apply:');
+  const suffix = isoRecTableNoteSuffix(langCode());
+  tbody.innerHTML = ISO286_FIT_RECOMMENDATIONS.map((r) => {
+    const loc = localizedIsoFitRec(r, langCode());
+    return `
     <tr>
       <td class="lab-iso-rec-table__col-fit">
         <strong class="lab-iso-rec-table__code">${escapeHtml(r.fitCode)}</strong>
       </td>
       <td class="lab-iso-rec-table__col-fit">
-        <span class="lab-iso-rec-table__meta">${escapeHtml(r.category)}</span>
+        <span class="lab-iso-rec-table__meta">${escapeHtml(loc.category)}</span>
       </td>
       <td class="lab-iso-rec-table__col-use">
-        <span class="lab-iso-rec-table__title">${escapeHtml(r.comment)}</span>
-        <span class="lab-iso-rec-table__note">${escapeHtml(r.label)}. Ej.: ${escapeHtml(r.examples)} &#183; &#216; sugerido ${r.dNomSuggestion} mm.</span>
+        <span class="lab-iso-rec-table__title">${escapeHtml(loc.comment)}</span>
+        <span class="lab-iso-rec-table__note">${escapeHtml(loc.label)}. ${exLabel} ${escapeHtml(loc.examples)} &#183; &#216; ${suffix} ${r.dNomSuggestion} mm.</span>
       </td>
       <td class="lab-iso-rec-table__col-act">
         <button type="button" class="lab-btn lab-iso-rec-table__btn" data-iso-preset="${escapeHtml(
           r.id,
-        )}" aria-label="Aplicar: ${escapeHtml(r.label)}">&#8594;</button>
+        )}" aria-label="${applyLabel} ${escapeHtml(loc.label)}">&#8594;</button>
       </td>
-    </tr>`,
-  ).join('');
+    </tr>`;
+  }).join('');
 }
 
 function findMatchingRecommendationId() {
@@ -165,8 +183,19 @@ function refreshCore() {
   const dNom = readNum('isoD', 25);
   const validationMsgs = [];
   const dInvalid = !(Number.isFinite(dNom) && dNom >= 1 && dNom <= 500);
-  markFieldInvalid('isoD', dInvalid, 'Nominal diameter must be between 1 and 500 mm');
-  if (dInvalid) validationMsgs.push('Revise nominal diameter d: use a value between 1 and 500 mm.');
+  markFieldInvalid(
+    'isoD',
+    dInvalid,
+    bx('El diámetro nominal debe estar entre 1 y 500 mm', 'Nominal diameter must be between 1 and 500 mm'),
+  );
+  if (dInvalid) {
+    validationMsgs.push(
+      bx(
+        'Revise el diámetro nominal d: use un valor entre 1 y 500 mm.',
+        'Check nominal diameter d: use a value between 1 and 500 mm.',
+      ),
+    );
+  }
 
   const holeLetter = readSelect('isoHoleLetter', 'H');
   const holeIt = readSelect('isoHoleIt', 'IT7');
@@ -207,8 +236,14 @@ function refreshCore() {
 
   const jMax = r.clearanceMax_um;
   const jMin = r.clearanceMin_um;
-  const jMaxLabel = jMax >= 0 ? 'Juego max.' : 'Interferencia max. (|Jmax|)';
-  const jMinLabel = jMin >= 0 ? 'Juego min.' : 'Interferencia min. (|Jmin|)';
+  const jMaxLabel =
+    jMax >= 0
+      ? bx('Juego max.', 'Max. clearance')
+      : bx('Interferencia max. (|Jmax|)', 'Max. interference (|Jmax|)');
+  const jMinLabel =
+    jMin >= 0
+      ? bx('Juego min.', 'Min. clearance')
+      : bx('Interferencia min. (|Jmin|)', 'Min. interference (|Jmin|)');
 
   const isoFitVerdict =
     validationMsgs.length ? 'error' : r.fitKind === 'clearance' ? 'ok' : 'warn';
@@ -219,17 +254,20 @@ function refreshCore() {
       {
         label: jMaxLabel,
         display: `${jMax.toFixed(1)} um`,
-        hint: 'Dmax - dmin (positivo = holgura; negativo = interferencia).',
+        hint: bx(
+          'Dmax - dmin (positivo = holgura; negativo = interferencia).',
+          'Dmax - dmin (positive = clearance; negative = interference).',
+        ),
       },
       {
         label: jMinLabel,
         display: `${jMin.toFixed(1)} um`,
-        hint: 'Dmin - dmax.',
+        hint: bx('Dmin - dmax.', 'Dmin - dmax.'),
       },
       {
-        label: 'Tipo de ajuste',
-        display: r.fitLabelEs,
-        hint: r.fitLabelEn,
+        label: bx('Tipo de ajuste', 'Fit type'),
+        display: getLabLang() === 'en' ? r.fitLabelEn : r.fitLabelEs,
+        hint: getLabLang() === 'en' ? r.fitLabelEs : r.fitLabelEn,
       },
     ],
       { verdict: isoFitVerdict },
@@ -257,11 +295,35 @@ function refreshCore() {
     );
     validationMsgs.forEach((msg) => parts.push(labAlert('danger', escapeHtml(msg))));
     if (r.fitKind === 'interference') {
-      parts.push(labAlert('warn', 'Interference fit selected: verify assembly method, material pair, and thermal expansion.'));
+      parts.push(
+        labAlert(
+          'warn',
+          bx(
+            'Ajuste con interferencia: verifique método de montaje, par de materiales y dilatación térmica.',
+            'Interference fit: verify assembly method, material pair, and thermal expansion.',
+          ),
+        ),
+      );
     } else if (r.fitKind === 'transition') {
-      parts.push(labAlert('info', 'Transition fit: evaluate both worst-case clearance and worst-case interference.'));
+      parts.push(
+        labAlert(
+          'info',
+          bx(
+            'Ajuste de transición: evalúe holgura e interferencia en el peor caso.',
+            'Transition fit: evaluate worst-case clearance and interference.',
+          ),
+        ),
+      );
     } else {
-      parts.push(labAlert('ok', 'Clearance fit: review minimum clearance against lubrication and thermal expansion needs.'));
+      parts.push(
+        labAlert(
+          'ok',
+          bx(
+            'Ajuste con holgura: revise holgura mínima frente a lubricación y dilatación térmica.',
+            'Clearance fit: review minimum clearance vs lubrication and thermal expansion.',
+          ),
+        ),
+      );
     }
     parts.push(
       labAlert(
@@ -279,13 +341,44 @@ function refreshCore() {
     const iStr = r.i_microns.toFixed(2);
     const dMStr = r.dGeo_mm.toFixed(3);
     box.innerHTML = [
-      metricHtml('Unidad i (tabla)', `${iStr} um`, `i = 0.45 * cbrt(D_M) + 0.001*D_M; D_M = ${dMStr} mm (media geométrica del tramo).`),
-      metricHtml('IT fundamental agujero', `${r.hole.it} = ${r.IT_hole_microns} um`, 'Valor útil para acotar en plano de fabricación.'),
-      metricHtml('IT fundamental eje', `${r.shaft.it} = ${r.IT_shaft_microns} um`, 'Valor útil para acotar en plano de fabricación.'),
-      metricHtml('Agujero EI / ES', `${r.hole.EI_um} / ${r.hole.ES_um} um`, 'Desviaciones fundamentales + IT (micras).'),
-      metricHtml('Eje ei / es', `${r.shaft.ei_um} / ${r.shaft.es_um} um`, 'Desviaciones fundamentales + IT (micras).'),
-      metricHtml('D max / D min', `${r.hole.dMax.toFixed(6)} / ${r.hole.dMin.toFixed(6)} mm`, 'Limites del agujero.'),
-      metricHtml('d max / d min', `${r.shaft.dMax.toFixed(6)} / ${r.shaft.dMin.toFixed(6)} mm`, 'Limites del eje.'),
+      metricHtml(
+        bx('Unidad i (tabla)', 'Unit i (table)'),
+        `${iStr} um`,
+        bx(
+          `i = 0.45 * cbrt(D_M) + 0.001*D_M; D_M = ${dMStr} mm (media geométrica del tramo).`,
+          `i = 0.45 * cbrt(D_M) + 0.001*D_M; D_M = ${dMStr} mm (geometric mean of span).`,
+        ),
+      ),
+      metricHtml(
+        bx('IT fundamental agujero', 'Fundamental IT hole'),
+        `${r.hole.it} = ${r.IT_hole_microns} um`,
+        bx('Valor útil para acotar en plano de fabricación.', 'Useful for drawing tolerances.'),
+      ),
+      metricHtml(
+        bx('IT fundamental eje', 'Fundamental IT shaft'),
+        `${r.shaft.it} = ${r.IT_shaft_microns} um`,
+        bx('Valor útil para acotar en plano de fabricación.', 'Useful for drawing tolerances.'),
+      ),
+      metricHtml(
+        bx('Agujero EI / ES', 'Hole EI / ES'),
+        `${r.hole.EI_um} / ${r.hole.ES_um} um`,
+        bx('Desviaciones fundamentales + IT (micras).', 'Fundamental deviations + IT (microns).'),
+      ),
+      metricHtml(
+        bx('Eje ei / es', 'Shaft ei / es'),
+        `${r.shaft.ei_um} / ${r.shaft.es_um} um`,
+        bx('Desviaciones fundamentales + IT (micras).', 'Fundamental deviations + IT (microns).'),
+      ),
+      metricHtml(
+        bx('D max / D min', 'D max / D min'),
+        `${r.hole.dMax.toFixed(6)} / ${r.hole.dMin.toFixed(6)} mm`,
+        bx('Límites del agujero.', 'Hole limits.'),
+      ),
+      metricHtml(
+        bx('d max / d min', 'd max / d min'),
+        `${r.shaft.dMax.toFixed(6)} / ${r.shaft.dMin.toFixed(6)} mm`,
+        bx('Límites del eje.', 'Shaft limits.'),
+      ),
     ].join('');
   }
 
@@ -312,6 +405,7 @@ function refreshCore() {
 const ISO_PRESETS = [
   {
     label: 'H7/g6 · Ø25',
+    labelKey: 'iso.preset1',
     values: {
       isoD: 25,
       isoHoleLetter: 'H',
@@ -322,6 +416,7 @@ const ISO_PRESETS = [
   },
   {
     label: 'H7/k6 · Ø40',
+    labelKey: 'iso.preset2',
     values: {
       isoD: 40,
       isoHoleLetter: 'H',
@@ -332,6 +427,7 @@ const ISO_PRESETS = [
   },
   {
     label: 'JS7/h6 · Ø28',
+    labelKey: 'iso.preset3',
     values: {
       isoD: 28,
       isoHoleLetter: 'JS',
@@ -407,5 +503,15 @@ document.querySelectorAll('[data-iso-chip]').forEach((btn) => {
 });
 
 wireLabCopyLink('isoCopyLinkBtn', 'isoCopyToast');
+wireLabCopyResultsButton('isoCopyResults', {
+  moduleTitle: uxCopy('Ajustes ISO 286', 'ISO 286 fits'),
+});
 runCalcWithIndustrialFeedback(wrap, refreshCore);
-mountLabCloudSaveBar('Ajustes ISO 286');
+mountLabCloudSaveBar(bx('Ajustes ISO 286', 'ISO 286 fits'));
+watchLangAndApply(ISO_FIT_PAGE_EN, {
+  onEnApplied: () => {
+    mountAppPresetSelect();
+    renderRecommendationTable();
+    scheduleIsoRecalc();
+  },
+});

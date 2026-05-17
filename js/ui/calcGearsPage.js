@@ -26,12 +26,15 @@ import {
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { metricsFromGears } from '../services/iaAdvisor.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { LAB_LANG_EVENT, getLabLang } from '../lab/i18n/labLang.js';
 import { gearsRuntimeStrings } from '../lab/i18n/runtime/gearsRuntime.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { GEARS_PAGE_EN } from '../lab/i18n/pages/gearsPageEn.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 mountTierStatusBar();
@@ -46,6 +49,7 @@ bindInputValidation([
   { id: 'gZ2', min: 6, max: 500, label: 'Dientes Z₂' },
   { id: 'gFace', min: 1, max: 500, label: 'Ancho de cara b' },
   { id: 'gAlpha', min: 0, max: 45, label: 'Presión α' },
+  { id: 'gBeta', min: 0, max: 45, label: 'Hélice β' },
   { id: 'gN1', min: 0, max: 30000, label: 'RPM motrices n₁' },
   { id: 'gPower', min: 0, max: 1e7, label: 'Potencia' },
   { id: 'gTorque', min: 0, max: 1e9, label: 'Par' },
@@ -102,6 +106,7 @@ function elementCardHtml(title, rows) {
 const GEAR_PRESETS = [
   {
     label: 'Reducción 3:1 paso 1',
+    labelKey: 'gear.preset1',
     values: {
       gCalcMode: 'diagnostic',
       gZ1: 20,
@@ -109,6 +114,7 @@ const GEAR_PRESETS = [
       gM: 1,
       gFace: 32,
       gAlpha: 20,
+      gBeta: 0,
       gN1: 1455,
       gPower: 5.5,
       gTorque: '',
@@ -117,6 +123,7 @@ const GEAR_PRESETS = [
   },
   {
     label: 'Par elevado paso 2.5',
+    labelKey: 'gear.preset2',
     values: {
       gCalcMode: 'diagnostic',
       gZ1: 18,
@@ -124,6 +131,7 @@ const GEAR_PRESETS = [
       gM: 2.5,
       gFace: 55,
       gAlpha: 20,
+      gBeta: 0,
       gN1: 720,
       gTorque: 2200,
       gPower: '',
@@ -132,6 +140,7 @@ const GEAR_PRESETS = [
   },
   {
     label: 'Alta velocidad módulo 1',
+    labelKey: 'gear.preset3',
     values: {
       gCalcMode: 'diagnostic',
       gZ1: 24,
@@ -139,8 +148,26 @@ const GEAR_PRESETS = [
       gM: 1,
       gFace: 20,
       gAlpha: 20,
+      gBeta: 0,
       gN1: 6000,
       gPower: 8,
+      gTorque: '',
+      gLube: 'oil',
+    },
+  },
+  {
+    label: 'Helicoidal 15° · mₙ 2',
+    labelKey: 'gear.presetHelix',
+    values: {
+      gCalcMode: 'diagnostic',
+      gZ1: 22,
+      gZ2: 44,
+      gM: 2,
+      gFace: 40,
+      gAlpha: 20,
+      gBeta: 15,
+      gN1: 1200,
+      gPower: 12,
       gTorque: '',
       gLube: 'oil',
     },
@@ -159,11 +186,9 @@ function powerKwFromInputs(n1_rpm, Topt, Popt) {
 function syncGearCalcModeUi() {
   const design = document.getElementById('gCalcMode')?.value === 'design';
   const help = document.getElementById('gCalcModeHelp');
-  if (help instanceof HTMLElement) {
-    help.innerHTML = design
-      ? 'En <strong>diseño</strong> utilice el par o potencia en piñón junto con el chequeo AGMA simplificado para iterar <strong>m</strong> y <strong>b</strong> hasta un uso del material aceptable.'
-      : 'En <strong>diagnóstico</strong> fije <strong>z₁, z₂, m, b</strong> reales del tren instalado y compruebe con la carga de servicio (par o potencia).';
-  }
+  if (!(help instanceof HTMLElement)) return;
+  const t = gearsRuntimeStrings(getLabLang());
+  help.innerHTML = design ? t.calcModeHelpDesignHtml : t.calcModeHelpDiagnosticHtml;
 }
 
 function applyGearsHelpI18n() {
@@ -186,6 +211,8 @@ function refreshCore() {
   const mRaw = parseNumberInput('gM').value;
   const faceRaw = parseNumberInput('gFace').value;
   const alphaRaw = parseNumberInput('gAlpha').value;
+  const betaParsed = parseNumberInput('gBeta');
+  const betaRaw = betaParsed.empty ? 0 : betaParsed.value;
   const n1Raw = parseNumberInput('gN1').value;
 
   const z1Invalid = !(z1Raw >= 6);
@@ -193,26 +220,32 @@ function refreshCore() {
   const mInvalid = !(mRaw > 0);
   const faceInvalid = !(faceRaw > 0);
   const alphaInvalid = !(alphaRaw > 0 && alphaRaw <= 45);
+  const betaInvalid =
+    !betaParsed.empty && (betaRaw == null || !(betaRaw >= 0 && betaRaw <= 45));
   const n1Invalid = !(n1Raw != null && n1Raw >= 0);
   markFieldInvalid('gZ1', z1Invalid, 'Use z1 >= 6 teeth');
   markFieldInvalid('gZ2', z2Invalid, 'Use z2 >= 6 teeth');
   markFieldInvalid('gM', mInvalid, 'Module must be > 0');
   markFieldInvalid('gFace', faceInvalid, 'Face width must be > 0');
   markFieldInvalid('gAlpha', alphaInvalid, 'Pressure angle must be between 0 and 45 deg');
+  markFieldInvalid('gBeta', betaInvalid, 'Helix angle beta: use 0 to 45 deg (0 = spur)');
   markFieldInvalid('gN1', n1Invalid, 'Input speed cannot be negative');
   if (z1Invalid) validationMsgs.push('Revise z1: use at least 6 teeth.');
   if (z2Invalid) validationMsgs.push('Revise z2: use at least 6 teeth.');
   if (mInvalid) validationMsgs.push('Revise module m: it must be greater than 0.');
   if (faceInvalid) validationMsgs.push('Revise face width b: it must be greater than 0.');
   if (alphaInvalid) validationMsgs.push('Revise pressure angle alpha: set a value between 0 and 45 deg.');
+  if (betaInvalid) validationMsgs.push('Revise helix angle beta: use a value between 0 and 45 deg (0 = spur).');
   if (n1Invalid) validationMsgs.push('Revise input speed n1: it cannot be negative.');
 
   const n1In = read('gN1', 1455);
+  const helixDeg = betaParsed.empty ? read('gBeta', 0) : betaRaw != null ? betaRaw : 0;
   const p = {
     z1: read('gZ1', 20),
     z2: read('gZ2', 45),
     module_mm: read('gM', 2.5),
     pressureAngle_deg: read('gAlpha', 20),
+    helixAngle_deg: helixDeg,
     n1: n1In,
     faceWidth_mm: read('gFace', 28),
   };
@@ -226,6 +259,8 @@ function refreshCore() {
     z1: r.z1,
     z2: r.z2,
     module_mm: r.module_mm,
+    module_transverse_mm: r.module_transverse_mm,
+    helixAngle_deg: r.helixAngle_deg,
     d1_mm: r.d1,
     faceWidth_mm: r.faceWidth_mm ?? read('gFace', 28),
     n1_rpm: r.n1 ?? 0,
@@ -247,24 +282,21 @@ function refreshCore() {
   if (heroEl) {
     const heroItems = [];
     heroItems.push({
-      label: 'ω₂ — velocidad angular · rueda 2 (conducida)',
+      label: t.heroOmega,
       display: r.n2 != null ? formatRotation(r.n2, u.rotation) : '—',
-      hint:
-        r.n2 != null
-          ? 'Salida en el primitivo; ω₂/ω₁ = z₁/z₂.'
-          : 'Indique giro de entrada &gt; 0 para obtener la salida.',
+      hint: r.n2 != null ? t.heroOmegaHintOk : t.heroOmegaHintNeed,
     });
     if (P_kw != null) {
       heroItems.push({
-        label: 'Potencia en piñón',
+        label: t.heroP,
         display: `${P_kw.toFixed(2)} kW`,
-        hint: Topt != null ? 'Calculada a partir del par y el giro.' : 'Valor introducido o estimado.',
+        hint: Topt != null ? t.heroPHintT : t.heroPHintIn,
       });
     } else {
       heroItems.push({
-        label: 'Potencia en piñón',
-        display: '—',
-        hint: 'Opcional: potencia o par para AGMA y regla de motor.',
+        label: t.heroP,
+        display: t.heroPEmpty,
+        hint: t.heroPHintOpt,
       });
     }
     const gv = gearsHasCritical ? 'error' : gearsHasWarn ? 'warn' : 'ok';
@@ -300,12 +332,23 @@ function refreshCore() {
   const box = document.getElementById('gResults');
   if (box) {
     box.innerHTML = [
-      metricHtml('Relación real i = z₂/z₁', i.toFixed(4), 'Valor exacto con los dientes cargados en el formulario.'),
+      metricHtml(t.mRatioExact, i.toFixed(4), t.mRatioExactHint),
       metricHtml(t.mRatio, i.toFixed(2), t.mRatioHint(1 / i)),
       metricHtml(t.mVp1, formatLinearSpeed(r.v_pitch_m_s, u.linear), t.mVp1Hint),
       metricHtml(t.mCenter, formatLength(r.centerDistance_mm, u.length), t.mCenterHint),
       metricHtml(t.mD1, formatLength(r.d1, u.length), t.mD1Hint),
       metricHtml(t.mD2, formatLength(r.d2, u.length), t.mD2Hint),
+      ...(r.helixAngle_deg > 1e-6
+        ? [
+            metricHtml(t.mMt, `${r.module_transverse_mm.toFixed(3)} mm`, t.mMtHint),
+            metricHtml(t.mBeta, `${r.helixAngle_deg.toFixed(1)}\u00b0`, t.mBetaHint),
+            metricHtml(
+              t.mAlphat,
+              `${r.pressureAngle_transverse_deg.toFixed(2)}\u00b0`,
+              t.mAlphatHint,
+            ),
+          ]
+        : []),
       metricHtml(t.mFace, formatLength(r.faceWidth_mm ?? 0, u.length), t.mFaceHint),
       metricHtml(t.mDa1, formatLength(r.da1, u.length), t.mDa1Hint),
       metricHtml(t.mDa2, formatLength(r.da2, u.length), t.mDa2Hint),
@@ -400,21 +443,13 @@ function refreshCore() {
     sub.innerHTML = `
       <details class="calc-substitution">
         <summary class="calc-substitution__summary">
-          <span class="calc-substitution__title">Sustitución — de dientes a velocidad de salida</span>
+          <span class="calc-substitution__title">${esc(t.subTitle)}</span>
         </summary>
         <div class="calc-substitution__inner">
-          <p class="calc-substitution__step">
-            Relación cinemática en el primitivo: <code>n₂ = n₁ · z₁ / z₂</code>
-          </p>
-          <p class="calc-substitution__step">
-            En <strong>RPM</strong> (cálculo numérico, rueda 2): <code>n₂ = ${r.n1.toFixed(2)} × ${r.z1} / ${r.z2} = ${n2.toFixed(2)} RPM</code>
-          </p>
-          <p class="calc-substitution__step">
-            Mismo giro de salida en sus unidades elegidas: <strong>${formatRotation(n2, u.rotation)}</strong>
-          </p>
-          <p class="calc-substitution__step">
-            Velocidad en primitivo · rueda 1 (piñón): <strong>${vps}</strong> (<code>d₁ = ${d1s}</code>).
-          </p>
+          <p class="calc-substitution__step">${t.sub1}</p>
+          <p class="calc-substitution__step">${t.sub2(r.n1, r.z1, r.z2, n2)}</p>
+          <p class="calc-substitution__step">${t.sub3(formatRotation(n2, u.rotation))}</p>
+          <p class="calc-substitution__step">${t.sub4(vps, d1s)}</p>
         </div>
       </details>`;
   } else if (sub) {
@@ -430,7 +465,10 @@ function refreshCore() {
     {
       commerceId: 'gear-pair-quote',
       qty: 1,
-      note: `m = ${r.module_mm} mm · z₁/z₂ = ${r.z1}/${r.z2}`,
+      note:
+        r.helixAngle_deg > 1e-6
+          ? `m\u2099 = ${r.module_mm} mm · \u03b2 = ${r.helixAngle_deg.toFixed(1)}\u00b0 · z\u2081/z\u2082 = ${r.z1}/${r.z2}`
+          : `m = ${r.module_mm} mm · z\u2081/z\u2082 = ${r.z1}/${r.z2}`,
     },
   ];
   emitEngineeringSnapshot({
@@ -466,6 +504,7 @@ const GEAR_URL_PARAM_TO_ID = {
   module: 'gM',
   face: 'gFace',
   alpha: 'gAlpha',
+  beta: 'gBeta',
   n1: 'gN1',
   lube: 'gLube',
   power: 'gPower',
@@ -473,34 +512,12 @@ const GEAR_URL_PARAM_TO_ID = {
 };
 
 const gearUrl = createLabUrlSync(GEAR_URL_PARAM_TO_ID, {
-  hydrateOrder: ['calcMode', 'z1', 'z2', 'module', 'face', 'alpha', 'n1', 'lube', 'power', 'torque'],
+  hydrateOrder: ['calcMode', 'z1', 'z2', 'module', 'face', 'alpha', 'beta', 'n1', 'lube', 'power', 'torque'],
   hydrateKeyAliases: { face: ['faceWidth'] },
   afterHydrate: () => {
     syncGearCalcModeUi();
   },
 });
-
-function buildCopyResultsText() {
-  const u = getLabUnitPrefs();
-  const p = {
-    z1: read('gZ1', 20),
-    z2: read('gZ2', 45),
-    module_mm: read('gM', 2.5),
-    pressureAngle_deg: read('gAlpha', 20),
-    n1: read('gN1', 1455),
-    faceWidth_mm: read('gFace', 28),
-  };
-  const r = computeSpurGearPair(p);
-  const rows = [
-    'TheMechAssist - Engranajes cilindricos',
-    `i real (z2/z1): ${r.ratio_transmission.toFixed(4)}`,
-    `Distancia entre ejes a: ${formatLength(r.centerDistance_mm, u.length)}`,
-    `d1: ${formatLength(r.d1, u.length)} | d2: ${formatLength(r.d2, u.length)}`,
-    `n1: ${formatRotation(r.n1, u.rotation)} | n2: ${formatRotation(r.n2, u.rotation)}`,
-    `v periferica: ${formatLinearSpeed(r.v_pitch_m_s, u.linear)}`,
-  ];
-  return rows.join('\n');
-}
 
 const resultsWrap = document.getElementById('gResultsWrap');
 const debounced = debounce(() => runCalcWithIndustrialFeedback(resultsWrap, refreshCore), 55);
@@ -519,7 +536,7 @@ syncGearCalcModeUi();
 
 bindLabUnitSelectors(scheduleGearRecalc);
 
-['gZ1', 'gZ2', 'gM', 'gFace', 'gAlpha', 'gN1', 'gPower', 'gTorque', 'gLube'].forEach((id) => {
+['gZ1', 'gZ2', 'gM', 'gFace', 'gAlpha', 'gBeta', 'gN1', 'gPower', 'gTorque', 'gLube'].forEach((id) => {
   document.getElementById(id)?.addEventListener('input', scheduleGearRecalc);
   document.getElementById(id)?.addEventListener('change', scheduleGearRecalc);
 });
@@ -530,28 +547,23 @@ document.getElementById('gCalcMode')?.addEventListener('change', () => {
 });
 applyGearsHelpI18n();
 
-wireLabCopyLink('gCopyLinkBtn', 'gCopyToast');
+watchLangAndApply(GEARS_PAGE_EN, {
+  onEnApplied: () => {
+    applyGearsHelpI18n();
+    syncGearCalcModeUi();
+    scheduleGearRecalc();
+  },
+});
 
-document.getElementById('gCopyResults')?.addEventListener('click', async () => {
-  const btn = document.getElementById('gCopyResults');
-  if (!(btn instanceof HTMLButtonElement)) return;
-  const original = btn.textContent || 'Copiar resultados';
-  const text = buildCopyResultsText();
-  try {
-    await navigator.clipboard.writeText(text);
-    btn.textContent = 'Resultados copiados';
-  } catch {
-    btn.textContent = 'No se pudo copiar';
-  } finally {
-    window.setTimeout(() => {
-      btn.textContent = original;
-    }, 1200);
-  }
+wireLabCopyLink('gCopyLinkBtn', 'gCopyToast');
+wireLabCopyResultsButton('gCopyResults', {
+  moduleTitle: gearsRuntimeStrings(getLabLang()).moduleLabel,
 });
 window.addEventListener(LAB_LANG_EVENT, () => {
   bootSmartDashboardIfEnabled(gearsRuntimeStrings(getLabLang()).dashboardBoot);
   applyGearsHelpI18n();
+  syncGearCalcModeUi();
   scheduleGearRecalc();
 });
 runCalcWithIndustrialFeedback(resultsWrap, refreshCore);
-mountLabCloudSaveBar('Engranajes cil\u00edndricos rectos');
+mountLabCloudSaveBar(gearsRuntimeStrings(getLabLang()).moduleLabel);

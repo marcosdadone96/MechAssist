@@ -242,6 +242,8 @@ export function renderFlatConveyorDiagram(svg, p) {
   const legMidX = VB_W / 2;
 
   svg.setAttribute('viewBox', `0 0 ${VB_W} ${VB_H}`);
+  svg.setAttribute('width', '100%');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
   svg.setAttribute('role', 'img');
   svg.innerHTML = `
     <title>${svgTitle}</title>

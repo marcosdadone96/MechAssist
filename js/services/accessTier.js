@@ -12,7 +12,9 @@
  */
 
 import { FEATURES } from '../config/features.js';
+import { calcSlugFromPath, isCreditsSystemEnabled } from '../config/credits.js';
 import { hasProductionProSessionCache } from './proEntitlement.js';
+import { getCachedCreditsState } from './creditsApi.js';
 
 /** Atajos Pro solo-navegador desactivados (licencia local, URL, usos prueba). */
 function clientProShortcutsDisabled() {
@@ -177,9 +179,24 @@ export function clearPremiumPersistent() {
   }
 }
 
+function hasCreditsUnlimitedAccess() {
+  if (!isCreditsSystemEnabled()) return false;
+  const c = getCachedCreditsState();
+  return Boolean(c?.unlimited);
+}
+
+function hasCreditsCalcUnlockForCurrentPage() {
+  if (!isCreditsSystemEnabled()) return false;
+  const c = getCachedCreditsState();
+  if (!c?.calcUnlocked) return false;
+  const slug = calcSlugFromPath();
+  return Boolean(slug && slug !== 'unknown');
+}
+
 export function isPremiumEffective() {
   if (FEATURES.publicFreeRelease === true) return true;
   if (FEATURES.devSimulatePremium) return true;
+  if (hasCreditsUnlimitedAccess()) return true;
   if (FEATURES.proClientPolicy === 'production' && hasProductionProSessionCache()) return true;
   return getEffectiveTier() === 'premium';
 }
@@ -194,6 +211,8 @@ export function isPremiumEffective() {
 export function isPremiumForMachineForm() {
   if (FEATURES.publicFreeRelease === true) return true;
   if (FEATURES.devSimulatePremium) return true;
+  if (hasCreditsUnlimitedAccess()) return true;
+  if (hasCreditsCalcUnlockForCurrentPage()) return true;
   if (FEATURES.proClientPolicy === 'production') {
     return hasProductionProSessionCache();
   }

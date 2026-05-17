@@ -1,0 +1,28 @@
+/** English strings for bucket-elevator.html (`beConv.*` field keys). ASCII-safe. */
+export const BUCKET_ELEVATOR_EN = {
+  'beConv.docTitle': 'Bucket elevator calculator online \u2014 TheMechAssist',
+  'beConv.h2': 'Bucket elevator \u00b7 capacity, speed and drive',
+  'beConv.heroLead':
+    'Step-by-step bucket elevator sizing: geometry, capacity, belt speed and drive power.',
+  'beConv.helpSummary': 'Methodology and model limits',
+  'beConv.presetsLabel': 'Typical examples:',
+  'beConv.diagTitle': 'Schematic view \u00b7 elevator and boot',
+  'beConv.labelHeight': 'Lift height H (m)',
+  'beConv.helpHeight': 'Vertical distance from boot (feed) to head (discharge).',
+  'beConv.labelCapacity': 'Required capacity Q (t/h)',
+  'beConv.labelBucketVolume': 'Bucket volume V (L)',
+  'beConv.helpBucketVolume': 'Struck capacity of each bucket. Select from manufacturer catalogue.',
+  'beConv.labelBucketSpacing': 'Bucket spacing s (mm)',
+  'beConv.labelDensity': 'Bulk density \u03c1 (kg/m\u00b3)',
+  'beConv.labelFillFactor': 'Fill factor \u03c6',
+  'beConv.helpFillFactor': 'Actual fill as fraction of struck capacity. Free-flowing grain: 0.75\u20130.85.',
+  'beConv.labelDrumDiam': 'Head drum diameter D (mm)',
+  'beConv.resultBeltSpeed': 'Required belt speed v',
+  'beConv.resultActualCapacity': 'Actual capacity Q',
+  'beConv.resultBucketsPerMetre': 'Buckets per metre',
+  'beConv.resultShaftPower': 'Drive shaft power P',
+  'beConv.resultTorque': 'Head drum torque T',
+  'beConv.resultDrumSpeed': 'Head drum speed n',
+  'beConv.alertCentrifugal': 'Belt speed may cause centrifugal discharge \u2014 check bucket design.',
+  'beConv.alertCapacity': 'Calculated capacity below required \u2014 increase speed or bucket size.',
+};

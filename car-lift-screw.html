@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Par en husillo trapecial, potencia y presión en tuerca en elevador de coches de tornillo. Predimensionado online gratis." />
+    <meta name="description" content="Cargas, tornillo y requisitos de accionamiento en plataforma elevadora. Cálculo Pro orientativo." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,13 +11,13 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/car-lift-screw.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/car-lift-screw.html" />
-    <meta property="og:title" content="Calculadora de elevador de coches husillo online" />
-    <meta property="og:description" content="Par en husillo trapecial, potencia y presión en tuerca en elevador de coches de tornillo. Predimensionado online gratis." />
+    <meta property="og:url" content="https://www.themechassist.com/car-lift-screw.html" id="mdr-og-url" />
+    <meta property="og:title" content="Elevador de vehículos — TheMechAssist" />
+    <meta property="og:description" content="Cargas, tornillo y requisitos de accionamiento en plataforma elevadora. Cálculo Pro orientativo." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de elevador de coches husillo online" />
+    <meta name="twitter:title" content="Elevador de vehículos — TheMechAssist" />
 
-    <title>Calculadora de elevador de coches husillo online — TheMechAssist</title>
+    <title>Elevador de vehículos — TheMechAssist</title>
     <link rel="stylesheet" href="css/app.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
@@ -44,6 +44,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -62,18 +64,25 @@
       <aside class="panel flat-sidebar">
         <header class="flat-sidebar__head">
           <p class="flat-sidebar__eyebrow">TheMechAssist</p>
-          <h2 class="flat-sidebar__title">Elevador de coches (husillo)</h2>
-          <p class="calc-seo-intro">
-            Esta calculadora enlaza la masa elevada, la carrera y el tiempo objetivo con el paso y diámetro del husillo trapecial ISO para obtener velocidad de avance, par resistente y potencia en el motor, además de una estimación orientativa de presión en la tuerca de bronce y del comportamiento frente al ángulo de fricción cuando se habla de autofrenado. Sirve a fabricantes de equipos de taller y talleres de carrocería que deben validar un husillo existente antes de alargar la plataforma. Un ejemplo práctico es comprobar si un aumento del peso máximo admisible obliga a cambiar la entrada del tornillo o la longitud portante de la tuerca.
-          </p>
-          <p class="flat-sidebar__lead">
-            Dos columnas, tornillo de potencia y tuerca de bronce. Par, potencia, presi&oacute;n de tuerca y autofrenado (&lambda; &lt; &phi;) con la misma experiencia que cinta plana y rodillos: formulario a la izquierda, esquema y resultados a la derecha.
-          </p>
+          <h2 class="flat-sidebar__title" data-i18n="carConv.h2">Elevador de coches (husillo)</h2>
+          <details class="flat-sidebar-intro">
+            <summary class="flat-sidebar-intro__summary" data-i18n="carConv.introSummary">
+              Descripción y alcance de la calculadora
+            </summary>
+            <div class="flat-sidebar-intro__body">
+              <p class="calc-seo-intro" data-i18n="carConv.calcSeoIntro">
+                Esta calculadora enlaza la masa elevada, la carrera y el tiempo objetivo con el paso y diámetro del husillo trapecial ISO para obtener velocidad de avance, par resistente y potencia en el motor, además de una estimación orientativa de presión en la tuerca de bronce y del comportamiento frente al ángulo de fricción cuando se habla de autofrenado. Sirve a fabricantes de equipos de taller y talleres de carrocería que deben validar un husillo existente antes de alargar la plataforma. Un ejemplo práctico es comprobar si un aumento del peso máximo admisible obliga a cambiar la entrada del tornillo o la longitud portante de la tuerca.
+              </p>
+              <p class="flat-sidebar__lead" data-i18n="carConv.heroLead">
+                Dos columnas, tornillo de potencia y tuerca de bronce. Par, potencia, presi&oacute;n de tuerca y autofrenado (&lambda; &lt; &phi;) con la misma experiencia que cinta plana y rodillos: formulario a la izquierda, esquema y resultados a la derecha.
+              </p>
+            </div>
+          </details>
         </header>
 
         <details class="help-details flat-help">
-          <summary>Gu&iacute;a r&aacute;pida</summary>
-          <div class="help-details__body">
+          <summary data-i18n="carConv.helpSummary">Gu&iacute;a r&aacute;pida</summary>
+          <div class="help-details__body" data-i18n="carConv.helpBodyHtml" data-i18n-html>
             <p class="help-details__lead muted">
               Junto a varias etiquetas hay un <span class="info-chip info-chip--static" aria-hidden="true">?</span>: en escritorio, sit&uacute;e el cursor encima; en t&aacute;ctil, <strong>pulse</strong> para leer la ayuda.
             </p>
@@ -89,9 +98,9 @@
         <details class="flat-accordion" id="carLiftAccStandards">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
-            <span class="flat-accordion__label">Est&aacute;ndares y seguridad en transmisi&oacute;n por husillo</span>
+            <span class="flat-accordion__label" data-i18n="carConv.accStandards">Est&aacute;ndares y seguridad en transmisi&oacute;n por husillo</span>
           </summary>
-          <div class="flat-accordion__body">
+          <div class="flat-accordion__body" data-i18n="carConv.accStandardsBodyHtml" data-i18n-html>
             <p class="muted" style="margin: 0 0 0.8rem; line-height: 1.45">
               <strong>Normativa ISO de rosca trapecial m&eacute;trica:</strong> la familia
               <strong>ISO 2901, 2902, 2903 y 2904</strong> define el perfil b&aacute;sico de la rosca trapecial m&eacute;trica,
@@ -176,10 +185,25 @@
           </div>
         </details>
 
-        <details class="flat-accordion">
+        <section class="flat-ux-panel" aria-labelledby="clUxPresetsTitle">
+          <h3 id="clUxPresetsTitle" class="flat-ux-panel__title" data-i18n="machineHub.uxPresetsTitle">Casos reales (un clic)</h3>
+          <p class="flat-ux-panel__lead muted" data-i18n="machineHub.uxPresetsLead">
+            Rellena un taller típico; puede ajustar después.
+          </p>
+          <div class="flat-ux-preset-row" role="group" aria-label="Presets elevador husillo">
+            <button type="button" class="btn-flat-preset" data-cl-preset="workshop_light" title="Taller ligero, Tr 32×6">
+              <span class="btn-flat-preset__name">Taller · ligero</span>
+            </button>
+            <button type="button" class="btn-flat-preset" data-cl-preset="workshop_heavy" title="Mayor masa, Tr 45×7">
+              <span class="btn-flat-preset__name">Taller · pesado</span>
+            </button>
+          </div>
+        </section>
+
+        <details class="flat-accordion" id="carLiftAccGeometry">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
-            <span class="flat-accordion__label">Geometr&iacute;a y cinem&aacute;tica</span>
+            <span class="flat-accordion__label" data-i18n="carConv.accGeometry">Geometr&iacute;a y cinem&aacute;tica</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
@@ -194,9 +218,10 @@
               >
               <input type="range" id="clCapacityR" class="flat-slider" min="800" max="6000" step="50" value="3500" aria-label="Capacidad" />
               <div class="flat-field__num">
-                <input id="clCapacity" type="number" step="50" min="100" value="3500" />
+                <input id="clCapacity" type="number" step="50" min="100" value="3500" placeholder="ej. 2800–4200 kg" />
                 <span class="field-hint">kg</span>
               </div>
+              <p class="field-context muted">Típ. 2000–5000 kg (coche + carga en taller)</p>
             </div>
             <div class="field flat-field--slider">
               <label for="clH"
@@ -205,9 +230,10 @@
               >
               <input type="range" id="clHR" class="flat-slider" min="1.2" max="4.5" step="0.05" value="1.8" aria-label="Altura" />
               <div class="flat-field__num">
-                <input id="clH" type="number" step="0.05" min="0.2" value="1.8" />
+                <input id="clH" type="number" step="0.05" min="0.2" value="1.8" placeholder="ej. 1,6–2,2 m" />
                 <span class="field-hint">m</span>
               </div>
+              <p class="field-context muted">Típ. 1,5–2,2 m carrera útil en taller</p>
             </div>
             <div class="field flat-field--slider">
               <label for="clT"
@@ -216,9 +242,10 @@
               >
               <input type="range" id="clTR" class="flat-slider" min="15" max="120" step="1" value="45" aria-label="Tiempo" />
               <div class="flat-field__num">
-                <input id="clT" type="number" step="1" min="5" value="45" />
+                <input id="clT" type="number" step="1" min="5" value="45" placeholder="ej. 45–70 s" />
                 <span class="field-hint">s</span>
               </div>
+              <p class="field-context muted">Típ. 40–90 s (comodidad / normativa local)</p>
             </div>
             <div class="field" style="grid-column: 1 / -1">
               <label for="clThreadPreset"
@@ -275,7 +302,7 @@
         <details class="flat-accordion" id="carLiftAccNut">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
-            <span class="flat-accordion__label">Tuerca, rozamiento y servicio</span>
+            <span class="flat-accordion__label" data-i18n="carConv.accNut">Tuerca, rozamiento y servicio</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
@@ -285,9 +312,10 @@
               >
               <input type="range" id="clNutLR" class="flat-slider" min="40" max="200" step="5" value="90" aria-label="Longitud tuerca" />
               <div class="flat-field__num">
-                <input id="clNutL" type="number" step="5" min="10" value="90" />
+                <input id="clNutL" type="number" step="5" min="10" value="90" placeholder="ej. 80–120 mm" />
                 <span class="field-hint">mm</span>
               </div>
+              <p class="field-context muted">Típ. 60–120 mm longitud portante de tuerca</p>
             </div>
             <div class="field flat-field--slider">
               <label for="clMu"
@@ -296,10 +324,10 @@
               >
               <input type="range" id="clMuR" class="flat-slider" min="0.06" max="0.22" step="0.01" value="0.12" aria-label="Mu" />
               <div class="flat-field__num">
-                <input id="clMu" type="number" step="0.01" min="0.03" max="0.25" value="0.12" />
+                <input id="clMu" type="number" step="0.01" min="0.03" max="0.25" value="0.12" placeholder="ej. 0,10–0,14" />
                 <span class="field-hint">&mdash;</span>
               </div>
-              <p class="field-hint" style="grid-column: 1 / -1; margin-top: 0.25rem">
+              <p class="field-context muted" style="grid-column: 1 / -1; margin-top: 0.25rem">
                 Valores t&iacute;picos: acero&ndash;bronce lubricado &asymp; 0.08&ndash;0.12; sin lubricaci&oacute;n &asymp; 0.15&ndash;0.20.
               </p>
             </div>
@@ -310,9 +338,10 @@
               >
               <input type="range" id="clPallowR" class="flat-slider" min="5" max="22" step="0.5" value="10" aria-label="P allow" />
               <div class="flat-field__num">
-                <input id="clPallow" type="number" step="0.5" min="4" max="25" value="10" />
+                <input id="clPallow" type="number" step="0.5" min="4" max="25" value="10" placeholder="ej. 10–14 MPa bronce" />
                 <span class="field-hint">MPa</span>
               </div>
+              <p class="field-context muted">Orientativo 8–14 MPa según aleación; valide con fabricante</p>
             </div>
             <div class="field flat-field--slider">
               <label for="clSF"
@@ -321,22 +350,23 @@
               >
               <input type="range" id="clSFR" class="flat-slider" min="1" max="2.2" step="0.05" value="1.35" aria-label="SF" />
               <div class="flat-field__num">
-                <input id="clSF" type="number" step="0.05" min="1" max="2.2" value="1.35" />
-                <span class="field-hint">&mdash;</span>
+                <input id="clSF" type="number" step="0.05" min="1" max="2.2" value="1.35" placeholder="ej. 1,25–1,5" />
+                <span class="field-hint">—</span>
               </div>
+              <p class="field-context muted">Típ. 1,25–1,5 servicio general; subir si arranques frecuentes o impactos</p>
             </div>
           </div>
         </details>
 
-        <p class="muted form-model-scope flat-model-scope">
+        <p class="muted form-model-scope flat-model-scope" data-i18n="carConv.modelScopeHtml" data-i18n-html>
           <strong>Modelo:</strong> educativo, 2 columnas &middot; husillo de potencia simplificado.
           <a href="#car-lift-assumptions">Hip&oacute;tesis y exclusiones</a>
         </p>
 
         <div id="mountingConfigHost" class="mounting-config-host"></div>
 
-        <button type="button" class="btn-calc" id="btnCarLiftCalc">Ver motorreductores sugeridos</button>
-        <p class="calc-hint flat-calc-hint">
+        <button type="button" class="btn-calc" id="btnCarLiftCalc" data-i18n="carConv.btnMotors">Ver motorreductores sugeridos</button>
+        <p class="calc-hint flat-calc-hint" data-i18n="carConv.calcHintHtml" data-i18n-html>
           Los resultados y el diagrama se <strong>actualizan al cambiar los datos</strong>. Este bot&oacute;n despliega el bloque de motorreductores.
         </p>
       </aside>
@@ -344,14 +374,58 @@
       <div class="flat-stage layout-right">
         <section class="panel flat-dashboard">
           <header class="flat-dashboard__head">
-            <h2 class="flat-dashboard__title">Dashboard de dimensionamiento</h2>
-            <p class="flat-dashboard__lead muted">
+            <h2 class="flat-dashboard__title" data-i18n="carConv.dashboardTitle">Dashboard de dimensionamiento</h2>
+            <p class="flat-dashboard__lead muted" data-i18n="carConv.dashboardLeadHtml" data-i18n-html>
               Par y potencia en el <strong>husillo</strong> (dise&ntilde;o con factor de servicio). Revise alertas de <strong>autofrenado</strong> y <strong>presi&oacute;n</strong> en tuerca.
               <a href="#car-lift-assumptions">Hip&oacute;tesis</a> &middot; modelo orientativo, no norma completa.
             </p>
           </header>
+
+          <section class="flat-scope-panel" aria-labelledby="clScopeTitle">
+            <h3 id="clScopeTitle" class="flat-scope-panel__title" data-i18n="carConv.scopeTitle">Qué resuelve esta herramienta</h3>
+            <p class="flat-scope-panel__intro muted" data-i18n="carConv.scopeIntro">
+              Husillo trapecial ISO (orientativo): par, potencia y presión en tuerca a partir de masa, carrera y tiempo. No sustituye la documentación de la directiva máquinas ni la aprobación OEM.
+            </p>
+            <ul class="flat-scope-panel__list">
+              <li data-i18n="carConv.scopeLi1">Geometría de rosca y fricción acero–bronce simplificada con comprobación de autofrenado.</li>
+              <li data-i18n="carConv.scopeLi2">Comparación de motorreductor con el mismo verificador que otras máquinas.</li>
+              <li data-i18n="carConv.scopeLi3">Presión en tuerca y desgaste son orientativos; confirmar con ensayos del proveedor.</li>
+              <li data-i18n="carConv.scopeLi4">PDF Pro opcional; resumen copiable gratuito.</li>
+            </ul>
+          </section>
+
           <div id="clSelfLockBanner" class="design-alert design-alert--error" hidden></div>
           <div class="results-grid" id="clResults"></div>
+
+          <section class="flat-rfq-panel" aria-labelledby="clRfqTitle">
+            <h3 id="clRfqTitle" class="flat-rfq-panel__title" data-i18n="carConv.rfqTitle">Resumen para proveedor (gratis)</h3>
+            <p class="flat-rfq-panel__lead muted" data-i18n="carConv.rfqLead">
+              Copie entradas y el punto de husillo en texto o CSV.
+            </p>
+            <div class="flat-rfq-panel__actions">
+              <button
+                type="button"
+                id="machineRfqCopyText"
+                class="button button--secondary flat-rfq-panel__btn"
+                data-i18n="carConv.rfqBtnText"
+                data-i18n-attrs="title=carConv.rfqBtnTextTitle"
+                title="Copia un bloque de texto"
+              >
+                Copiar texto
+              </button>
+              <button
+                type="button"
+                id="machineRfqCopyCsv"
+                class="button button--ghost flat-rfq-panel__btn"
+                data-i18n="carConv.rfqBtnCsv"
+                data-i18n-attrs="title=carConv.rfqBtnCsvTitle"
+                title="Copia CSV"
+              >
+                Copiar CSV
+              </button>
+            </div>
+          </section>
+
           <div id="clVerdicts" class="design-alerts" style="margin-top: 1rem"></div>
           <p id="clDisclaimer" class="muted" style="margin-top: 0.75rem; font-size: 0.82rem"></p>
         </section>
@@ -360,7 +434,7 @@
           <div class="flat-visual__workbench">
             <div class="diagram-duo__schematic flat-visual__diagram-col">
               <svg id="clDiagram" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama elevador por husillo"></svg>
-              <p class="diagram-schematic-note muted">
+              <p class="diagram-schematic-note muted" data-i18n="carConv.diagramNoteHtml" data-i18n-html>
                 <strong>Lectura r&aacute;pida:</strong> vista cualitativa de <strong>dos columnas</strong>, husillo, tuerca de carga y de seguridad, y posici&oacute;n del motor (arriba o abajo seg&uacute;n su selecci&oacute;n). <strong>H</strong>, <strong>p</strong> y <strong>d</strong> son los valores del formulario; valide siempre con el fabricante del elevador.
               </p>
             </div>
@@ -375,7 +449,7 @@
                   decoding="async"
                 />
               </div>
-              <figcaption class="flat-visual__caption muted">
+              <figcaption class="flat-visual__caption muted" data-i18n="carConv.photoCaptionHtml" data-i18n-html>
                 Referencia: aplicaci&oacute;n en taller (ejemplo).
                 <a href="https://commons.wikimedia.org/wiki/File:Two-post_lift.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.
               </figcaption>
@@ -385,8 +459,8 @@
 
         <section class="panel flat-panel--verify">
           <div class="verify-panel" id="carLiftVerifyPanel">
-            <h2><span class="panel-icon">&#10003;</span> Comprobar un motorreductor que ya tengo</h2>
-            <p class="muted panel-lead">
+            <h2 data-i18n="carConv.verifyH2Html" data-i18n-html><span class="panel-icon">&#10003;</span> Comprobar un motorreductor que ya tengo</h2>
+            <p class="muted panel-lead" data-i18n="carConv.verifyLeadHtml" data-i18n-html>
               <strong>Dos formas:</strong> (1) Marca y modelo del <strong>cat&aacute;logo de ejemplo</strong> y bot&oacute;n &laquo;Comprobar para este elevador&raquo;. (2) Desplegable
               <em>O bien: introducir mi motorreductor a mano</em>, datos de placa y &laquo;Comprobar con estos datos&raquo;. Se contrastan potencia, par y <strong>rpm de salida con el husillo</strong> calculado.
             </p>
@@ -419,7 +493,7 @@
                 <span class="field-hint">&mdash;</span>
               </div>
             </div>
-            <button type="button" data-verify-run style="margin-top: 1rem; width: 100%">Comprobar para este elevador</button>
+            <button type="button" data-verify-run style="margin-top: 1rem; width: 100%" data-i18n="carConv.verifyRunBtn">Comprobar para este elevador</button>
             <div data-verify-out></div>
           </div>
         </section>
@@ -430,13 +504,13 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">&#8983;</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title" id="carLiftEngDetailsTitle">Desglose de ingenier&iacute;a</span>
-                  <span class="motors-details__hint" id="carLiftEngDetailsHint">Plegado por defecto &mdash; reductor, estrategias de motor y pasos del modelo de husillo</span>
+                  <span class="motors-details__title" id="carLiftEngDetailsTitle" data-i18n="carConv.engTitle">Desglose de ingenier&iacute;a</span>
+                  <span class="motors-details__hint" id="carLiftEngDetailsHint" data-i18n="carConv.engHint">Plegado por defecto &mdash; reductor, estrategias de motor y pasos del modelo de husillo</span>
                 </span>
               </span>
             </summary>
             <div class="motors-details__body">
-              <p class="muted panel-lead" id="carLiftEngDetailsLead">
+              <p class="muted panel-lead" id="carLiftEngDetailsLead" data-i18n="carConv.engLead">
                 C&aacute;lculo del par en tornillo, cinem&aacute;tica, presi&oacute;n en tuerca y enfoques de motorreductor (referencia).
               </p>
               <div id="carLiftEngineeringReport" class="eng-report"></div>
@@ -450,8 +524,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">&#9678;</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title" id="carLiftMotorsDetailsTitle">Motorreductores (SEW-Eurodrive, Siemens Simogear, Nord, Bonfiglioli, Motovario)</span>
-                  <span class="motors-details__hint" id="carLiftMotorsDetailsHint">Plegado por defecto &mdash; recomendaciones, exportaci&oacute;n y comprobador</span>
+                  <span class="motors-details__title" id="carLiftMotorsDetailsTitle" data-i18n="carConv.motorsTitle">Motorreductores (SEW-Eurodrive, Siemens Simogear, Nord, Bonfiglioli, Motovario)</span>
+                  <span class="motors-details__hint" id="carLiftMotorsDetailsHint" data-i18n="carConv.motorsHint">Plegado por defecto &mdash; recomendaciones, exportaci&oacute;n y comprobador</span>
                 </span>
               </span>
             </summary>
@@ -467,8 +541,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">&#8251;</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title" id="carLiftAssumptionsTitle">Hip&oacute;tesis del modelo</span>
-                  <span class="motors-details__hint" id="carLiftAssumptionsHint">Supuestos y l&iacute;mites del c&aacute;lculo educativo (no sustituye normativa de elevadores)</span>
+                  <span class="motors-details__title" id="carLiftAssumptionsTitle" data-i18n="carConv.assumptionsTitle">Hip&oacute;tesis del modelo</span>
+                  <span class="motors-details__hint" id="carLiftAssumptionsHint" data-i18n="carConv.assumptionsHint">Supuestos y l&iacute;mites del c&aacute;lculo educativo (no sustituye normativa de elevadores)</span>
                 </span>
               </span>
             </summary>

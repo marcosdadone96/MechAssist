@@ -13,15 +13,24 @@ import {
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { lookupSeeger } from '../lab/seegerDinTables.js';
 import { renderSeegerDiagram } from '../lab/diagramSeeger.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { getLabLang } from '../lab/i18n/labLang.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { SEEGER_PAGE_EN } from '../lab/i18n/pages/seegerPageEn.js';
+import { localizeSeegerHint } from '../lab/i18n/runtime/seegerHintRuntime.js';
+
+function bx(es, en) {
+  return getLabLang() === 'en' ? en : es;
+}
 
 mountTierStatusBar();
-bootSmartDashboardIfEnabled('Anillos Seeger \u00b7 laboratorio');
+bootSmartDashboardIfEnabled(bx('Anillos Seeger \u00b7 laboratorio', 'Seeger rings \u00b7 lab'));
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
 mountCompactLabFieldHelp();
@@ -74,7 +83,9 @@ function esc(s) {
 function orderCodeSeeger(kind, d1, inox) {
   const d = Number.isInteger(d1) ? String(d1) : String(d1);
   const base =
-    kind === 'shaft' ? `Anillo Seeger DIN 471 - ${d}` : `Anillo Seeger DIN 472 - ${d}`;
+    kind === 'shaft'
+      ? bx(`Anillo Seeger DIN 471 - ${d}`, `Seeger ring DIN 471 - ${d}`)
+      : bx(`Anillo Seeger DIN 472 - ${d}`, `Seeger ring DIN 472 - ${d}`);
   return inox ? `${base} - INOX` : base;
 }
 
@@ -142,7 +153,7 @@ function refreshCore() {
     }
     emitEngineeringSnapshot({
       page: 'calc-seeger',
-      moduleLabel: 'Anillos Seeger',
+      moduleLabel: bx('Anillos Seeger', 'Seeger rings'),
       advisorContext: {},
       shoppingLines: [],
       metrics: [],
@@ -154,12 +165,15 @@ function refreshCore() {
 
   const row = hit.row;
   const norm = kind === 'shaft' ? 'DIN 471' : 'DIN 472';
-  const form = 'Forma A (referencia)';
+  const form = bx('Forma A (referencia)', 'Form A (reference)');
   const pedido = orderCodeSeeger(kind, row.d1, inox);
   const pedidoCompacto = `${norm} - ${row.d1}${inox ? ' - INOX' : ''}`;
   const refCorta = techRef(kind, row.d1);
   const faxAdm = interpFaxOrient(row.d1);
-  const hintPedido = `${refCorta} \u00b7 ${norm} ${form}. En comercio tambi\u00e9n: circlip, anillo de retenci\u00f3n. Confirme referencia en cat\u00e1logo.`;
+  const hintPedido = `${refCorta} \u00b7 ${norm} ${form}. ${bx(
+    'En comercio tambi\u00e9n: circlip, anillo de retenci\u00f3n. Confirme referencia en cat\u00e1logo.',
+    'Also sold as circlip / snap ring. Confirm reference in catalogue.',
+  )}`;
 
   const sgVerdict =
     faxWork != null && Number.isFinite(faxAdm) && faxWork > faxAdm ? 'error' : 'ok';
@@ -168,22 +182,25 @@ function refreshCore() {
     heroEl.innerHTML = renderResultHero(
       [
       {
-        label: 'C\u00f3digo de pedido (referencia)',
+        label: bx('C\u00f3digo de pedido (referencia)', 'Order code (reference)'),
         display: pedidoCompacto,
         hint: hintPedido,
       },
       {
-        label: 'Norma principal',
+        label: bx('Norma principal', 'Main standard'),
         display: norm,
         hint:
           kind === 'shaft'
-            ? 'Anillos de seguridad exteriores para ejes (DIN 471).'
-            : 'Anillos de seguridad interiores para alojamientos (DIN 472).',
+            ? bx('Anillos de seguridad exteriores para ejes (DIN 471).', 'External retaining rings for shafts (DIN 471).')
+            : bx('Anillos de seguridad interiores para alojamientos (DIN 472).', 'Internal retaining rings for bores (DIN 472).'),
       },
       {
-        label: 'Fax admisible orient.',
-        display: Number.isFinite(faxAdm) ? `${Math.round(faxAdm)} N` : 'No disponible',
-        hint: 'Escalado orientativo con tabla DIN 471 (acero estándar). Confirmar en fabricante.',
+        label: bx('Fax admisible orient.', 'Orient. allowable Fax'),
+        display: Number.isFinite(faxAdm) ? `${Math.round(faxAdm)} N` : bx('No disponible', 'Not available'),
+        hint: bx(
+          'Escalado orientativo con tabla DIN 471 (acero est\u00e1ndar). Confirmar en fabricante.',
+          'Indicative scaling from DIN 471 table (standard steel). Confirm with manufacturer.',
+        ),
       },
     ],
       { verdict: sgVerdict },
@@ -215,7 +232,7 @@ function refreshCore() {
     );
     if (hit.hint) {
       alertParts.push(
-        `<div class="lab-alert lab-alert--info">${esc(hit.hint).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`,
+        `<div class="lab-alert lab-alert--info">${esc(localizeSeegerHint(hit.hint, getLabLang() === 'en' ? 'en' : 'es')).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`,
       );
     }
     alertsEl.innerHTML = alertParts.join('');
@@ -225,46 +242,58 @@ function refreshCore() {
     const parts = [];
     parts.push(
       metricHtml(
-        'Referencia t\u00e9cnica compacta',
+        bx('Referencia t\u00e9cnica compacta', 'Compact technical ref.'),
         refCorta,
-        '\u00datil en fichas y dibujos; no sustituye el texto completo de pedido.',
+        bx('\u00datil en fichas y dibujos; no sustituye el texto completo de pedido.', 'Useful on drawings; not a full order text.'),
       ),
     );
     if (Number.isFinite(faxAdm)) {
-      parts.push(metricHtml('Fax admisible orientativa', `${Math.round(faxAdm)} N`, 'Tabla resumida DIN 471; valor solo orientativo.'));
+      parts.push(
+        metricHtml(
+          bx('Fax admisible orientativa', 'Orient. allowable Fax'),
+          `${Math.round(faxAdm)} N`,
+          bx('Tabla resumida DIN 471; valor solo orientativo.', 'Summary DIN 471 table; indicative only.'),
+        ),
+      );
       if (faxWork != null) {
         const ok = faxWork <= faxAdm;
         parts.push(
-          `<div class="lab-alert lab-alert--${ok ? 'ok' : 'danger'}"><strong>${ok ? 'APTO' : 'NO APTO'} axial:</strong> Fax trabajo = ${Math.round(
+          `<div class="lab-alert lab-alert--${ok ? 'ok' : 'danger'}"><strong>${ok ? bx('APTO', 'OK') : bx('NO APTO', 'NOT OK')} axial:</strong> ${bx('Fax trabajo', 'Working Fax')} = ${Math.round(
             faxWork,
-          )} N vs Fax adm orient. = ${Math.round(faxAdm)} N.</div>`,
+          )} N vs ${bx('Fax adm orient.', 'Orient. Fax adm')} = ${Math.round(faxAdm)} N.</div>`,
         );
       }
     }
     if (kind === 'shaft') {
       const ex = /** @type {import('../lab/seegerDinTables.js').SeegerExternalRow} */ (row);
       parts.push(
-        metricHtml('Di\u00e1metro nominal eje d1', `${ex.d1} mm`, 'Talla del anillo y del eje de referencia.'),
-        metricHtml('Espesor s', `${ex.s} mm`, 'Espesor del anillo.'),
-        metricHtml('Di\u00e1metro fondo ranura d3', `${ex.d3} mm`, 'Cota de mecanizado de la garganta en el eje (tabla demo).'),
-        metricHtml('Anchura ranura m', `${ex.m} mm`, 'Anchura axial de la ranura en el eje.'),
-        metricHtml('Di\u00e1m. exterior libre (aprox.)', `${ex.dFree} mm`, 'Anillo sin montar; ver tolerancias de fabricante.'),
+        metricHtml(bx('Di\u00e1metro nominal eje d1', 'Nominal shaft diameter d1'), `${ex.d1} mm`, bx('Talla del anillo y del eje de referencia.', 'Ring and reference shaft size.')),
+        metricHtml(bx('Espesor s', 'Thickness s'), `${ex.s} mm`, bx('Espesor del anillo.', 'Ring thickness.')),
+        metricHtml(bx('Di\u00e1metro fondo ranura d3', 'Groove bottom diameter d3'), `${ex.d3} mm`, bx('Cota de mecanizado de la garganta en el eje (tabla demo).', 'Shaft groove machining dimension (demo table).')),
+        metricHtml(bx('Anchura ranura m', 'Groove width m'), `${ex.m} mm`, bx('Anchura axial de la ranura en el eje.', 'Axial groove width on shaft.')),
+        metricHtml(bx('Di\u00e1m. exterior libre (aprox.)', 'Free OD (approx.)'), `${ex.dFree} mm`, bx('Anillo sin montar; ver tolerancias de fabricante.', 'Unmounted ring; see manufacturer tolerances.')),
       );
     } else {
       const inn = /** @type {import('../lab/seegerDinTables.js').SeegerInternalRow} */ (row);
       parts.push(
-        metricHtml('Di\u00e1metro nominal agujero d1', `${inn.d1} mm`, 'Talla del anillo y alojamiento de referencia.'),
-        metricHtml('Espesor s', `${inn.s} mm`, 'Espesor del anillo.'),
-        metricHtml('Di\u00e1metro fondo ranura dG', `${inn.dG} mm`, 'Garganta en la pared del agujero (tabla demo).'),
-        metricHtml('Anchura ranura m', `${inn.m} mm`, 'Anchura axial de la ranura.'),
-        metricHtml('Di\u00e1m. exterior libre (aprox.)', `${inn.odFree} mm`, 'Anillo expandido; montaje con pinzas.'),
-        metricHtml('Anchura anillo b (aprox.)', `${inn.b} mm`, 'Seg\u00fan tabulaci\u00f3n de referencia.'),
+        metricHtml(bx('Di\u00e1metro nominal agujero d1', 'Nominal bore diameter d1'), `${inn.d1} mm`, bx('Talla del anillo y alojamiento de referencia.', 'Ring and reference bore size.')),
+        metricHtml(bx('Espesor s', 'Thickness s'), `${inn.s} mm`, bx('Espesor del anillo.', 'Ring thickness.')),
+        metricHtml(bx('Di\u00e1metro fondo ranura dG', 'Groove bottom diameter dG'), `${inn.dG} mm`, bx('Garganta en la pared del agujero (tabla demo).', 'Groove in bore wall (demo table).')),
+        metricHtml(bx('Anchura ranura m', 'Groove width m'), `${inn.m} mm`, bx('Anchura axial de la ranura.', 'Axial groove width.')),
+        metricHtml(bx('Di\u00e1m. exterior libre (aprox.)', 'Free OD (approx.)'), `${inn.odFree} mm`, bx('Anillo expandido; montaje con pinzas.', 'Expanded ring; install with pliers.')),
+        metricHtml(bx('Anchura anillo b (aprox.)', 'Ring width b (approx.)'), `${inn.b} mm`, bx('Seg\u00fan tabulaci\u00f3n de referencia.', 'Per reference tabulation.')),
       );
     }
     parts.push(
-      `<div class="lab-metric lab-metric--wide"><div class="lab-metric__head"><span class="k">Pedido en cat\u00e1logo</span></div><div class="lab-metric__text">Solicite <strong>${esc(
+      `<div class="lab-metric lab-metric--wide"><div class="lab-metric__head"><span class="k">${bx('Pedido en cat\u00e1logo', 'Catalogue order')}</span></div><div class="lab-metric__text">${bx('Solicite', 'Request')} <strong>${esc(
         pedido,
-      )}</strong> o equivalente comercial (p. ej. ref. Seeger / circlip). Verifique acero${inox ? ' inoxidable' : ''}, bisel y empaque. Hipótesis: no sustituye ensayo de carga axial ni cálculo de asentamiento dinámico.</div></div>`,
+      )}</strong> ${bx(
+        'o equivalente comercial (p. ej. ref. Seeger / circlip). Verifique acero',
+        'or commercial equivalent (e.g. Seeger / circlip). Check steel',
+      )}${inox ? bx(' inoxidable', ' stainless') : ''}, ${bx('bisel y empaque.', 'chamfer and packaging.')} ${bx(
+        'Hip\u00f3tesis: no sustituye ensayo de carga axial ni c\u00e1lculo de asentamiento din\u00e1mico.',
+        'Assumption: does not replace axial load test or dynamic seating calculation.',
+      )}</div></div>`,
     );
     box.innerHTML = parts.join('');
   }
@@ -279,13 +308,13 @@ function refreshCore() {
 
   emitEngineeringSnapshot({
     page: 'calc-seeger',
-    moduleLabel: 'Anillos Seeger DIN',
+    moduleLabel: bx('Anillos Seeger DIN', 'Seeger rings DIN'),
     advisorContext: {
       seeger: { kind, dNom: row.d1, norm, orderCode: pedido, inox },
     },
     shoppingLines: [],
     metrics: [
-      { label: 'Pedido', value: pedido },
+      { label: bx('Pedido', 'Order'), value: pedido },
       { label: 'd1 mm', value: String(row.d1) },
     ],
   });
@@ -297,14 +326,17 @@ function refreshCore() {
 const SG_PRESETS = [
   {
     label: 'Eje Ø25 · acero',
+    labelKey: 'seeger.preset1',
     values: { sgKind: 'shaft', sgD: 25, sgMaterial: 'carbon', sgFaxWork: '' },
   },
   {
     label: 'Eje Ø40 + Fax',
+    labelKey: 'seeger.preset2',
     values: { sgKind: 'shaft', sgD: 40, sgMaterial: 'carbon', sgFaxWork: 2500 },
   },
   {
     label: 'Agujero Ø62',
+    labelKey: 'seeger.preset3',
     values: { sgKind: 'bore', sgD: 62, sgMaterial: 'carbon', sgFaxWork: '' },
   },
 ];
@@ -357,5 +389,9 @@ document.getElementById('sgMaterial')?.addEventListener('change', scheduleSgReca
 document.getElementById('sgFaxWork')?.addEventListener('input', scheduleSgRecalc);
 document.getElementById('sgFaxWork')?.addEventListener('change', scheduleSgRecalc);
 wireLabCopyLink('sgCopyLinkBtn', 'sgCopyToast');
+wireLabCopyResultsButton('sgCopyResults', {
+  moduleTitle: uxCopy('Anillos el\u00e1sticos (Seeger)', 'Seeger retaining rings'),
+});
 runCalcWithIndustrialFeedback(wrap, refreshCore);
-mountLabCloudSaveBar('Anillos el\u00e1sticos (Seeger)');
+mountLabCloudSaveBar(bx('Anillos el\u00e1sticos (Seeger)', 'Seeger retaining rings'));
+watchLangAndApply(SEEGER_PAGE_EN, { onEnApplied: () => scheduleSgRecalc() });

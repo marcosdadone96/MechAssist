@@ -6,7 +6,10 @@ import { readMountingPreferences } from '../modules/mountingPreferences.js';
 import { computeTractionElevator } from '../modules/tractionElevator.js';
 import { renderBrandRecommendationCards, initMotorVerification, refreshMotorVerificationManual } from './driveSelection.js';
 import { injectMountingConfigSection } from './mountingConfigSection.js';
-import { TRACTION_LANG_EVENT } from './tractionElevatorStaticI18n.js';
+import {
+  applyTractionElevatorPageLanguage,
+  TRACTION_LANG_EVENT,
+} from './tractionElevatorStaticI18n.js';
 import { openMotorsRecommendationsAndScroll } from './motorsCollapsible.js';
 import { renderTractionElevatorDiagram } from './diagramTractionElevator.js';
 import { applyMachinePremiumGates } from './machinePremiumGates.js';
@@ -17,7 +20,14 @@ import { renderFullEngineeringAside } from './engineeringReport.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
-import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
+import { TRACTION_ELEVATOR_EN } from '../lab/i18n/pages/tractionElevatorEn.js';
+
+const TRACTION_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...TRACTION_ELEVATOR_EN };
+import { TRACTION_PRESET_BY_ID } from '../modules/machineHubPresets.js';
+import { incrementCalcCounter } from '../services/calcCounter.js';
 
 function recoCopyTraction(en) {
   return en
@@ -65,6 +75,156 @@ function formatMounting(pref, lang = getCurrentLang()) {
   return `${typeMap[pref.mountingType] || pref.mountingType} \u00b7 ${pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal'}`;
 }
 
+function teRfqFmt(x, d = 2) {
+  return Number.isFinite(x) ? x.toFixed(d) : '\u2014';
+}
+
+/**
+ * @param {ReturnType<typeof buildParams>} raw
+ * @param {ReturnType<typeof computeTractionElevator>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ * @param {'es'|'en'} lang
+ */
+function buildTractionRfqPlainText(raw, r, mount, lang) {
+  const en = lang === 'en';
+  const inp = r.inputs || {};
+  const eu = r.euler || {};
+  const rope = r.rope || {};
+  const dr = r.drive || {};
+  const br = r.brake || {};
+  const ene = r.energy || {};
+  const when = new Date().toISOString().slice(0, 19).replace('T', ' ') + ' UTC';
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const head = en
+    ? 'TheMechAssist — Traction elevator (indicative teaching model)'
+    : 'TheMechAssist — Ascensor de tracción (modelo formativo)';
+  const hIn = en ? '== Inputs ==' : '== Entradas ==';
+  const hOut = en ? '== Summary ==' : '== Resumen ==';
+  const hMount = en ? '== Mounting preference (for RFQ) ==' : '== Preferencia de montaje (RFQ) ==';
+  const disc = typeof r.disclaimer === 'string' ? r.disclaimer : '';
+
+  const parts = [
+    head,
+    `${en ? 'Timestamp (UTC)' : 'Fecha (UTC)'}: ${when}`,
+  ];
+  if (url) parts.push(`${en ? 'Source' : 'Origen'}: ${url}`);
+  parts.push(
+    '',
+    hIn,
+    `${en ? 'Useful load Q' : 'Carga útil Q'} (kg): ${teRfqFmt(inp.Q, 0)}`,
+    `${en ? 'Empty car Mc' : 'Cabina Mc'} (kg): ${teRfqFmt(inp.Mc, 0)}`,
+    `${en ? 'Counterweight Mcp' : 'Contrapeso Mcp'} (kg): ${teRfqFmt(inp.Mcp, 0)}`,
+    `${en ? 'CW fraction' : 'Fracción contrapeso'}: ${teRfqFmt(inp.counterweightFraction, 3)}`,
+    `${en ? 'Travel H' : 'Recorrido H'} (m): ${teRfqFmt(inp.H, 2)}`,
+    `${en ? 'Speed v' : 'Velocidad v'} (m/s): ${teRfqFmt(inp.v, 2)}`,
+    `${en ? 'Reeving' : 'Eslingado'}: ${inp.reeving}`,
+    `${en ? 'Sheave D' : 'Ø polea'} (m): ${teRfqFmt(inp.D, 3)}`,
+    `${en ? 'Wrap angle' : 'Ángulo abrazamiento'} (deg): ${teRfqFmt(inp.alpha_deg, 1)}`,
+    `${en ? 'Friction mu' : 'Coef. fricción μ'}: ${teRfqFmt(inp.mu, 3)}`,
+    `${en ? 'Duty' : 'Servicio'}: ${inp.duty}`,
+    `${en ? 'SF (demo)' : 'SF (demo)'}: ${teRfqFmt(inp.SF, 2)}`,
+    `${en ? 'Max strands' : 'Máx. cables'}: ${teRfqFmt(inp.maxStrands, 0)}`,
+    '',
+    hOut,
+    `${en ? 'Adhesion check' : 'Comprobación adherencia'}: T1/T2=${teRfqFmt(eu.tensionRatioWorst, 3)} vs exp(mu·alpha)=${teRfqFmt(eu.limit, 3)} → ${eu.adhesionOk ? (en ? 'OK' : 'OK') : en ? 'REVIEW' : 'REVISAR'} (${en ? 'margin' : 'margen'} x${teRfqFmt(eu.adhesionMargin, 2)})`,
+    `${en ? 'Ropes' : 'Cables'}: ${rope.n ?? '—'} x Ø${teRfqFmt(rope.d_mm, 1)} mm`,
+    `${en ? 'Imbalance' : 'Desequilibrio'} (N): ${teRfqFmt(dr.imbalance_N, 0)}`,
+    `${en ? 'Indicative motor power (model)' : 'Potencia motor (orientativa)'} (kW): ${teRfqFmt(dr.power_kW_orientative, 3)}`,
+    `${en ? 'Sheave rpm' : 'rpm polea'}: ${teRfqFmt(dr.sheave_rpm, 2)}`,
+    `${en ? 'Brake torque' : 'Par freno'} (N·m): ${teRfqFmt(br.torque_Nm, 0)}`,
+    `${en ? 'Energy saving vs no CW' : 'Ahorro vs sin contrapeso'} (%): ${teRfqFmt(ene.savingVsNoCounterweight_pct, 0)}`,
+    '',
+    hMount,
+    formatMounting(mount, lang) +
+      (mount.machineShaftDiameter_mm != null
+        ? ` · ${en ? 'Machine shaft Ø' : 'Ø eje máquina'} ${teRfqFmt(mount.machineShaftDiameter_mm, 1)} mm`
+        : ''),
+    '',
+    disc,
+  );
+  return parts.join('\n');
+}
+
+/**
+ * @param {ReturnType<typeof buildParams>} raw
+ * @param {ReturnType<typeof computeTractionElevator>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ */
+function buildTractionRfqCsv(raw, r, mount) {
+  const inp = r.inputs || {};
+  const eu = r.euler || {};
+  const rope = r.rope || {};
+  const dr = r.drive || {};
+  const br = r.brake || {};
+  const headers = [
+    'product',
+    'generated_utc',
+    'page_url',
+    'Q_kg',
+    'Mc_kg',
+    'Mcp_kg',
+    'kcw',
+    'H_m',
+    'v_m_s',
+    'reeving',
+    'D_sheave_m',
+    'wrap_deg',
+    'mu',
+    'duty',
+    'SF',
+    'max_strands',
+    'mounting',
+    'orientation',
+    'machine_shaft_d_mm',
+    'T1_T2',
+    'euler_limit',
+    'adhesion_ok',
+    'adhesion_margin',
+    'ropes_n',
+    'rope_d_mm',
+    'imbalance_N',
+    'power_kW_model',
+    'sheave_rpm',
+    'brake_torque_Nm',
+    'energy_save_pct',
+  ];
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const when = new Date().toISOString();
+  const values = [
+    'TheMechAssist_traction_elevator',
+    when,
+    url,
+    inp.Q,
+    inp.Mc,
+    inp.Mcp,
+    inp.counterweightFraction,
+    inp.H,
+    inp.v,
+    inp.reeving,
+    inp.D,
+    inp.alpha_deg,
+    inp.mu,
+    inp.duty,
+    inp.SF,
+    inp.maxStrands,
+    mount.mountingType,
+    mount.orientation,
+    mount.machineShaftDiameter_mm ?? '',
+    eu.tensionRatioWorst,
+    eu.limit,
+    eu.adhesionOk ? '1' : '0',
+    eu.adhesionMargin,
+    rope.n,
+    rope.d_mm,
+    dr.imbalance_N,
+    dr.power_kW_orientative,
+    dr.sheave_rpm,
+    br.torque_Nm,
+    r.energy?.savingVsNoCounterweight_pct,
+  ];
+  return `${headers.map(escapeCsvCell).join(',')}\n${values.map(escapeCsvCell).join(',')}`;
+}
+
 function buildParams() {
   const manualCw = readNum('teMcpManual', 0);
   return {
@@ -105,6 +265,23 @@ function syncReevingVisual() {
     const on = btn.getAttribute('data-reeving') === sel.value;
     btn.classList.toggle('reeving-visual__opt--active', on);
   });
+}
+
+function writeTeFormValue(id, val) {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement) && !(el instanceof HTMLSelectElement)) return;
+  el.value = val === '' || val == null ? '' : String(val);
+}
+
+function applyTePresetFromId(presetId) {
+  const def = TRACTION_PRESET_BY_ID[presetId];
+  if (!def) return;
+  for (const [k, v] of Object.entries(def.values)) {
+    writeTeFormValue(k, v);
+  }
+  syncReevingVisual();
+  syncCounterweightSuggestion();
+  computeAndRender();
 }
 
 /** Requisitos de accionamiento en la polea (potencia motor orientativa incl. η transmisión). */
@@ -197,6 +374,7 @@ function computeAndRender() {
     console.error(e);
     return;
   }
+  if (Number.isFinite(r.drive?.power_kW_orientative)) incrementCalcCounter();
 
   drawDiagram(p.travelHeight_m, p.reeving, lang);
 
@@ -423,5 +601,30 @@ syncReevingVisual();
 computeAndRender();
 initInfoChipPopovers(document.body);
 
-mountLabCloudSaveBar('Elevador de tracción');
+document.querySelector('main.app-main')?.addEventListener('click', (e) => {
+  const t = e.target instanceof Element ? e.target.closest('[data-te-preset]') : null;
+  if (!(t instanceof HTMLButtonElement)) return;
+  const id = t.getAttribute('data-te-preset');
+  if (id) applyTePresetFromId(id);
+});
+
+wireMachineRfqExport({
+  getPayload: () => {
+    const raw = buildParams();
+    return { raw, result: computeTractionElevator(raw), mount: readMountingPreferences() };
+  },
+  buildPlainText: buildTractionRfqPlainText,
+  buildCsv: buildTractionRfqCsv,
+  toastCopiedEn: MACHINE_HUB_UX_EN['machineHub.toastRfqCopied'],
+  toastErrEn: MACHINE_HUB_UX_EN['machineHub.toastRfqErr'],
+});
+
+watchLangAndApply(TRACTION_PAGE_EN, {
+  onEnApplied: () => {
+    applyTractionElevatorPageLanguage();
+    initInfoChipPopovers(document.body);
+    computeAndRender();
+  },
+});
+
 

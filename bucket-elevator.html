@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Potencia, altura y caudal en elevador de cangilones según línea CEMA orientativa. Dimensionamiento preliminar. Gratis online." />
+    <meta name="description" content="Cálculo orientativo de potencia, altura y caudal en elevador de cangilones. Módulo Pro TheMechAssist." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,13 +11,13 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/bucket-elevator.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/bucket-elevator.html" />
-    <meta property="og:title" content="Calculadora de elevador de cangilones online" />
-    <meta property="og:description" content="Potencia, altura y caudal en elevador de cangilones según línea CEMA orientativa. Dimensionamiento preliminar. Gratis online." />
+    <meta property="og:url" content="https://www.themechassist.com/bucket-elevator.html" id="mdr-og-url" />
+    <meta property="og:title" content="Elevador de cangilones — TheMechAssist" />
+    <meta property="og:description" content="Cálculo orientativo de potencia, altura y caudal en elevador de cangilones. Módulo Pro TheMechAssist." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de elevador de cangilones online" />
+    <meta name="twitter:title" content="Elevador de cangilones — TheMechAssist" />
 
-    <title>Calculadora de elevador de cangilones online — TheMechAssist</title>
+    <title>Elevador de cangilones — TheMechAssist</title>
     <link rel="stylesheet" href="css/app.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
@@ -43,6 +43,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -61,10 +63,17 @@
       <div class="be-main-col">
         <section class="panel">
           <h2><span class="panel-icon">⬆</span> <span data-be-i18n="beMainH2">Elevador de cangilones — diseño orientativo (CEMA)</span></h2>
-          <p class="calc-seo-intro">
-            El asistente encadena capacidad geométrica, velocidad periférica del tambor y elevación útil para obtener potencias y esfuerzos característicos del elevador de cangilones en una lectura alineada con los métodos semiempíricos que tradicionalmente expone la bibliografía tipo CEMA sin sustituir el proyecto firmado por proveedor. Ayuda a ingenieros de proceso en minería, cemento y agrícola que deben comparar alturas de elevación o cambios de producto abrasivo. Por ejemplo, permite estimar si una mayor fluidez del grano reduce tanto la velocidad admisible que hace falta ampliar el diámetro de polea antes de subir tonelaje horario.
-          </p>
-          <p class="form-lead" data-be-i18n="beMainLead">Asistente técnico para geometría, capacidad, cinemática y motorreductor.</p>
+          <details class="flat-sidebar-intro">
+            <summary class="flat-sidebar-intro__summary" data-i18n="beConv.introSummary">
+              Descripción y alcance de la calculadora
+            </summary>
+            <div class="flat-sidebar-intro__body">
+              <p class="calc-seo-intro">
+                El asistente encadena capacidad geométrica, velocidad periférica del tambor y elevación útil para obtener potencias y esfuerzos característicos del elevador de cangilones en una lectura alineada con los métodos semiempíricos que tradicionalmente expone la bibliografía tipo CEMA sin sustituir el proyecto firmado por proveedor. Ayuda a ingenieros de proceso en minería, cemento y agrícola que deben comparar alturas de elevación o cambios de producto abrasivo. Por ejemplo, permite estimar si una mayor fluidez del grano reduce tanto la velocidad admisible que hace falta ampliar el diámetro de polea antes de subir tonelaje horario.
+              </p>
+              <p class="form-lead" data-be-i18n="beMainLead">Asistente técnico para geometría, capacidad, cinemática y motorreductor.</p>
+            </div>
+          </details>
           <details class="help-details flat-help" style="margin-top:.8rem">
             <summary data-be-i18n="beHelpSum">Guía rápida de cada magnitud</summary>
             <div class="help-details__body">
@@ -79,6 +88,21 @@
               </ul>
             </div>
           </details>
+
+          <section class="flat-ux-panel" aria-labelledby="beUxPresetsTitle">
+            <h3 id="beUxPresetsTitle" class="flat-ux-panel__title" data-i18n="machineHub.uxPresetsTitle">Casos reales (un clic)</h3>
+            <p class="flat-ux-panel__lead muted" data-i18n="machineHub.uxPresetsLead">
+              Rellena un punto típico de grano o mineral; puede ajustar en los pasos del asistente.
+            </p>
+            <div class="flat-ux-preset-row" role="group" aria-label="Presets elevador cangilones">
+              <button type="button" class="btn-flat-preset" data-be-preset="grain_elevator" title="Grano seco, descarga centrífuga">
+                <span class="btn-flat-preset__name">Grano · elevador</span>
+              </button>
+              <button type="button" class="btn-flat-preset" data-be-preset="minerals" title="Mineral denso, descarga por gravedad">
+                <span class="btn-flat-preset__name">Mineral · abrasivo</span>
+              </button>
+            </div>
+          </section>
 
           <nav class="be-wizard-nav" id="beWizardNav" aria-label="Pasos del asistente">
             <button type="button" class="be-wizard-nav__btn be-wizard-nav__btn--active" data-be-step="1">
@@ -104,13 +128,19 @@
               <div class="flat-accordion__body field-grid">
                 <div class="field">
                   <label for="beH"><span data-be-i18n="beLblH">Altura de elevación H</span> <span class="info-chip" data-be-chip="h" title="" aria-label="">?</span></label>
-                  <input id="beH" type="number" step="0.5" min="1" value="28" />
-                  <span class="field-hint" data-be-i18n="beHintH">m</span>
+                  <div class="flat-field__num">
+                    <input id="beH" type="number" step="0.5" min="1" value="28" placeholder="ej. 25–45 m" />
+                    <span class="field-hint">m</span>
+                  </div>
+                  <p class="field-context muted" data-be-i18n="beFldCtxH"></p>
                 </div>
                 <div class="field">
                   <label for="beQ"><span data-be-i18n="beLblQ">Capacidad requerida</span> <span class="info-chip" data-be-chip="q" title="" aria-label="">?</span></label>
-                  <input id="beQ" type="number" step="0.5" min="0.5" value="45" />
-                  <span class="field-hint" data-be-i18n="beHintQ">t/h</span>
+                  <div class="flat-field__num">
+                    <input id="beQ" type="number" step="0.5" min="0.5" value="45" placeholder="ej. 45–150 t/h" />
+                    <span class="field-hint">t/h</span>
+                  </div>
+                  <p class="field-context muted" data-be-i18n="beFldCtxQ"></p>
                 </div>
                 <div class="field">
                   <label for="beBucket"><span data-be-i18n="beLblBucket">Tipo de cangilón</span> <span class="info-chip" data-be-chip="bucket" title="" aria-label="">?</span></label>
@@ -126,8 +156,11 @@
               <div class="flat-accordion__body field-grid">
                 <div class="field">
                   <label for="beRho"><span data-be-i18n="beLblRho">Densidad aparente</span> <span class="info-chip" data-be-chip="rho" title="" aria-label="">?</span></label>
-                  <input id="beRho" type="number" step="10" min="200" value="850" />
-                  <span class="field-hint" data-be-i18n="beHintRho"></span>
+                  <div class="flat-field__num">
+                    <input id="beRho" type="number" step="10" min="200" value="850" placeholder="ej. 780–1450 kg/m³" />
+                    <span class="field-hint">kg/m³</span>
+                  </div>
+                  <p class="field-context muted" data-be-i18n="beFldCtxRho"></p>
                 </div>
                 <div class="field">
                   <label for="beFluidity"><span data-be-i18n="beLblFluid">Fluidez</span> <span class="info-chip" data-be-chip="fluidity" title="" aria-label="">?</span></label>
@@ -155,23 +188,34 @@
               <div class="flat-accordion__body field-grid">
                 <div class="field">
                   <label for="beVbelt"><span data-be-i18n="beLblVbelt">Velocidad de banda/cadena</span> <span class="info-chip" data-be-chip="vbelt" title="" aria-label="">?</span></label>
-                  <input id="beVbelt" type="number" step="0.05" min="0.4" value="1.9" />
-                  <span class="field-hint">m/s</span>
+                  <div class="flat-field__num">
+                    <input id="beVbelt" type="number" step="0.05" min="0.4" value="1.9" placeholder="ej. 1,2–2,0 m/s grano" />
+                    <span class="field-hint">m/s</span>
+                  </div>
+                  <p class="field-context muted" data-be-i18n="beFldCtxVbelt"></p>
                 </div>
                 <div class="field">
                   <label for="bePitchManual"><span data-be-i18n="beLblPitch">Paso entre cangilones</span> <span class="info-chip" title="Paso calculado orientativo en función de Q, velocidad y volumen de cangilón." aria-label="Ayuda paso entre cangilones.">?</span></label>
-                  <input id="bePitchManual" type="number" step="5" min="120" value="380" />
-                  <span class="field-hint">mm</span>
+                  <div class="flat-field__num">
+                    <input id="bePitchManual" type="number" step="5" min="120" value="380" />
+                    <span class="field-hint">mm</span>
+                  </div>
                 </div>
                 <div class="field">
                   <label for="beDhead"><span data-be-i18n="beLblDhead">Diámetro de polea superior</span> <span class="info-chip" data-be-chip="dhead" title="" aria-label="">?</span></label>
-                  <input id="beDhead" type="number" step="0.05" min="0.2" value="0.65" />
-                  <span class="field-hint" data-be-i18n="beHintM"></span>
+                  <div class="flat-field__num">
+                    <input id="beDhead" type="number" step="0.05" min="0.2" value="0.65" />
+                    <span class="field-hint">m</span>
+                  </div>
+                  <p class="field-context muted" data-be-i18n="beFldCtxDrum"></p>
                 </div>
                 <div class="field">
                   <label for="beDboot"><span data-be-i18n="beLblDboot">Diámetro de polea inferior</span> <span class="info-chip" data-be-chip="dboot" title="" aria-label="">?</span></label>
-                  <input id="beDboot" type="number" step="0.05" min="0.2" value="0.55" />
-                  <span class="field-hint" data-be-i18n="beHintM"></span>
+                  <div class="flat-field__num">
+                    <input id="beDboot" type="number" step="0.05" min="0.2" value="0.55" />
+                    <span class="field-hint">m</span>
+                  </div>
+                  <p class="field-context muted" data-be-i18n="beFldCtxDrum"></p>
                 </div>
                 <div class="field">
                   <label for="beDischargeType"><span data-be-i18n="beLblDischarge">Tipo de descarga</span> <span class="info-chip" title="Centrífuga para materiales fluidos y mayor velocidad; gravedad para materiales frágiles/abrasivos; mixta para compromisos." aria-label="Ayuda tipo de descarga.">?</span></label>
@@ -180,7 +224,7 @@
                     <option value="gravity">Por gravedad</option>
                     <option value="mixed" selected>Mixta</option>
                   </select>
-                  <span class="field-hint" data-be-i18n="beDischargeHint">Centrífuga: material fluido y alta velocidad. Gravedad: producto frágil/abrasivo. Mixta: compromiso.</span>
+                  <p class="field-context muted" data-be-i18n="beDischargeHint">Centrífuga: material fluido y alta velocidad. Gravedad: producto frágil/abrasivo. Mixta: compromiso.</p>
                 </div>
                 <p class="field-hint" style="margin-top: 0.75rem; grid-column: 1 / -1" data-be-i18n="beDiagNote"></p>
                 <div class="field" style="grid-column: 1 / -1">
@@ -214,13 +258,18 @@
                 <div class="field-grid">
                   <div class="field">
                     <label for="beWidth"><span data-be-i18n="beLblWidth">Ancho de banda/cadena</span> <span class="info-chip" data-be-chip="width" title="" aria-label="">?</span></label>
-                    <input id="beWidth" type="number" step="10" min="150" value="400" />
-                    <span class="field-hint">mm</span>
+                    <div class="flat-field__num">
+                      <input id="beWidth" type="number" step="10" min="150" value="400" />
+                      <span class="field-hint">mm</span>
+                    </div>
                   </div>
                   <div class="field">
                     <label for="beSigma"><span data-be-i18n="beLblSigma">Resistencia nominal de banda</span> <span class="info-chip" data-be-chip="sigma" title="" aria-label="">?</span></label>
-                    <input id="beSigma" type="number" step="5" min="20" value="315" />
-                    <span class="field-hint" data-be-i18n="beHintSigma"></span>
+                    <div class="flat-field__num">
+                      <input id="beSigma" type="number" step="5" min="20" value="315" />
+                      <span class="field-hint">N/mm</span>
+                    </div>
+                    <p class="field-context muted" data-be-i18n="beFldCtxSigma"></p>
                   </div>
                 </div>
                 <div id="beStep2Hints" class="be-hints" aria-live="polite"></div>
@@ -244,7 +293,7 @@
                 <div class="field">
                   <label for="beKboot"><span data-be-i18n="beLblKboot">Arrastre en bota</span> <span class="info-chip" data-be-chip="kboot" title="" aria-label="">?</span></label>
                   <input id="beKboot" type="number" step="0.02" min="0" max="0.4" value="0.18" />
-                  <span class="field-hint" data-be-i18n="beHintKboot"></span>
+                  <p class="field-context muted" data-be-i18n="beHintKboot"></p>
                 </div>
                 <div class="field">
                   <label for="beEtaTrans"><span data-be-i18n="beLblEtaTrans">Rendimiento transmisión</span> <span class="info-chip" data-be-chip="etatrans" title="" aria-label="">?</span></label>
@@ -258,7 +307,50 @@
                 <span class="flat-accordion__label" data-be-i18n="beAccRes">Resultados y comprobación</span>
               </summary>
               <div class="flat-accordion__body">
+                <section class="flat-scope-panel" aria-labelledby="beScopeTitle">
+                  <h3 id="beScopeTitle" class="flat-scope-panel__title" data-i18n="beConv.scopeTitle">Qué resuelve esta herramienta</h3>
+                  <p class="flat-scope-panel__intro muted" data-i18n="beConv.scopeIntro">
+                    Asistente por pasos: capacidad, cinemática y potencia orientativas al estilo prácticas CEMA habituales. No sustituye el diseño firmado por el proveedor.
+                  </p>
+                  <ul class="flat-scope-panel__list">
+                    <li data-i18n="beConv.scopeLi1">Geometría, capacidad y supuestos de bota/tambor en flujo guiado.</li>
+                    <li data-i18n="beConv.scopeLi2">Comprobación de motorreductor cuando hay resultados.</li>
+                    <li data-i18n="beConv.scopeLi3">Abrasión, descarga y estructura simplificadas.</li>
+                    <li data-i18n="beConv.scopeLi4">Módulo Pro; el resumen copiable es gratuito.</li>
+                  </ul>
+                </section>
+
                 <div id="beResults" class="results-grid"></div>
+
+                <section class="flat-rfq-panel" aria-labelledby="beRfqTitle">
+                  <h3 id="beRfqTitle" class="flat-rfq-panel__title" data-i18n="beConv.rfqTitle">Resumen para proveedor (gratis)</h3>
+                  <p class="flat-rfq-panel__lead muted" data-i18n="beConv.rfqLead">
+                    Copie entradas del paso actual y resultados principales en texto o CSV cuando estén disponibles.
+                  </p>
+                  <div class="flat-rfq-panel__actions">
+                    <button
+                      type="button"
+                      id="machineRfqCopyText"
+                      class="button button--secondary flat-rfq-panel__btn"
+                      data-i18n="beConv.rfqBtnText"
+                      data-i18n-attrs="title=beConv.rfqBtnTextTitle"
+                      title="Copiar texto"
+                    >
+                      Copiar texto
+                    </button>
+                    <button
+                      type="button"
+                      id="machineRfqCopyCsv"
+                      class="button button--ghost flat-rfq-panel__btn"
+                      data-i18n="beConv.rfqBtnCsv"
+                      data-i18n-attrs="title=beConv.rfqBtnCsvTitle"
+                      title="Copiar CSV"
+                    >
+                      Copiar CSV
+                    </button>
+                  </div>
+                </section>
+
                 <div id="beVerdicts" class="design-alerts" style="margin-top: 1rem"></div>
                 <p id="beDisclaimer" class="muted" style="margin-top: 0.75rem; font-size: 0.82rem"></p>
                 <p style="margin-top: 1rem">

@@ -15,14 +15,39 @@ import { renderScrewConveyorDiagram } from './diagramScrew.js';
 import { mountPremiumPdfExportBar, buildScrewPdfPayload } from '../services/reportPdfExport.js';
 import { readMountingPreferences } from '../modules/mountingPreferences.js';
 import { injectMountingConfigSection, MOUNTING_INPUT_IDS } from './mountingConfigSection.js';
-import { SCREW_LANG_EVENT } from './screwConveyorStaticI18n.js';
+import { applyScrewConveyorPageLanguage, SCREW_LANG_EVENT } from './screwConveyorStaticI18n.js';
 import { openMotorsRecommendationsAndScroll } from './motorsCollapsible.js';
 import { applyMachinePremiumGates } from './machinePremiumGates.js';
 import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
-import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
+import { SCREW_CONVEYOR_EN } from '../lab/i18n/pages/screwConveyorEn.js';
+
+const SC_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...SCREW_CONVEYOR_EN };
+import { incrementCalcCounter } from '../services/calcCounter.js';
+import { SCREW_PRESET_BY_ID } from '../modules/machineHubPresets.js';
+
+function syncScrewInlineUnits() {
+  const capU = document.getElementById('screwCapUnit');
+  const capSpan = document.getElementById('screwCapInlineUnit');
+  if (capSpan && capU instanceof HTMLSelectElement) {
+    capSpan.textContent = capU.value === 'th' ? 't/h' : 'm³/h';
+  }
+  const dU = document.getElementById('screwDiamUnit');
+  const dSpan = document.getElementById('screwDiamInlineUnit');
+  if (dSpan && dU instanceof HTMLSelectElement) {
+    dSpan.textContent = dU.value === 'in' ? 'in' : 'mm';
+  }
+  const pU = document.getElementById('screwPitchUnit');
+  const pSpan = document.getElementById('screwPitchInlineUnit');
+  if (pSpan && pU instanceof HTMLSelectElement) {
+    pSpan.textContent = pU.value === 'in' ? 'in' : 'mm';
+  }
+}
 
 const inputIds = [
   'screwCap',
@@ -135,6 +160,47 @@ function clampNum(n, lo, hi) {
   return Math.min(hi, Math.max(lo, n));
 }
 
+function writeFormValue(id, val) {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement) && !(el instanceof HTMLSelectElement)) return;
+  el.value = val === '' || val == null ? '' : String(val);
+}
+
+function syncScrewRangeSlidersFromNumberInputs() {
+  const pairs = [
+    ['screwCapR', 'screwCap', 5, 250, 0.5],
+    ['screwDiamR', 'screwDiam', 80, 900, 1],
+    ['screwPitchR', 'screwPitch', 50, 800, 1],
+    ['screwLengthR', 'screwLength', 0.5, 50, 0.1],
+    ['screwAngleR', 'screwAngle', 0, 45, 0.5],
+    ['screwRhoR', 'screwRho', 200, 2200, 10],
+    ['screwMuR', 'screwMu', 0.1, 0.75, 0.01],
+  ];
+  for (const [rangeId, numId, lo, hi, step] of pairs) {
+    const range = document.getElementById(rangeId);
+    const num = document.getElementById(numId);
+    if (!(range instanceof HTMLInputElement) || !(num instanceof HTMLInputElement)) continue;
+    let v = parseFloat(String(num.value).replace(',', '.'));
+    if (!Number.isFinite(v)) v = lo;
+    v = clampNum(v, lo, hi);
+    if (step != null && step > 0) v = Math.round(v / step) * step;
+    num.value = String(v);
+    range.value = String(v);
+  }
+}
+
+function applyScrewPresetFromId(presetId) {
+  const def = SCREW_PRESET_BY_ID[presetId];
+  if (!def) return;
+  for (const [k, v] of Object.entries(def.values)) {
+    writeFormValue(k, v);
+  }
+  syncCapacityUnitUi();
+  syncLoadDutyUi();
+  syncScrewRangeSlidersFromNumberInputs();
+  refresh();
+}
+
 function bindScrewRangeSlider(rangeId, numId, lo, hi, step = null) {
   const range = document.getElementById(rangeId);
   const num = document.getElementById(numId);
@@ -212,6 +278,144 @@ function formatMounting(pref, lang = getCurrentLang()) {
     : { B3: 'B3 patas', B5: 'B5 brida', B14: 'B14 brida', hollowShaft: 'Eje hueco' };
   const ori = pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal';
   return `${typeMap[pref.mountingType] || pref.mountingType} \u00b7 ${ori}`;
+}
+
+/**
+ * @param {ReturnType<typeof readInputs>} raw
+ * @param {ReturnType<typeof computeScrewConveyor>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ * @param {'es'|'en'} lang
+ */
+function buildScrewRfqPlainText(raw, r, mount, lang) {
+  const en = lang === 'en';
+  const d = r.detail || {};
+  const when = new Date().toISOString().slice(0, 19).replace('T', ' ') + ' UTC';
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const head = en
+    ? 'TheMechAssist — Screw conveyor (indicative duty)'
+    : 'TheMechAssist — Transportador de tornillo (punto orientativo)';
+  const hIn = en ? '== Inputs ==' : '== Entradas ==';
+  const hOut = en ? '== Results (indicative) ==' : '== Resultados (orientativos) ==';
+  const hMount = en ? '== Mounting preference (for RFQ) ==' : '== Preferencia de montaje (RFQ) ==';
+  const disc = en
+    ? 'Disclaimer: semi-empirical screw model; does not replace CEMA 350 or OEM sizing.'
+    : 'Aviso: modelo semiempírico de tornillo; no sustituye CEMA 350 ni el dimensionamiento del fabricante.';
+
+  const parts = [
+    head,
+    `${en ? 'Timestamp (UTC)' : 'Fecha (UTC)'}: ${when}`,
+  ];
+  if (url) parts.push(`${en ? 'Source' : 'Origen'}: ${url}`);
+  parts.push(
+    '',
+    hIn,
+    `${en ? 'Capacity value' : 'Capacidad'}: ${formatNum(raw.capValue, 3)} (${raw.capUnit})`,
+    `${en ? 'Screw diameter' : 'Diámetro tornillo'}: ${formatNum(raw.diamValue, 2)} (${raw.diamUnit})`,
+    `${en ? 'Pitch' : 'Paso'}: ${formatNum(raw.pitchValue, 2)} (${raw.pitchUnit})`,
+    `${en ? 'Conveyor length L' : 'Longitud L'} (m): ${formatNum(raw.length_m, 3)}`,
+    `${en ? 'Incline angle' : 'Ángulo θ'} (deg): ${formatNum(raw.angle_deg, 2)}`,
+    `${en ? 'Bulk density rho' : 'Densidad ρ'} (kg/m³): ${formatNum(raw.rho_kg_m3, 1)}`,
+    `${en ? 'Trough load %' : 'Llenado canal'}: ${raw.troughLoadPct}`,
+    `${en ? 'Abrasive / corrosive' : 'Abrasivo / corrosivo'}: ${raw.abrasive} / ${raw.corrosive}`,
+    `${en ? 'Friction mu' : 'Coeficiente μ'}: ${formatNum(raw.frictionCoeff, 3)}`,
+    `${en ? 'Bearing mech. eff.' : 'Rend. rodamientos'} (%): ${formatNum(raw.bearingMechanicalEff_pct, 1)}`,
+    `${en ? 'Load duty' : 'Tipo de carga'}: ${raw.loadDuty}`,
+    `${en ? 'Service factor' : 'Factor de servicio'}: ${formatNum(r.serviceFactorUsed ?? raw.serviceFactor, 3)}`,
+    '',
+    hOut,
+    `${en ? 'Screw rpm' : 'RPM tornillo'}: ${formatNum(r.screwRpm, 2)}`,
+    `${en ? 'Design torque (shaft, incl. SF)' : 'Par diseño eje (incl. SF)'} (N·m): ${formatNum(r.torqueWithService_Nm, 2)}`,
+    `${en ? 'Motor power (sizing)' : 'Potencia motor (dim.)'} (kW): ${formatNum(r.requiredMotorPower_kW, 3)}`,
+    `${en ? 'Gear output rpm (model)' : 'rpm salida (modelo)'}: ${formatNum(r.drumRpm, 2)}`,
+    `${en ? 'Mass flow' : 'Caudal másico'} (kg/s): ${formatNum(r.massFlow_kg_s, 3)}`,
+    `${en ? 'Capacity' : 'Capacidad'} (m³/h): ${formatNum(r.cap_m3h, 3)}`,
+    `${en ? 'Helix D / pitch / L (model)' : 'D / paso / L (modelo)'} (m): ${formatNum(d.D_m, 4)} / ${formatNum(d.pitch_m, 4)} / ${formatNum(d.L_m, 3)}`,
+    '',
+    hMount,
+    formatMounting(mount, lang) +
+      (mount.machineShaftDiameter_mm != null
+        ? ` · ${en ? 'Machine shaft Ø' : 'Ø eje máquina'} ${formatNum(mount.machineShaftDiameter_mm, 1)} mm`
+        : ''),
+    '',
+    disc,
+  );
+  return parts.join('\n');
+}
+
+/**
+ * @param {ReturnType<typeof readInputs>} raw
+ * @param {ReturnType<typeof computeScrewConveyor>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ */
+function buildScrewRfqCsv(raw, r, mount) {
+  const d = r.detail || {};
+  const headers = [
+    'product',
+    'generated_utc',
+    'page_url',
+    'cap_value',
+    'cap_unit',
+    'diam_value',
+    'diam_unit',
+    'pitch_value',
+    'pitch_unit',
+    'L_m',
+    'angle_deg',
+    'rho_kg_m3',
+    'trough_load_pct',
+    'abrasive',
+    'corrosive',
+    'friction_mu',
+    'bearing_eff_pct',
+    'load_duty',
+    'service_factor',
+    'mounting',
+    'orientation',
+    'machine_shaft_d_mm',
+    'screw_rpm',
+    'T_design_Nm',
+    'P_motor_kW',
+    'n_out_rpm',
+    'mass_flow_kg_s',
+    'cap_m3h',
+    'D_m',
+    'pitch_m',
+  ];
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const when = new Date().toISOString();
+  const values = [
+    'TheMechAssist_screw_conveyor',
+    when,
+    url,
+    raw.capValue,
+    raw.capUnit,
+    raw.diamValue,
+    raw.diamUnit,
+    raw.pitchValue,
+    raw.pitchUnit,
+    raw.length_m,
+    raw.angle_deg,
+    raw.rho_kg_m3,
+    raw.troughLoadPct,
+    raw.abrasive,
+    raw.corrosive,
+    raw.frictionCoeff,
+    raw.bearingMechanicalEff_pct,
+    raw.loadDuty,
+    r.serviceFactorUsed ?? raw.serviceFactor,
+    mount.mountingType,
+    mount.orientation,
+    mount.machineShaftDiameter_mm ?? '',
+    r.screwRpm,
+    r.torqueWithService_Nm,
+    r.requiredMotorPower_kW,
+    r.drumRpm,
+    r.massFlow_kg_s,
+    r.cap_m3h,
+    d.D_m,
+    d.pitch_m,
+  ];
+  return `${headers.map(escapeCsvCell).join(',')}\n${values.map(escapeCsvCell).join(',')}`;
 }
 
 function showRuntimeError(msg) {
@@ -352,6 +556,7 @@ function refresh() {
     clearRuntimeError();
     const raw = readInputs();
     const r = computeScrewConveyor(raw);
+    if (Number.isFinite(r.requiredMotorPower_kW)) incrementCalcCounter();
     syncCapacityUnitUi();
     const d = r.detail || {};
     const Dmm = (d.D_m ?? diameterToMeters(raw.diamValue, raw.diamUnit)) * 1000;
@@ -527,6 +732,7 @@ selectIds.forEach((id) => {
   if (el instanceof HTMLSelectElement) {
     el.addEventListener('change', () => {
       if (id === 'screwLoadDuty') syncLoadDutyUi();
+      if (id === 'screwCapUnit' || id === 'screwDiamUnit' || id === 'screwPitchUnit') syncScrewInlineUnits();
       refresh();
     });
   }
@@ -559,17 +765,43 @@ bindScrewRangeSlider('screwAngleR', 'screwAngle', 0, 45, 0.5);
 bindScrewRangeSlider('screwRhoR', 'screwRho', 200, 2200, 10);
 bindScrewRangeSlider('screwMuR', 'screwMu', 0.1, 0.75, 0.01);
 
+syncScrewInlineUnits();
+
 window.addEventListener(SCREW_LANG_EVENT, () => {
   syncLoadDutyUi();
+  syncScrewInlineUnits();
   refreshMotorVerificationManual(document.getElementById('screwVerifyPanel'), getDriveRequirements);
   document.getElementById('screwVerifyBrand')?.dispatchEvent(new Event('change'));
   refresh();
 });
 
-syncLoadDutyUi();
-refresh();
+wireMachineRfqExport({
+  getPayload: () => {
+    const raw = readInputs();
+    return { raw, result: computeScrewConveyor(raw), mount: readMountingPreferences() };
+  },
+  buildPlainText: buildScrewRfqPlainText,
+  buildCsv: buildScrewRfqCsv,
+  toastCopiedEn: MACHINE_HUB_UX_EN['machineHub.toastRfqCopied'],
+  toastErrEn: MACHINE_HUB_UX_EN['machineHub.toastRfqErr'],
+});
 
-mountLabCloudSaveBar('Transportador de tornillo sin fin', { scopeSelector: 'main.app-main' });
+watchLangAndApply(SC_PAGE_EN, {
+  onEnApplied: () => {
+    applyScrewConveyorPageLanguage();
+    syncLoadDutyUi();
+    initInfoChipPopovers(document.body);
+    refresh();
+  },
+});
+
+document.querySelector('.flat-sidebar')?.addEventListener('click', (e) => {
+  const t = e.target instanceof Element ? e.target.closest('[data-screw-preset]') : null;
+  if (!(t instanceof HTMLButtonElement)) return;
+  const id = t.getAttribute('data-screw-preset');
+  if (id) applyScrewPresetFromId(id);
+});
+
 
 
 

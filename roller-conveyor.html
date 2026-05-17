@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Paso de rodillos, fuerzas por rodillo, velocidad y potencia en línea motorizada. Transportador de rodillos: estudio online gratis." />
+    <meta name="description" content="Cargas, velocidad, paso de rodillos y potencia en línea de rodillos. Resultados indicativos." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,13 +11,13 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/roller-conveyor.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/roller-conveyor.html" />
-    <meta property="og:title" content="Calculadora de transportador de rodillos online" />
-    <meta property="og:description" content="Paso de rodillos, fuerzas por rodillo, velocidad y potencia en línea motorizada. Transportador de rodillos: estudio online gratis." />
+    <meta property="og:url" content="https://www.themechassist.com/roller-conveyor.html" id="mdr-og-url" />
+    <meta property="og:title" content="Transportador de rodillos — TheMechAssist" />
+    <meta property="og:description" content="Cargas, velocidad, paso de rodillos y potencia en línea de rodillos. Resultados indicativos." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de transportador de rodillos online" />
+    <meta name="twitter:title" content="Transportador de rodillos — TheMechAssist" />
 
-    <title>Calculadora de transportador de rodillos online — TheMechAssist</title>
+    <title>Transportador de rodillos — TheMechAssist</title>
     <link rel="stylesheet" href="css/app.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
@@ -43,6 +43,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -61,18 +63,25 @@
       <aside class="panel flat-sidebar">
         <header class="flat-sidebar__head">
           <p class="flat-sidebar__eyebrow">TheMechAssist</p>
-          <h2 class="flat-sidebar__title">Rodillos motorizados</h2>
-          <p class="calc-seo-intro">
-            Esta herramienta traduce la distribución de cargas sobre rodillos libres o motorizados, el paso entre ejes y la velocidad periférica en esfuerzos de arrastre y potencia demandada por la zona motriz, manteniendo la misma filosofía de dashboard que las cintas planas para facilitar comparaciones. Es especialmente útil en picking, acumulación controlada y líneas de paquetería donde los incrementos de throughput cambian la cadencia de los motores brushless integrados. Un ingeniero de instalaciones puede usarla para saber si el aumento de peso por palet europeo obliga a pasar a motorización por zona en lugar de impulsión por correa bajo tablero.
-          </p>
-          <p class="flat-sidebar__lead">
-            L&iacute;nea horizontal con rodadura y resistencias extra. Misma experiencia de trabajo que cinta plana: panel de resultados y esquema a la derecha.
-          </p>
+          <h2 class="flat-sidebar__title" data-i18n="rollerConv.h2">Rodillos motorizados</h2>
+          <details class="flat-sidebar-intro">
+            <summary class="flat-sidebar-intro__summary" data-i18n="rollerConv.introSummary">
+              Descripción y alcance de la calculadora
+            </summary>
+            <div class="flat-sidebar-intro__body">
+              <p class="calc-seo-intro" data-i18n="rollerConv.calcSeoIntro">
+                Esta herramienta traduce la distribución de cargas sobre rodillos libres o motorizados, el paso entre ejes y la velocidad periférica en esfuerzos de arrastre y potencia demandada por la zona motriz, manteniendo la misma filosofía de dashboard que las cintas planas para facilitar comparaciones. Es especialmente útil en picking, acumulación controlada y líneas de paquetería donde los incrementos de throughput cambian la cadencia de los motores brushless integrados. Un ingeniero de instalaciones puede usarla para saber si el aumento de peso por palet europeo obliga a pasar a motorización por zona en lugar de impulsión por correa bajo tablero.
+              </p>
+              <p class="flat-sidebar__lead" data-i18n="rollerConv.heroLead">
+                L&iacute;nea horizontal con rodadura y resistencias extra. Misma experiencia de trabajo que cinta plana: panel de resultados y esquema a la derecha.
+              </p>
+            </div>
+          </details>
         </header>
 
         <details class="help-details flat-help">
-          <summary>Gu&iacute;a r&aacute;pida de cada magnitud</summary>
-          <div class="help-details__body">
+          <summary data-i18n="rollerConv.helpSummary">Gu&iacute;a r&aacute;pida de cada magnitud</summary>
+          <div class="help-details__body" data-i18n="rollerConv.helpBodyHtml" data-i18n-html>
             <p class="help-details__lead muted">
               Junto a casi cada etiqueta hay un <span class="info-chip info-chip--static" aria-hidden="true">?</span>: en escritorio, sit&uacute;e el cursor encima; en t&aacute;ctil, <strong>pulse</strong> el mismo s&iacute;mbolo para leer la ayuda sin alargar el formulario.
             </p>
@@ -88,10 +97,28 @@
           </div>
         </details>
 
+        <section class="flat-ux-panel" aria-labelledby="rollerUxPresetsTitle">
+          <h3 id="rollerUxPresetsTitle" class="flat-ux-panel__title" data-i18n="machineHub.uxPresetsTitle">Casos reales (un clic)</h3>
+          <p class="flat-ux-panel__lead muted" data-i18n="machineHub.uxPresetsLead">
+            Rellena parámetros coherentes por sector; puede ajustar después.
+          </p>
+          <div class="flat-ux-preset-row" role="group" aria-label="Presets rodillos">
+            <button type="button" class="btn-flat-preset" data-roller-preset="ecommerce_line" title="Línea corta, cajas ligeras, Crr bajo">
+              <span class="btn-flat-preset__name">E-commerce · ligera</span>
+            </button>
+            <button type="button" class="btn-flat-preset" data-roller-preset="pallet_distribution" title="Paleta EUR, recorrido medio">
+              <span class="btn-flat-preset__name">Distribución · paleta</span>
+            </button>
+            <button type="button" class="btn-flat-preset" data-roller-preset="heavy_pallet" title="Carga pesada, Crr más alto">
+              <span class="btn-flat-preset__name">Paleta · pesada</span>
+            </button>
+          </div>
+        </section>
+
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
-            <span class="flat-accordion__label">Norma y factor de servicio</span>
+            <span class="flat-accordion__label" data-i18n="rollerConv.accNormSf">Norma y factor de servicio</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field">
@@ -148,7 +175,7 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
-            <span class="flat-accordion__label">Geometr&iacute;a y cinem&aacute;tica</span>
+            <span class="flat-accordion__label" data-i18n="rollerConv.accGeom">Geometr&iacute;a y cinem&aacute;tica</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
@@ -163,9 +190,10 @@
               >
               <input type="range" id="lengthR" class="flat-slider" min="0.5" max="80" step="0.1" value="5" aria-label="Longitud" />
               <div class="flat-field__num">
-                <input id="length" type="number" min="0.5" step="0.1" value="5.0" />
+                <input id="length" type="number" min="0.5" step="0.1" value="5.0" placeholder="ej. 4–20 m" />
                 <span class="field-hint">m</span>
               </div>
+              <p class="field-context muted">Típ. 3–25 m (embalaje / picking)</p>
             </div>
             <div class="field flat-field--slider">
               <label for="loadMass"
@@ -179,9 +207,10 @@
               >
               <input type="range" id="loadMassR" class="flat-slider" min="1" max="8000" step="1" value="350" aria-label="Masa" />
               <div class="flat-field__num">
-                <input id="loadMass" type="number" min="1" step="1" value="350" />
+                <input id="loadMass" type="number" min="1" step="1" value="350" placeholder="ej. 180–2400 kg" />
                 <span class="field-hint">kg</span>
               </div>
+              <p class="field-context muted">Típ. 100–3000 kg en paletas / carga puntual</p>
             </div>
             <div class="field flat-field--slider">
               <label for="speed"
@@ -195,9 +224,10 @@
               >
               <input type="range" id="speedR" class="flat-slider" min="0.05" max="3" step="0.01" value="0.35" aria-label="v" />
               <div class="flat-field__num">
-                <input id="speed" type="number" min="0.01" step="0.01" value="0.35" />
+                <input id="speed" type="number" min="0.01" step="0.01" value="0.35" placeholder="ej. 0,25–0,6 m/s" />
                 <span class="field-hint">m/s</span>
               </div>
+              <p class="field-context muted">Típ. 0,15–0,5 m/s (logística); hasta ~1 m/s en líneas rápidas</p>
             </div>
             <div class="field flat-field--slider">
               <label for="rollerD"
@@ -211,9 +241,10 @@
               >
               <input type="range" id="rollerDR" class="flat-slider" min="40" max="400" step="1" value="89" aria-label="D" />
               <div class="flat-field__num">
-                <input id="rollerD" type="number" min="40" step="1" value="89" />
+                <input id="rollerD" type="number" min="40" step="1" value="89" placeholder="ej. 76–120 mm" />
                 <span class="field-hint">mm</span>
               </div>
+              <p class="field-context muted">Típ. 50–150 mm (motriz); valide con catálogo</p>
             </div>
           </div>
         </details>
@@ -221,7 +252,7 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
-            <span class="flat-accordion__label">Apoyo de carga y paso de rodillos</span>
+            <span class="flat-accordion__label" data-i18n="rollerConv.accSupport">Apoyo de carga y paso de rodillos</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <p class="muted field-hint" style="grid-column: 1 / -1; margin: 0">
@@ -321,7 +352,7 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
-            <span class="flat-accordion__label">Rodadura y rendimiento</span>
+            <span class="flat-accordion__label" data-i18n="rollerConv.accRolling">Rodadura y rendimiento</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
@@ -339,6 +370,7 @@
                 <input id="rollingResistance" type="number" min="0.002" step="0.001" value="0.030" />
                 <span class="field-hint" title="Coeficiente adimensional">adim.</span>
               </div>
+              <p class="field-context muted">Típ. 0,010–0,035 líneas limpias; 0,035–0,08 suciedad o desgaste — valide con prueba</p>
               <details class="friction-guide">
                 <summary>Tabla orientativa de Crr</summary>
                 <div class="friction-guide__body">
@@ -400,17 +432,18 @@
                 <input id="efficiency" type="number" min="70" max="99" step="0.5" value="90" />
                 <span class="field-hint">%</span>
               </div>
+              <p class="field-context muted">Típ. 85–92 % motor → eje del rodillo motriz (sin doble contar motor eléctrico)</p>
             </div>
           </div>
         </details>
 
-        <p class="muted form-model-scope flat-model-scope">
+        <p class="muted form-model-scope flat-model-scope" data-i18n="rollerConv.modelScopeHtml" data-i18n-html>
           <strong>Modelo:</strong> horizontal &middot; rodadura &middot; arranque simplificado.
           <a href="#roller-conveyor-assumptions">Hip&oacute;tesis y exclusiones</a>
         </p>
 
         <details class="adv-details">
-          <summary>Resistencias y arranque <span class="field-badge field-badge--optional">Avanzado</span></summary>
+          <summary data-i18n="rollerConv.advSummary" data-i18n-html>Resistencias y arranque <span class="field-badge field-badge--optional">Avanzado</span></summary>
           <div class="adv-details__body">
             <div class="field-grid">
               <div class="field">
@@ -457,8 +490,8 @@
 
         <div id="mountingConfigHost" class="mounting-config-host"></div>
 
-        <button type="button" class="btn-calc" id="btnCalcular">Ver motorreductores sugeridos</button>
-        <p class="calc-hint flat-calc-hint">
+        <button type="button" class="btn-calc" id="btnCalcular" data-i18n="rollerConv.btnMotors">Ver motorreductores sugeridos</button>
+        <p class="calc-hint flat-calc-hint" data-i18n="rollerConv.calcHintHtml" data-i18n-html>
           Los resultados y el diagrama se <strong>actualizan solos</strong>. Este bot&oacute;n despliega motorreductores sugeridos.
         </p>
       </aside>
@@ -466,20 +499,63 @@
       <div class="flat-stage layout-right">
         <section class="panel flat-dashboard">
           <header class="flat-dashboard__head">
-            <h2 class="flat-dashboard__title">Dashboard de dimensionamiento</h2>
-            <p class="flat-dashboard__lead muted">
+            <h2 class="flat-dashboard__title" data-i18n="rollerConv.dashboardTitle">Dashboard de dimensionamiento</h2>
+            <p class="flat-dashboard__lead muted" data-i18n="rollerConv.dashboardLeadHtml" data-i18n-html>
               Par de dise&ntilde;o = max(r&eacute;gimen, arranque) &times; SF. Potencia <strong>(T<sub>dise&ntilde;o</sub> &times; &omega;) / &eta;</strong>.
               <a href="#roller-conveyor-assumptions">Hip&oacute;tesis</a> &middot; pase el rat&oacute;n sobre los chips del esquema.
             </p>
           </header>
+
+          <section class="flat-scope-panel" aria-labelledby="rollerScopeTitle">
+            <h3 id="rollerScopeTitle" class="flat-scope-panel__title" data-i18n="rollerConv.scopeTitle">Qué resuelve esta herramienta</h3>
+            <p class="flat-scope-panel__intro muted" data-i18n="rollerConv.scopeIntro">
+              Para líneas motorizadas con rodillos: potencia y par en el tambor/rodillo motriz a partir de carga, paso y rodadura equivalente (C<sub>rr</sub>). No sustituye curvas OEM de rodillos ni validación de seguridad.
+            </p>
+            <ul class="flat-scope-panel__list">
+              <li data-i18n="rollerConv.scopeLi1">Estima fuerza de arrastre, par en tambor con factor de servicio y potencia en el eje motor.</li>
+              <li data-i18n="rollerConv.scopeLi2">Comprueba motorreductores de ejemplo frente al punto calculado (misma lógica que cinta plana).</li>
+              <li data-i18n="rollerConv.scopeLi3">Modelo horizontal con C<sub>rr</sub> agregado; la huella de paleta es orientativa.</li>
+              <li data-i18n="rollerConv.scopeLi4">PDF completo / extras nube son Pro; el resumen copiable es gratuito.</li>
+            </ul>
+          </section>
+
           <div class="results-grid" id="resultsGrid"></div>
+
+          <section class="flat-rfq-panel" aria-labelledby="rollerRfqTitle">
+            <h3 id="rollerRfqTitle" class="flat-rfq-panel__title" data-i18n="rollerConv.rfqTitle">Resumen para proveedor (gratis)</h3>
+            <p class="flat-rfq-panel__lead muted" data-i18n="rollerConv.rfqLead">
+              Copie entradas y resultados orientativos en texto o CSV. Revise la sección de hipótesis para los límites del modelo.
+            </p>
+            <div class="flat-rfq-panel__actions">
+              <button
+                type="button"
+                id="machineRfqCopyText"
+                class="button button--secondary flat-rfq-panel__btn"
+                data-i18n="rollerConv.rfqBtnText"
+                data-i18n-attrs="title=rollerConv.rfqBtnTextTitle"
+                title="Copia un bloque de texto con el punto de trabajo actual"
+              >
+                Copiar texto
+              </button>
+              <button
+                type="button"
+                id="machineRfqCopyCsv"
+                class="button button--ghost flat-rfq-panel__btn"
+                data-i18n="rollerConv.rfqBtnCsv"
+                data-i18n-attrs="title=rollerConv.rfqBtnCsvTitle"
+                title="Copia una fila CSV (encabezado + valores)"
+              >
+                Copiar CSV
+              </button>
+            </div>
+          </section>
         </section>
 
         <section class="flat-visual flat-visual--integrated" aria-label="Esquema y referencia fotogr&aacute;fica">
           <div class="flat-visual__workbench">
             <div class="diagram-duo__schematic flat-visual__diagram-col">
               <svg id="diagramRoller" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama transportador de rodillos"></svg>
-              <p class="diagram-schematic-note muted">
+              <p class="diagram-schematic-note muted" data-i18n="rollerConv.diagramNoteHtml" data-i18n-html>
                 <strong>Lectura r&aacute;pida:</strong> arriba del todo, texto <strong>r&eacute;gimen</strong> (sin SF) frente a <strong>dise&ntilde;o</strong> (&times; SF y &eta;). <strong>L</strong> es la longitud &uacute;til y <strong>D</strong> el di&aacute;metro del rodillo motriz (sus datos del formulario); el dibujo es cualitativo. Las cajas del esquema repiten n&uacute;meros de r&eacute;gimen y de dimensionamiento al motor, alineados con <strong>Resultados finales</strong>.
               </p>
             </div>
@@ -487,7 +563,7 @@
               <div class="flat-visual__photo-frame">
                 <img src="assets/roller-conveyor-reference.png" alt="Referencia transportador de rodillos" loading="lazy" decoding="async" />
               </div>
-              <figcaption class="flat-visual__caption">
+              <figcaption class="flat-visual__caption" data-i18n="rollerConv.photoCaptionHtml" data-i18n-html>
                 Transportador de rodillos en obra.
                 <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.
               </figcaption>
@@ -497,8 +573,8 @@
 
         <section class="panel flat-panel--verify">
           <div class="verify-panel" id="verifyPanel">
-            <h2><span class="panel-icon">&#10003;</span> Comprobar un motorreductor que ya tengo</h2>
-            <p class="muted panel-lead">
+            <h2 data-i18n="rollerConv.verifyH2Html" data-i18n-html><span class="panel-icon">&#10003;</span> Comprobar un motorreductor que ya tengo</h2>
+            <p class="muted panel-lead" data-i18n="rollerConv.verifyLeadHtml" data-i18n-html>
               <strong>Dos formas:</strong> (1) Marca y modelo del <strong>cat&aacute;logo de ejemplo</strong> abajo y bot&oacute;n &laquo;Comprobar para esta m&aacute;quina&raquo;. (2) Si su equipo no est&aacute; en la lista, abra el desplegable
               <em>O bien: introducir mi motorreductor a mano</em> (justo debajo), rellene datos de placa/ficha y pulse &laquo;Comprobar con estos datos&raquo;. En ambos casos se contrastan potencia de motor, par nominal de salida y rpm de salida con el punto calculado.
             </p>
@@ -531,7 +607,7 @@
                 <span class="field-hint">&mdash;</span>
               </div>
             </div>
-            <button type="button" data-verify-run style="margin-top: 1rem; width: 100%">Comprobar para esta m&aacute;quina</button>
+            <button type="button" data-verify-run style="margin-top: 1rem; width: 100%" data-i18n="rollerConv.verifyRunBtn">Comprobar para esta m&aacute;quina</button>
             <div data-verify-out></div>
           </div>
         </section>

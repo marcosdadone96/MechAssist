@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Fuerza útil, consumo de aire normalizado y tiempos de ciclo en cilindro neumático doble efecto. Automatización. Gratis online." />
+    <meta name="description" content="Fuerza, consumo de aire y tiempos de carrera. Cálculo orientativo con presión y rendimiento." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,13 +11,13 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/calc-pneumatic-cylinder.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/calc-pneumatic-cylinder.html" />
-    <meta property="og:title" content="Calculadora de cilindro neumático fuerza y consumo online" />
-    <meta property="og:description" content="Fuerza útil, consumo de aire normalizado y tiempos de ciclo en cilindro neumático doble efecto. Automatización. Gratis online." />
+    <meta property="og:url" content="https://www.themechassist.com/calc-pneumatic-cylinder.html" id="mdr-og-url" />
+    <meta property="og:title" content="Cilindro neumático — TheMechAssist" />
+    <meta property="og:description" content="Fuerza, consumo de aire y tiempos de carrera. Cálculo orientativo con presión y rendimiento." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de cilindro neumático fuerza y consumo online" />
+    <meta name="twitter:title" content="Cilindro neumático — TheMechAssist" />
 
-    <title>Calculadora de cilindro neumático fuerza y consumo online — TheMechAssist</title>
+    <title data-i18n="pneuCyl.docTitle">Cilindro neumático — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -188,6 +188,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -204,18 +206,35 @@
 
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2>Cilindro neumático — fuerza, consumo y estabilidad</h2>
-        <p class="calc-seo-intro">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="pneuCyl.h2">Cilindro neumático — fuerza, consumo y estabilidad</h2>
+          <p class="lab-scope-note" data-i18n="pneuCyl.scopeNote">
+            Cálculo orientativo para dimensionado previo. Confirma siempre con catálogo de fabricante y normativa aplicable (ISO 4413 / ISO 4414).
+          </p>
+          <p class="lab-calc-hero-lead" data-i18n="pneuCyl.heroLead">
+            Fuerza útil por áreas y presión, consumo de aire libre por ciclo y pandeo del vástago — diseño o diagnóstico, con modo proyecto opcional.
+          </p>
+          <details class="lab-calc-seo">
+            <summary>Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro">
           La herramienta calcula la fuerza efectiva disponible a partir de la presión de red y las áreas útiles en cada sentido, estima el consumo libre de aire por ciclo y contrasta la estabilidad frente al pandeo del vástago cuando la guía es corta. Sirve para dimensionar compactadores neumáticos, puertas balanceadas y manipuladores ligeros antes de cerrar la válvula reguladora y el depósito buffer. Es habitual entre automatistas integradores de PLC que necesitan saber si la válvula puede mantener cadencias altas sin caída brusca de presión al final del trayecto.
-        </p>
-        <p class="lab-lead">
-          Calcula fuerza real, consumo de aire libre, chequeo de pandeo y margen de seguridad para validar si el cilindro es apto para la carga y la carrera.
-        </p>
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="pneuCyl.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help">
+                Calcula fuerza real, consumo de aire libre, chequeo de pandeo y margen de seguridad para validar si el cilindro es apto para la carga y la carrera.
+                Consumo y caídas de presión son <strong>modelo orientativo</strong>; valide válvulas, tubería y catálogo del fabricante.
+              </p>
+            </div>
+          </details>
+        </header>
 
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-              <p class="lab-diagram-wrap__title">Corte de cilindro neumático (doble efecto)</p>
+              <p class="lab-diagram-wrap__title" data-i18n="pneuCyl.diagTitle">Corte de cilindro neumático (doble efecto)</p>
               <svg id="pcDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema de cilindro con cámaras A y B"></svg>
               <p class="lab-diagram-caption">Cámara A: avance. Cámara B: retroceso. Se muestran émbolo, sellos y vástago.</p>
             </div>
@@ -286,10 +305,10 @@
                 <p class="lab-field-help">En modo ISO se usan medidas comerciales normalizadas. En modo manual se permite valor libre con aviso de cercanía a estándar.</p>
               </div>
               <div class="lab-field">
-                <label for="pcPressureBar">Presión de red (bar)</label>
+                <label for="pcPressureBar" data-i18n="pneuCyl.labelPressure">Presión de red (bar)</label>
                 <input id="pcPressureBar" type="number" min="1" step="any" value="6" />
                 <span class="hint">Presión manométrica de alimentación</span>
-                <p class="lab-field-help">Valor disponible en la red neumática en condiciones reales de operación, sin caídas locales severas.</p>
+                <p class="lab-field-help" data-i18n="pneuCyl.helpPressure">Valor disponible en la red neumática en condiciones reales de operación, sin caídas locales severas.</p>
                 <table class="pc-mini-table" aria-label="Presión de red típica por aplicación">
                   <thead>
                     <tr>
@@ -306,7 +325,7 @@
                 </table>
               </div>
               <div class="lab-field">
-                <label for="pcBoreIso">Diámetro de émbolo ISO (mm)</label>
+                <label for="pcBoreIso" data-i18n="pneuCyl.labelBore">Diámetro de émbolo ISO (mm)</label>
                 <select id="pcBoreIso">
                   <option value="32">32</option>
                   <option value="40">40</option>
@@ -321,13 +340,13 @@
                   <option value="320">320</option>
                 </select>
                 <span class="hint">Define área activa principal</span>
-                <p class="lab-field-help">Área de avance A = π×D²/4. A mayor D, mayor fuerza disponible a igual presión. Al cambiar el émbolo, el vástago se ajusta al ISO por defecto (editable).</p>
+                <p class="lab-field-help" data-i18n="pneuCyl.helpBore">Área de avance A = π×D²/4. A mayor D, mayor fuerza disponible a igual presión. Al cambiar el émbolo, el vástago se ajusta al ISO por defecto (editable).</p>
               </div>
               <div class="lab-field">
-                <label for="pcRodIso">Diámetro de vástago ISO (mm)</label>
+                <label for="pcRodIso" data-i18n="pneuCyl.labelRod">Diámetro de vástago ISO (mm)</label>
                 <select id="pcRodIso"></select>
                 <span class="hint">Afecta retroceso y pandeo</span>
-                <p class="lab-field-help">Reduce el área efectiva en retroceso y determina rigidez frente al pandeo.</p>
+                <p class="lab-field-help" data-i18n="pneuCyl.helpRod">Reduce el área efectiva en retroceso y determina rigidez frente al pandeo.</p>
               </div>
               <div class="lab-field pc-manual-field" id="pcBoreManualField" hidden>
                 <label for="pcBoreManual">Diámetro de émbolo manual (mm)</label>
@@ -342,19 +361,19 @@
                 <p class="lab-field-help">Los vástagos fuera de serie ISO pueden aumentar coste y plazo de suministro.</p>
               </div>
               <div class="lab-field">
-                <label for="pcStrokeMm">Carrera (mm)</label>
+                <label for="pcStrokeMm" data-i18n="pneuCyl.labelStroke">Carrera (mm)</label>
                 <input id="pcStrokeMm" type="number" min="10" step="any" value="500" />
                 <span class="hint">Longitud útil de desplazamiento</span>
-                <p class="lab-field-help">Carreras largas incrementan riesgo de pandeo y consumo por ciclo.</p>
+                <p class="lab-field-help" data-i18n="pneuCyl.helpStroke">Carreras largas incrementan riesgo de pandeo y consumo por ciclo.</p>
               </div>
               <div class="pc-flow-wrap">
                 <div id="pcGroupDesignLoad" class="pc-field-group pc-field-group--open">
                   <div class="pc-field-group__inner">
                     <div class="lab-field">
-                      <label for="pcLoadKg">Carga a mover (kg)</label>
+                      <label for="pcLoadKg" data-i18n="pneuCyl.labelLoad">Carga a mover (kg)</label>
                       <input id="pcLoadKg" type="number" min="0.1" step="any" value="120" />
                       <span class="hint">Carga externa equivalente</span>
-                      <p class="lab-field-help">Se convierte a fuerza en N (F = m×g) para comparar con la fuerza real del cilindro.</p>
+                      <p class="lab-field-help" data-i18n="pneuCyl.helpLoad">Se convierte a fuerza en N (F = m×g) para comparar con la fuerza real del cilindro.</p>
                     </div>
                   </div>
                 </div>
@@ -366,10 +385,10 @@
                 <p class="lab-field-help">Permite calcular el consumo en Nl/min para dimensionar compresor y acumulación.</p>
               </div>
               <div class="lab-field lab-field--wide">
-                <label for="pcMotionType">Tipo de movimiento</label>
+                <label for="pcMotionType" data-i18n="pneuCyl.labelMotion">Tipo de movimiento</label>
                 <select id="pcMotionType">
-                  <option value="horizontal" selected>Horizontal</option>
-                  <option value="vertical">Vertical (elevación)</option>
+                  <option value="horizontal" selected data-i18n="pneuCyl.optMotionHoriz">Horizontal</option>
+                  <option value="vertical" data-i18n="pneuCyl.optMotionVertUp">Vertical (elevación)</option>
                 </select>
                 <span class="hint">Ajusta el criterio del factor de seguridad</span>
                 <p class="lab-field-help">Para elevación vertical se recomienda margen de fuerza mayor (habitualmente superior a 2,0×).</p>

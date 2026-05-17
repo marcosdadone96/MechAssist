@@ -1426,12 +1426,34 @@ a.hub-account__btn--link:hover {
   color: #475569;
 }
 
+#hub-pricing,
+#hub-zones {
+  scroll-margin-top: 4rem;
+}
+
 .hub-footer-legal {
   margin: 2rem auto 0;
   padding: 1rem 1.5rem 2rem;
   max-width: 1200px;
   border-top: 1px solid rgba(148, 163, 184, 0.35);
   text-align: center;
+}
+
+.hub-footer-contact {
+  font-size: 0.82rem;
+  color: var(--muted, #64748b);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.hub-footer-contact a {
+  color: #0d9488;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hub-footer-contact a:hover {
+  text-decoration: underline;
 }
 
 .hub-footer-legal__links {
@@ -2061,4 +2083,179 @@ html[data-public-free-release='1'] #hub-pricing,
 html[data-public-free-release='1'] a[data-nav-plans],
 html[data-public-free-release='1'] p.hub-footnote--detail {
   display: none !important;
+}
+
+/* ── Session calc counter (home) ───────────────────────────── */
+.hub-session-strip {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.35rem 1rem 0;
+}
+.session-counter {
+  font-size: 0.8rem;
+  color: var(--muted, #64748b);
+  text-align: center;
+  padding: 0.25rem 0.5rem;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.session-counter--visible {
+  opacity: 1;
+}
+.session-counter__text {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.15rem 0.35rem;
+}
+.session-counter__num {
+  color: var(--accent-dark, #0f766e);
+}
+
+/* ── Hub cases (real-world examples) ───────────────────────── */
+.hub-cases {
+  padding: 3rem 1rem 2.5rem;
+  background: var(--surface-0, #ffffff);
+}
+.hub-cases__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.hub-cases__title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: var(--text-strong, #0f172a);
+}
+.hub-cases__sub {
+  text-align: center;
+  color: var(--muted, #64748b);
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+.hub-cases__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+.hub-cases__note {
+  margin: 1.25rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--muted, #64748b);
+  font-style: italic;
+  text-align: center;
+}
+
+.case-card {
+  background: var(--surface-1, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.case-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+.case-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.case-card__icon {
+  font-size: 1.4rem;
+}
+.case-card__tag {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent-dark, #0f766e);
+  background: rgba(13, 148, 136, 0.08);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+.case-card__problem {
+  font-size: 0.9rem;
+  color: var(--text, #334155);
+  margin: 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+.case-card__result {
+  background: var(--surface-0, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.case-card__result-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+}
+.case-card__label {
+  color: var(--muted, #64748b);
+}
+.case-card__value {
+  font-weight: 600;
+  color: var(--text-strong, #0f172a);
+  text-align: right;
+}
+.case-card__value--accent {
+  color: var(--accent-dark, #0f766e);
+}
+.case-card__cta {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-dark, #0f766e);
+  text-decoration: none;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+.case-card__cta:hover {
+  text-decoration: underline;
+}
+
+.plan-use-case {
+  font-size: 0.8rem;
+  color: var(--muted, #64748b);
+  margin-top: 0.75rem;
+  font-style: italic;
+  text-align: center;
+}
+.plan-roi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  margin-top: 0.75rem;
+  background: rgba(13, 148, 136, 0.07);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+}
+.plan-roi__label {
+  color: var(--muted, #64748b);
+}
+.plan-roi__value {
+  font-weight: 600;
+  color: var(--accent-dark, #0f766e);
+}
+
+#hub-pricing,
+#hub-zones,
+#hub-cases {
+  scroll-margin-top: 4.5rem;
 }

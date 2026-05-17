@@ -23,7 +23,18 @@ import { applyMachinePremiumGates } from './machinePremiumGates.js';
 import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
-import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
+import { CENTRIFUGAL_PUMP_EN } from '../lab/i18n/pages/centrifugalPumpEn.js';
+import {
+  applyCentrifugalPumpPageLanguage,
+  applyCentrifugalPumpStaticI18n,
+} from './centrifugalPumpStaticI18n.js';
+
+const PUMP_PAGE_I18N_EN = { ...MACHINE_HUB_UX_EN, ...CENTRIFUGAL_PUMP_EN };
+import { incrementCalcCounter } from '../services/calcCounter.js';
+import { PUMP_PRESET_BY_ID } from '../modules/machineHubPresets.js';
 
 const pumpInputIds = [
   'pumpNameplateKw',
@@ -151,6 +162,23 @@ function syncLoadDutyUi() {
   }
 }
 
+function writePumpFormValue(id, val) {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement) && !(el instanceof HTMLSelectElement)) return;
+  el.value = val === '' || val == null ? '' : String(val);
+}
+
+function applyPumpPresetFromId(presetId) {
+  const def = PUMP_PRESET_BY_ID[presetId];
+  if (!def) return;
+  for (const [k, v] of Object.entries(def.values)) {
+    writePumpFormValue(k, v);
+  }
+  syncPumpCalcModeUi();
+  syncLoadDutyUi();
+  refresh();
+}
+
 function applyFluidPresetFromSelect() {
   const type = readSelect('fluidType', 'water');
   const p = FLUID_TYPE_PRESETS[type];
@@ -235,6 +263,7 @@ function normalizePhysicalInputs() {
 
 function localizePumpStaticContent() {
   if (getCurrentLang() !== 'en') return;
+  applyCentrifugalPumpStaticI18n('en');
   document.documentElement.lang = 'en';
   document.title = 'Centrifugal pump — TheMechAssist';
   const fp = document.getElementById('fileProtoWarn');
@@ -252,8 +281,9 @@ function localizePumpStaticContent() {
   };
   document.querySelector('.site-nav__center')?.setAttribute('aria-label', 'Main navigation');
   setText('.flat-sidebar__title', 'Centrifugal pump');
+  setText('details.flat-sidebar-intro .flat-sidebar-intro__summary', 'Calculator description and scope');
   setText(
-    '.flat-sidebar__lead',
+    'details.flat-sidebar-intro .flat-sidebar__lead',
     'Duty point Q–H, efficiency, fluid and drive. Results, schematic and gearmotor checker are on the right.',
   );
   setText('.flat-accordion:nth-of-type(1) .flat-accordion__label', 'Operating parameters');
@@ -585,6 +615,152 @@ function formatMounting(pref) {
   return `${typeMap[pref.mountingType] || pref.mountingType} \u00b7 ${ori}`;
 }
 
+/**
+ * @param {ReturnType<typeof readInputs>} raw
+ * @param {ReturnType<typeof computeCentrifugalPump>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ * @param {'es'|'en'} lang
+ */
+function buildPumpRfqPlainText(raw, r, mount, lang) {
+  const en = lang === 'en';
+  const d = r.detail || {};
+  const when = new Date().toISOString().slice(0, 19).replace('T', ' ') + ' UTC';
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const head = en
+    ? 'TheMechAssist — Centrifugal pump (indicative duty)'
+    : 'TheMechAssist — Bomba centrífuga (punto orientativo)';
+  const hIn = en ? '== Inputs ==' : '== Entradas ==';
+  const hOut = en ? '== Results (indicative) ==' : '== Resultados (orientativos) ==';
+  const hMount = en ? '== Mounting preference (for RFQ) ==' : '== Preferencia de montaje (RFQ) ==';
+  const disc = en
+    ? 'Disclaimer: single-point ideal pump model; validate curves, NPSH and motor class with the manufacturer.'
+    : 'Aviso: modelo de bomba ideal en un punto; valide curvas, NPSH y motor con el fabricante.';
+
+  const parts = [
+    head,
+    `${en ? 'Timestamp (UTC)' : 'Fecha (UTC)'}: ${when}`,
+  ];
+  if (url) parts.push(`${en ? 'Source' : 'Origen'}: ${url}`);
+  parts.push(
+    '',
+    hIn,
+    `${en ? 'Calc mode' : 'Modo cálculo'}: ${raw.pumpCalcMode}`,
+    `${en ? 'Nameplate motor kW (diagnostic)' : 'Potencia placa (diagnóstico)'} (kW): ${
+      raw.pumpCalcMode === 'diagnostic' ? formatNum(raw.nameplatePower_kW, 3) : '—'
+    }`,
+    `${en ? 'Flow Q' : 'Caudal Q'}: ${formatNum(raw.flowValue, 4)} (${raw.flowUnit})`,
+    `${en ? 'Head H' : 'Altura H'} (m): ${formatNum(raw.head_m, 3)}`,
+    `${en ? 'Pump efficiency eta' : 'Rendimiento bomba η'} (%): ${formatNum(raw.etaPump_pct, 2)}`,
+    `${en ? 'Fluid type' : 'Tipo fluido'}: ${raw.fluidType}`,
+    `${en ? 'Density rho' : 'Densidad ρ'} (kg/m³): ${formatNum(raw.rho_kg_m3, 1)}`,
+    `${en ? 'Kinematic viscosity' : 'Viscosidad cinemática'} (mm²/s): ${formatNum(raw.viscosity_mm2_s, 2)}`,
+    `${en ? 'Temperature' : 'Temperatura'} (°C): ${formatNum(raw.temp_C, 2)}`,
+    `${en ? 'Pump shaft rpm' : 'rpm eje bomba'}: ${formatNum(raw.pumpSpeed_rpm, 1)}`,
+    `${en ? 'Coupling' : 'Acoplamiento'}: ${raw.couplingType}`,
+    `${en ? 'Voltage / frequency' : 'Tensión / frecuencia'}: ${formatNum(raw.voltage_V, 0)} V / ${formatNum(raw.frequency_Hz, 1)} Hz`,
+    `${en ? 'Load duty' : 'Tipo de carga'}: ${raw.loadDuty}`,
+    `${en ? 'Service factor' : 'Factor de servicio'}: ${formatNum(r.serviceFactorUsed ?? raw.serviceFactor, 3)}`,
+    '',
+    hOut,
+    `${en ? 'Hydraulic power' : 'Potencia hidráulica'} (kW): ${formatNum(r.hydraulicPower_kW, 4)}`,
+    `${en ? 'Shaft power' : 'Potencia eje'} (kW): ${formatNum(r.shaftPower_kW, 4)}`,
+    `${en ? 'Design torque (incl. SF)' : 'Par diseño (incl. SF)'} (N·m): ${formatNum(r.torqueWithService_Nm, 2)}`,
+    `${en ? 'Motor power (sizing)' : 'Potencia motor (dim.)'} (kW): ${formatNum(r.requiredMotorPower_kW, 4)}`,
+    `${en ? 'Gearmotor output rpm (model)' : 'rpm salida (modelo)'}: ${formatNum(r.drumRpm, 2)}`,
+    `${en ? 'Pump shaft rpm' : 'rpm eje bomba (modelo)'}: ${formatNum(r.pumpShaftRpm, 2)}`,
+    `${en ? 'Mass flow' : 'Caudal másico'} (kg/s): ${formatNum(r.massFlow_kg_s, 4)}`,
+    `${en ? 'Viscosity factor' : 'Factor viscosidad'}: ${formatNum(r.viscosityFactor, 3)}`,
+    `Q (m³/s): ${formatNum(d.Q_m3s, 6)}, H (m): ${formatNum(d.H_m, 3)}, rho: ${formatNum(d.rho, 1)}`,
+    '',
+    hMount,
+    formatMounting(mount) +
+      (mount.machineShaftDiameter_mm != null
+        ? ` · ${en ? 'Machine shaft Ø' : 'Ø eje máquina'} ${formatNum(mount.machineShaftDiameter_mm, 1)} mm`
+        : ''),
+    '',
+    disc,
+  );
+  return parts.join('\n');
+}
+
+/**
+ * @param {ReturnType<typeof readInputs>} raw
+ * @param {ReturnType<typeof computeCentrifugalPump>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ */
+function buildPumpRfqCsv(raw, r, mount) {
+  const d = r.detail || {};
+  const headers = [
+    'product',
+    'generated_utc',
+    'page_url',
+    'calc_mode',
+    'nameplate_kW',
+    'flow_value',
+    'flow_unit',
+    'head_m',
+    'eta_pump_pct',
+    'fluid_type',
+    'rho_kg_m3',
+    'nu_mm2_s',
+    'temp_C',
+    'pump_shaft_rpm',
+    'coupling',
+    'voltage_V',
+    'frequency_Hz',
+    'load_duty',
+    'service_factor',
+    'mounting',
+    'orientation',
+    'machine_shaft_d_mm',
+    'P_hyd_kW',
+    'P_shaft_kW',
+    'T_design_Nm',
+    'P_motor_kW',
+    'n_gear_out_rpm',
+    'n_pump_shaft_rpm',
+    'mass_flow_kg_s',
+    'nu_factor',
+    'Q_m3s',
+  ];
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const when = new Date().toISOString();
+  const values = [
+    'TheMechAssist_centrifugal_pump',
+    when,
+    url,
+    raw.pumpCalcMode,
+    raw.pumpCalcMode === 'diagnostic' ? raw.nameplatePower_kW : '',
+    raw.flowValue,
+    raw.flowUnit,
+    raw.head_m,
+    raw.etaPump_pct,
+    raw.fluidType,
+    raw.rho_kg_m3,
+    raw.viscosity_mm2_s,
+    raw.temp_C,
+    raw.pumpSpeed_rpm,
+    raw.couplingType,
+    raw.voltage_V,
+    raw.frequency_Hz,
+    raw.loadDuty,
+    r.serviceFactorUsed ?? raw.serviceFactor,
+    mount.mountingType,
+    mount.orientation,
+    mount.machineShaftDiameter_mm ?? '',
+    r.hydraulicPower_kW,
+    r.shaftPower_kW,
+    r.torqueWithService_Nm,
+    r.requiredMotorPower_kW,
+    r.drumRpm,
+    r.pumpShaftRpm,
+    r.massFlow_kg_s,
+    r.viscosityFactor,
+    d.Q_m3s,
+  ];
+  return `${headers.map(escapeCsvCell).join(',')}\n${values.map(escapeCsvCell).join(',')}`;
+}
+
 function getRecoCopyPump() {
   const en = getCurrentLang() === 'en';
   return en
@@ -628,6 +804,7 @@ function refresh() {
     normalizePhysicalInputs();
     const raw = readInputs();
     const r = computeCentrifugalPump(raw, lang);
+    if (Number.isFinite(r.shaftPower_kW)) incrementCalcCounter();
     const d = r.detail || {};
 
     const etaEl = document.getElementById('pumpEta');
@@ -988,9 +1165,41 @@ syncPumpCalcModeUi();
 initInfoChipPopovers(document.body);
 refresh();
 
+wireMachineRfqExport({
+  getPayload: () => {
+    const raw = readInputs();
+    const lang = getCurrentLang();
+    return { raw, result: computeCentrifugalPump(raw, lang), mount: readMountingPreferences() };
+  },
+  buildPlainText: buildPumpRfqPlainText,
+  buildCsv: buildPumpRfqCsv,
+  toastCopiedEn: MACHINE_HUB_UX_EN['machineHub.toastRfqCopied'],
+  toastErrEn: MACHINE_HUB_UX_EN['machineHub.toastRfqErr'],
+});
+
+watchLangAndApply(PUMP_PAGE_I18N_EN, {
+  onEnApplied: () => {
+    document.documentElement.lang = 'en';
+    applyCentrifugalPumpPageLanguage();
+    localizePumpStaticContent();
+    patchProInstallTeaserCheckoutLink();
+    syncLoadDutyUi();
+    syncPumpCalcModeUi();
+    refreshMountingConfigSection();
+    initInfoChipPopovers(document.body);
+    refresh();
+  },
+});
+
+document.querySelector('.flat-sidebar')?.addEventListener('click', (e) => {
+  const t = e.target instanceof Element ? e.target.closest('[data-pump-preset]') : null;
+  if (!(t instanceof HTMLButtonElement)) return;
+  const id = t.getAttribute('data-pump-preset');
+  if (id) applyPumpPresetFromId(id);
+});
+
 window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
   location.reload();
 });
 
-mountLabCloudSaveBar('Bomba centrífuga');
 

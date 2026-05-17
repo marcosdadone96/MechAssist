@@ -5,6 +5,7 @@
 
 import { FEATURES } from '../config/features.js';
 import { getCurrentUser } from './localAuth.js';
+import { replaceLabHubPinsRoot, readLabHubPinsRoot } from './labHubFavoritesStore.js';
 import { syncSupabaseSessionFromNetlifyJwt } from './supabaseSessionSync.js';
 
 function _handleExpiredSession() {
@@ -138,8 +139,12 @@ function applyServerDoc(doc) {
   replaceMachineConfigRoot(
     doc.machineConfigs && typeof doc.machineConfigs === 'object' ? doc.machineConfigs : {},
   );
+  replaceLabHubPinsRoot(
+    doc.labHubPins && typeof doc.labHubPins === 'object' ? doc.labHubPins : {},
+  );
   try {
     window.dispatchEvent(new CustomEvent('mdr-machine-configs-changed'));
+    window.dispatchEvent(new CustomEvent('mdr-lab-hub-pins-changed'));
   } catch (_) {
     /* ignore */
   }
@@ -147,7 +152,12 @@ function applyServerDoc(doc) {
 
 function serverDocHasData(doc) {
   const mc = doc.machineConfigs && typeof doc.machineConfigs === 'object' && Object.keys(doc.machineConfigs).length > 0;
-  return mc;
+  const pins = doc.labHubPins && typeof doc.labHubPins === 'object' && Object.keys(doc.labHubPins).length > 0;
+  return mc || pins;
+}
+
+function localStorageHasLabHubPinsData() {
+  return Object.keys(readLabHubPinsRoot()).length > 0;
 }
 
 /**
@@ -172,6 +182,7 @@ let pushTimer = null;
 async function pushUserData() {
   if (!FEATURES.useServerAuth || !getBearer()) return;
   const machineConfigs = readMachineConfigRoot();
+  const labHubPins = readLabHubPinsRoot();
   let res;
   try {
     res = await fetch(`${fnBase()}/user-data`, {
@@ -180,7 +191,7 @@ async function pushUserData() {
         Authorization: `Bearer ${getBearer()}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ gearmotors: [], machineConfigs }),
+      body: JSON.stringify({ gearmotors: [], machineConfigs, labHubPins }),
     });
   } catch (_) {
     return;
@@ -251,7 +262,7 @@ export function initUserCloudSync() {
       return;
     }
 
-    if (!serverDocHasData(doc) && localStorageHasMachineData()) {
+    if (!serverDocHasData(doc) && (localStorageHasMachineData() || localStorageHasLabHubPinsData())) {
       await pushUserData();
       return;
     }

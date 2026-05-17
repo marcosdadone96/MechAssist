@@ -1,0 +1,46 @@
+/** English strings for calc-hydraulic-press.html (`hpress.*` keys). ASCII-safe. */
+export const HYDRAULIC_PRESS_EN = {
+  'hpress.docTitle': 'Industrial hydraulic press calculator \u2014 TheMechAssist',
+  'hpress.h2': 'Industrial hydraulic press \u2014 tonnage, flow and structure',
+  'hpress.heroLead':
+    'Pressing force, piston, pump, cycle times and simplified column checks (project mode with Euler) \u2014 indicative productivity criteria.',
+  'hpress.helpSummary': 'Methodology and model limits',
+  'hpress.seoSummary': 'Expanded context and usage notes',
+  'hpress.seoIntroHtml':
+    'This page links required pressing force to working pressure, effective piston diameter and pump demand to complete a cycle within the desired time, including a simplified column check when the form allows. The approach suits general tooling and forming lines where tonnage must balance with idle time and oil temperature. Useful for tooling engineers and maintainers upgrading an existing press. A typical use is estimating whether a larger pump materially reduces downtime between parts without overheating the circuit.',
+  'hpress.scopeNote':
+    'Indicative pre-sizing. Always confirm with the manufacturer catalogue and applicable standards (ISO 4413 / ISO 4414).',
+  'hpress.presetsLabel': 'Typical examples:',
+  'hpress.diagTitle': '4-column hydraulic press (functional schematic)',
+  'hpress.diagCaption':
+    'Shows pressure on the moving platen and the pressing path.',
+  'hpress.diagAriaLabel': 'Hydraulic press schematic with cylinder, moving platen and fixed table',
+  'hpress.formulasSummary': 'Calculation memory, formulas and assumptions',
+  'hpress.verdictOk': 'SYSTEM SUITABLE',
+  'hpress.labelForce': 'Required pressing force (t)',
+  'hpress.helpForce': 'Tonnes required at the actual pressing point.',
+  'hpress.labelPressure': 'Maximum system pressure (bar)',
+  'hpress.helpPressure': 'Force\u2013pressure combination defines minimum piston diameter.',
+  'hpress.labelStroke': 'Cylinder stroke (mm)',
+  'hpress.labelCycleTime': 'Desired cycle time (s)',
+  'hpress.helpCycleTime': 'Approximate total time per full cycle.',
+  'hpress.labelApproachFactor': 'Approach speed factor',
+  'hpress.helpApproachFactor':
+    'Ratio of idle descent speed to speed under pressing load. Higher values improve productivity but need more instantaneous flow and hydraulic power.',
+  'hpress.labelPumpFlow': 'Current pump flow (L/min)',
+  'hpress.helpPumpFlow': 'If insufficient, the advisor suggests minimum required flow.',
+  'hpress.labelColumns': 'Number of columns',
+  'hpress.optCols4': '4 columns',
+  'hpress.optCols2': '2 columns',
+  'hpress.labelColStress': 'Allowable column stress (MPa)',
+  'hpress.labelUserCol': 'Available column diameter (mm)',
+  'hpress.placeholderOptional': 'Optional',
+  'hpress.labelDiagCol': 'Actual column diameter (mm)',
+  'hpress.resultBore': 'Suggested piston diameter (ISO)',
+  'hpress.resultFlow': 'Required pump flow',
+  'hpress.resultPower': 'Electric motor power',
+  'hpress.secondaryDetails': 'Secondary technical data',
+  'hpress.alertHighPressure':
+    'Pressure exceeds 350 bar \u2014 verify component ratings and seals.',
+  'hpress.alertSmallBore': 'Bore below 40 mm \u2014 check catalogue availability.',
+};

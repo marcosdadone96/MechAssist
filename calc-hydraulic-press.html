@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Tonelaje útil, diámetro de pistón, bomba y columnas en prensa hidráulica de taller. Estudio orientativo. Herramienta online gratuita." />
+    <meta name="description" content="Fuerza de prensado, presión y diámetro de émbolo. Estimación de exigencia de bomba y caudal." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,13 +11,13 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/calc-hydraulic-press.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/calc-hydraulic-press.html" />
-    <meta property="og:title" content="Calculadora de prensa hidráulica fuerza y columnas online" />
-    <meta property="og:description" content="Tonelaje útil, diámetro de pistón, bomba y columnas en prensa hidráulica de taller. Estudio orientativo. Herramienta online gratuita." />
+    <meta property="og:url" content="https://www.themechassist.com/calc-hydraulic-press.html" id="mdr-og-url" />
+    <meta property="og:title" content="Prensa hidráulica — TheMechAssist" />
+    <meta property="og:description" content="Fuerza de prensado, presión y diámetro de émbolo. Estimación de exigencia de bomba y caudal." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de prensa hidráulica fuerza y columnas online" />
+    <meta name="twitter:title" content="Prensa hidráulica — TheMechAssist" />
 
-    <title>Calculadora de prensa hidráulica fuerza y columnas online — TheMechAssist</title>
+    <title>Prensa hidráulica — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -171,6 +171,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -187,20 +189,37 @@
 
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2>Prensa hidráulica industrial — tonelaje, caudal y estructura</h2>
-        <p class="calc-seo-intro">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="hpress.h2">Prensa hidráulica industrial — tonelaje, caudal y estructura</h2>
+          <p class="lab-scope-note" data-i18n="hpress.scopeNote">
+            Cálculo orientativo para dimensionado previo. Confirma siempre con catálogo de fabricante y normativa aplicable (ISO 4413 / ISO 4414).
+          </p>
+          <p class="lab-calc-hero-lead" data-i18n="hpress.heroLead">
+            Fuerza de prensado, pistón, bomba, tiempos de ciclo y chequeo simplificado de columnas (modo proyecto con Euler) — criterios orientativos de productividad.
+          </p>
+          <details class="lab-calc-seo">
+            <summary data-i18n="hpress.seoSummary">Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro" data-i18n="hpress.seoIntroHtml" data-i18n-html>
           Aquí se relacionan la fuerza de prensado requerida con la presión de trabajo, el diámetro efectivo del pistón y la demanda de bomba para completar un ciclo dentro del tiempo deseado, incorporando un chequeo simplificado de columnas cuando la mesa lo permite. El planteamiento sirve para herramental general y líneas de conformado donde hay que equilibrar tonelaje con tiempo muerto y temperatura de aceite. Es útil para ingenieros de utillaje y mantenedores que amplían una prensa existente. Un uso típico es estimar si una bomba mayor reduce demasiado la pausa entre piezas sin sobrecalentar el circuito.
-        </p>
-        <p class="lab-lead">
-          Calcula el diámetro de pistón, caudal de bomba, potencia motriz y chequeo básico de columnas para una prensa de 2 o 4 columnas con criterio de productividad.
-        </p>
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="hpress.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help">
+                Calcula el diámetro de pistón, caudal de bomba, potencia motriz y chequeo básico de columnas para una prensa de 2 o 4 columnas con criterio de productividad.
+                Pandeo Euler y ciclos son <strong>simplificados</strong>; no modela flexión del bastidor ni excentricidad de carga en el plato. No sustituye cálculo estructural ni norma de prensas certificadas.
+              </p>
+            </div>
+          </details>
+        </header>
 
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-              <p class="lab-diagram-wrap__title" id="hppDiagramTitle">Prensa hidráulica de 4 columnas (esquema funcional)</p>
-              <svg id="hpPressDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema de prensa hidráulica con cilindro, plato móvil y mesa fija"></svg>
-              <p class="lab-diagram-caption">Se muestra aplicación de presión sobre el plato móvil y trayectoria de prensado.</p>
+              <p class="lab-diagram-wrap__title" id="hppDiagramTitle" data-i18n="hpress.diagTitle">Prensa hidráulica de 4 columnas (esquema funcional)</p>
+              <svg id="hpPressDiagram" xmlns="http://www.w3.org/2000/svg" data-i18n="hpress.diagAriaLabel" data-i18n-attr="aria-label" aria-label="Esquema de prensa hidráulica con cilindro, plato móvil y mesa fija"></svg>
+              <p class="lab-diagram-caption" data-i18n="hpress.diagCaption">Se muestra aplicación de presión sobre el plato móvil y trayectoria de prensado.</p>
             </div>
           </div>
 
@@ -254,10 +273,10 @@
                 <p class="lab-field-help">Diseño: fuerza objetivo → se sugiere diámetro/presión. Diagnóstico: diámetro + presión → tonelaje real.</p>
               </div>
               <div class="lab-field">
-                <label for="hppForceTon">Fuerza de prensado requerida (t)</label>
+                <label for="hppForceTon" data-i18n="hpress.labelForce">Fuerza de prensado requerida (t)</label>
                 <input id="hppForceTon" type="number" min="1" step="any" value="120" />
                 <span class="hint">Carga de trabajo objetivo</span>
-                <p class="lab-field-help">Toneladas requeridas en el punto de prensado real.</p>
+                <p class="lab-field-help" data-i18n="hpress.helpForce">Toneladas requeridas en el punto de prensado real.</p>
                 <table class="hpp-mini-table" aria-label="Tonelajes típicos por aplicación industrial">
                   <thead>
                     <tr>
@@ -280,22 +299,22 @@
                 <p class="lab-field-help">En diagnóstico se usa junto con la presión para calcular la fuerza/tonelaje real disponible.</p>
               </div>
               <div class="lab-field">
-                <label for="hppPressureBar">Presión máxima del sistema (bar)</label>
+                <label for="hppPressureBar" data-i18n="hpress.labelPressure">Presión máxima del sistema (bar)</label>
                 <input id="hppPressureBar" type="number" min="50" step="any" value="210" />
                 <span class="hint">Límite hidráulico nominal</span>
-                <p class="lab-field-help">La combinación fuerza–presión define el diámetro mínimo del pistón.</p>
+                <p class="lab-field-help" data-i18n="hpress.helpPressure">La combinación fuerza–presión define el diámetro mínimo del pistón.</p>
               </div>
               <div class="lab-field">
-                <label for="hppStrokeMm">Carrera del cilindro (mm)</label>
+                <label for="hppStrokeMm" data-i18n="hpress.labelStroke">Carrera del cilindro (mm)</label>
                 <input id="hppStrokeMm" type="number" min="20" step="any" value="450" />
                 <span class="hint">Recorrido útil vertical</span>
                 <p class="lab-field-help">Influye en tiempo, caudal y volumen total desplazado.</p>
               </div>
               <div class="lab-field">
-                <label for="hppCycleS">Tiempo de ciclo deseado (s)</label>
+                <label for="hppCycleS" data-i18n="hpress.labelCycleTime">Tiempo de ciclo deseado (s)</label>
                 <input id="hppCycleS" type="number" min="1" step="any" value="12" />
                 <span class="hint">Objetivo de productividad</span>
-                <p class="lab-field-help">Tiempo total aproximado por ciclo completo.</p>
+                <p class="lab-field-help" data-i18n="hpress.helpCycleTime">Tiempo total aproximado por ciclo completo.</p>
               </div>
               <div class="lab-field">
                 <label for="hppApproachFactor">Factor velocidad aproximación</label>
@@ -344,12 +363,12 @@
 
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
             <details class="lab-fluid-formulas" id="hppFormulasBlock">
-              <summary>Memoria de cálculo, fórmulas y supuestos</summary>
+              <summary data-i18n="hpress.formulasSummary">Memoria de cálculo, fórmulas y supuestos</summary>
               <div id="hppFormulaBody" class="lab-fluid-formulas__body"></div>
             </details>
             <div id="hppResults" class="lab-results"></div>
             <div id="hppAdvisor" class="lab-alerts"></div>
-            <p id="hppVerdict" class="lab-verdict lab-verdict--ok">SISTEMA APTO</p>
+            <p id="hppVerdict" class="lab-verdict lab-verdict--ok" data-i18n="hpress.verdictOk">SISTEMA APTO</p>
             <div id="labFluidPdfMount" class="premium-pdf-mount"></div>
           </div>
         </div>

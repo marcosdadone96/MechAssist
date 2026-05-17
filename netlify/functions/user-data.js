@@ -101,6 +101,28 @@ function sanitizeGearmotors(raw) {
  * @param {unknown} raw
  * @returns {Record<string, unknown>}
  */
+/**
+ * @param {unknown} raw
+ * @returns {Record<string, string[]>}
+ */
+function sanitizeLabHubPins(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const src = /** @type {Record<string, unknown>} */ (raw);
+  /** @type {Record<string, string[]>} */
+  const out = {};
+  for (const [hubId, ids] of Object.entries(src)) {
+    const hk = String(hubId || '').slice(0, 64);
+    if (!hk) continue;
+    if (!Array.isArray(ids)) continue;
+    const list = ids
+      .map((id) => String(id || '').slice(0, 120))
+      .filter(Boolean)
+      .slice(0, 48);
+    if (list.length) out[hk] = list;
+  }
+  return out;
+}
+
 function sanitizeMachineConfigs(raw) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
   const src = /** @type {Record<string, unknown>} */ (raw);
@@ -163,10 +185,11 @@ exports.handler = async (event) => {
       doc = null;
     }
     if (!doc || typeof doc !== 'object') {
-      doc = { updatedAt: 0, gearmotors: [], machineConfigs: {} };
+      doc = { updatedAt: 0, gearmotors: [], machineConfigs: {}, labHubPins: {} };
     }
     if (!Array.isArray(doc.gearmotors)) doc.gearmotors = [];
     if (!doc.machineConfigs || typeof doc.machineConfigs !== 'object') doc.machineConfigs = {};
+    if (!doc.labHubPins || typeof doc.labHubPins !== 'object') doc.labHubPins = {};
     if (typeof doc.updatedAt !== 'number' || !Number.isFinite(doc.updatedAt)) doc.updatedAt = 0;
 
     return {
@@ -198,9 +221,10 @@ exports.handler = async (event) => {
 
   const gearmotors = sanitizeGearmotors(body.gearmotors);
   const machineConfigs = sanitizeMachineConfigs(body.machineConfigs);
+  const labHubPins = sanitizeLabHubPins(body.labHubPins);
 
   const updatedAt = Date.now();
-  const doc = { updatedAt, gearmotors, machineConfigs };
+  const doc = { updatedAt, gearmotors, machineConfigs, labHubPins };
 
   try {
     await store.setJSON(key, doc);

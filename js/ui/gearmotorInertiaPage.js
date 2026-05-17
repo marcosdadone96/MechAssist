@@ -3,9 +3,18 @@
  */
 
 import { renderInertiaTransmissionLine } from '../lab/diagramCatalogModules.js';
-import { bindInputValidation } from './labCalcUx.js';
+import { bindInputValidation, wireLabCopyResultsButton } from './labCalcUx.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { withCalcCredits } from '../services/creditSession.js';
+import { isCreditsSystemEnabled } from '../config/credits.js';
+import { getLabLang } from '../lab/i18n/labLang.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { GEARMOTOR_INERTIA_EN } from '../lab/i18n/pages/gearmotorInertiaEn.js';
+
+function bx(es, en) {
+  return getLabLang() === 'en' ? en : es;
+}
 
 function interpCurve(curve, x) {
   const pts = [...curve].sort((a, b) => a[0] - b[0]);
@@ -39,7 +48,7 @@ function buildUserMotor() {
   const peak = Math.min(4, Math.max(1, readNum('gmTpeak', 2.2)));
   return {
     id: 'user',
-    label: 'Motorreductor definido por usuario',
+    label: bx('Motorreductor definido por usuario', 'User-defined gearmotor'),
     J_motor_kgm2,
     J_ratio_max,
     T_N_m,
@@ -111,19 +120,19 @@ function drawChart(motor, T_load, n_op) {
     <defs><linearGradient id="gmChBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#f8fafc"/></linearGradient></defs>
     <rect fill="url(#gmChBg)" x="0" y="0" width="${W}" height="${H}" rx="8" stroke="#e2e8f0"/>
     ${grid}
-    <text x="${padL}" y="22" font-size="11" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">Par T (N·m) frente a n (rpm)</text>
+    <text x="${padL}" y="22" font-size="11" font-weight="800" fill="#0f172a" font-family="Inter,system-ui,sans-serif">${bx('Par T (N·m) frente a n (rpm)', 'Torque T (N·m) vs n (rpm)')}</text>
     <line x1="${padL}" y1="${H - padB}" x2="${W - padR}" y2="${H - padB}" stroke="#64748b" stroke-width="1.5" />
     <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H - padB}" stroke="#64748b" stroke-width="1.5" />
     ${ticks}
-    <text x="${(padL + W - padR) / 2}" y="${H - 6}" text-anchor="middle" font-size="9" font-weight="600" fill="#475569" font-family="Inter,system-ui,sans-serif">Velocidad n (rpm)</text>
-    <text transform="rotate(-90 14 ${(padT + H - padB) / 2})" x="14" y="${(padT + H - padB) / 2}" text-anchor="middle" font-size="9" font-weight="600" fill="#475569" font-family="Inter,system-ui,sans-serif">Par (N·m)</text>
+    <text x="${(padL + W - padR) / 2}" y="${H - 6}" text-anchor="middle" font-size="9" font-weight="600" fill="#475569" font-family="Inter,system-ui,sans-serif">${bx('Velocidad n (rpm)', 'Speed n (rpm)')}</text>
+    <text transform="rotate(-90 14 ${(padT + H - padB) / 2})" x="14" y="${(padT + H - padB) / 2}" text-anchor="middle" font-size="9" font-weight="600" fill="#475569" font-family="Inter,system-ui,sans-serif">${bx('Par (N·m)', 'Torque (N·m)')}</text>
     <path d="${pathD.trim()}" fill="none" stroke="#0d9488" stroke-width="2.8" stroke-linejoin="round" />
     <line x1="${xl}" y1="${padT}" x2="${xl}" y2="${H - padB}" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.95" />
     <rect x="${(xl - 8).toFixed(1)}" y="${yTop.toFixed(1)}" width="16" height="${(yBottom - yTop).toFixed(1)}" fill="rgba(245, 158, 11, 0.24)" stroke="#f59e0b" stroke-width="1"/>
     <circle cx="${xl}" cy="${yl}" r="6" fill="#b45309" stroke="#fff" stroke-width="1.5" />
     <circle cx="${xl}" cy="${ym}" r="6" fill="#0d9488" stroke="#fff" stroke-width="1.5" />
-    <text x="${W - padR - 130}" y="${padT + 16}" font-size="9" font-weight="700" fill="#0d9488" font-family="Inter,system-ui,sans-serif">● T motor en régimen</text>
-    <text x="${W - padR - 130}" y="${padT + 30}" font-size="9" font-weight="700" fill="#b45309" font-family="Inter,system-ui,sans-serif">● T carga</text>
+    <text x="${W - padR - 130}" y="${padT + 16}" font-size="9" font-weight="700" fill="#0d9488" font-family="Inter,system-ui,sans-serif">● ${bx('T motor en régimen', 'Motor torque at speed')}</text>
+    <text x="${W - padR - 130}" y="${padT + 30}" font-size="9" font-weight="700" fill="#b45309" font-family="Inter,system-ui,sans-serif">● ${bx('T carga', 'Load torque')}</text>
   `;
 }
 
@@ -155,31 +164,34 @@ function render() {
 
   out.innerHTML = `
     <p class="lab-verdict ${okJ ? 'lab-verdict--ok' : 'lab-verdict--err'}">
-      Relación inercias <strong>J<sub>ext</sub>/J<sub>mot</sub></strong> = ${ratio.toFixed(2)} (límite definido: <strong>${motor.J_ratio_max}</strong>) — ${okJ ? 'dentro de referencia' : 'fuera de referencia'}.
+      ${bx('Relación inercias', 'Inertia ratio')} <strong>J<sub>ext</sub>/J<sub>mot</sub></strong> = ${ratio.toFixed(2)} (${bx('límite definido:', 'defined limit:')} <strong>${motor.J_ratio_max}</strong>) — ${okJ ? bx('dentro de referencia', 'within reference') : bx('fuera de referencia', 'outside reference')}.
     </p>
     <p class="lab-verdict ${okT ? 'lab-verdict--ok' : 'lab-verdict--err'}">
-      A ${nOp.toFixed(0)} rpm, par motor estimado ≈ <strong>${Tm.toFixed(2)} N·m</strong> vs par resistente <strong>${Tload.toFixed(2)} N·m</strong> — ${okT ? 'margen suficiente (≈5%)' : 'riesgo de stall / sobrecarga'}.
+      ${bx('A', 'At')} ${nOp.toFixed(0)} rpm, ${bx('par motor estimado', 'estimated motor torque')} ≈ <strong>${Tm.toFixed(2)} N·m</strong> ${bx('vs par resistente', 'vs load torque')} <strong>${Tload.toFixed(2)} N·m</strong> — ${okT ? bx('margen suficiente (≈5%)', 'sufficient margin (≈5%)') : bx('riesgo de stall / sobrecarga', 'stall / overload risk')}.
     </p>`;
 
   tbl.innerHTML = `
     <table class="lab-catalog-table">
-      <thead><tr><th>Parámetro</th><th>Valor</th></tr></thead>
+      <thead><tr><th>${bx('Parámetro', 'Parameter')}</th><th>${bx('Valor', 'Value')}</th></tr></thead>
       <tbody>
-        <tr><td>J motorreductor</td><td>${motor.J_motor_kgm2.toExponential(3)} kg·m²</td></tr>
-        <tr><td>J carga reflejada</td><td>${JextUse.toExponential(3)} kg·m²</td></tr>
-        <tr><td>J carga (entrada opc.)</td><td>${Number.isFinite(Jload) ? Jload.toExponential(3) : '—'} kg·m²</td></tr>
-        <tr><td>Relación i (entrada opc.)</td><td>${Number.isFinite(iRatio) && iRatio > 0 ? iRatio.toFixed(3) : '—'}</td></tr>
-        <tr><td>T<sub>N</sub> nominal</td><td>${motor.T_N_m.toFixed(2)} N·m</td></tr>
-        <tr><td>n síncrona base</td><td>${motor.n_sync.toFixed(0)} rpm</td></tr>
-        <tr><td>Factor pico Tpico/Tn</td><td>${readNum('gmTpeak', 2.2).toFixed(2)}</td></tr>
+        <tr><td>J ${bx('motorreductor', 'gearmotor')}</td><td>${motor.J_motor_kgm2.toExponential(3)} kg·m²</td></tr>
+        <tr><td>J ${bx('carga reflejada', 'reflected load')}</td><td>${JextUse.toExponential(3)} kg·m²</td></tr>
+        <tr><td>J ${bx('carga (entrada opc.)', 'load (optional input)')}</td><td>${Number.isFinite(Jload) ? Jload.toExponential(3) : '—'} kg·m²</td></tr>
+        <tr><td>${bx('Relación i (entrada opc.)', 'Ratio i (optional input)')}</td><td>${Number.isFinite(iRatio) && iRatio > 0 ? iRatio.toFixed(3) : '—'}</td></tr>
+        <tr><td>T<sub>N</sub> ${bx('nominal', 'nominal')}</td><td>${motor.T_N_m.toFixed(2)} N·m</td></tr>
+        <tr><td>n ${bx('síncrona base', 'base synchronous')}</td><td>${motor.n_sync.toFixed(0)} rpm</td></tr>
+        <tr><td>${bx('Factor pico Tpico/Tn', 'Peak factor Tpeak/Tn')}</td><td>${readNum('gmTpeak', 2.2).toFixed(2)}</td></tr>
       </tbody>
     </table>
-    <p class="lab-small-print">Curva estimada según parámetros introducidos por usuario. Para validación final, use curva real del fabricante de su motorreductor.</p>`;
+    <p class="lab-small-print">${bx(
+      'Curva estimada según parámetros introducidos por usuario. Para validación final, use curva real del fabricante de su motorreductor.',
+      'Estimated curve from user inputs. For final validation, use the real curve from your gearmotor manufacturer.',
+    )}</p>`;
 
   summary.innerHTML = `
     <div class="gm-summary-grid">
-      <div class="gm-summary-item ${okJ ? 'gm-summary-item--ok' : 'gm-summary-item--err'}">${okJ ? '✓' : '✗'} Relación de inercias: Jext/Jmot = ${ratio.toFixed(2)} (límite ${motor.J_ratio_max})</div>
-      <div class="gm-summary-item ${okT ? 'gm-summary-item--ok' : 'gm-summary-item--err'}">${okT ? '✓' : '✗'} Par disponible: Tm(${nOp.toFixed(0)} rpm) = ${Tm.toFixed(2)} N·m vs T carga = ${Tload.toFixed(2)} N·m</div>
+      <div class="gm-summary-item ${okJ ? 'gm-summary-item--ok' : 'gm-summary-item--err'}">${okJ ? '✓' : '✗'} ${bx('Relación de inercias:', 'Inertia ratio:')} Jext/Jmot = ${ratio.toFixed(2)} (${bx('límite', 'limit')} ${motor.J_ratio_max})</div>
+      <div class="gm-summary-item ${okT ? 'gm-summary-item--ok' : 'gm-summary-item--err'}">${okT ? '✓' : '✗'} ${bx('Par disponible:', 'Available torque:')} Tm(${nOp.toFixed(0)} rpm) = ${Tm.toFixed(2)} N·m ${bx('vs T carga =', 'vs load T =')} ${Tload.toFixed(2)} N·m</div>
     </div>`;
 }
 
@@ -199,9 +211,14 @@ bindInputValidation([
   { id: 'gmTload', min: 0, max: 1e9, label: 'T carga' },
 ]);
 
+function scheduleGmRender() {
+  if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
+  else render();
+}
+
 ['gmJmotor', 'gmJratioMax', 'gmTN', 'gmNsync', 'gmTpeak', 'gmJload', 'gmIratio', 'gmJext', 'gmN', 'gmTload'].forEach((id) => {
-  document.getElementById(id)?.addEventListener('input', render);
-  document.getElementById(id)?.addEventListener('change', render);
+  document.getElementById(id)?.addEventListener('input', scheduleGmRender);
+  document.getElementById(id)?.addEventListener('change', scheduleGmRender);
 });
 
 document.querySelectorAll('.gm-ref-chip').forEach((chip) => {
@@ -209,9 +226,14 @@ document.querySelectorAll('.gm-ref-chip').forEach((chip) => {
     const v = chip.getAttribute('data-gm-ratio');
     const input = document.getElementById('gmJratioMax');
     if (input instanceof HTMLInputElement && v) input.value = v;
-    render();
+    scheduleGmRender();
   });
 });
 
-render();
-mountLabCloudSaveBar('Inercia motor / carga');
+wireLabCopyResultsButton('gmCopyResults', {
+  moduleTitle: bx('Inercia motor / carga', 'Motor / load inertia'),
+});
+
+scheduleGmRender();
+mountLabCloudSaveBar(bx('Inercia motor / carga', 'Motor / load inertia'));
+watchLangAndApply(GEARMOTOR_INERTIA_EN, { onEnApplied: () => scheduleGmRender() });

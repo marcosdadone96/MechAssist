@@ -3,6 +3,13 @@
  * regla de potencias IEC, alertas accesibles, feedback de recálculo).
  */
 
+import { incrementCalcCounter } from '../services/calcCounter.js';
+import { isCreditsSystemEnabled } from '../config/credits.js';
+import { ensureCalcSessionCharged } from '../services/creditSession.js';
+import { showNoCreditsModal } from './creditsUi.js';
+import { copyLabReportToClipboard, buildLabCopyReportFromScope } from '../services/labCopyReport.js';
+import { getLabLang } from '../lab/i18n/labLang.js';
+
 /** Potencias nominales típicas IEC / catálogo (kW) — mismas familias que SEW Eurodrive, Siemens SIMOTICS, etc. */
 export const IEC_MOTOR_KW_SERIES = [
   0.12, 0.18, 0.25, 0.37, 0.55, 0.75, 1.1, 1.5, 2.2, 3, 4, 5.5, 7.5, 11, 15, 18.5, 22, 30, 37, 45, 55, 75, 90, 110, 132,
@@ -290,7 +297,7 @@ export function bindInputValidation(inputConfigs) {
 /**
  * Barra de ejemplos típicos (misma UX que engranajes/correas).
  * @param {string} containerId id del contenedor `.lab-presets-bar`
- * @param {Array<{ label: string, values: Record<string, string | number | boolean> }>} presets
+ * @param {Array<{ label: string, labelKey?: string, values: Record<string, string | number | boolean> }>} presets
  * @param {() => void} recalculate
  */
 export function mountLabPresetsBar(containerId, presets, recalculate) {
@@ -312,6 +319,7 @@ export function mountLabPresetsBar(containerId, presets, recalculate) {
     btn.type = 'button';
     btn.className = 'lab-preset-btn';
     btn.textContent = preset.label;
+    if (preset.labelKey) btn.setAttribute('data-i18n', preset.labelKey);
     btn.addEventListener('click', () => {
       clearActive();
       btn.classList.add('is-active');
@@ -452,6 +460,32 @@ export function createLabUrlSync(paramToId, options = {}) {
   };
 }
 
+/**
+ * Boton «Copiar resultados» con tablas HTML para Word + texto plano alineado.
+ * @param {string} buttonId
+ * @param {{ moduleTitle: string; scopeSelector?: string }} opts
+ */
+export function wireLabCopyResultsButton(buttonId, { moduleTitle, scopeSelector = 'main.lab-main' }) {
+  document.getElementById(buttonId)?.addEventListener('click', async () => {
+    const btn = document.getElementById(buttonId);
+    if (!(btn instanceof HTMLButtonElement)) return;
+    const en = getLabLang() === 'en';
+    const original = btn.textContent || uxCopy('Copiar resultados', 'Copy results');
+    try {
+      const scope = document.querySelector(scopeSelector) || document.body;
+      const report = buildLabCopyReportFromScope(moduleTitle, scope);
+      await copyLabReportToClipboard(report);
+      btn.textContent = uxCopy('Resultados copiados', 'Results copied');
+    } catch {
+      btn.textContent = uxCopy('No se pudo copiar', 'Could not copy');
+    } finally {
+      window.setTimeout(() => {
+        btn.textContent = original;
+      }, 1400);
+    }
+  });
+}
+
 /** Botón «Copiar enlace» + toast (mensajes ES/EN con `uxCopy`). */
 export function wireLabCopyLink(buttonId, toastId) {
   document.getElementById(buttonId)?.addEventListener('click', async () => {
@@ -495,9 +529,10 @@ export function debounce(fn, ms) {
  * @param {HTMLElement | null} wrap
  * @param {() => void} fn
  */
-export function runCalcWithIndustrialFeedback(wrap, fn) {
+function runCalcFeedbackInner(wrap, fn) {
   if (!wrap) {
     fn();
+    incrementCalcCounter();
     return;
   }
   wrap.classList.add('lab-results-wrap--computing');
@@ -505,6 +540,7 @@ export function runCalcWithIndustrialFeedback(wrap, fn) {
     requestAnimationFrame(() => {
       try {
         fn();
+        incrementCalcCounter();
       } finally {
         wrap.classList.remove('lab-results-wrap--computing');
         wrap.classList.remove('lab-results-wrap--pulse');
@@ -513,5 +549,19 @@ export function runCalcWithIndustrialFeedback(wrap, fn) {
         setTimeout(() => wrap.classList.remove('lab-results-wrap--pulse'), 650);
       }
     });
+  });
+}
+
+export function runCalcWithIndustrialFeedback(wrap, fn) {
+  if (!isCreditsSystemEnabled()) {
+    runCalcFeedbackInner(wrap, fn);
+    return;
+  }
+  ensureCalcSessionCharged().then((gate) => {
+    if (!gate.allowed) {
+      if (gate.reason === 'no_credits') showNoCreditsModal();
+      return;
+    }
+    runCalcFeedbackInner(wrap, fn);
   });
 }

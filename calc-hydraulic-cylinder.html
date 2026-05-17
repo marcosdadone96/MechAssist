@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Fuerza de empuje, caudal, velocidad y comprobación de vástago y tubo en cilindro de doble efecto. Hidráulica. Gratis en línea." />
+    <meta name="description" content="Fuerza, sección, caudal y velocidad en cilindro de doble efecto. Parámetros de circuito orientativos." />
     <title data-i18n="hydCyl.docTitle">Calculadora de cilindro hidráulico fuerza y caudal online — TheMechAssist</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
@@ -12,11 +12,11 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/calc-hydraulic-cylinder.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/calc-hydraulic-cylinder.html" />
-    <meta property="og:title" content="Calculadora de cilindro hidráulico fuerza y caudal online" />
-    <meta property="og:description" content="Fuerza de empuje, caudal, velocidad y comprobación de vástago y tubo en cilindro de doble efecto. Hidráulica. Gratis en línea." />
+    <meta property="og:url" content="https://www.themechassist.com/calc-hydraulic-cylinder.html" id="mdr-og-url" />
+    <meta property="og:title" content="Cilindro hidráulico — TheMechAssist" />
+    <meta property="og:description" content="Fuerza, sección, caudal y velocidad en cilindro de doble efecto. Parámetros de circuito orientativos." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de cilindro hidráulico fuerza y caudal online" />
+    <meta name="twitter:title" content="Cilindro hidráulico — TheMechAssist" />
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
@@ -195,6 +195,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -211,13 +213,29 @@
 
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2 data-i18n="hydCyl.h2">Cilindro hidráulico — fuerza, caudal y seguridad estructural</h2>
-        <p class="calc-seo-intro" data-i18n="hydCyl.calcSeoIntro">
-          Este apartado integra la fuerza generada por presión sobre las áreas efectivas de avance y retroceso con los caudales necesarios para cada tiempo de carrera y revisa el pandeo del vástago y el espesor del cilindro según criterios orientativos de resistencia. Sirve para dimensionar actuadores oleohidráulicos en prensas, pinzas y mesas elevadoras antes de pedir el grupo completo al proveedor. Es útil para ingenieros de fluidos y automatización industrial que comparan varias presiones de trabajo. Por ejemplo, puede mostrar si una reducción de carrera permite usar un vástago más delgado sin salirse del margen de Euler en una línea de elevación rápida.
-        </p>
-        <p class="lab-lead" data-i18n="hydCyl.lead">
-          Valida fuerza de empuje/tracción, caudal requerido, pandeo del vástago (Euler) y espesor mínimo de tubo para operar con seguridad a presión nominal.
-        </p>
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="hydCyl.h2">Cilindro hidráulico — fuerza, caudal y seguridad estructural</h2>
+          <p class="lab-scope-note" data-i18n="fluids.scopeNote">
+            Cálculo orientativo para dimensionado previo. Confirma siempre con catálogo de fabricante y normativa aplicable (ISO 4413 / ISO 4414).
+          </p>
+          <p class="lab-calc-hero-lead" data-i18n="hydCyl.heroLead">
+            Fuerza de empuje/tracción, caudal, pandeo del vástago (Euler) y espesor mínimo de tubo para operar con seguridad a la presión de trabajo.
+          </p>
+          <details class="lab-calc-seo">
+            <summary data-i18n="hydCyl.seoSummary">Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro" data-i18n="hydCyl.calcSeoIntro">
+              Este apartado integra la fuerza generada por presión sobre las áreas efectivas de avance y retroceso con los caudales necesarios para cada tiempo de carrera y revisa el pandeo del vástago y el espesor del cilindro según criterios orientativos de resistencia. Sirve para dimensionar actuadores oleohidráulicos en prensas, pinzas y mesas elevadoras antes de pedir el grupo completo al proveedor. Es útil para ingenieros de fluidos y automatización industrial que comparan varias presiones de trabajo. Por ejemplo, puede mostrar si una reducción de carrera permite usar un vástago más delgado sin salirse del margen de Euler en una línea de elevación rápida.
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help" data-i18n="hydCyl.lead">
+                Valida fuerza de empuje/tracción, caudal requerido, pandeo del vástago (Euler) y espesor mínimo de tubo para operar con seguridad a presión nominal.
+              </p>
+            </div>
+          </details>
+        </header>
 
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
@@ -317,7 +335,7 @@
                 <label for="hcLoadKg" data-i18n="hydCyl.labelLoad">Carga de trabajo (kg)</label>
                 <input id="hcLoadKg" type="number" min="1" step="any" value="1500" />
                 <span class="hint" data-i18n="hydCyl.hintLoadExt">Carga mecánica externa</span>
-                <p class="lab-field-help" data-i18n="hydCyl.helpLoad">Se convierte a N para comparar con fuerza disponible y factor de seguridad.</p>
+                <p class="lab-field-help" data-i18n="hydCyl.helpLoad">Se convierte a N para comparar con fuerza disponible y factor de seguridad. El pandeo Euler usa esta carga como compresión axial en el vástago; si en su instalación solo una fracción del peso comprime el vástago, interprete el FS con margen o ajuste la carga.</p>
               </div>
 
               <div class="hc-flow-wrap">

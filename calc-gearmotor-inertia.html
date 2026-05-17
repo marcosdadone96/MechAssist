@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Relación de inercias reflejada y par motor frente a carga con motorreductor del usuario. Dinámica orientativa. Online gratis." />
+    <meta name="description" content="Relación de inercias y par motor vs carga con catálogo demo. En evolución; resultados orientativos." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,14 +11,14 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/calc-gearmotor-inertia.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/calc-gearmotor-inertia.html" />
-    <meta property="og:title" content="Calculadora de inercia motorreductor y carga online" />
-    <meta property="og:description" content="Relación de inercias reflejada y par motor frente a carga con motorreductor del usuario. Dinámica orientativa. Online gratis." />
+    <meta property="og:url" content="https://www.themechassist.com/calc-gearmotor-inertia.html" id="mdr-og-url" />
+    <meta property="og:title" content="Motor e inercia — Laboratorio — TheMechAssist" />
+    <meta property="og:description" content="Relación de inercias y par motor vs carga con catálogo demo. En evolución; resultados orientativos." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de inercia motorreductor y carga online" />
+    <meta name="twitter:title" content="Motor e inercia — Laboratorio — TheMechAssist" />
 
     <meta name="robots" content="noindex" />
-    <title>Calculadora de inercia motorreductor y carga online — TheMechAssist</title>
+    <title data-i18n="gm.docTitle">Motor e inercia — Laboratorio — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -72,6 +72,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -87,20 +89,33 @@
     </header>
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2>Inercia de carga vs motorreductor · datos introducidos por usuario</h2>
-        <p class="calc-seo-intro">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="gm.h2">Inercia de carga vs motorreductor · datos introducidos por usuario</h2>
+          <p class="lab-data-note">
+            <strong>Catálogo demo:</strong> curvas y datos de motorreductor son orientativos; no sustituyen software ni hojas del fabricante.
+          </p>
+          <p class="lab-calc-hero-lead" data-i18n="gm.heroLead" data-i18n-html>
+            Relación <strong>J<sub>ext</sub>/J<sub>mot</sub></strong> frente a un límite que usted define y par disponible vs par resistente en el punto de trabajo — modelo pedagógico con catálogo demo.
+          </p>
+          <details class="lab-calc-seo">
+            <summary>Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro">
           Este laboratorio combina la inercia reflejada de la carga con la del motorreductor para estimar si la relación J<sub>ext</sub>/J<sub>mot</sub> encaja en los límites típicos de arranque directo o variado y contrasta el par disponible frente al par resistente en el punto de trabajo usando una curva simplificada de par contra velocidad. El método es pedagógico y útil para seleccionar tamaños antes de abrir el software del fabricante. Es relevante para ingenieros de automatización que integran bombas, ventiladores o husillos con grandes masas acopladas. Por ejemplo, puede advertir si una bomba de gran volante exige variador de rampa más largo tras cambiar el diámetro de polea.
-        </p>
-        <p class="lab-lead">
-          Introduzca los parámetros de su <strong>motorreductor</strong> y de la carga. Se valida la relación
-          <strong>J<sub>ext</sub>/J<sub>mot</sub></strong> frente al límite definido por usted y el
-          <strong>par disponible</strong> frente al par resistente en el punto de operación.
-        </p>
-        <p class="lab-lead" style="margin-top: -0.35rem">
-          Esta parte sirve para comprobar, de forma rápida, si el motorreductor podrá <strong>arrancar sin problemas</strong> y
-          mantener el régimen sin sobrecarga. Si la relación de inercias o el par no cumplen, conviene reajustar relación,
-          tamaño de motorreductor o estrategia de arranque.
-        </p>
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="gm.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help">
+                Introduzca los parámetros de su <strong>motorreductor</strong> y de la carga. Se valida la relación
+                <strong>J<sub>ext</sub>/J<sub>mot</sub></strong> frente al límite definido por usted y el
+                <strong>par disponible</strong> frente al par resistente en el punto de operación.
+                Comprueba de forma rápida si el conjunto podrá <strong>arrancar</strong> y mantener el régimen sin sobrecarga; si no cumple, reajuste relación, tamaño o estrategia de arranque.
+                Modelo <strong>pedagógico</strong> con catálogo demo; no sustituye software ni curvas oficiales del fabricante.
+              </p>
+            </div>
+          </details>
+        </header>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated" style="margin-bottom: 0.85rem">
@@ -193,9 +208,19 @@
             </div>
           </div>
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
-            <div id="gmOut"></div>
-            <div id="gmTable"></div>
-            <div id="gmSummary"></div>
+            <div class="lab-results-wrap">
+              <div id="gmOut" class="lab-catalog-verdict"></div>
+              <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked" open>
+                <summary data-i18n="gm.summaryFull">Resultado completo</summary>
+                <div id="gmTable"></div>
+                <div id="gmSummary"></div>
+              </details>
+              <div class="lab-results-actions">
+                <button type="button" class="lab-btn lab-btn--block" id="gmCopyResults" data-i18n="gm.copyResults">
+                  Copiar resultados
+                </button>
+              </div>
+            </div>
             <p class="lab-small-print">
               La relación Jext/Jmot es una guía de selección rápida. Para accionamientos con variador de frecuencia el límite puede
               relajarse; para arranque directo en red debe ser conservador. Consultar siempre las especificaciones del fabricante

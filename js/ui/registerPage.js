@@ -4,6 +4,7 @@
 
 import { FEATURES } from '../config/features.js';
 import { registerAccount, getCurrentUser, clearLocalUser } from '../services/accountAuth.js';
+import { refreshCreditsAfterAuth, clearCreditsCache } from '../services/creditsApi.js';
 import { getRegisterNextPath } from '../services/proCheckoutFlow.js';
 
 function getLang() {
@@ -64,6 +65,7 @@ const TX = {
     acceptLegalHtml:
       'He le\u00eddo y acepto los <a href="terms.html" target="_blank" rel="noopener">T\u00e9rminos</a> y la <a href="privacy.html" target="_blank" rel="noopener">Pol\u00edtica de privacidad</a>.',
     footerPrivacy: 'Privacidad',
+    footerTrust: 'Confianza',
     footerTerms: 'T\u00e9rminos',
     footerCookies: 'Cookies',
     footerCookiePrefs: 'Preferencias cookies',
@@ -139,8 +141,10 @@ const TX = {
     acceptLegalHtml:
       'I have read and accept the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a>.',
     footerPrivacy: 'Privacy',
+    footerTrust: 'Trust',
     footerTerms: 'Terms',
     footerCookies: 'Cookies',
+    footerCookiePrefs: 'Cookie settings',
     linkHome: 'Back to home',
     errMatch: 'Passwords do not match.',
     errLegal: 'You must accept the terms and privacy policy.',
@@ -202,9 +206,11 @@ function applyTx() {
   });
 
   const fp = document.querySelector('[data-reg-foot="privacy"]');
+  const ftr = document.querySelector('[data-reg-foot="trust"]');
   const ft = document.querySelector('[data-reg-foot="terms"]');
   const fc = document.querySelector('[data-reg-foot="cookies"]');
   if (fp) fp.textContent = t.footerPrivacy;
+  if (ftr) ftr.textContent = t.footerTrust;
   if (ft) ft.textContent = t.footerTerms;
   if (fc) fc.textContent = t.footerCookies;
   const fcp = document.querySelector('[data-reg-foot="cookiePrefs"]');
@@ -354,6 +360,8 @@ export function mountRegisterPage() {
         if (pending) pending.hidden = false;
         return;
       }
+
+      await refreshCreditsAfterAuth();
 
       const nextPath = getRegisterNextPath();
       if (nextPath === 'checkout.html') {

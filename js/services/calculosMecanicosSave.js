@@ -13,6 +13,23 @@ import { showToast } from '../ui/labToast.js';
 export const CALCULOS_TABLE = 'calculos_mecanicos';
 
 /**
+ * Sesion Supabase (RLS) o null si no hay usuario en Supabase Auth.
+ * @returns {Promise<{ user: import('@supabase/supabase-js').User | null }>}
+ */
+async function ensureSupabaseUserForCalculos() {
+  const u = getCurrentUser();
+  if (!FEATURES.useSupabaseRLS) return { user: null };
+  let { data: authData } = await supabase.auth.getUser();
+  let user = authData?.user ?? null;
+  if (!user && u?.serverAuth && u?.authToken) {
+    await syncSupabaseSessionFromNetlifyJwt();
+    ({ data: authData } = await supabase.auth.getUser());
+    user = authData?.user ?? null;
+  }
+  return { user };
+}
+
+/**
  * Recoge inputs con id en el �mbito (misma idea que machineConfigMount.collectFormState).
  * @param {ParentNode} scope
  * @returns {Record<string, unknown>}
@@ -95,13 +112,7 @@ export async function insertCalculoMecanico(opts) {
 
   try {
     if (FEATURES.useSupabaseRLS) {
-      let { data: authData } = await supabase.auth.getUser();
-      let user = authData?.user;
-      if (!user && u?.serverAuth && u?.authToken) {
-        await syncSupabaseSessionFromNetlifyJwt();
-        ({ data: authData } = await supabase.auth.getUser());
-        user = authData?.user;
-      }
+      const { user } = await ensureSupabaseUserForCalculos();
       if (!user) {
         showToast(
           langEs()
@@ -141,6 +152,115 @@ export async function insertCalculoMecanico(opts) {
       langEs() ? `Error al guardar: ${msg}` : `Save failed: ${msg}`,
       { type: 'error', durationMs: 5000 },
     );
+    return { ok: false };
+  }
+}
+
+/**
+ * @param {{ limit?: number, silent?: boolean }} [opts]
+ * @returns {Promise<{ ok: boolean, rows?: Array<{ id: string, created_at: string, tipo_maquina: string, datos_entrada: Record<string, unknown>, resultados: Record<string, unknown> }>, reason?: string }>}
+ */
+export async function listMyCalculosMecanicos(opts = {}) {
+  const limit = Math.min(500, Math.max(1, Number(opts.limit) || 200));
+  const silent = opts.silent === true;
+  const langEs = () =>
+    typeof document !== 'undefined' &&
+    !String(document.documentElement.lang || '')
+      .toLowerCase()
+      .startsWith('en');
+
+  if (!FEATURES.useSupabaseRLS) {
+    if (!silent) {
+      showToast(
+        langEs()
+          ? 'El listado en la nube requiere sesión segura (RLS).'
+          : 'Cloud listing requires secure session (RLS).',
+        { type: 'error', durationMs: 5000 },
+      );
+    }
+    return { ok: false, rows: [], reason: 'no_rls' };
+  }
+
+  try {
+    const { user } = await ensureSupabaseUserForCalculos();
+    if (!user) {
+      return { ok: false, rows: [], reason: 'no_session' };
+    }
+
+    const { data, error } = await supabase
+      .from(CALCULOS_TABLE)
+      .select('id, created_at, tipo_maquina, datos_entrada, resultados')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return { ok: true, rows: /** @type {any} */ (data) || [] };
+  } catch (e) {
+    console.error('[calculos_mecanicos list]', e);
+    const msg = e && typeof e === 'object' && 'message' in e ? String(/** @type {any} */ (e).message) : String(e);
+    if (!silent) {
+      showToast(
+        langEs() ? `Error al cargar: ${msg}` : `Load failed: ${msg}`,
+        { type: 'error', durationMs: 5000 },
+      );
+    }
+    return { ok: false, rows: [], reason: 'query_error' };
+  }
+}
+
+/**
+ * @param {string} id uuid fila
+ * @param {{ silent?: boolean }} [opts]
+ * @returns {Promise<{ ok: boolean }>}
+ */
+export async function deleteCalculoMecanicoById(id, opts = {}) {
+  const silent = opts.silent === true;
+  const langEs = () =>
+    typeof document !== 'undefined' &&
+    !String(document.documentElement.lang || '')
+      .toLowerCase()
+      .startsWith('en');
+
+  if (!FEATURES.useSupabaseRLS) {
+    if (!silent) {
+      showToast(
+        langEs() ? 'Borrado en la nube no disponible en este modo.' : 'Cloud delete not available in this mode.',
+        { type: 'error', durationMs: 4000 },
+      );
+    }
+    return { ok: false };
+  }
+
+  const rid = String(id || '').trim();
+  if (!rid) return { ok: false };
+
+  try {
+    const { user } = await ensureSupabaseUserForCalculos();
+    if (!user) {
+      if (!silent) {
+        showToast(
+          langEs() ? 'Inicie sesión para borrar en la nube.' : 'Sign in to delete from the cloud.',
+          { type: 'error', durationMs: 4000 },
+        );
+      }
+      return { ok: false };
+    }
+
+    const { error } = await supabase.from(CALCULOS_TABLE).delete().eq('id', rid);
+    if (error) throw error;
+    if (!silent) {
+      showToast(langEs() ? 'Eliminado de la nube.' : 'Removed from cloud.', { type: 'ok' });
+    }
+    return { ok: true };
+  } catch (e) {
+    console.error('[calculos_mecanicos delete]', e);
+    const msg = e && typeof e === 'object' && 'message' in e ? String(/** @type {any} */ (e).message) : String(e);
+    if (!silent) {
+      showToast(
+        langEs() ? `Error al borrar: ${msg}` : `Delete failed: ${msg}`,
+        { type: 'error', durationMs: 5000 },
+      );
+    }
     return { ok: false };
   }
 }

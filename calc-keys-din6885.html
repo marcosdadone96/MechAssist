@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Chaveta paralela según extracto DIN 6885-1: medidas b, h, L y comprobación de aplastamiento. Útil en taller. Gratis online." />
+    <meta name="description" content="Autodimensionar chaveta paralela por diámetro de eje; comprobar aplastamiento con L y material." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,13 +11,13 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/calc-keys-din6885.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/calc-keys-din6885.html" />
-    <meta property="og:title" content="Calculadora de chavetas DIN 6885 online" />
-    <meta property="og:description" content="Chaveta paralela según extracto DIN 6885-1: medidas b, h, L y comprobación de aplastamiento. Útil en taller. Gratis online." />
+    <meta property="og:url" content="https://www.themechassist.com/calc-keys-din6885.html" id="mdr-og-url" />
+    <meta property="og:title" content="Chavetas DIN 6885 — TheMechAssist" />
+    <meta property="og:description" content="Autodimensionar chaveta paralela por diámetro de eje; comprobar aplastamiento con L y material." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de chavetas DIN 6885 online" />
+    <meta name="twitter:title" content="Chavetas DIN 6885 — TheMechAssist" />
 
-    <title>Calculadora de chavetas DIN 6885 online — TheMechAssist</title>
+    <title data-i18n="keys.docTitle">Chavetas DIN 6885 — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -30,6 +30,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -45,26 +47,46 @@
     </header>
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2>Chavetas paralelas · normalización DIN 6885-1 (extracto)</h2>
-        <p class="calc-seo-intro">
-          La herramienta propone anchura y espesor normalizados de chaveta paralela en función del diámetro de eje según tablas tipo DIN 6885-1 y permite comprobar presiones de contacto y aplastamiento para el par transmitido y la longitud útil elegida. Sirve para preparar pedidos de mecanizado y detectar si conviene alargar la chaveta o pasar a dos elementos antes de fabricar. Es habitual entre proyectistas de máquinas herramienta y montadores que revisan un piñón ya instalado. Imagine renovar el motor de una bomba: puede validar si la chaveta actual sigue siendo suficiente cuando sube el par nominal del nuevo conjunto.
-        </p>
-        <p class="lab-lead">
-          Según el <strong>diámetro de eje</strong> se muestran <strong>b</strong> y <strong>h</strong> comerciales. Compruebe <strong>aplastamiento</strong> con el par y la longitud
-          <strong>L</strong> (mm); material C45 o inox con tensión admisible orientativa.
-        </p>
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="keys.h2">Chavetas paralelas · normalización DIN 6885-1 (extracto)</h2>
+          <p class="lab-calc-hero-lead" data-i18n="keys.heroLead" data-i18n-html>
+            Según el <strong>diámetro de eje</strong> se muestran <strong>b</strong> y <strong>h</strong> de la tabla; comprueba <strong>aplastamiento</strong> con el par y la longitud <strong>L</strong> (C45 o inox con σ adm. orientativa).
+          </p>
+          <details class="lab-calc-seo">
+            <summary>Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro">
+              La herramienta propone anchura y espesor normalizados de chaveta paralela en función del diámetro de eje según tablas tipo DIN 6885-1 y permite comprobar presiones de contacto y aplastamiento para el par transmitido y la longitud útil elegida. Sirve para preparar pedidos de mecanizado y detectar si conviene alargar la chaveta o pasar a dos elementos antes de fabricar. Es habitual entre proyectistas de máquinas herramienta y montadores que revisan un piñón ya instalado. Imagine renovar el motor de una bomba: puede validar si la chaveta actual sigue siendo suficiente cuando sube el par nominal del nuevo conjunto.
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="keys.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help">
+                <strong>b</strong> y <strong>h</strong> según extracto <strong>DIN 6885-1</strong>; comprobación de <strong>aplastamiento</strong> con el par y la longitud útil <strong>L</strong> (σ<sub>adm</sub> orientativa C45 / inox).
+                No sustituye tolerancias de ranura ni fatiga de contacto; confirme con dibujo y fabricante.
+              </p>
+            </div>
+          </details>
+        </header>
+        <nav class="lab-next-steps" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li><a href="calc-shaft.html">Eje · torsión</a> — diámetro mínimo del vastago.</li>
+            <li><a href="calc-iso-fit.html">Ajustes ISO 286</a> — tolerancias cubo–eje.</li>
+            <li><a href="calc-bearings.html">Rodamientos</a> — cargas en apoyos cercanos.</li>
+          </ul>
+        </nav>
         <div class="lab-presets-row">
-          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <span class="lab-presets-row__label" data-i18n="keys.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="kyPresetsBar"></div>
         </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-              <p class="lab-diagram-wrap__title">Corte del eje · ranura t₁ · chaveta b × h · longitud L</p>
+              <p class="lab-diagram-wrap__title" data-i18n="keys.diagTitle">Corte del eje · ranura t₁ · chaveta b × h · longitud L</p>
               <svg id="kyDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama chaveta y eje"></svg>
               <p class="lab-diagram-caption">
-                Las cotas del dibujo se <strong>escalan con su entrada</strong>; la ranura y la chaveta siguen las proporciones <strong>b, h, t₁</strong> de la fila DIN del
-                diámetro elegido.
+                Tres vistas separadas: <strong>corte</strong> (ranura y chaveta), <strong>planta</strong> del eje y <strong>lateral</strong> con cota L. El ancho del lateral está acotado solo para lectura; la cota L es la real.
               </p>
             </div>
           </div>
@@ -98,15 +120,26 @@
             </div>
           </div>
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
-            <div class="lab-results-share" id="kyShareLinkWrap" aria-live="polite">
-              <button type="button" class="lab-btn" id="kyCopyLinkBtn">Copiar enlace</button>
-              <div class="lab-copy-toast" id="kyCopyToast" role="status">¡Enlace copiado!</div>
+            <div class="lab-results-wrap">
+              <div id="kyOut" class="lab-catalog-verdict"></div>
+              <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked" open>
+                <summary data-i18n="keys.summaryFull">Resultado completo</summary>
+                <div id="kyTable"></div>
+              </details>
+              <div class="lab-results-actions">
+                <button type="button" class="lab-btn lab-btn--block" id="kyCopyResults" data-i18n="keys.copyResults">
+                  Copiar resultados
+                </button>
+              </div>
             </div>
-            <div id="kyOut"></div>
-            <div id="kyTable"></div>
+
             <p class="lab-small-print">
               Para transmisión de par elevado con eje de diámetro reducido, considerar dos chavetas a 180° o unión estriada.
             </p>
+            <div class="lab-results-share lab-results-share--footer" id="kyShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="kyCopyLinkBtn" data-i18n="keys.copyLink">Copiar enlace</button>
+              <div class="lab-copy-toast" id="kyCopyToast" role="status" data-i18n="keys.copyToast">¡Enlace copiado!</div>
+            </div>
           </div>
         </div>
       </section>

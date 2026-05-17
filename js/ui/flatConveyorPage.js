@@ -6,6 +6,13 @@ import { FEATURES } from '../config/features.js';
 import { isFreeMachineFullAccess } from '../config/freemium.js';
 import { isPremiumEffective } from '../services/accessTier.js';
 import { computeFlatConveyor } from '../modules/flatConveyor.js';
+import { FLAT_PRESET_BY_ID } from '../modules/flatConveyorUxConfig.js';
+import {
+  collectEmptyCoreFieldIds,
+  evaluateFlatConveyorFieldUx,
+  buildFlatConveyorVerdict,
+  missingFieldsHumanList,
+} from '../modules/flatConveyorUxEngine.js';
 import { LOAD_DUTY_OPTIONS, LOAD_DUTY_OPTIONS_EN } from '../modules/serviceFactorByDuty.js';
 import { buildInputPhaseAlerts, buildResultPhaseAlerts } from '../modules/conveyorDesignAlerts.js';
 import { renderFlatConveyorDiagram } from './diagramFlat.js';
@@ -26,7 +33,8 @@ import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { FLAT_CONVEYOR_EN } from '../lab/i18n/pages/flatConvEn.js';
-import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { incrementCalcCounter } from '../services/calcCounter.js';
 
 const inputIds = [
   'beltLength',
@@ -45,7 +53,7 @@ const inputIds = [
   'serviceFactor',
 ];
 
-const selectIds = ['designStandard', 'loadDuty', 'carrySurface'];
+const selectIds = ['designStandard', 'loadDuty', 'carrySurface', 'flatAppProfile'];
 const LS_ADVANCED_OPEN = 'mdr-flat-advanced-open';
 
 /** Lectura segura: si falta un input en el HTML no rompe todo el cálculo. */
@@ -158,6 +166,151 @@ function formatMounting(pref) {
   return `${typeMap[pref.mountingType] || pref.mountingType} \u00b7 ${ori}`;
 }
 
+/**
+ * @param {ReturnType<typeof readInputs>} raw
+ * @param {ReturnType<typeof computeFlatConveyor>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ * @param {'es'|'en'} lang
+ */
+function buildFlatRfqPlainText(raw, r, mount, lang) {
+  const en = lang === 'en';
+  const d = r.detail || {};
+  const carry =
+    raw.carrySurface === 'slide_plate'
+      ? en
+        ? 'Slide plate'
+        : 'Plancha deslizante'
+      : en
+        ? 'Rollers'
+        : 'Rodillos';
+  const when = new Date().toISOString().slice(0, 19).replace('T', ' ') + ' UTC';
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const head = en
+    ? 'TheMechAssist — Flat belt conveyor (indicative duty point)'
+    : 'TheMechAssist — Cinta transportadora plana (punto de trabajo orientativo)';
+  const hIn = en ? '== Inputs ==' : '== Entradas ==';
+  const hOut = en ? '== Results (indicative) ==' : '== Resultados (orientativos) ==';
+  const hMount = en ? '== Mounting preference (for RFQ) ==' : '== Preferencia de montaje (RFQ) ==';
+  const disc = en
+    ? 'Disclaimer: simplified horizontal model; does not replace manufacturer selection, belt tensile design, or full DIN/CEMA memos. Validate μ, layout, and thermal duty with your supplier.'
+    : 'Aviso: modelo horizontal simplificado; no sustituye la selección del fabricante, el cálculo de tensión de banda ni memorias DIN/CEMA completas. Valide μ, layout y régimen térmico con su proveedor.';
+
+  const parts = [
+    head,
+    `${en ? 'Timestamp (UTC)' : 'Fecha (UTC)'}: ${when}`,
+  ];
+  if (url) parts.push(`${en ? 'Source' : 'Origen'}: ${url}`);
+  parts.push(
+    '',
+    hIn,
+    `${en ? 'Carrying strand' : 'Rama portante'}: ${carry}`,
+    `${en ? 'Loaded run L' : 'Tramo de carga L'} (m): ${formatNum(raw.beltLength_m, 3)}`,
+    `${en ? 'Belt width B' : 'Ancho banda B'} (m): ${formatNum(raw.beltWidth_m, 3)}`,
+    `${en ? 'Nominal load mass m' : 'Masa de carga m'} (kg): ${formatNum(raw.loadMass_kg, 1)}`,
+    `${en ? 'Belt mass m_b' : 'Masa banda m_b'} (kg): ${formatNum(raw.beltMass_kg, 2)}`,
+    `${en ? 'Active load fraction' : 'Fracción carga activa'}: ${formatNum(raw.loadDistribution, 3)}`,
+    `${en ? 'Belt mass on carry strand' : 'Fracción banda en portante'}: ${formatNum(raw.beltCarryFraction, 3)}`,
+    `${en ? 'Belt speed v' : 'Velocidad v'} (m/s): ${formatNum(raw.beltSpeed_m_s, 3)}`,
+    `${en ? 'Drive drum diameter D' : 'Diámetro tambor motriz D'} (mm): ${formatNum(raw.rollerDiameter_mm, 1)}`,
+    `${en ? 'Friction coefficient μ' : 'Coeficiente μ'}: ${formatNum(raw.frictionCoeff, 3)}`,
+    `${en ? 'Efficiency motor to drum η' : 'Rendimiento η motor–tambor'} (%): ${formatNum(raw.efficiency_pct, 1)}`,
+    `${en ? 'Service factor (applied)' : 'Factor de servicio (aplicado)'}: ${formatNum(r.serviceFactorUsed ?? raw.serviceFactor, 3)}`,
+    `${en ? 'Load duty' : 'Tipo de carga'}: ${raw.loadDuty}`,
+    `${en ? 'Design framework' : 'Marco normativo'}: ${raw.designStandard}`,
+    `${en ? 'Additional resistance F_ad' : 'Resistencia adicional F_ad'} (N): ${formatNum(raw.additionalResistance_N, 1)}`,
+    `${en ? 'Accel. time' : 'Tiempo aceleración'} (s): ${formatNum(raw.accelTime_s, 2)}`,
+    `${en ? 'Inertia factor' : 'Factor inercia'}: ${formatNum(raw.inertiaStartingFactor, 3)}`,
+    '',
+    hOut,
+    `${en ? 'Steady traction F (drum)' : 'Fuerza régimen F (tambor)'} (N): ${formatNum(d.F_steady_N ?? r.frictionForce_N, 2)}`,
+    `${en ? 'Design torque at drum (incl. SF)' : 'Par diseño en tambor (incl. SF)'} (N·m): ${formatNum(r.torqueWithService_Nm, 2)}`,
+    `${en ? 'Motor shaft power (sizing)' : 'Potencia eje motor (dimensionamiento)'} (kW): ${formatNum(r.requiredMotorPower_kW, 3)}`,
+    `${en ? 'Drum speed' : 'Velocidad tambor'} (rpm): ${formatNum(r.drumRpm, 2)}`,
+    `${en ? 'Mass flow (model)' : 'Caudal másico (modelo)'} (kg/s): ${formatNum(r.massFlow_kg_s, 3)}`,
+    '',
+    hMount,
+    formatMounting(mount) +
+      (mount.machineShaftDiameter_mm != null
+        ? ` · ${en ? 'Machine shaft Ø' : 'Ø eje máquina'} ${formatNum(mount.machineShaftDiameter_mm, 1)} mm`
+        : ''),
+    '',
+    disc,
+  );
+  return parts.join('\n');
+}
+
+/**
+ * @param {ReturnType<typeof readInputs>} raw
+ * @param {ReturnType<typeof computeFlatConveyor>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ */
+function buildFlatRfqCsv(raw, r, mount) {
+  const d = r.detail || {};
+  const headers = [
+    'product',
+    'generated_utc',
+    'page_url',
+    'carry_surface',
+    'L_m',
+    'belt_width_m',
+    'load_mass_kg',
+    'belt_mass_kg',
+    'load_distribution',
+    'belt_carry_fraction',
+    'v_m_s',
+    'D_drum_mm',
+    'friction_mu',
+    'efficiency_pct',
+    'service_factor',
+    'load_duty',
+    'design_standard',
+    'additional_resistance_N',
+    'accel_time_s',
+    'inertia_factor',
+    'mounting',
+    'orientation',
+    'machine_shaft_d_mm',
+    'F_steady_N',
+    'T_drum_design_Nm',
+    'P_motor_kW',
+    'n_drum_rpm',
+    'mass_flow_kg_s',
+  ];
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const when = new Date().toISOString();
+  const values = [
+    'TheMechAssist_flat_belt',
+    when,
+    url,
+    raw.carrySurface,
+    raw.beltLength_m,
+    raw.beltWidth_m,
+    raw.loadMass_kg,
+    raw.beltMass_kg,
+    raw.loadDistribution,
+    raw.beltCarryFraction,
+    raw.beltSpeed_m_s,
+    raw.rollerDiameter_mm,
+    raw.frictionCoeff,
+    raw.efficiency_pct,
+    r.serviceFactorUsed ?? raw.serviceFactor,
+    raw.loadDuty,
+    raw.designStandard,
+    raw.additionalResistance_N,
+    raw.accelTime_s,
+    raw.inertiaStartingFactor,
+    mount.mountingType,
+    mount.orientation,
+    mount.machineShaftDiameter_mm ?? '',
+    d.F_steady_N ?? r.frictionForce_N,
+    r.torqueWithService_Nm,
+    r.requiredMotorPower_kW,
+    r.drumRpm,
+    r.massFlow_kg_s,
+  ];
+  return `${headers.map(escapeCsvCell).join(',')}\n${values.map(escapeCsvCell).join(',')}`;
+}
+
 function clampNum(n, lo, hi) {
   return Math.min(hi, Math.max(lo, n));
 }
@@ -211,6 +364,99 @@ function bindFlatRangeSlider(rangeId, numId, lo, hi, step = null) {
     refresh();
   });
   syncRangeFromNum();
+}
+
+function syncFlatRangeSlidersFromNumberInputs() {
+  const pairs = [
+    ['beltLengthR', 'beltLength'],
+    ['loadMassR', 'loadMass'],
+    ['beltSpeedR', 'beltSpeed'],
+    ['rollerDR', 'rollerD'],
+    ['frictionR', 'friction'],
+  ];
+  for (const [rangeId, numId] of pairs) {
+    const range = document.getElementById(rangeId);
+    const num = document.getElementById(numId);
+    if (!(range instanceof HTMLInputElement) || !(num instanceof HTMLInputElement)) continue;
+    let v = parseFloat(String(num.value).replace(',', '.'));
+    const lo = parseFloat(range.min);
+    const hi = parseFloat(range.max);
+    if (!Number.isFinite(v)) v = lo;
+    v = clampNum(v, lo, hi);
+    num.value = String(v);
+    range.value = String(v);
+  }
+}
+
+function writeFlatInput(id, val) {
+  const el = document.getElementById(id);
+  if (el instanceof HTMLInputElement) el.value = String(val);
+}
+
+function writeFlatSelect(id, val) {
+  const el = document.getElementById(id);
+  if (el instanceof HTMLSelectElement) el.value = val;
+}
+
+function applyFlatPresetFromId(presetId) {
+  const def = FLAT_PRESET_BY_ID[presetId];
+  if (!def) return;
+  writeFlatSelect('flatAppProfile', def.profileId);
+  const v = def.values;
+  writeFlatSelect('carrySurface', v.carrySurface);
+  writeFlatSelect('designStandard', v.designStandard);
+  writeFlatSelect('loadDuty', v.loadDuty);
+  writeFlatInput('beltLength', v.beltLength);
+  writeFlatInput('rollerD', v.rollerD);
+  writeFlatInput('beltSpeed', v.beltSpeed);
+  writeFlatInput('loadMass', v.loadMass);
+  writeFlatInput('friction', v.friction);
+  writeFlatInput('efficiency', v.efficiency);
+  writeFlatInput('beltWidth', v.beltWidth);
+  writeFlatInput('beltMass', v.beltMass);
+  writeFlatInput('loadDistribution', v.loadDistribution);
+  writeFlatInput('beltCarryFraction', v.beltCarryFraction);
+  writeFlatInput('additionalResistance', v.additionalResistance);
+  writeFlatInput('accelTime', v.accelTime);
+  writeFlatInput('inertiaFactor', v.inertiaFactor);
+  syncFlatRangeSlidersFromNumberInputs();
+  syncLoadDutyUi();
+  const firstAcc = document.querySelector('.flat-sidebar details.flat-accordion');
+  if (firstAcc instanceof HTMLDetailsElement) firstAcc.open = true;
+  refresh();
+}
+
+function applyFieldInputUxClasses(states, missingIds) {
+  for (const id of inputIds) {
+    const el = document.getElementById(id);
+    if (!(el instanceof HTMLInputElement)) continue;
+    el.classList.remove('field-input--field-ok', 'field-input--field-warn', 'field-input--field-bad');
+  }
+  for (const id of missingIds) {
+    const el = document.getElementById(id);
+    if (el instanceof HTMLInputElement) el.classList.add('field-input--field-bad');
+  }
+  for (const [id, st] of Object.entries(states)) {
+    if (missingIds.includes(id)) continue;
+    const el = document.getElementById(id);
+    if (!(el instanceof HTMLInputElement)) continue;
+    if (st === 'ok') el.classList.add('field-input--field-ok');
+    else if (st === 'warn') el.classList.add('field-input--field-warn');
+    else if (st === 'bad') el.classList.add('field-input--field-bad');
+  }
+}
+
+function updateFlatInputFeedbackBanner(missingIds, lang, TX) {
+  const el = document.getElementById('flatInputFeedback');
+  if (!el) return;
+  if (!missingIds.length) {
+    el.hidden = true;
+    el.textContent = '';
+    return;
+  }
+  el.hidden = false;
+  const list = missingFieldsHumanList(missingIds, lang);
+  el.textContent = `${TX.missingFieldsPrefix} ${list}`;
 }
 
 function showRuntimeError(msg) {
@@ -293,6 +539,7 @@ function refresh() {
         calcErrorPrefix: 'Calculation error:',
         calcErrorSuffix:
           'Check console (F12). If opened by double click, use a local server: npx --yes serve .',
+        missingFieldsPrefix: 'Enter values for:',
       }
     : {
         cannotCalcPower:
@@ -335,11 +582,21 @@ function refresh() {
         calcErrorPrefix: 'Error al calcular:',
         calcErrorSuffix:
           'Compruebe la consola (F12). Si abrió el archivo con doble clic, use un servidor local: npx --yes serve .',
+        missingFieldsPrefix: 'Falta indicar:',
       };
   const els = getEls();
   try {
     clearRuntimeError();
+    const missing = collectEmptyCoreFieldIds();
     const raw = readInputs();
+    const appProfile = readSelect('flatAppProfile', 'medium');
+    const fieldUx = evaluateFlatConveyorFieldUx(raw, appProfile, lang);
+    missing.forEach((id) => {
+      fieldUx.states[id] = 'bad';
+    });
+    applyFieldInputUxClasses(fieldUx.states, missing);
+    updateFlatInputFeedbackBanner(missing, lang, TX);
+
     const r = computeFlatConveyor(raw);
     const d = r.detail || {};
 
@@ -348,82 +605,123 @@ function refresh() {
       effIn.classList.toggle('field-input--danger', (r.efficiency_pct_raw ?? 0) > 100);
     }
 
+    const duty = raw.loadDuty;
+    const sfUsed = r.serviceFactorUsed ?? readNum('serviceFactor', 1);
+    const inputAlerts = buildInputPhaseAlerts({
+      efficiency_pct_raw: r.efficiency_pct_raw ?? raw.efficiency_pct,
+      efficiency_pct_used: r.efficiency_pct_effective ?? 88,
+      serviceFactor: sfUsed,
+      loadDuty: duty,
+      serviceFactorFieldRaw: duty === 'custom' ? raw.serviceFactor : undefined,
+      rollerDiameter_mm: raw.rollerDiameter_mm,
+    });
+    const resultAlerts = buildResultPhaseAlerts({
+      rollerDiameter_mm: raw.rollerDiameter_mm,
+      powerMotor_kW: r.requiredMotorPower_kW,
+      torqueDesign_Nm: r.torqueWithService_Nm,
+      beltWidth_m: raw.beltWidth_m,
+    });
+    const nanAlert = !Number.isFinite(r.requiredMotorPower_kW)
+      ? [
+          {
+            level: /** @type {const} */ ('error'),
+            text: TX.cannotCalcPower,
+          },
+        ]
+      : [];
+    const fieldUxAlertLines = fieldUx.warnings.map((w) => ({
+      level: /** @type {const} */ ('warn'),
+      text: w.text,
+    }));
+    const all = [...inputAlerts, ...nanAlert, ...resultAlerts, ...fieldUxAlertLines];
+
+    const calcOk = Number.isFinite(r.requiredMotorPower_kW);
+    if (calcOk) incrementCalcCounter();
+    const verdict = buildFlatConveyorVerdict({
+      missingIds: missing,
+      calcOk,
+      designAlerts: all,
+      fieldWarnings: fieldUx.warnings,
+      raw,
+      result: r,
+      lang,
+    });
+
     if (els.designAlerts) {
-      const duty = raw.loadDuty;
-      const sfUsed = r.serviceFactorUsed ?? readNum('serviceFactor', 1);
-      const inputAlerts = buildInputPhaseAlerts({
-        efficiency_pct_raw: r.efficiency_pct_raw ?? raw.efficiency_pct,
-        efficiency_pct_used: r.efficiency_pct_effective ?? 88,
-        serviceFactor: sfUsed,
-        loadDuty: duty,
-        serviceFactorFieldRaw: duty === 'custom' ? raw.serviceFactor : undefined,
-        rollerDiameter_mm: raw.rollerDiameter_mm,
-      });
-      const resultAlerts = buildResultPhaseAlerts({
-        rollerDiameter_mm: raw.rollerDiameter_mm,
-        powerMotor_kW: r.requiredMotorPower_kW,
-        torqueDesign_Nm: r.torqueWithService_Nm,
-        beltWidth_m: raw.beltWidth_m,
-      });
-      const nanAlert = !Number.isFinite(r.requiredMotorPower_kW)
-        ? [
-            {
-              level: /** @type {const} */ ('error'),
-              text: TX.cannotCalcPower,
-            },
-          ]
-        : [];
-      const all = [...inputAlerts, ...nanAlert, ...resultAlerts];
       els.designAlerts.innerHTML = all
         .map((a) => `<p class="design-alert design-alert--${a.level}">${escHtml(a.text)}</p>`)
         .join('');
     }
 
     if (els.diagram) {
-      renderFlatConveyorDiagram(els.diagram, {
-        lang,
-        carrySurface: raw.carrySurface,
-        beltLength_m: raw.beltLength_m,
-        rollerDiameter_mm: raw.rollerDiameter_mm,
-        beltSpeed_m_s: raw.beltSpeed_m_s,
-        loadMass_kg: raw.loadMass_kg,
-        frictionCoeff: raw.frictionCoeff,
-        frictionForce_N: r.frictionForce_N,
-        normalForce_N: r.normalForce_N,
-        massFlow_kg_s: r.massFlow_kg_s,
-        powerAtDrum_W: r.powerAtDrum_W,
-        torqueAtDrum_Nm: r.torqueAtDrum_Nm,
-        torqueRun_Nm: r.torqueAtDrum_Nm,
-        torqueStart_Nm: r.torqueStart_Nm,
-        torqueDesign_Nm: r.torqueWithService_Nm,
-        powerDrumRun_W: r.powerAtDrum_W,
-        powerDrumStart_W: d.powerDrumStart_W,
-        powerMotorDesign_W: d.powerMotorDesign_W,
-        serviceFactor: r.serviceFactorUsed ?? raw.serviceFactor,
-        efficiency_pct: r.efficiency_pct_effective,
-        omega_rad_s: d.omega_rad_s,
-        detail: Object.keys(d).length ? d : undefined,
-      });
-      initFlatDiagramMetricHover(els.diagram);
+      try {
+        renderFlatConveyorDiagram(els.diagram, {
+          lang,
+          carrySurface: raw.carrySurface,
+          beltLength_m: raw.beltLength_m,
+          rollerDiameter_mm: raw.rollerDiameter_mm,
+          beltSpeed_m_s: raw.beltSpeed_m_s,
+          loadMass_kg: raw.loadMass_kg,
+          frictionCoeff: raw.frictionCoeff,
+          frictionForce_N: r.frictionForce_N,
+          normalForce_N: r.normalForce_N,
+          massFlow_kg_s: r.massFlow_kg_s,
+          powerAtDrum_W: r.powerAtDrum_W,
+          torqueAtDrum_Nm: r.torqueAtDrum_Nm,
+          torqueRun_Nm: r.torqueAtDrum_Nm,
+          torqueStart_Nm: r.torqueStart_Nm,
+          torqueDesign_Nm: r.torqueWithService_Nm,
+          powerDrumRun_W: r.powerAtDrum_W,
+          powerDrumStart_W: d.powerDrumStart_W,
+          powerMotorDesign_W: d.powerMotorDesign_W,
+          serviceFactor: r.serviceFactorUsed ?? raw.serviceFactor,
+          efficiency_pct: r.efficiency_pct_effective,
+          omega_rad_s: d.omega_rad_s,
+          detail: Object.keys(d).length ? d : undefined,
+        });
+        initFlatDiagramMetricHover(els.diagram);
+      } catch (diagramErr) {
+        console.error(diagramErr);
+        const svg = els.diagram;
+        svg.setAttribute('viewBox', '0 0 560 120');
+        svg.setAttribute('width', '100%');
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        svg.innerHTML = `<text x="24" y="48" fill="#b91c1c" font-size="14" font-family="system-ui,sans-serif">${
+          lang === 'en' ? 'Could not draw schematic.' : 'No se pudo dibujar el esquema.'
+        }</text><text x="24" y="78" fill="#64748b" font-size="11" font-family="system-ui,sans-serif">${escHtml(
+          String(diagramErr?.message || diagramErr),
+        )}</text>`;
+      }
     }
 
     if (els.results) {
-      const mount = readMountingPreferences();
-      const carryLabel =
-        raw.carrySurface === 'slide_plate' ? TX.carryingSlidePlate : TX.carryingRollers;
-      const mechanicalSummary = [
-        carryLabel,
-        `${TX.drum} ${formatNum(raw.rollerDiameter_mm, 2)} mm`,
-        mount.machineShaftDiameter_mm != null ? `${TX.shaftLabel} ${formatNum(mount.machineShaftDiameter_mm, 2)} mm` : null,
-      ]
-        .filter(Boolean)
-        .join(' · ');
-      const normaRow =
-        r.steadyStandardMultiplier > 1
-          ? `<div class="metric"><div class="label">${TX.normativeMargin}</div><div class="value">×${formatNum(r.steadyStandardMultiplier, 2)} (${r.designStandard})</div></div>`
-          : '';
-      const vLine = `${formatNum(raw.beltSpeed_m_s, 2)} m/s · ${formatNum(r.drumRpm, 2)} rpm`;
-      els.results.innerHTML = `
+      try {
+        const mount = readMountingPreferences();
+        const carryLabel =
+          raw.carrySurface === 'slide_plate' ? TX.carryingSlidePlate : TX.carryingRollers;
+        const mechanicalSummary = [
+          carryLabel,
+          `${TX.drum} ${formatNum(raw.rollerDiameter_mm, 2)} mm`,
+          mount.machineShaftDiameter_mm != null ? `${TX.shaftLabel} ${formatNum(mount.machineShaftDiameter_mm, 2)} mm` : null,
+        ]
+          .filter(Boolean)
+          .join(' · ');
+        const normaRow =
+          r.steadyStandardMultiplier > 1
+            ? `<div class="metric"><div class="label">${TX.normativeMargin}</div><div class="value">×${formatNum(r.steadyStandardMultiplier, 2)} (${r.designStandard})</div></div>`
+            : '';
+        const vLine = `${formatNum(raw.beltSpeed_m_s, 2)} m/s · ${formatNum(r.drumRpm, 2)} rpm`;
+        const verdictIcon =
+          verdict.kind === 'ok' ? '\u2705' : verdict.kind === 'out' ? '\u274C' : '\u26A0\uFE0F';
+        const verdictHtml = `
+    <div class="flat-verdict flat-verdict--${verdict.kind}" role="status">
+      <div class="flat-verdict__icon" aria-hidden="true">${verdictIcon}</div>
+      <div class="flat-verdict__body">
+        <p class="flat-verdict__title">${escHtml(verdict.title)}</p>
+        <p class="flat-verdict__text muted">${escHtml(verdict.body)}</p>
+      </div>
+    </div>`;
+        els.results.innerHTML = `${verdictHtml}
     <div class="flat-kpi-row" role="group" aria-label="${LBL.resultsMain}">
       <article class="flat-kpi flat-kpi--torque">
         <span class="flat-kpi__eyebrow">${LBL.designTorque} · ${TX.drum.toLowerCase()}</span>
@@ -472,6 +770,10 @@ function refresh() {
       </div>
     </details>
   `;
+      } catch (renderErr) {
+        console.error(renderErr);
+        els.results.innerHTML = `<p class="motor-error" role="alert">${escHtml(String(renderErr?.message || renderErr))}</p>`;
+      }
     }
 
     if (els.engineeringReport) {
@@ -493,12 +795,24 @@ function refresh() {
     }
 
     if (els.premiumPdfMount) {
-      mountPremiumPdfExportBar(els.premiumPdfMount, {
-        isPremium: pdfReportUnlocked,
-        getPayload: () => buildFlatPdfPayload(raw, r),
-        getDiagramElement: () => els.diagram,
-        diagramTitle: TX.machineDiagram,
-      });
+      try {
+        mountPremiumPdfExportBar(els.premiumPdfMount, {
+          isPremium: pdfReportUnlocked,
+          getPayload: () => buildFlatPdfPayload(raw, r),
+          getDiagramElement: () => els.diagram,
+          diagramTitle: TX.machineDiagram,
+        });
+      } catch (pdfMountErr) {
+        console.error(pdfMountErr);
+        if (els.premiumPdfMount) {
+          els.premiumPdfMount.hidden = false;
+          els.premiumPdfMount.innerHTML = `<div class="premium-export premium-export--teaser" role="alert"><p class="premium-export__teaser-text">${
+            lang === 'en'
+              ? 'Could not mount the PDF block. See console (F12).'
+              : 'No se pudo mostrar el bloque PDF. Vea la consola (F12).'
+          } ${escHtml(String(pdfMountErr?.message || pdfMountErr))}</p></div>`;
+        }
+      }
     }
 
     if (els.assumptions) {
@@ -574,6 +888,17 @@ try {
   console.error(e);
 }
 
+wireMachineRfqExport({
+  getPayload: () => {
+    const raw = readInputs();
+    return { raw, result: computeFlatConveyor(raw), mount: readMountingPreferences() };
+  },
+  buildPlainText: buildFlatRfqPlainText,
+  buildCsv: buildFlatRfqCsv,
+  toastCopiedEn: FLAT_CONVEYOR_EN['flatConv.toastRfqCopied'],
+  toastErrEn: FLAT_CONVEYOR_EN['flatConv.toastRfqErr'],
+});
+
 document.getElementById('btnCalcular')?.addEventListener('click', () => {
   refresh();
   openMotorsRecommendationsAndScroll('section-motores');
@@ -609,6 +934,13 @@ syncLoadDutyUi();
 initAdvancedDetailsPersistence();
 initInfoChipPopovers(document.body);
 
+document.querySelectorAll('[data-flat-preset]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const id = btn.getAttribute('data-flat-preset');
+    if (id) applyFlatPresetFromId(id);
+  });
+});
+
 bindFlatRangeSlider('beltLengthR', 'beltLength', 2, 80, 0.1);
 bindFlatRangeSlider('loadMassR', 'loadMass', 10, 8000, 1);
 bindFlatRangeSlider('beltSpeedR', 'beltSpeed', 0.05, 5, 0.01);
@@ -629,7 +961,6 @@ if (getCurrentLang() !== 'en') {
   refresh();
 }
 
-mountLabCloudSaveBar('Cinta transportadora plana', { scopeSelector: 'main.app-main' });
 
 if (location.hash === '#flat-conveyor-assumptions') {
   const assumptionsSection = document.getElementById('flat-conveyor-assumptions');

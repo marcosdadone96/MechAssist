@@ -1,19 +1,26 @@
 /**
  * Freemium policy: which calculator pages require Pro vs Free.
- * Mùquinas: cinta plana, inclinada y rodillos con cùlculo completo sin Pro; el resto del hub mùquinas es Pro.
- * En esas 3, guardar configuraciùn e informe PDF siguen siendo Pro (ver machineConfigMount, reportPdfExport).
- * Laboratorio (transmission-canvas) sigue en Pro. El resto del sitio no listado aquù se trata como gratis.
+ * MÔøΩquinas: cinta plana, inclinada y rodillos con cÔøΩlculo completo sin Pro; el resto del hub mÔøΩquinas es Pro.
+ * En esas 3, guardar configuraciÔøΩn e informe PDF siguen siendo Pro (ver machineConfigMount, reportPdfExport).
+ * Laboratorio (transmission-canvas) sigue en Pro. El resto del sitio no listado aquÔøΩ se trata como gratis.
  */
 
-/** Mùdulos con cùlculo y acordeones abiertos sin Pro (no aplican `applyMachinePremiumGates` de acordeùn). */
+/** MÔøΩdulos con cÔøΩlculo y acordeones abiertos sin Pro (no aplican `applyMachinePremiumGates` de acordeÔøΩn). */
 export const FREE_MACHINE_FULL_ACCESS_PATHS = new Set([
   'flat-conveyor.html',
   'inclined-conveyor.html',
   'roller-conveyor.html',
 ]);
 
-/** Mismas rutas sin extensiÛn (pretty URLs, rewrites). */
-const FREE_MACHINE_PATH_SLUGS = new Set(['flat-conveyor', 'inclined-conveyor', 'roller-conveyor']);
+/** Mismas rutas sin extensiÔøΩn (pretty URLs, rewrites). Incluye alias con guion bajo por servidores locales. */
+const FREE_MACHINE_PATH_SLUGS = new Set([
+  'flat-conveyor',
+  'flat_conveyor',
+  'inclined-conveyor',
+  'inclined_conveyor',
+  'roller-conveyor',
+  'roller_conveyor',
+]);
 
 /** Calculadoras de m\u00e1quinas Pro (UI restringida v\u00eda `applyMachinePremiumGates`; el lienzo usa su propia UI). */
 export const PRO_MACHINE_APP_PATHS = new Set([
@@ -67,8 +74,8 @@ export function isProMachineAppPath(hrefOrPath) {
 
 /**
  * Cinta plana, inclinada, rodillos: sin paywall de acordeones (bloques extra).
- * Configuraciùn guardada e informe PDF no dependen de esta funciùn; requieren `isPremiumEffective()`.
- * Acepta pathname, URL completa o se evalùa `window.location` si existe.
+ * ConfiguraciÔøΩn guardada e informe PDF no dependen de esta funciÔøΩn; requieren `isPremiumEffective()`.
+ * Acepta pathname, URL completa o se evalÔøΩa `window.location` si existe.
  *
  * @param {string} [hrefOrPath]
  * @returns {boolean}

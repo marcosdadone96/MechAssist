@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Designación DIN 471 y DIN 472 y cotas de ranura para anillos Seeger en eje o alojamiento. Montaje y fuerza axial orientativa. Online gratis." />
+    <meta name="description" content="Designación y cotas de ranura a partir de diámetro de eje o alojamiento. Esquema de montaje." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,13 +11,13 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/calc-seeger.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/calc-seeger.html" />
-    <meta property="og:title" content="Calculadora de anillos Seeger DIN 471 472 online" />
-    <meta property="og:description" content="Designación DIN 471 y DIN 472 y cotas de ranura para anillos Seeger en eje o alojamiento. Montaje y fuerza axial orientativa. Online gratis." />
+    <meta property="og:url" content="https://www.themechassist.com/calc-seeger.html" id="mdr-og-url" />
+    <meta property="og:title" content="Anillos Seeger DIN 471/472 — TheMechAssist" />
+    <meta property="og:description" content="Designación y cotas de ranura a partir de diámetro de eje o alojamiento. Esquema de montaje." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de anillos Seeger DIN 471 472 online" />
+    <meta name="twitter:title" content="Anillos Seeger DIN 471/472 — TheMechAssist" />
 
-    <title>Calculadora de anillos Seeger DIN 471 472 online — TheMechAssist</title>
+    <title data-i18n="seeger.docTitle">Anillos Seeger DIN 471/472 — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -111,6 +111,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -126,23 +128,36 @@
     </header>
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2>Anillos Seeger (circlips) &mdash; DIN 471 y DIN 472</h2>
-        <p class="calc-seo-intro">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="seeger.h2">Anillos Seeger (circlips) &mdash; DIN 471 y DIN 472</h2>
+          <p class="lab-calc-hero-lead" data-i18n="seeger.heroLead" data-i18n-html>
+            Designación y cotas de ranura a partir de Ø de eje o alojamiento (extracto 3–100 mm); fuerza axial orientativa. Verifique con pliego y fabricante.
+          </p>
+          <details class="lab-calc-seo">
+            <summary>Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro">
           La herramienta recupera la codificación comercial de anillos Seeger para ejes y alojamientos según DIN 471 y DIN 472 con cotas de ranura coherentes con extractos didácticos de catálogo y permite estimar la fuerza axial admitida en modo orientativo. Ayuda a talleres que maquinan ranuras sin tener la tabla física a mano y a proyectistas que dimensionan conjuntos pequeños sometidos a empujes moderados. Imagine definir el tapón interior de un pistón neumático donde el circlip debe retener rodamiento y sellado sin agrandar innecesariamente el diámetro nominal del carril.
-        </p>
-        <p class="lab-lead">
-          Indique el <strong>di&aacute;metro nominal del eje</strong> (anillo exterior) o del <strong>agujero</strong> (anillo interior). La herramienta muestra la
-          <strong>codificaci&oacute;n de pedido</strong> (tipo <em>Anillo Seeger DIN 471 - 20</em> o <em>- INOX</em>), la norma y las <strong>cotas de ranura</strong> seg&uacute;n tablas de referencia (extracto 3&ndash;100 mm). Verifique siempre con el
-          pliego y el fabricante antes de mecanizar.
-        </p>
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="seeger.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help">
+                Indique el <strong>di&aacute;metro nominal del eje</strong> (anillo exterior) o del <strong>agujero</strong> (anillo interior). La herramienta muestra la
+                <strong>codificaci&oacute;n de pedido</strong> (tipo <em>Anillo Seeger DIN 471 - 20</em> o <em>- INOX</em>), la norma y las <strong>cotas de ranura</strong> seg&uacute;n tablas de referencia (extracto 3&ndash;100 mm). Verifique siempre con el
+                pliego y el fabricante antes de mecanizar.
+              </p>
+            </div>
+          </details>
+        </header>
         <div class="lab-presets-row">
-          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <span class="lab-presets-row__label" data-i18n="seeger.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="sgPresetsBar"></div>
         </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-              <p class="lab-diagram-wrap__title">Esquema de ranura y anillo (actualizado con su talla)</p>
+              <p class="lab-diagram-wrap__title" data-i18n="seeger.diagTitle">Esquema de ranura y anillo (actualizado con su talla)</p>
               <svg id="sgDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama anillo Seeger"></svg>
               <p class="lab-diagram-caption">
                 <strong>DIN 471</strong>: vista en secci&oacute;n del eje con ranura y anillo exterior.
@@ -154,10 +169,10 @@
             <div class="lab-grid lab-grid--2 sg-input-grid">
               <div class="lab-field">
                 <label for="sgSizePreset" class="lab-field__label-row">
-                  <span class="lab-field__label-text">Talla normalizada (rápida)</span>
+                  <span class="lab-field__label-text" data-i18n="seeger.labelSizePreset">Talla normalizada (rápida)</span>
                 </label>
                 <select id="sgSizePreset">
-                  <option value="">Manual (usar d1)</option>
+                  <option value="" data-i18n="seeger.optSizeManual">Manual (usar d1)</option>
                   <option value="8">8 mm</option>
                   <option value="10">10 mm</option>
                   <option value="12">12 mm</option>
@@ -180,11 +195,11 @@
                       <circle cx="12" cy="12" r="3" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Aplicaci&oacute;n</span>
+                  <span class="lab-field__label-text" data-i18n="seeger.labelApp">Aplicaci&oacute;n</span>
                 </label>
                 <select id="sgKind">
-                  <option value="shaft">Anillo en eje (exterior) &mdash; DIN 471</option>
-                  <option value="bore">Anillo en agujero (interior) &mdash; DIN 472</option>
+                  <option value="shaft" data-i18n="seeger.optShaft">Anillo en eje (exterior) &mdash; DIN 471</option>
+                  <option value="bore" data-i18n="seeger.optBore">Anillo en agujero (interior) &mdash; DIN 472</option>
                 </select>
                 <p class="lab-field-help">El di&aacute;metro es el nominal de cat&aacute;logo <strong>d1</strong> asociado a la talla del anillo.</p>
               </div>
@@ -196,7 +211,7 @@
                       <circle cx="12" cy="12" r="6" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Di&aacute;metro d1 (mm)</span>
+                  <span class="lab-field__label-text" data-i18n="seeger.labelD">Di&aacute;metro d1 (mm)</span>
                 </label>
                 <input id="sgD" type="number" min="3" step="0.1" value="25" />
                 <p class="lab-field-help">Eje: di&aacute;metro sobre el que apoya el conjunto antes de la ranura. Agujero: di&aacute;metro nominal del alojamiento.</p>
@@ -216,11 +231,11 @@
                       <path d="M8 14h8" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Material (pedido)</span>
+                  <span class="lab-field__label-text" data-i18n="seeger.labelMat">Material (pedido)</span>
                 </label>
                 <select id="sgMaterial">
-                  <option value="carbon">Acero al carbono (est&aacute;ndar)</option>
-                  <option value="inox">Acero inoxidable (a&ntilde;ade &quot; - INOX &quot; al c&oacute;digo)</option>
+                  <option value="carbon" data-i18n="seeger.optSteelLong">Acero al carbono (est&aacute;ndar)</option>
+                  <option value="inox" data-i18n="seeger.optInoxLong">Acero inoxidable (a&ntilde;ade &quot; - INOX &quot; al c&oacute;digo)</option>
                 </select>
                 <p class="lab-field-help">La codificaci&oacute;n de almac&eacute;n suele a&ntilde;adir <strong>INOX</strong> para acero inoxidable; confirme con su proveedor.</p>
               </div>
@@ -251,10 +266,6 @@
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
             <div id="sgHero"></div>
             <div id="sgAlerts" class="lab-alerts"></div>
-            <div class="lab-results-share" id="sgShareLinkWrap" aria-live="polite">
-              <button type="button" class="lab-btn" id="sgCopyLinkBtn">Copiar enlace</button>
-              <div class="lab-copy-toast" id="sgCopyToast" role="status">¡Enlace copiado!</div>
-            </div>
             <div class="lab-results-wrap" id="sgResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
@@ -265,11 +276,23 @@
                 </svg>
                 <span class="lab-results-computing__label">Recalculando</span>
               </div>
-              <div class="lab-results" id="sgResults"></div>
+              <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked">
+                <summary data-i18n="seeger.summaryFull">Resultado completo</summary>
+                <div class="lab-results" id="sgResults"></div>
+              </details>
+              <div class="lab-results-actions">
+                <button type="button" class="lab-btn lab-btn--block" id="sgCopyResults" data-i18n="seeger.copyResults">
+                  Copiar resultados
+                </button>
+              </div>
             </div>
             <p class="lab-small-print">
               Instalación: usar alicates de montaje adecuados (DIN 471: punta recta, DIN 472: punta angular). La expansión excesiva del anillo puede reducir su capacidad de carga axial.
             </p>
+            <div class="lab-results-share lab-results-share--footer" id="sgShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="sgCopyLinkBtn" data-i18n="seeger.copyLink">Copiar enlace</button>
+              <div class="lab-copy-toast" id="sgCopyToast" role="status" data-i18n="seeger.copyToast">¡Enlace copiado!</div>
+            </div>
           </div>
         </div>
       </section>

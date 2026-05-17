@@ -3,7 +3,8 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
-import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { PNEUMATIC_CYL_EN } from '../lab/i18n/pages/pneumaticCylEn.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 
 /** @type {object | null} */
 let pcPdfSnapshot = null;
@@ -1133,4 +1134,10 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountPc'), {
     return svg instanceof SVGSVGElement ? [svg] : [];
   },
 });
-mountLabCloudSaveBar('Cilindro neum\u00e1tico');
+
+watchLangAndApply(PNEUMATIC_CYL_EN, {
+  onEnApplied: () => {
+    applyStaticI18n();
+    computeAndRender();
+  },
+});

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Compare par de diseño con catálogo demo de acoplamientos elásticos (Lovejoy, KTR, Flender). Selección orientativa. Gratis online." />
+    <meta name="description" content="Par de diseño frente a catálogo demo (Lovejoy, KTR, Flender). Compruebe con el fabricante." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,13 +11,13 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/calc-couplings.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/calc-couplings.html" />
-    <meta property="og:title" content="Calculadora de acoplamientos elásticos selección online" />
-    <meta property="og:description" content="Compare par de diseño con catálogo demo de acoplamientos elásticos (Lovejoy, KTR, Flender). Selección orientativa. Gratis online." />
+    <meta property="og:url" content="https://www.themechassist.com/calc-couplings.html" id="mdr-og-url" />
+    <meta property="og:title" content="Acoplamientos — catálogo — TheMechAssist" />
+    <meta property="og:description" content="Par de diseño frente a catálogo demo (Lovejoy, KTR, Flender). Compruebe con el fabricante." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de acoplamientos elásticos selección online" />
+    <meta name="twitter:title" content="Acoplamientos — catálogo — TheMechAssist" />
 
-    <title>Calculadora de acoplamientos elásticos selección online — TheMechAssist</title>
+    <title data-i18n="coup.docTitle">Acoplamientos — catálogo — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -30,6 +30,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -45,16 +47,31 @@
     </header>
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2>Acoplamientos industriales · selección por catálogo</h2>
-        <p class="calc-seo-intro">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="coup.h2">Acoplamientos industriales · selección por catálogo</h2>
+          <p class="lab-data-note">
+            <strong>Datos de muestra:</strong> modelos tipo Lovejoy / KTR / Flender con T<sub>nom</sub> orientativo. Para pedido, use ficha oficial del fabricante.
+          </p>
+          <p class="lab-calc-hero-lead" data-i18n="coup.heroLead" data-i18n-html>
+            Par de diseño con <strong>P</strong>, <strong>n</strong> y <strong>K</strong>; contrástelo con <strong>T<sub>nom</sub></strong> de modelos demo (Lovejoy / KTR / Flender) antes de pedir ficha oficial.
+          </p>
+          <details class="lab-calc-seo">
+            <summary>Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro">
           Este módulo parte del par de diseño que resulta de potencia y régimen con factor de servicio y lo contrasta con torques nominales de modelos elásticos tipo mandíbula o similar tomados de un catálogo demostrativo. Sirve para cribar tallas antes de solicitar la hoja técnica oficial del fabricante y revisar huecos máximos de montaje. Es útil para ingenieros de mantención que sustituyen acoplamientos en bombas y ventiladores y para proyectistas que integran motores normalizados. Por ejemplo, puede mostrar si el mismo modelo admite el incremento de potencia tras cambiar el ventilador por uno de mayor diámetro.
-        </p>
-        <p class="lab-lead">
-          Introduzca <strong>potencia</strong> y <strong>rpm</strong>; el par de diseño es <code>T = P/ω</code> con factor de servicio <strong>K</strong>. El sistema contrasta
-          <strong>T<sub>nom</sub></strong> del modelo elegido (datos demostrativos tipo Lovejoy / KTR / Flender).
-        </p>
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="coup.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help">
+                Par de diseño <code>T = P/ω</code> con factor <strong>K</strong> frente a <strong>T<sub>nom</sub></strong> del modelo (catálogo demo tipo Lovejoy / KTR / Flender). Compare siempre <strong>T<sub>diseño</sub> ≤ T<sub>nom</sub></strong> con la ficha oficial y el régimen de servicio real.
+              </p>
+            </div>
+          </details>
+        </header>
         <div class="lab-presets-row">
-          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <span class="lab-presets-row__label" data-i18n="coup.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="cpPresetsBar"></div>
         </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
@@ -146,16 +163,26 @@
             </details>
           </div>
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
-            <div class="lab-results-share" id="cpShareLinkWrap" aria-live="polite">
-              <button type="button" class="lab-btn" id="cpCopyLinkBtn">Copiar enlace</button>
-              <div class="lab-copy-toast" id="cpCopyToast" role="status">¡Enlace copiado!</div>
+            <div class="lab-results-wrap">
+              <div id="cpOut" class="lab-catalog-verdict"></div>
+              <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked" open>
+                <summary data-i18n="coup.summaryFull">Resultado completo</summary>
+                <div id="cpTable"></div>
+              </details>
+              <div class="lab-results-actions">
+                <button type="button" class="lab-btn lab-btn--block" id="cpCopyResults" data-i18n="coup.copyResults">
+                  Copiar resultados
+                </button>
+              </div>
             </div>
-            <div id="cpOut"></div>
             <p class="lab-small-print">
               Desalineación admisible orientativa: acoplamientos de mandíbula suelen admitir angular ≤ 1° y radial ≤ 0.1–0.3 mm.
               Para desalineaciones mayores, considerar acoplamiento de disco o cardan.
             </p>
-            <div id="cpTable"></div>
+            <div class="lab-results-share lab-results-share--footer" id="cpShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="cpCopyLinkBtn" data-i18n="coup.copyLink">Copiar enlace</button>
+              <div class="lab-copy-toast" id="cpCopyToast" role="status" data-i18n="coup.copyToast">¡Enlace copiado!</div>
+            </div>
           </div>
         </div>
       </section>

@@ -18,6 +18,9 @@
       content="TheMechAssist: calculadoras profesionales de ingeniería mecánica basadas en normas. Dimensioná transmisión, máquinas e hidráulica en segundos; núcleo amplio gratis."
     />
     <link rel="canonical" href="https://www.themechassist.com/" />
+    <link rel="alternate" hreflang="es" href="https://www.themechassist.com/" />
+    <link rel="alternate" hreflang="en" href="https://www.themechassist.com/?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://www.themechassist.com/" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/" />
     <meta property="og:title" content="TheMechAssist" />
@@ -57,7 +60,11 @@
         <span class="site-nav__title">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
+        <a class="site-nav__link" href="my-saved-calcs.html" data-i18n="nav.mySavedCalcs">Mis cálculos guardados</a>
       </nav>
       <div class="site-nav__end">
         <a class="site-nav__link site-nav__link--plans" href="#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
@@ -70,6 +77,15 @@
         </div>
       </div>
     </header>
+    <div class="hub-session-strip" role="status" aria-live="polite">
+      <div class="session-counter" id="session-counter-wrap">
+        <span class="session-counter__text">
+          <span data-i18n="sessionCounter.prefix">Has hecho</span>
+          <strong id="session-calc-count" class="session-counter__num">0</strong>
+          <span data-i18n="sessionCounter.suffix">cálculos en esta sesión de navegador</span>
+        </span>
+      </div>
+    </div>
 
     <main class="hub-main">
       <section class="hub-hero" aria-labelledby="hub-hero-heading">
@@ -263,6 +279,97 @@
             <p class="hub-featured-card__desc" data-i18n="featured.iso.desc">Elige ajuste correcto en minutos y evita retrabajos por holguras o interferencias mal definidas.</p>
             <a class="hub-featured-card__cta" href="calc-iso-fit.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
+        </div>
+      </section>
+
+      <section id="hub-cases" class="hub-cases" aria-labelledby="hub-cases-heading">
+        <div class="hub-cases__inner">
+          <h2 id="hub-cases-heading" class="hub-cases__title" data-i18n="cases.title">
+            Lo que un ingeniero resuelve en 3 minutos
+          </h2>
+          <p class="hub-cases__sub" data-i18n="cases.sub">
+            Casos reales, datos reales. Sin Excel, sin tablas de catálogo.
+          </p>
+
+          <div class="hub-cases__grid">
+            <article class="case-card">
+              <div class="case-card__header">
+                <span class="case-card__icon" aria-hidden="true">📦</span>
+                <span class="case-card__tag" data-i18n="cases.tag.conveyor">Cinta transportadora</span>
+              </div>
+              <p class="case-card__problem" data-i18n="cases.case1.problem">
+                Cinta horizontal de 80 m, 15 t/h de áridos, tambor Ø315 mm
+              </p>
+              <div class="case-card__result">
+                <div class="case-card__result-row">
+                  <span class="case-card__label" data-i18n="cases.case1.row1Label">Potencia eje</span>
+                  <span class="case-card__value" data-i18n="cases.case1.row1Value">5,5 kW</span>
+                </div>
+                <div class="case-card__result-row">
+                  <span class="case-card__label" data-i18n="cases.case1.row2Label">Par de salida</span>
+                  <span class="case-card__value" data-i18n="cases.case1.row2Value">328 N·m</span>
+                </div>
+                <div class="case-card__result-row">
+                  <span class="case-card__label" data-i18n="cases.case1.row3Label">Motorreductor (ej. catálogo)</span>
+                  <span class="case-card__value case-card__value--accent" data-i18n="cases.case1.row3Value">R67 DRE112M4</span>
+                </div>
+              </div>
+              <a href="flat-conveyor.html" class="case-card__cta" data-i18n="cases.cta">Calcular con mis datos →</a>
+            </article>
+
+            <article class="case-card">
+              <div class="case-card__header">
+                <span class="case-card__icon" aria-hidden="true">🌀</span>
+                <span class="case-card__tag" data-i18n="cases.tag.screw">Tornillo sin fin</span>
+              </div>
+              <p class="case-card__problem" data-i18n="cases.case2.problem">
+                Tornillo Ø250 mm, paso 250 mm, 6 m horizontal, pellet biomasa 15 t/h
+              </p>
+              <div class="case-card__result">
+                <div class="case-card__result-row">
+                  <span class="case-card__label" data-i18n="cases.case2.row1Label">Velocidad tornillo</span>
+                  <span class="case-card__value" data-i18n="cases.case2.row1Value">87 rpm</span>
+                </div>
+                <div class="case-card__result-row">
+                  <span class="case-card__label" data-i18n="cases.case2.row2Label">Potencia requerida</span>
+                  <span class="case-card__value" data-i18n="cases.case2.row2Value">4,7 kW</span>
+                </div>
+                <div class="case-card__result-row">
+                  <span class="case-card__label" data-i18n="cases.case2.row3Label">Motorreductor (ej. catálogo)</span>
+                  <span class="case-card__value case-card__value--accent" data-i18n="cases.case2.row3Value">K57 DRE100L4</span>
+                </div>
+              </div>
+              <a href="screw-conveyor.html" class="case-card__cta" data-i18n="cases.cta">Calcular con mis datos →</a>
+            </article>
+
+            <article class="case-card">
+              <div class="case-card__header">
+                <span class="case-card__icon" aria-hidden="true">⬆️</span>
+                <span class="case-card__tag" data-i18n="cases.tag.elevator">Elevador de cangilones</span>
+              </div>
+              <p class="case-card__problem" data-i18n="cases.case3.problem">
+                Elevador de trigo, 18 m altura, 25 t/h, cangilón 2 L
+              </p>
+              <div class="case-card__result">
+                <div class="case-card__result-row">
+                  <span class="case-card__label" data-i18n="cases.case3.row1Label">Potencia requerida</span>
+                  <span class="case-card__value" data-i18n="cases.case3.row1Value">3,8 kW</span>
+                </div>
+                <div class="case-card__result-row">
+                  <span class="case-card__label" data-i18n="cases.case3.row2Label">Velocidad tambor</span>
+                  <span class="case-card__value" data-i18n="cases.case3.row2Value">85 rpm</span>
+                </div>
+                <div class="case-card__result-row">
+                  <span class="case-card__label" data-i18n="cases.case3.row3Label">Motorreductor (ej. catálogo)</span>
+                  <span class="case-card__value case-card__value--accent" data-i18n="cases.case3.row3Value">K57 DRE90L4</span>
+                </div>
+              </div>
+              <a href="bucket-elevator.html" class="case-card__cta" data-i18n="cases.cta">Calcular con mis datos →</a>
+            </article>
+          </div>
+          <p class="hub-cases__note" data-i18n="cases.note">
+            Ejemplos orientativos con modelo TheMechAssist; referencias comerciales sin vínculo con fabricantes.
+          </p>
         </div>
       </section>
 
@@ -463,6 +570,9 @@
                 <li data-i18n="pricing.free.b3">Actualizaciones del núcleo gratuito sin coste</li>
                 <li data-i18n="pricing.free.b4">Ideal para presupuestos rápidos, aulas y mantenimiento</li>
               </ul>
+              <p class="plan-use-case" data-i18n="pricing.free.useCase">
+                Para estudiantes de ingeniería y verificaciones ocasionales.
+              </p>
               <a class="hub-pricing-card__cta hub-pricing-card__cta--free" href="transmission-lab.html" data-i18n="pricing.free.cta">Empezar gratis</a>
             </article>
             <article class="hub-pricing-card hub-pricing-card--pro">
@@ -487,6 +597,13 @@
                 <li data-i18n="pricing.pro.b5">Soporte prioritario y anticipo de nuevas calculadoras</li>
                 <li data-i18n="pricing.pro.b6">Flujo de trabajo pensado para oficina técnica y obra</li>
               </ul>
+              <p class="plan-use-case" data-i18n="pricing.pro.useCase">
+                Para oficinas técnicas, ingenieros de planta e integradores que dimensionan más de una instalación al mes.
+              </p>
+              <div class="plan-roi">
+                <span class="plan-roi__label" data-i18n="pricing.pro.roiLabel">¿Cuánto vale tu hora?</span>
+                <span class="plan-roi__value" data-i18n="pricing.pro.roiValue">Si ahorras 1 h/mes → el plan se paga solo.</span>
+              </div>
               <button
                 type="button"
                 class="hub-pricing-card__cta hub-pricing-card__cta--pro"
@@ -506,8 +623,14 @@
       </section>
 
       <footer class="hub-footer-legal">
+        <p class="hub-footer-contact" data-i18n-html="footer.contactHtml">
+          ¿Preguntas? <a href="feedback.html">Escríbenos</a> o contáctanos en
+          <a href="mailto:hola@themechassist.com">hola@themechassist.com</a>
+        </p>
         <nav class="hub-footer-legal__links" aria-label="Legal">
           <a href="feedback.html" data-i18n="footer.feedback">Sugerencias</a>
+          <a href="trust.html" data-i18n="footer.trust">Confianza</a>
+          <a href="my-saved-calcs.html" data-i18n="footer.mySavedCalcs">Mis cálculos guardados</a>
           <a href="privacy.html" data-i18n="footer.privacy">Privacidad</a>
           <a href="terms.html" data-i18n="footer.terms">Términos</a>
           <a href="cookies.html" data-i18n="footer.cookies">Cookies</a>
@@ -525,7 +648,7 @@
         <div class="ma-modal__head">
           <h2 id="ma-auth-title" class="ma-modal__title" data-i18n="auth.headline">Tu cuenta TheMechAssist</h2>
           <p class="ma-modal__sub" data-i18n="auth.sub">
-            Cuenta local en este navegador: sirve para continuar al checkout y personalizar la cabecera. No hay servidor todavía.
+            Accede con tu cuenta TheMechAssist para continuar al checkout y guardar tus proyectos.
           </p>
         </div>
         <div class="ma-auth__tabs" role="tablist">
@@ -580,7 +703,7 @@
         </div>
         <p id="ma-auth-error" class="ma-modal__error" role="alert" hidden></p>
         <p class="ma-modal__note" data-i18n="auth.backendNote">
-          Si el sitio usa cuenta en servidor, recibirá un correo para verificar el email antes de iniciar sesión; si no, los datos quedan solo en este dispositivo (demo).
+          Recibirás un correo de verificación antes de poder iniciar sesión.
         </p>
       </div>
     </div>

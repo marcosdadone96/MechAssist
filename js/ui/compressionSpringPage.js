@@ -17,9 +17,13 @@ import {
   renderResultHero,
   runCalcWithIndustrialFeedback,
   uxCopy,
+  wireLabCopyResultsButton,
+  isEnglishUi,
 } from './labCalcUx.js';
 import { setLabPurchaseSuggestions } from './labPurchaseSuggestions.js';
-import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { COMPRESSION_SPRING_EN } from '../lab/i18n/pages/compressionSpringEn.js';
+import { LAB_LANG_EVENT } from '../lab/i18n/labLang.js';
 
 /** @type {object | null} */
 let springPdfSnapshot = null;
@@ -304,10 +308,16 @@ function updateSimDisplay() {
   });
 }
 
+function matDisplayLabel(matId, mat) {
+  const key = `spring.mat.${matId}`;
+  if (isEnglishUi() && COMPRESSION_SPRING_EN[key]) return COMPRESSION_SPRING_EN[key];
+  return mat.label;
+}
+
 function endsLabel(v) {
-  if (v === 'open') return 'Abiertos';
-  if (v === 'closed') return 'Cerrados';
-  return 'Rectificados';
+  if (v === 'open') return uxCopy('Abiertos', 'Open ends');
+  if (v === 'closed') return uxCopy('Cerrados', 'Closed ends');
+  return uxCopy('Rectificados', 'Ground ends');
 }
 
 function computeCore() {
@@ -513,39 +523,42 @@ function computeCore() {
 
   const heroItems = [];
   heroItems.push({
-    label: 'k - rigidez',
+    label: uxCopy('k - rigidez', 'k - stiffness'),
     display: `${fmt(k, 3)} N/mm`,
     hint: 'k = G*d^4 / (8*Dm^3*n). G en N/mm^2; d y Dm en mm.',
   });
   if (tauOp != null && Fop != null) {
     heroItems.push({
-      label: 'Servicio: F_op y tau',
+      label: uxCopy('Servicio: F_op y tau', 'Service: F_op and tau'),
       display: `${fmt(Fop, 0)} N | ${fmt(tauOp, 1)} MPa`,
       hint: `s_op = ${fmt(sOp ?? 0, 2)} mm. Comparar tau/tau_adm = ${fmt(ratioOp ?? 0, 2)}.`,
     });
   } else {
     heroItems.push({
-      label: 'Servicio (opc.)',
-      display: 'Indique s_op o F_op',
-      hint: 'Sin servicio solo se evalua bloqueo (Fn) y pandeo respecto a s_max.',
+      label: uxCopy('Servicio (opc.)', 'Service (opt.)'),
+      display: uxCopy('Indique s_op o F_op', 'Enter s_op or F_op'),
+      hint: uxCopy(
+        'Sin servicio solo se evalua bloqueo (Fn) y pandeo respecto a s_max.',
+        'Without service only solid (Fn) and buckling vs s_max are checked.',
+      ),
     });
   }
   heroItems.push({
-    label: 'Bloqueo: Fn y tau',
+    label: uxCopy('Bloqueo: Fn y tau', 'Solid: Fn and tau'),
     display: `${fmt(Fn, 0)} N | ${fmt(tauBlock, 1)} MPa`,
     hint: `s_max = ${fmt(Math.max(0, sMax), 2)} mm. tau/tau_adm = ${fmt(ratioBlock, 2)}.`,
   });
   if (heroEl) heroEl.innerHTML = renderResultHero(heroItems, { verdict: springVerdict });
 
   const buckNote = bucklingFailBlock || bucklingFailOp
-    ? 'REVISAR PANDEO'
+    ? uxCopy('REVISAR PANDEO', 'CHECK BUCKLING')
     : buck.w > 3.5
-      ? 'Esbeltez alta: vigilar con abaco de norma.'
-      : 'Dentro de modelo docente.';
+      ? uxCopy('Esbeltez alta: vigilar con abaco de norma.', 'High slenderness: check with standard chart.')
+      : uxCopy('Dentro de modelo docente.', 'Within educational model.');
 
   if (elementBox) {
     elementBox.innerHTML = [
-      elementCardHtml('Geometria y recorrido', [
+      elementCardHtml(uxCopy('Geometria y recorrido', 'Geometry and stroke'), [
         ['d (hilo)', formatLength(d, u.length)],
         ['Dm (medio)', formatLength(Dm, u.length)],
         ['De (exterior)', formatLength(De, u.length)],
@@ -555,13 +568,13 @@ function computeCore() {
         ['s_max (hasta solido)', formatLength(Math.max(0, sMax), u.length)],
         ['Extremos', endsLabel(ends)],
       ]),
-      elementCardHtml('Material (catalogo docente)', [
-        ['Material', mat.label],
+      elementCardHtml(uxCopy('Material (catalogo docente)', 'Material (demo catalogue)'), [
+        ['Material', matDisplayLabel(matId, mat)],
         ['G', `${G} N/mm^2`],
         ['tau_adm efectiva', `${fmt(tauAllowEff, 0)} MPa`],
         ['Nota datos', mat.source],
       ]),
-      elementCardHtml('Pandeo y estabilidad (docente)', [
+      elementCardHtml(uxCopy('Pandeo y estabilidad (docente)', 'Buckling and stability (educational)'), [
         ['L0/Dm (esbeltez)', fmt(buck.w, 2)],
         ['s_cr estimada', formatLength(buck.sCrMm, u.length)],
         ['s_cr / L0', fmt(buck.sCrL0, 3)],
@@ -571,7 +584,7 @@ function computeCore() {
           : []),
         ['Estado', buckNote],
       ]),
-      elementCardHtml('Servicio y fatiga', [
+      elementCardHtml(uxCopy('Servicio y fatiga', 'Service and fatigue'), [
         ...(sOp != null
           ? [
               ['s_op', formatLength(sOp, u.length)],
@@ -593,36 +606,54 @@ function computeCore() {
   if (resultsBox) {
     const chartHostId = 'springChartHost';
     const metrics = [
-      metricHtml('Rigidez k', `${fmt(k, 3)} N/mm`, 'Zona lineal F = k s.'),
-      metricHtml('Carga bloqueo Fn', `${fmt(Fn, 0)} N`, `s_max = L0 - Ls = ${fmt(Math.max(0, sMax), 2)} mm.`),
-      metricHtml('Tau bloqueo (Wahl)', `${fmt(tauBlock, 1)} MPa`, `tau/tau_adm = ${fmt(ratioBlock, 2)}.`),
+      metricHtml(uxCopy('Rigidez k', 'Stiffness k'), `${fmt(k, 3)} N/mm`, uxCopy('Zona lineal F = k s.', 'Linear zone F = k s.')),
+      metricHtml(uxCopy('Carga bloqueo Fn', 'Solid load Fn'), `${fmt(Fn, 0)} N`, `s_max = L0 - Ls = ${fmt(Math.max(0, sMax), 2)} mm.`),
+      metricHtml(uxCopy('Tau bloqueo (Wahl)', 'Solid tau (Wahl)'), `${fmt(tauBlock, 1)} MPa`, `tau/tau_adm = ${fmt(ratioBlock, 2)}.`),
     ];
     if (tauOp != null) {
       metrics.push(
-        metricHtml('Tau servicio', `${fmt(tauOp, 1)} MPa`, `F_op = ${fmt(Fop ?? 0, 1)} N; ratio ${fmt(ratioOp ?? 0, 2)}.`),
+        metricHtml(uxCopy('Tau servicio', 'Service tau'), `${fmt(tauOp, 1)} MPa`, `F_op = ${fmt(Fop ?? 0, 1)} N; ratio ${fmt(ratioOp ?? 0, 2)}.`),
       );
     }
     metrics.push(
-      metricHtml('Indice C', fmt(C, 2), 'Rango habitual aprox. 4-12.'),
-      metricHtml('Pandeo s_cr (docente)', formatLength(buck.sCrMm, u.length), 'Modelo abaco simplificado; valide con EN 13906 / fabricante.'),
-      metricHtml('Tau alternante (ciclo)', `${fmt(fat.tauA, 1)} MPa`, 'Para Goodman si hay fluctuacion de carga.'),
+      metricHtml(uxCopy('Indice C', 'Index C'), fmt(C, 2), uxCopy('Rango habitual aprox. 4-12.', 'Typical range approx. 4-12.')),
+      metricHtml(
+        uxCopy('Pandeo s_cr (docente)', 'Buckling s_cr (educational)'),
+        formatLength(buck.sCrMm, u.length),
+        uxCopy('Modelo abaco simplificado; valide con EN 13906 / fabricante.', 'Simplified chart model; validate with EN 13906 / supplier.'),
+      ),
+      metricHtml(
+        uxCopy('Tau alternante (ciclo)', 'Alternating tau (cycle)'),
+        `${fmt(fat.tauA, 1)} MPa`,
+        uxCopy('Para Goodman si hay fluctuacion de carga.', 'For Goodman when load fluctuates.'),
+      ),
     );
     if (Number.isFinite(fat.U)) {
       metrics.push(
-        metricHtml('Goodman shear (docente)', fmt(fat.U, 2), 'U = tau_alt/tau_W + tau_m/tau_adm; tau_adm como limite medio simplificado.'),
+        metricHtml(
+          uxCopy('Goodman shear (docente)', 'Goodman shear (educational)'),
+          fmt(fat.U, 2),
+          uxCopy(
+            'U = tau_alt/tau_W + tau_m/tau_adm; tau_adm como limite medio simplificado.',
+            'U = tau_alt/tau_W + tau_m/tau_adm; tau_adm as simplified mean limit.',
+          ),
+        ),
       );
     }
   metrics.push(
     metricHtml(
       'Nota Goodman',
-      'Aproximación docente',
-      'El diagrama de Goodman aquí es una aproximación docente. Para diseño a fatiga completo, usar DIN 2089 parte 1 con datos certificados del hilo y curvas S-N del fabricante.',
+      uxCopy('Aproximación docente', 'Educational approximation'),
+      uxCopy(
+        'El diagrama de Goodman aquí es una aproximación docente. Para diseño a fatiga completo, usar DIN 2089 parte 1 con datos certificados del hilo y curvas S-N del fabricante.',
+        'The Goodman diagram here is educational. For full fatigue design use DIN 2089 part 1 with certified wire data and S-N curves from the supplier.',
+      ),
     ),
   );
     resultsBox.innerHTML = metrics.join('');
     const wrap = document.createElement('div');
     wrap.className = 'spring-chart-embed';
-    wrap.innerHTML = `<p class="spring-chart-embed__title">Caracteristica F-s (hasta bloqueo)</p><svg id="${chartHostId}" xmlns="http://www.w3.org/2000/svg" width="100%" height="140"></svg>`;
+    wrap.innerHTML = `<p class="spring-chart-embed__title">${uxCopy('Caracteristica F-s (hasta bloqueo)', 'F-s curve (to solid)')}</p><svg id="${chartHostId}" xmlns="http://www.w3.org/2000/svg" width="100%" height="140"></svg>`;
     resultsBox.appendChild(wrap);
     renderFsChart(document.getElementById(chartHostId), Math.max(0, sMax), Fn, k, sOp);
   }
@@ -872,7 +903,7 @@ function computeCore() {
         ? 'alambre piano music wire resorte'
         : 'alambre acero resortes CrSi';
   setLabPurchaseSuggestions(purchaseMount, {
-    title: 'Compras orientativas (resorte)',
+    title: uxCopy('Compras orientativas (resorte)', 'Suggested purchases (spring)'),
     rows: [
       {
         label: 'Resorte compresion (busqueda aproximada)',
@@ -952,7 +983,7 @@ document.getElementById('springSimToggle')?.addEventListener('click', () => {
   const btn = document.getElementById('springSimToggle');
   if (body instanceof HTMLElement) body.hidden = !simOpen;
   if (btn instanceof HTMLButtonElement) {
-    btn.textContent = simOpen ? 'Cerrar simulacion' : 'Simular compresion';
+    btn.textContent = simOpen ? uxCopy('Cerrar simulacion', 'Close simulation') : uxCopy('Simular compresion', 'Simulate compression');
     btn.setAttribute('aria-expanded', simOpen ? 'true' : 'false');
   }
   if (simOpen) updateSimDisplay();
@@ -968,7 +999,7 @@ document.getElementById('springResetDefaults')?.addEventListener('click', () => 
   const btn = document.getElementById('springSimToggle');
   if (body instanceof HTMLElement) body.hidden = true;
   if (btn instanceof HTMLButtonElement) {
-    btn.textContent = 'Simular compresion';
+    btn.textContent = uxCopy('Simular compresion', 'Simulate compression');
     btn.setAttribute('aria-expanded', 'false');
   }
   const sl = document.getElementById('springSimSlider');
@@ -980,6 +1011,10 @@ document.getElementById('springResetDefaults')?.addEventListener('click', () => 
 
 runCalcWithIndustrialFeedback(resultsWrap, computeCore);
 
+wireLabCopyResultsButton('springCopyResults', {
+  moduleTitle: uxCopy('Muelle helicoidal de compresi\u00f3n', 'Helical compression spring'),
+});
+
 mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountSpring'), {
   getPayload: () => springPdfSnapshot,
   getDiagramElements: () => {
@@ -988,4 +1023,9 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountSpring'), {
     return [a, b].filter((el) => el instanceof SVGSVGElement);
   },
 });
-mountLabCloudSaveBar('Resorte de compresi\u00f3n');
+watchLangAndApply(COMPRESSION_SPRING_EN, {
+  onEnApplied: () => runCalcWithIndustrialFeedback(resultsWrap, computeCore),
+});
+window.addEventListener(LAB_LANG_EVENT, () => {
+  runCalcWithIndustrialFeedback(resultsWrap, computeCore);
+});

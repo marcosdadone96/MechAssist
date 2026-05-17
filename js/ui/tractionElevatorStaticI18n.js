@@ -21,7 +21,7 @@ const CHIPS = {
       aria: 'carga \u00fatil',
     },
     en: {
-      title: 'Rated useful load in kg. Drives safety factor and total load on the traction system.',
+      title: 'Rated payload Q (kg). Drives imbalance and traction demand.',
       aria: 'useful load',
     },
   },
@@ -31,7 +31,7 @@ const CHIPS = {
       aria: 'peso cabina',
     },
     en: {
-      title: 'Empty car mass. Together with Q it fixes masses on each rope branch.',
+      title: 'Cabin mass Mc (kg). Sum with Q gives the loaded car mass.',
       aria: 'empty car weight',
     },
   },
@@ -41,7 +41,7 @@ const CHIPS = {
       aria: 'altura de viaje',
     },
     en: {
-      title: 'Useful vertical travel. Affects cycle energy and shaft schematic.',
+      title: 'Travel height H (m). Drives duty cycle and rope length.',
       aria: 'travel height',
     },
   },
@@ -51,7 +51,7 @@ const CHIPS = {
       aria: 'velocidad nominal',
     },
     en: {
-      title: 'Car line speed. Sets sheave rpm and traction power.',
+      title: 'Rated speed v (m/s). Affects motor power and traction sheave rpm.',
       aria: 'rated speed',
     },
   },
@@ -61,7 +61,7 @@ const CHIPS = {
       aria: 'tipo de servicio',
     },
     en: {
-      title: 'Sets demo selection safety factor: freight ~10, passenger ~12.',
+      title: 'Service type (passenger / freight). Sets minimum safety factor for rope selection.',
       aria: 'duty type',
     },
   },
@@ -71,7 +71,7 @@ const CHIPS = {
       aria: 'arrollamiento',
     },
     en: {
-      title: '1:1 or 2:1. Changes motion ratio, forces and sheave rpm.',
+      title: 'Roping ratio: 1:1 = direct; 2:1 = rope doubles at car and counterweight.',
       aria: 'reeving',
     },
   },
@@ -81,7 +81,7 @@ const CHIPS = {
       aria: 'fracci\u00f3n de contrapeso',
     },
     en: {
-      title: 'Typical range 0.40\u20130.50 for Mcp\u2248Mc+k\u00b7Q.',
+      title: 'Fraction of Q in the optimal counterweight: typically 0.40\u20130.50.',
       aria: 'counterweight fraction',
     },
   },
@@ -91,7 +91,7 @@ const CHIPS = {
       aria: 'masa contrapeso manual',
     },
     en: {
-      title: 'Use a manual value if counterweight is already fixed; otherwise keep auto optimal.',
+      title: 'Enable to fix counterweight mass manually (overrides the optimal formula).',
       aria: 'manual counterweight mass',
     },
   },
@@ -101,7 +101,7 @@ const CHIPS = {
       aria: 'di\u00e1metro polea tractora',
     },
     en: {
-      title: 'Traction sheave pitch diameter (m). Affects rpm, torque and rope bending.',
+      title: 'Traction sheave pitch diameter D (m). Sets rope speed and sheave rpm.',
       aria: 'traction sheave diameter',
     },
   },
@@ -111,7 +111,7 @@ const CHIPS = {
       aria: '\u00e1ngulo de abrazamiento',
     },
     en: {
-      title: 'Rope wrap angle on sheave. Larger \u03b1 improves e^(\u03bc\u03b1) limit.',
+      title: 'Rope wrap angle on the sheave (rad). Affects Euler\u2013Eytelwein traction.',
       aria: 'wrap angle',
     },
   },
@@ -121,7 +121,7 @@ const CHIPS = {
       aria: 'coeficiente de fricci\u00f3n cable canal',
     },
     en: {
-      title: 'Effective traction coefficient. Typical 0.08\u20130.15 depending on groove condition.',
+      title: 'Rope\u2013groove friction \u03bc. Grooved sheave: 0.08\u20130.12; undercut: 0.12\u20130.16.',
       aria: 'rope-groove friction coefficient',
     },
   },
@@ -176,6 +176,26 @@ function applyChips(lang) {
     const t = CHIPS[k][en ? 'en' : 'es'];
     el.setAttribute('title', t.title);
     el.setAttribute('aria-label', chipAria(t.aria, lang));
+  });
+}
+
+const TE_REC = {
+  q: { es: '630\u20133200 kg montacargas habituales', en: '630\u20133200 kg typical freight' },
+  mc: { es: '800\u20132500 kg cabina seg\u00fan proyecto', en: '800\u20132500 kg cabin by project' },
+  h: { es: '6\u201350 m instalaciones comunes', en: '6\u201350 m common installs' },
+  v: { es: '0,63\u20131,6 m/s (normativa local)', en: '0.63\u20131.6 m/s (check local code)' },
+  d: { es: '\u00d8 0,40\u20131,20 m seg\u00fan carga', en: '\u00d8 0.40\u20131.20 m by duty' },
+  alpha: { es: '150\u2013190\u00b0 abrazamiento \u00fanicom', en: '150\u2013190\u00b0 single-wrap typical' },
+  mu: { es: '\u03bc 0,08\u20130,14 cable/seco', en: '\u03bc 0.08\u20130.14 dry rope/groove' },
+  maxN: { es: '3\u20138 cabos frecuentes', en: '3\u20138 ropes common' },
+};
+
+function applyRecommendHintsTe(lang) {
+  const t = lang === 'en' ? 'en' : 'es';
+  document.querySelectorAll('[data-te-rec]').forEach((el) => {
+    const k = el.getAttribute('data-te-rec');
+    if (!k || !TE_REC[k]) return;
+    el.textContent = TE_REC[k][t];
   });
 }
 
@@ -384,6 +404,7 @@ export function applyTractionElevatorStaticI18n(lang = getCurrentLang()) {
   applyLabels(lang);
   applySelectsAndHints(lang);
   applyChips(lang);
+  applyRecommendHintsTe(lang);
   applyBlocks(lang);
 
   const host = document.getElementById('teLangHost');
@@ -409,19 +430,20 @@ export function applyTractionElevatorPageLanguage() {
 
 export function initTractionElevatorLangChrome() {
   const host = document.getElementById('teLangHost');
-  if (!host) return;
-  host.innerHTML = `
+  if (host) {
+    host.innerHTML = `
     <div class="hub-lang" role="group" aria-label="">
       <button type="button" class="hub-lang__btn" data-lang="es" aria-pressed="false">ES</button>
       <button type="button" class="hub-lang__btn" data-lang="en" aria-pressed="false">EN</button>
     </div>`;
-  host.querySelectorAll('[data-lang]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const l = btn.getAttribute('data-lang');
-      if (l !== 'es' && l !== 'en') return;
-      setCurrentLang(l);
-      applyTractionElevatorPageLanguage();
+    host.querySelectorAll('[data-lang]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const l = btn.getAttribute('data-lang');
+        if (l !== 'es' && l !== 'en') return;
+        setCurrentLang(l);
+        applyTractionElevatorPageLanguage();
+      });
     });
-  });
+  }
   applyTractionElevatorPageLanguage();
 }

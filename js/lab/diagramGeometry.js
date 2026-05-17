@@ -5,7 +5,7 @@
 
 /**
  * Puntos de tangencia para tramos rectos exteriores (correa abierta).
- * rL en xL, rR en xR; se asume xR > xL y rL ≥ rR (polea mayor a la izquierda).
+ * rL en xL, rR en xR; se asume xR > xL (cualquier relación rL/rR).
  */
 export function svgOpenBeltTangents(xL, y, rL, xR, rR) {
   const d = Math.max(1e-6, xR - xL);
@@ -37,12 +37,13 @@ function fmtPt(p) {
  */
 export function svgOpenBeltLoopPath(xL, y, rL, xR, rR) {
   const { UL, UR, LL, LR } = svgOpenBeltTangents(xL, y, rL, xR, rR);
+  const centroid = { x: (xL + xR) / 2, y };
   return [
     `M ${fmtPt(UL)}`,
     `L ${fmtPt(UR)}`,
-    `A ${rR} ${rR} 0 0 1 ${fmtPt(LR)}`,
+    arcAlongCircleExterior(xR, y, rR, UR, LR, centroid),
     `L ${fmtPt(LL)}`,
-    `A ${rL} ${rL} 0 1 0 ${fmtPt(UL)}`,
+    arcAlongCircleExterior(xL, y, rL, LL, UL, centroid),
     'Z',
   ].join(' ');
 }

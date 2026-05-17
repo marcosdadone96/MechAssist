@@ -37,6 +37,7 @@ import {
 } from '../services/userGearmotorLibrary.js';
 import { shaftSizingFromDrive } from '../modules/shaftSizing.js';
 import { getCurrentUser } from '../services/localAuth.js';
+import { getCurrentLang } from '../config/locales.js';
 
 /**
  * @typedef {import('../modules/motorVerify.js').DriveRequirement} DriveRequirement
@@ -603,7 +604,7 @@ function wireUserGearmotorDelegation(root) {
         const label =
           labelEl instanceof HTMLInputElement ? String(labelEl.value || '').trim().slice(0, 160) : '';
 
-        const brandEl = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-brand]'));
+        let brandEl = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-brand]'));
         let brandId = 'custom';
         if (brandEl && brandEl.value && brandEl.value !== USER_SAVED_BRAND_VALUE) {
           brandId = String(brandEl.value).trim() || 'custom';
@@ -659,7 +660,7 @@ function wireUserGearmotorDelegation(root) {
         }
         const refill = root._mdrRefillVerifyModels;
         if (typeof refill === 'function') refill();
-        const brandEl = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-brand]'));
+        brandEl = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-brand]'));
         const modelSelect = /** @type {HTMLSelectElement | null} */ (root.querySelector('[data-verify-model]'));
         if (brandEl && modelSelect && brandEl.value === USER_SAVED_BRAND_VALUE) {
           modelSelect.value = `ug:${rec.id}`;

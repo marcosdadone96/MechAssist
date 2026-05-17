@@ -25,16 +25,23 @@ function escTitle(s) {
 const LEGAL_DUP =
   /\n    <meta name="robots" content="index,follow" \/>\n    <meta property="og:type" content="website" \/>\n    <meta property="og:url" content="" \/>\n    <link rel="canonical" href="" id="mdr-canonical" \/>\n/g;
 
-function repair(html, title, description) {
+function repair(html, title, description, canonical) {
   let out = html;
   const t = escAttr(title);
   const d = escAttr(description);
   const titleInner = escTitle(title);
+  const c = escAttr(canonical);
 
   out = out.replace(/<title>[\s\S]*?<\/title>/i, `<title>${titleInner}</title>`);
-  out = out.replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i, `<meta name="description" content="${d}" />`);
+  out = out.replace(
+    /<meta\s+name="description"[\s\S]*?content="[^"]*"[\s\S]*?\/?>/i,
+    `<meta name="description" content="${d}" />`,
+  );
   out = out.replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:title" content="${t}" />`);
-  out = out.replace(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/im, `<meta property="og:description" content="${d}" />`);
+  out = out.replace(
+    /<meta\s+property="og:description"[\s\S]*?content="[^"]*"[\s\S]*?\/?>/i,
+    `<meta property="og:description" content="${d}" />`,
+  );
   out = out.replace(/<meta\s+name="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta name="twitter:title" content="${t}" />`);
 
   const matches = out.match(LEGAL_DUP);
@@ -57,6 +64,17 @@ function repair(html, title, description) {
     '\n    <meta name="robots" content="index,follow" />\n',
   );
 
+  if (canonical) {
+    out = out.replace(
+      /<link\s+rel="canonical"[^>]*>/i,
+      `<link rel="canonical" href="${c}" id="mdr-canonical" />`,
+    );
+    out = out.replace(
+      /<meta\s+property="og:url"[^>]*>/i,
+      `<meta property="og:url" content="${c}" id="mdr-og-url" />`,
+    );
+  }
+
   return out;
 }
 
@@ -72,14 +90,17 @@ function main() {
   const data = JSON.parse(raw);
 
   let n = 0;
-  for (const [file, { title, description }] of Object.entries(data)) {
+  for (const [file, meta] of Object.entries(data)) {
+    const { title, description } = meta;
+    const canonical =
+      meta.canonical || `https://www.themechassist.com/${file}`;
     const full = path.join(root, file);
     if (!fs.existsSync(full)) {
       console.warn('omitido (no existe):', file);
       continue;
     }
     let html = fs.readFileSync(full, 'utf8');
-    html = repair(html, title, description);
+    html = repair(html, title, description, canonical);
     if (file.includes('privacy') || file.includes('terms') || file.includes('cookies') || file.includes('cookie-preferences')) {
       html = normalizeLegalNav(html);
     }

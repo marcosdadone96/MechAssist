@@ -7,10 +7,20 @@ import {
   mountLabPresetsBar,
   updateLabShareVisibility,
   wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { withCalcCredits } from '../services/creditSession.js';
+import { isCreditsSystemEnabled } from '../config/credits.js';
 import { COUPLING_BRANDS } from '../data/couplingsCatalog.js';
 import { renderCouplingAssemblyDiagram } from '../lab/diagramCatalogModules.js';
+import { getLabLang } from '../lab/i18n/labLang.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { COUPLINGS_EN } from '../lab/i18n/pages/couplingsEn.js';
+
+function bx(es, en) {
+  return getLabLang() === 'en' ? en : es;
+}
 
 function torqueFromPower_kW_nm(P_kW, n_rpm) {
   if (!(Number.isFinite(P_kW) && P_kW >= 0 && Number.isFinite(n_rpm) && n_rpm > 0)) return NaN;
@@ -43,7 +53,7 @@ function updateSeriesPreview() {
     preview.textContent = '';
     return;
   }
-  preview.innerHTML = `Catálogo demo seleccionado: <strong>${row.model}</strong> · T<sub>nom</sub> = <strong>${row.T_nom_Nm} N·m</strong>`;
+  preview.innerHTML = `${bx('Catálogo demo seleccionado:', 'Demo catalogue selection:')} <strong>${row.model}</strong> · T<sub>nom</sub> = <strong>${row.T_nom_Nm} N·m</strong>`;
 }
 
 function findSuggestedModel(brandId, T_req_Nm) {
@@ -112,6 +122,7 @@ function hydrateCouplingFromUrl() {
 const CP_PRESETS = [
   {
     label: 'Lovejoy · bomba 7.5 kW',
+    labelKey: 'coup.preset1',
     values: {
       cpBrand: 'lovejoy',
       cpSeries: 'L095',
@@ -122,6 +133,7 @@ const CP_PRESETS = [
   },
   {
     label: 'KTR ROTEX · 15 kW',
+    labelKey: 'coup.preset2',
     values: {
       cpBrand: 'ktr',
       cpSeries: 'ROTEX 24',
@@ -132,6 +144,7 @@ const CP_PRESETS = [
   },
   {
     label: 'Flender · pesado',
+    labelKey: 'coup.preset3',
     values: {
       cpBrand: 'flender',
       cpSeries: 'N-Eupex 125',
@@ -153,7 +166,7 @@ function render() {
   if (!out || !tbl) return;
 
   if (!(Number.isFinite(P) && P >= 0 && Number.isFinite(n) && n > 0 && Number.isFinite(K) && K >= 1)) {
-    out.innerHTML = '<p class="lab-verdict lab-verdict--err"><strong>Entrada no válida:</strong> use P ≥ 0, n > 0 y K ≥ 1.</p>';
+    out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>${bx('Entrada no válida:', 'Invalid input:')}</strong> ${bx('use P ≥ 0, n > 0 y K ≥ 1.', 'use P ≥ 0, n > 0 and K ≥ 1.')}</p>`;
     tbl.innerHTML = '';
     updateLabShareVisibility('cpShareLinkWrap', 'cpOut');
     serializeCouplingUrl();
@@ -165,7 +178,7 @@ function render() {
   const row = brand?.series.find((s) => s.model === model);
 
   if (!row) {
-    out.innerHTML = '<p class="lab-verdict lab-verdict--muted">Seleccione fabricante y modelo.</p>';
+    out.innerHTML = `<p class="lab-verdict lab-verdict--muted">${bx('Seleccione fabricante y modelo.', 'Select manufacturer and model.')}</p>`;
     tbl.innerHTML = '';
     updateLabShareVisibility('cpShareLinkWrap', 'cpOut');
     serializeCouplingUrl();
@@ -177,29 +190,32 @@ function render() {
   const sug = ok ? null : findSuggestedModel(brandId, T_des);
 
   if (ratio <= 0.8) {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--ok"><strong>Margen holgado:</strong> ${row.model} trabaja cómodo (${T_des.toFixed(1)} N·m ≤ 0.8·T<sub>nom</sub>).</p>`;
+    out.innerHTML = `<p class="lab-verdict lab-verdict--ok"><strong>${bx('Margen holgado:', 'Comfortable margin:')}</strong> ${row.model} ${bx('trabaja cómodo', 'runs comfortably')} (${T_des.toFixed(1)} N·m ≤ 0.8·T<sub>nom</sub>).</p>`;
   } else if (ratio <= 1) {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--warn"><strong>Margen justo:</strong> ${row.model} está cerca del límite (${(ratio * 100).toFixed(1)}% de T<sub>nom</sub>).</p>`;
+    out.innerHTML = `<p class="lab-verdict lab-verdict--warn"><strong>${bx('Margen justo:', 'Tight margin:')}</strong> ${row.model} ${bx('está cerca del límite', 'is near the limit')} (${(ratio * 100).toFixed(1)}% ${bx('de', 'of')} T<sub>nom</sub>).</p>`;
   } else {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>ERROR:</strong> El modelo <strong>${row.model}</strong> no soporta la carga (${T_des.toFixed(1)} N·m &gt; ${row.T_nom_Nm} N·m).<br/>
-      <strong>Sugerido:</strong> modelo <strong>${sug?.model ?? '—'}</strong> (${sug ? `${sug.T_nom_Nm} N·m` : ''}).</p>`;
+    out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>ERROR:</strong> ${bx('El modelo', 'Model')} <strong>${row.model}</strong> ${bx('no soporta la carga', 'does not support the load')} (${T_des.toFixed(1)} N·m &gt; ${row.T_nom_Nm} N·m).<br/>
+      <strong>${bx('Sugerido:', 'Suggested:')}</strong> ${bx('modelo', 'model')} <strong>${sug?.model ?? '—'}</strong> (${sug ? `${sug.T_nom_Nm} N·m` : ''}).</p>`;
   }
 
   tbl.innerHTML = `
     <table class="lab-catalog-table">
-      <thead><tr><th>Concepto</th><th>Aplicación</th><th>Catálogo (${brand?.label})</th></tr></thead>
+      <thead><tr><th>${bx('Concepto', 'Item')}</th><th>${bx('Aplicación', 'Application')}</th><th>${bx('Catálogo', 'Catalogue')} (${brand?.label})</th></tr></thead>
       <tbody>
-        <tr><td>Potencia</td><td>${P.toFixed(3)} kW</td><td>—</td></tr>
-        <tr><td>Velocidad</td><td>${n.toFixed(0)} min⁻¹</td><td>—</td></tr>
-        <tr><td>Factor servicio K</td><td>${K.toFixed(2)}</td><td>—</td></tr>
-        <tr><td>Par en eje (entrada)</td><td>${T_ap.toFixed(2)} N·m</td><td>—</td></tr>
-        <tr><td>Par de diseño</td><td><strong>${T_des.toFixed(2)} N·m</strong></td><td>T<sub>nom</sub> = ${row.T_nom_Nm} N·m</td></tr>
-        <tr><td>Modelo</td><td>—</td><td>${row.model} · ${row.family}</td></tr>
-        <tr><td>Ø máx. aloj. (ref.)</td><td>—</td><td>${row.bore_max_mm} mm</td></tr>
-        <tr><td>Notas cat.</td><td colspan="2">${row.note}</td></tr>
+        <tr><td>${bx('Potencia', 'Power')}</td><td>${P.toFixed(3)} kW</td><td>—</td></tr>
+        <tr><td>${bx('Velocidad', 'Speed')}</td><td>${n.toFixed(0)} min⁻¹</td><td>—</td></tr>
+        <tr><td>${bx('Factor servicio K', 'Service factor K')}</td><td>${K.toFixed(2)}</td><td>—</td></tr>
+        <tr><td>${bx('Par en eje (entrada)', 'Shaft torque (input)')}</td><td>${T_ap.toFixed(2)} N·m</td><td>—</td></tr>
+        <tr><td>${bx('Par de diseño', 'Design torque')}</td><td><strong>${T_des.toFixed(2)} N·m</strong></td><td>T<sub>nom</sub> = ${row.T_nom_Nm} N·m</td></tr>
+        <tr><td>${bx('Modelo', 'Model')}</td><td>—</td><td>${row.model} · ${row.family}</td></tr>
+        <tr><td>${bx('Ø máx. aloj. (ref.)', 'Max bore (ref.)')}</td><td>—</td><td>${row.bore_max_mm} mm</td></tr>
+        <tr><td>${bx('Notas cat.', 'Cat. notes')}</td><td colspan="2">${row.note}</td></tr>
       </tbody>
     </table>
-    <p class="lab-small-print">Datos de catálogo demostrativos. La selección final debe hacerse con el catálogo oficial del fabricante y su condición real de servicio.</p>`;
+    <p class="lab-small-print">${bx(
+      'Datos de catálogo demostrativos. La selección final debe hacerse con el catálogo oficial del fabricante y su condición real de servicio.',
+      'Demonstration catalogue data. Final selection must use the manufacturer official catalogue and actual duty.',
+    )}</p>`;
 
   updateLabShareVisibility('cpShareLinkWrap', 'cpOut');
   serializeCouplingUrl();
@@ -223,11 +239,12 @@ function scheduleCouplingRender() {
   if (!couplingUrlHydrating) {
     document.querySelectorAll('#cpPresetsBar .lab-preset-btn').forEach((b) => b.classList.remove('is-active'));
   }
-  render();
+  if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
+  else render();
 }
 
 mountLabPresetsBar('cpPresetsBar', CP_PRESETS, () => {
-  render();
+  scheduleCouplingRender();
 });
 document.getElementById('cpBrand')?.addEventListener('change', (e) => {
   fillSeriesSelect(e.target.value);
@@ -250,6 +267,11 @@ document.querySelectorAll('.cp-ka-btn').forEach((btn) => {
 });
 
 wireLabCopyLink('cpCopyLinkBtn', 'cpCopyToast');
+wireLabCopyResultsButton('cpCopyResults', {
+  moduleTitle: bx('Acoplamientos', 'Couplings'),
+});
 
-render();
-mountLabCloudSaveBar('Acoplamientos');
+if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
+else render();
+mountLabCloudSaveBar(bx('Acoplamientos', 'Couplings'));
+watchLangAndApply(COUPLINGS_EN, { onEnApplied: () => scheduleCouplingRender() });

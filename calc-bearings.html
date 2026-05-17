@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Vida nominal básica L10 con carga dinámica C, P equivalente y rpm según ISO 281 en planteamiento simplificado. Consulta online gratuita." />
+    <meta name="description" data-i18n="brg.metaDesc" data-i18n-attr="content" content="Vida nominal básica L10 a partir de C, P y rpm. Modelo ISO simplificado; use C del fabricante." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,13 +11,18 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/calc-bearings.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/calc-bearings.html" />
-    <meta property="og:title" content="Calculadora de vida de rodamientos L10 online" />
-    <meta property="og:description" content="Vida nominal básica L10 con carga dinámica C, P equivalente y rpm según ISO 281 en planteamiento simplificado. Consulta online gratuita." />
+    <meta property="og:url" content="https://www.themechassist.com/calc-bearings.html" id="mdr-og-url" />
+    <meta property="og:title" data-i18n="brg.docTitle" data-i18n-attr="content" content="Rodamientos — vida L10 — TheMechAssist" />
+    <meta
+      property="og:description"
+      data-i18n="brg.metaDesc"
+      data-i18n-attr="content"
+      content="Vida nominal básica L10 a partir de C, P y rpm. Modelo ISO simplificado; use C del fabricante."
+    />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de vida de rodamientos L10 online" />
+    <meta name="twitter:title" data-i18n="brg.docTitle" data-i18n-attr="content" content="Rodamientos — vida L10 — TheMechAssist" />
 
-    <title>Calculadora de vida de rodamientos L10 online — TheMechAssist</title>
+    <title data-i18n="brg.docTitle">Rodamientos — vida L10 — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -30,6 +35,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -45,120 +52,164 @@
     </header>
     <main class="lab-main">
       <section class="lab-panel">
-        <h2>Vida básica L10 (ISO 281 simplificada)</h2>
-        <p class="calc-seo-intro">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="brg.h2">Vida básica L10 (ISO 281 simplificada)</h2>
+          <p class="lab-calc-hero-lead" data-i18n="brg.heroLead" data-i18n-html>
+            L<sub>10</sub> a partir de <strong>C</strong> (catálogo), <strong>P</strong> equivalente y rpm; modo diseño o diagnóstico. Sin factores a<sub>ISO</sub> extendidos ni confiabilidad distinta del 90%.
+          </p>
+          <details class="lab-calc-seo">
+            <summary data-i18n="brg.seoSummary">Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro" data-i18n="brg.calcSeoIntro">
           Aquí se obtiene la vida nominal básica L10 de un rodamiento rígido de bolas o rodillos a partir de la carga dinámica de catálogo C, la carga equivalente P en servicio y la velocidad de giro, siguiendo la línea del método ISO 281 en versión docente y simplificada. Sirve para comparar diseños y sensibilizar qué ocurre si sube la carga radial o mixta antes de pedir el detalle al fabricante. Es útil para ingenieros de mantenimiento, diseño de máquinas y compras técnicas que deben justificar un cambio de talla. Un caso típico es ver si un ventilador industrial alcanza las horas objetivo cuando la correa queda más tensa tras un alineado incorrecto.
-        </p>
-        <p class="lab-lead">L₁₀ en millones de revoluciones: L = (C/P)<sup>p</sup> con p = 3 (bolas) o 10/3 (rodillos). Sin factores a<sub>ISO</sub>, temperatura ni confiabilidad distinta del 90%.</p>
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="brg.methodSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help" data-i18n="brg.methodLeadHtml" data-i18n-html>
+                L<sub>10</sub> en millones de revoluciones: <strong>L = (C/P)<sup>p</sup></strong> con <strong>p = 3</strong> (bolas) o <strong>10/3</strong> (rodillos). Sin factores a<sub>ISO</sub> extendidos, corrección de temperatura ni confiabilidad distinta del 90%. Use la <strong>C</strong> del fabricante y una <strong>P</strong> equivalente coherente con la aplicación.
+              </p>
+            </div>
+          </details>
+        </header>
         <div class="lab-presets-row">
-          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <span class="lab-presets-row__label" data-i18n="brg.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="brgPresetsBar"></div>
         </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated lab-diagram-wrap--bearing">
-              <p class="lab-diagram-wrap__title">Vista en sección · rodamiento</p>
-              <svg id="brgDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de rodamiento"></svg>
-              <p class="lab-diagram-caption">Ilustración genérica; <strong>C</strong> y <strong>P</strong> son los datos de catálogo y de cálculo para L₁₀.</p>
+              <p class="lab-diagram-wrap__title" data-i18n="brg.diagTitle">Vista en sección · rodamiento</p>
+              <svg
+                id="brgDiagram"
+                xmlns="http://www.w3.org/2000/svg"
+                data-i18n="brg.diagAriaLabel"
+                data-i18n-attr="aria-label"
+                aria-label="Diagrama de rodamiento"
+              ></svg>
+              <p class="lab-diagram-caption" data-i18n="brg.diagCaptionHtml" data-i18n-html>
+                Ilustración genérica; <strong>C</strong> y <strong>P</strong> son los datos de catálogo y de cálculo para L₁₀.
+              </p>
             </div>
           </div>
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field lab-field--wide">
-                <label for="brgCalcMode">¿Qué desea calcular?</label>
+                <label for="brgCalcMode" data-i18n="brg.labelCalcMode">¿Qué desea calcular?</label>
                 <select id="brgCalcMode">
-                  <option value="design">Diseño — vida objetivo y carga P → C mínima de catálogo</option>
-                  <option value="diagnostic" selected>Diagnóstico — C de catálogo → vida L₁₀</option>
+                  <option value="design" data-i18n="brg.optDesign">Diseño — vida objetivo y carga P → C mínima de catálogo</option>
+                  <option value="diagnostic" selected data-i18n="brg.optDiagnostic">Diagnóstico — C de catálogo → vida L₁₀</option>
                 </select>
-                <p class="lab-field-help">
+                <p class="lab-field-help" data-i18n="brg.helpCalcModeHtml" data-i18n-html>
                   <strong>Diseño:</strong> conoce la carga equivalente y la vida que exige la aplicación; obtiene la <strong>C</strong> que debe buscar en catálogo.
                   <strong>Diagnóstico:</strong> tiene el rodamiento instalado (<strong>C</strong> del catálogo) y comprueba <strong>L₁₀</strong>.
                 </p>
               </div>
               <div class="lab-field" id="brgFieldC">
                 <label for="brgC" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Carga dinámica de catálogo">
+                  <span class="lab-field-ico" data-i18n="brg.icoC" data-i18n-attr="title" title="Carga dinámica de catálogo">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="7" />
                       <circle cx="12" cy="12" r="3" />
                       <path d="M12 5v3M12 16v3M5 12h3M16 12h3" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">C (N) · catálogo</span>
+                  <span class="lab-field__label-text" data-i18n="brg.labelC">C (N) · catálogo</span>
                 </label>
                 <input id="brgC" type="number" min="100" value="32500" />
-                <p class="lab-field-help"><strong>Carga dinámica básica C</strong> (N): del catálogo del rodamiento; capacidad para un millón de revoluciones de referencia.</p>
+                <p class="lab-field-help" data-i18n="brg.helpCHtml" data-i18n-html>
+                  <strong>Carga dinámica básica C</strong> (N): del catálogo del rodamiento; capacidad para un millón de revoluciones de referencia.
+                </p>
               </div>
               <div class="lab-field" id="brgFieldL10Target" hidden>
                 <label for="brgL10TargetH" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Vida objetivo">
+                  <span class="lab-field-ico" data-i18n="brg.icoL10T" data-i18n-attr="title" title="Vida objetivo">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="9" />
                       <path d="M12 7v5l3 3" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">L₁₀ objetivo (horas)</span>
+                  <span class="lab-field__label-text" data-i18n="brg.labelL10T">L₁₀ objetivo (horas)</span>
                 </label>
                 <input id="brgL10TargetH" type="number" min="100" step="100" value="20000" />
-                <p class="lab-field-help">Vida básica deseada en <strong>horas</strong> a la velocidad indicada (90% de confiabilidad, modelo simplificado).</p>
+                <p class="lab-field-help" data-i18n="brg.helpL10THtml" data-i18n-html>
+                  Vida básica deseada en <strong>horas</strong> a la velocidad indicada (90% de confiabilidad, modelo simplificado).
+                </p>
               </div>
               <div class="lab-field">
                 <label for="brgP" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Carga equivalente">
+                  <span class="lab-field-ico" data-i18n="brg.icoP" data-i18n-attr="title" title="Carga equivalente">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M12 4v16M8 8l4-4 4 4" />
                       <path d="M7 20h10" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">P (N) · equivalente</span>
+                  <span class="lab-field__label-text" data-i18n="brg.labelP">P (N) · equivalente</span>
                 </label>
                 <input id="brgP" type="number" min="1" value="8200" />
-                <p class="lab-field-help"><strong>Carga dinámica equivalente P</strong> (N): combina cargas radial/axial del caso de servicio (ISO 281, factores no incluidos aquí en detalle).</p>
+                <p class="lab-field-help" data-i18n="brg.helpPHtml" data-i18n-html>
+                  <strong>Carga dinámica equivalente P</strong> (N): combina cargas radial/axial del caso de servicio (ISO 281, factores no incluidos aquí en detalle).
+                </p>
               </div>
               <div class="lab-field">
                 <label for="brgType" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Rodamiento de bolas o rodillos">
+                  <span class="lab-field-ico" data-i18n="brg.icoType" data-i18n-attr="title" title="Rodamiento de bolas o rodillos">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="9" cy="12" r="4" />
                       <circle cx="15" cy="12" r="4" />
                       <path d="M13 12h-2" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Tipo</span>
+                  <span class="lab-field__label-text" data-i18n="brg.labelType">Tipo</span>
                 </label>
                 <select id="brgType">
-                  <option value="ball" selected>Bolas</option>
-                  <option value="roller">Rodillos</option>
+                  <option value="ball" selected data-i18n="brg.optBall">Bolas</option>
+                  <option value="roller" data-i18n="brg.optRoller">Rodillos</option>
                 </select>
-                <p class="lab-field-help">El <strong>exponente p</strong> de la ley de vida cambia: p = 3 (bolas) o 10/3 (rodillos cilíndricos) en esta forma simplificada.</p>
+                <p class="lab-field-help" data-i18n="brg.helpTypeHtml" data-i18n-html>
+                  El <strong>exponente p</strong> de la ley de vida cambia: p = 3 (bolas) o 10/3 (rodillos cilíndricos) en esta forma simplificada.
+                </p>
               </div>
               <div class="lab-field">
                 <label for="brgN" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Velocidad de trabajo">
+                  <span class="lab-field-ico" data-i18n="brg.icoN" data-i18n-attr="title" title="Velocidad de trabajo">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="8" />
                       <path d="M16 8l2-4M18 4l4 2" />
                       <path d="M12 8v4l3 2" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Giro de trabajo (RPM)</span>
+                  <span class="lab-field__label-text" data-i18n="brg.labelN">Giro de trabajo (RPM)</span>
                 </label>
                 <input id="brgN" type="number" min="0" value="1455" />
-                <span class="hint">Para estimar horas L₁₀</span>
-                <p class="lab-field-help">Velocidad de trabajo para pasar de vida en revoluciones a <strong>horas</strong>: horas = L₁₀(rev) / (60·n).</p>
+                <span class="hint" data-i18n="brg.hintN">Para estimar horas L₁₀</span>
+                <p class="lab-field-help" data-i18n="brg.helpNHtml" data-i18n-html>
+                  Velocidad de trabajo para pasar de vida en revoluciones a <strong>horas</strong>: horas = L₁₀(rev) / (60·n).
+                </p>
               </div>
               <div class="lab-field">
                 <label for="brgDuty" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Régimen">
+                  <span class="lab-field-ico" data-i18n="brg.icoDuty" data-i18n-attr="title" title="Régimen">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="9" />
                       <path d="M12 7v5l3 3" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Horas/día de servicio — opcional</span>
+                  <span class="lab-field__label-text" data-i18n="brg.labelDuty">Horas/día de servicio — opcional</span>
                 </label>
-                <input id="brgDuty" type="number" min="0" max="24" step="0.5" placeholder="p. ej. 2" />
-                <p class="lab-field-help">Para el <strong>Advisor</strong>: si el servicio es ocasional y L₁₀ en horas es muy alto, sugerirá series más económicas. Vacío = no aplicar ese criterio.</p>
+                <input
+                  id="brgDuty"
+                  type="number"
+                  min="0"
+                  max="24"
+                  step="0.5"
+                  data-i18n="brg.placeholderDuty"
+                  data-i18n-attr="placeholder"
+                  placeholder="p. ej. 2"
+                />
+                <p class="lab-field-help" data-i18n="brg.helpDutyHtml" data-i18n-html>
+                  Para el <strong>Advisor</strong>: si el servicio es ocasional y L₁₀ en horas es muy alto, sugerirá series más económicas. Vacío = no aplicar ese criterio.
+                </p>
               </div>
             </div>
           </div>
@@ -166,49 +217,46 @@
             <div
               class="lab-units-bar"
               role="group"
+              data-i18n-attrs="aria-label=brg.unitsAriaLabel data-lab-convert-title=brg.convertTitle data-lab-convert-tip=brg.convertTip"
               aria-label="Unidades de los resultados"
               data-lab-convert-categories="length rotation linear life"
               data-lab-convert-title="Conversor (rodamientos)"
               data-lab-convert-tip="Dimensiones en mm; velocidad angular; v de rodadura; vida L10 en horas, Mrev o vueltas (RPM para horas)."
             >
-              <span class="lab-units-bar__title">Cómo ver los resultados</span>
+              <span class="lab-units-bar__title" data-i18n="brg.unitsBarTitle">Cómo ver los resultados</span>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Distancias</span>
+                <span class="lab-units-bar__lbl" data-i18n="brg.lblLength">Distancias</span>
                 <select id="labUnitLength" class="lab-units-bar__select">
-                  <option value="mm">mm (taller)</option>
-                  <option value="cm">cm</option>
-                  <option value="m">m (SI)</option>
+                  <option value="mm" data-i18n="brg.optMmShop">mm (taller)</option>
+                  <option value="cm" data-i18n="brg.optCm">cm</option>
+                  <option value="m" data-i18n="brg.optMSi">m (SI)</option>
                 </select>
               </label>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Giro</span>
+                <span class="lab-units-bar__lbl" data-i18n="brg.lblRotation">Giro</span>
                 <select id="labUnitRotation" class="lab-units-bar__select">
-                  <option value="rpm">RPM</option>
-                  <option value="rad_s">rad/s</option>
+                  <option value="rpm" data-i18n="brg.optRpm">RPM</option>
+                  <option value="rad_s" data-i18n="brg.optRadS">rad/s</option>
                 </select>
               </label>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Velocidad lineal</span>
+                <span class="lab-units-bar__lbl" data-i18n="brg.lblLinear">Velocidad lineal</span>
                 <select id="labUnitLinear" class="lab-units-bar__select">
-                  <option value="m_s">m/s</option>
-                  <option value="mm_s">mm/s</option>
-                  <option value="km_h">km/h</option>
+                  <option value="m_s" data-i18n="brg.optMs">m/s</option>
+                  <option value="mm_s" data-i18n="brg.optMms">mm/s</option>
+                  <option value="km_h" data-i18n="brg.optKmh">km/h</option>
                 </select>
               </label>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Vida L₁₀</span>
+                <span class="lab-units-bar__lbl" data-i18n="brg.lblLife">Vida L₁₀</span>
                 <select id="labUnitLife" class="lab-units-bar__select">
-                  <option value="hours">horas</option>
-                  <option value="Mrev">millones de vueltas</option>
-                  <option value="rev">vueltas totales</option>
+                  <option value="hours" data-i18n="brg.optLifeH">horas</option>
+                  <option value="Mrev" data-i18n="brg.optLifeMrev">millones de vueltas</option>
+                  <option value="rev" data-i18n="brg.optLifeRev">vueltas totales</option>
                 </select>
               </label>
             </div>
             <div id="brgHero"></div>
-            <div class="lab-results-share" id="brgShareLinkWrap" aria-live="polite">
-              <button type="button" class="lab-btn" id="brgCopyLinkBtn">Copiar enlace</button>
-              <div class="lab-copy-toast" id="brgCopyToast" role="status">¡Enlace copiado!</div>
-            </div>
             <div class="lab-results-wrap" id="brgResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
@@ -217,11 +265,23 @@
                     d="M32 8l2.2 4.4 4.9-1.3 1.3 4.9 4.4 2.2-2.2 4.4 1.3 4.9-4.9 1.3-2.2 4.4-4.4-2.2-4.9 1.3-1.3-4.9-4.4-2.2 2.2-4.4-1.3-4.9 4.9-1.3 4.4-2.2zm0 10a14 14 0 100 28 14 14 0 000-28z"
                   />
                 </svg>
-                <span class="lab-results-computing__label">Recalculando</span>
+                <span class="lab-results-computing__label" data-i18n="brg.recalculating">Recalculando</span>
               </div>
-              <div class="lab-results" id="brgResults"></div>
+              <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked">
+                <summary data-i18n="brg.summaryFull">Resultado completo</summary>
+                <div class="lab-results" id="brgResults"></div>
+              </details>
+              <div class="lab-results-actions">
+                <button type="button" class="lab-btn lab-btn--block" id="brgCopyResults" data-i18n="brg.copyResults">
+                  Copiar resultados
+                </button>
+              </div>
             </div>
             <div id="labPurchaseSuggestions" hidden></div>
+            <div class="lab-results-share lab-results-share--footer" id="brgShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="brgCopyLinkBtn" data-i18n="brg.copyLink">Copiar enlace</button>
+              <div class="lab-copy-toast" id="brgCopyToast" role="status" data-i18n="brg.copyToast">¡Enlace copiado!</div>
+            </div>
           </div>
         </div>
       </section>

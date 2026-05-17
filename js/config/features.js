@@ -30,7 +30,7 @@
  * Modo publico gratuito (`publicFreeRelease: true`): mismo efecto que Pro en cliente (calculadoras,
  * CFG máquina, motorreductores en nube); la cuenta sigue siendo necesaria para guardar datos con
  * sesión / sync. Sin UI agresiva de planes (checkout opcional más adelante).
- * Restauracion de billing: ver `js/config/BILLING_RESTORE.txt`.
+ * Restauracion de billing: ver `js/config/BILLING_RESTORE.txt` y `docs/go-live-billing-checklist.md`.
  */
 export const FEATURES = Object.freeze({
   /**
@@ -43,7 +43,7 @@ export const FEATURES = Object.freeze({
    * Si true: mismo efecto que Pro para todos los usuarios y se oculta la UI comercial (home, checkout…).
    * El codigo de Lemon/Netlify y checkout.html permanece en el repo para reactivar.
    */
-  publicFreeRelease: true,
+  publicFreeRelease: false,
 
   /** Si true, toda la app se comporta como Pro (solo desarrollo). */
   devSimulatePremium: false,
@@ -178,10 +178,10 @@ export const FEATURES = Object.freeze({
   showLabDonationBanner: false,
 
   /**
-   * Botón «Guardar en la nube» en laboratorio/máquinas (instantáneas en tabla calculos_mecanicos;
-   * hoy sin UI para listar o restaurar). false: el valor para el usuario es CFG máquina + motorreductores.
+   * Botón «Exportar cálculos y diagrama en PDF» en calculadoras `main.lab-main`.
+   * (Antes: guardado en nube → `calculos_mecanicos` / `my-saved-calcs.html`.)
    */
-  showLabCloudSnapshotButton: false,
+  showLabCloudSnapshotButton: true,
 
   /**
    * Enlaces de compra Amazon / panel laboratorio: ver `js/config/labAffiliate.js` (tag Associates, dominio).
@@ -191,6 +191,30 @@ export const FEATURES = Object.freeze({
    * Monetization matrix (prepared, opt-in by flag).
    * Keep all false until rollout. Each machine can enable Pro gates independently.
    */
+  /**
+   * Créditos por hub (lab / machines / fluids). Desactivado si publicFreeRelease es true.
+   */
+  credits: Object.freeze({
+    enabled: true,
+    welcomePerPool: 100,
+    costCalcSession: 10,
+    costPdf: 10,
+    starterPdfLimitPerMonth: 30,
+    /** Duración de sesión de cálculo facturada (ms) — un cargo por ventana. */
+    calcSessionMs: 12 * 60 * 1000,
+  }),
+
+  /**
+   * Enlaces Lemon Squeezy (checkout/buy/{uuid}). Vacío = botón oculto en checkout.html.
+   * Desbloqueo calculadora: producto con campo personalizado `calc_slug` (p. ej. calc-gears.html).
+   */
+  lemonCheckout: Object.freeze({
+    starterMonthly: 'https://mechassist.lemonsqueezy.com/checkout/buy/acd30d30-72e7-4434-827e-e51487e492ca',
+    starterAnnual: 'https://mechassist.lemonsqueezy.com/checkout/buy/bfd83e87-ac81-46ad-a5cf-2c2c94b1d70d',
+    unlimitedMonthly: '',
+    calcUnlock: '',
+  }),
+
   monetization: Object.freeze({
     flat: Object.freeze({
       scenarioCompare: false,

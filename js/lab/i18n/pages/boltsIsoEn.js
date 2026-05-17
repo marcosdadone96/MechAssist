@@ -1,0 +1,23 @@
+/** English strings for calc-bolts-iso898.html (`bolt.*`). ASCII-safe. */
+export const BOLTS_ISO_EN = {
+  'bolt.docTitle': 'ISO 898-1 bolts calculator \u2014 TheMechAssist',
+  'bolt.h2': 'Bolts \u00b7 ISO 898-1 (M6\u2013M36)',
+  'bolt.heroLead':
+    'Indicative tightening torque and preload for grades 8.8 / 10.9 / 12.9; check the joint against design tension (simplified model).',
+  'bolt.helpSummary': 'Methodology and model limits',
+  'bolt.seoSummary': 'Expanded context and usage notes',
+  'bolt.presetsLabel': 'Typical examples:',
+  'bolt.preset1': 'Diagnostic M12 \u00b7 60 kN',
+  'bolt.preset2': 'Design \u00b7 95 kN',
+  'bolt.preset3': 'Dry joint \u03bc 0.18',
+  'bolt.diagTitle': 'Preloaded joint \u00b7 plates, bolt and axial force F',
+  'bolt.labelMode': 'Working mode',
+  'bolt.optDesign': 'Design \u2014 load \u2192 suggest bolt',
+  'bolt.optDiagnostic': 'Diagnostic \u2014 pick M and grade',
+  'bolt.labelF': 'Design tension F (kN)',
+  'bolt.labelMu': 'Friction coefficient \u03bc',
+  'bolt.copyLink': 'Copy link',
+  'bolt.copyToast': 'Link copied!',
+  'bolt.summaryFull': 'Full results',
+  'bolt.copyResults': 'Copy results',
+};

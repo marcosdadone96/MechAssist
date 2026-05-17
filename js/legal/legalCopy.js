@@ -327,3 +327,80 @@ export function getTermsDoc(lang) {
     ],
   };
 }
+
+/**
+ * P\u00e1gina de confianza (no legal vinculante): metodolog\u00eda, l\u00edmites y datos guardados.
+ * @param {'en'|'es'} lang
+ */
+export function getTrustDoc(lang) {
+  const l = lang === 'en' ? 'en' : 'es';
+  const dataBlock =
+    l === 'en'
+      ? `<p>${escHtml(
+          'With a signed-in account and server sync enabled, selected data can be stored for you (for example saved machine configurations and a gearmotor list) using the site\u2019s backend storage. Exact scope may evolve; this page is updated when flows change.',
+        )}</p>
+        <ul>
+          <li>${escHtml('Machine pages: named configurations are stored in this browser and can sync to your account cloud profile when the feature is active.')}</li>
+          <li>${escHtml('Laboratory: optional \u201ccloud snapshot\u201d actions may exist on some calculators; listing and restoring snapshots from a library is not the primary workflow yet.')}</li>
+          <li>${escHtml('Always validate results with your manufacturer catalogue, applicable standards and site measurements.')}</li>
+        </ul>
+        <p>${escHtml('Details on cookies and personal data:')} <a href="privacy.html">${escHtml('Privacy policy')}</a>. ${escHtml('Suggestions:')} <a href="feedback.html">${escHtml('Feedback')}</a>.</p>`
+      : `<p>${escHtml(
+          'Con cuenta iniciada y sincronizaci\u00f3n en servidor activa, parte de sus datos pueden guardarse para usted (por ejemplo configuraciones de m\u00e1quina con nombre y una lista de motorreductores) mediante el almacenamiento del sitio. El alcance exacto puede evolucionar; esta p\u00e1gina se actualiza cuando cambien los flujos.',
+        )}</p>
+        <ul>
+          <li>${escHtml('P\u00e1ginas de m\u00e1quinas: las configuraciones con nombre se guardan en este navegador y pueden sincronizarse con el perfil en la nube de su cuenta cuando la funci\u00f3n est\u00e9 activa.')}</li>
+          <li>${escHtml('Laboratorio: en algunas calculadoras puede existir una acci\u00f3n opcional de \u00abinstant\u00e1nea en la nube\u00bb; hoy no es el flujo principal listar y restaurar desde una biblioteca unificada.')}</li>
+          <li>${escHtml('Valide siempre los resultados con el cat\u00e1logo del fabricante, la normativa aplicable y las medidas en planta.')}</li>
+        </ul>
+        <p>${escHtml('Detalle sobre cookies y datos personales:')} <a href="privacy.html">${escHtml('Pol\u00edtica de privacidad')}</a>. ${escHtml('Sugerencias:')} <a href="feedback.html">${escHtml('Sugerencias')}</a>.</p>`;
+
+  return {
+    title: l === 'en' ? 'Trust & methodology' : 'Confianza y metodolog\u00eda',
+    disclaimer:
+      l === 'en'
+        ? 'This page explains how we think about accuracy, limits and data. It is not a substitute for engineering sign-off on your projects or for legal advice.'
+        : 'Esta p\u00e1gina explica c\u00f3mo entendemos la precisi\u00f3n, los l\u00edmites y los datos. No sustituye la validaci\u00f3n de ingenier\u00eda de su proyecto ni el asesoramiento legal.',
+    sections: [
+      {
+        title: l === 'en' ? 'What TheMechAssist is' : 'Qu\u00e9 es TheMechAssist',
+        paragraphs: [
+          l === 'en'
+            ? 'TheMechAssist is a set of web calculators and diagrams for mechanical engineers: machines (conveyors, pumps, lifts), a transmission laboratory, and related tools. The goal is to give fast, standards-oriented estimates to support early sizing and checks before you open heavy spreadsheets or CAD.'
+            : 'TheMechAssist es un conjunto de calculadoras y diagramas web para ingenier\u00eda mec\u00e1nica: m\u00e1quinas (cintas, bombas, elevaci\u00f3n), un laboratorio de transmisi\u00f3n y herramientas afines. El objetivo es ofrecer estimaciones r\u00e1pidas y orientadas a normas para apoyar el dimensionado inicial y las comprobaciones antes de abrir hojas de c\u00e1lculo pesadas o CAD.',
+        ],
+      },
+      {
+        title: l === 'en' ? 'Model limits (read this once)' : 'L\u00edmites del modelo (lea esto una vez)',
+        paragraphs: [
+          l === 'en'
+            ? 'Outputs are indicative: simplified equations, demo catalog data, and educational AGMA-style checks where noted. They do not replace a full standard study, vendor software, or signed-off calculations for safety-critical or contractual work.'
+            : 'Los resultados son orientativos: ecuaciones simplificadas, datos de cat\u00e1logo demo y comprobaciones tipo AGMA educativas donde se indique. No sustituyen un estudio completo seg\u00fan norma, el software del fabricante ni memorias firmadas para trabajos cr\u00edticos o contractuales.',
+          l === 'en'
+            ? 'When we show commercial gearmotor designations as examples, that is illustration only; it is not an endorsement or a guarantee of availability.'
+            : 'Cuando mostramos designaciones comerciales de motorreductor como ejemplo, es solo ilustraci\u00f3n; no implica aval ni garant\u00eda de disponibilidad.',
+        ],
+      },
+      {
+        title: l === 'en' ? 'Your account and what is stored' : 'Su cuenta y qu\u00e9 se guarda',
+        htmlBody: dataBlock,
+      },
+      {
+        title: l === 'en' ? 'What we improve next' : 'Qu\u00e9 mejoramos a continuaci\u00f3n',
+        paragraphs: [
+          l === 'en'
+            ? 'We prioritise clarity of outputs, stable behaviour on mobile, and honest UX around Pro vs free features. A unified \u201cmy projects\u201d library with restore is on the roadmap where it adds clear value.'
+            : 'Priorizamos claridad de salidas, comportamiento estable en m\u00f3vil y una UX honesta alrededor de Pro vs gratuito. Una biblioteca unificada de \u00abmis proyectos\u00bb con restauraci\u00f3n est\u00e1 en la hoja de ruta cuando aporte valor claro.',
+        ],
+      },
+      {
+        title: l === 'en' ? 'Recent updates' : 'Cambios recientes',
+        paragraphs: [
+          l === 'en'
+            ? 'May 2026: home \u201creal cases\u201d strip, session calculation counter, pricing copy tweaks, trust page, and a \u201cMy saved calculations\u201d page to list cloud snapshots from calculators.'
+            : 'Mayo 2026: franja de casos reales en la portada, contador de c\u00e1lculos por sesi\u00f3n, ajustes de copy en precios, p\u00e1gina de confianza y p\u00e1gina \u00abMis c\u00e1lculos guardados\u00bb para listar instant\u00e1neas en la nube.',
+        ],
+      },
+    ],
+  };
+}

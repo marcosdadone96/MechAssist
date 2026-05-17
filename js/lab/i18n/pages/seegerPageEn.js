@@ -1,0 +1,37 @@
+/** English strings for calc-seeger.html (`seeger.*`). ASCII-safe. */
+export const SEEGER_PAGE_EN = {
+  'seeger.docTitle': 'Seeger retaining rings calculator \u2014 TheMechAssist',
+  'seeger.h2': 'Seeger rings (circlips) \u2014 DIN 471 and DIN 472',
+  'seeger.heroLead':
+    'Designation and groove dimensions from shaft or bore \u00d8 (3\u2013100 mm extract); indicative axial force. Verify with drawing and manufacturer.',
+  'seeger.preset1': 'Shaft \u00d825 \u00b7 steel',
+  'seeger.preset2': 'Shaft \u00d840 + Fax',
+  'seeger.preset3': 'Bore \u00d862',
+  'seeger.labelSizePreset': 'Standard size (quick)',
+  'seeger.optSizeManual': 'Manual (use d1)',
+  'seeger.sizeHelp': 'Quick alternative to load common sizes.',
+  'seeger.labelApp': 'Application',
+  'seeger.d1Help':
+    'Shaft: diameter where the assembly sits before the groove. Bore: nominal housing diameter.',
+  'seeger.labelFaxLong': 'Working axial force (N) (optional)',
+  'seeger.faxHelp': 'If filled, compared against indicative allowable Fax of the ring.',
+  'seeger.diagTitle': 'Groove and ring schematic (updates with your size)',
+  'seeger.diagCaptionHtml':
+    '<strong>DIN 471</strong>: shaft section with groove and external ring. <strong>DIN 472</strong>: bore view with internal ring. Educational schematic.',
+  'seeger.helpSummary': 'Methodology and limits',
+  'seeger.labelD': 'Nominal diameter d (mm)',
+  'seeger.labelKind': 'Housing',
+  'seeger.optShaft': 'Shaft (DIN 471)',
+  'seeger.optBore': 'Bore (DIN 472)',
+  'seeger.labelMat': 'Material (order)',
+  'seeger.optSteelLong': 'Carbon steel (standard)',
+  'seeger.optInoxLong': 'Stainless steel (adds " - INOX " to code)',
+  'seeger.optSteel': 'Standard steel',
+  'seeger.optInox': 'Stainless',
+  'seeger.labelFax': 'Working axial load Fax (N)',
+  'seeger.presetsLabel': 'Typical examples:',
+  'seeger.copyLink': 'Copy link',
+  'seeger.copyToast': 'Link copied!',
+  'seeger.summaryFull': 'Full results',
+  'seeger.copyResults': 'Copy results',
+};

@@ -5,6 +5,7 @@
 const { getProStore } = require('./lib/blobStore.js');
 const { normalizeEmail } = require('./lib/proEntitlementLogic.js');
 const { pendingTokenKey, pendingIndexKey, verifiedUserKey } = require('./lib/authBlobKeys.js');
+const { ensureWelcomeCredits } = require('./lib/creditsLogic.js');
 
 const HOURS_VALID = 48;
 
@@ -62,6 +63,11 @@ exports.handler = async (event) => {
     passwordHash: pending.passwordHash,
     verifiedAt: new Date().toISOString(),
   });
+  try {
+    await ensureWelcomeCredits(store, email, { grantWelcome: true });
+  } catch (e) {
+    console.warn('auth-verify: welcome credits', e?.message || e);
+  }
   await store.delete(tk).catch(() => {});
   await store.delete(pendingIndexKey(email)).catch(() => {});
 

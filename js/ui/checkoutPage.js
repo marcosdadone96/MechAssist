@@ -3,6 +3,7 @@
  */
 
 import { FEATURES } from '../config/features.js';
+import { isCreditsSystemEnabled } from '../config/credits.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { grantProLicensePersistent } from '../services/accessTier.js';
 import { claimAndVerifyProAfterCheckout } from '../services/proEntitlement.js';
@@ -18,13 +19,18 @@ const TX = {
     navHome: 'Inicio',
     navRegister: 'Registro',
     eyebrow: 'TheMechAssist',
-    title: 'Plan Pro',
+    title: 'Planes y cr\u00e9ditos',
     lead:
-      'Elija facturacion mensual o anual. El pago lo procesa Lemon Squeezy; tras completarlo recibira confirmacion y podra gestionar la suscripcion desde su correo o panel del proveedor.',
+      'Registrado: 100 cr\u00e9ditos de bienvenida por \u00e1rea (laboratorio, m\u00e1quinas, hidr\u00e1ulica). Cada sesi\u00f3n de c\u00e1lculo (~12 min) y cada PDF consumen 10 cr\u00e9ditos. Elija Starter (9 \u20ac/mes, PDF incluidos), Ilimitado (25 \u20ac/mes) o desbloquee una calculadora por 1 \u20ac/mes.',
+    starterMonthly: 'Starter \u2014 9 \u20ac/mes',
+    starterAnnual: 'Starter anual \u2014 79 \u20ac/a\u00f1o',
+    unlimitedMonthly: 'Ilimitado \u2014 25 \u20ac/mes',
+    creditsNote:
+      'Desbloqueo puntual (~1 \u20ac): configure el producto Lemon con el campo personalizado calc_slug (p. ej. calc-gears.html).',
     signedAs: (name, email) => `Sesion: ${name} (${email})`,
     stripeBtn: 'Pagar con tarjeta (Stripe)',
-    monthlyPlan: 'Plan mensual \u2014 9 \u20ac/mes',
-    annualPlan: 'Plan anual \u2014 79 \u20ac/a\u00f1o',
+    monthlyPlan: 'Starter \u2014 9 \u20ac/mes',
+    annualPlan: 'Starter anual \u2014 79 \u20ac/a\u00f1o',
     checkoutPayNote:
       'El cobro lo gestiona Lemon Squeezy (checkout seguro). Use uno de los planes anteriores; si tambien ve la opcion Stripe, sera alternativa segun configuracion.',
     withdrawalLabelHtml:
@@ -38,6 +44,7 @@ const TX = {
     legalLinks:
       'Al pagar acepta los <a href="terms.html" target="_blank" rel="noopener">T\u00e9rminos</a> y la <a href="privacy.html" target="_blank" rel="noopener">Pol\u00edtica de privacidad</a>.',
     footPrivacy: 'Privacidad',
+    footTrust: 'Confianza',
     footTerms: 'T\u00e9rminos',
     footCookies: 'Cookies',
     footCookiePrefs: 'Preferencias cookies',
@@ -59,13 +66,18 @@ const TX = {
     navHome: 'Home',
     navRegister: 'Register',
     eyebrow: 'TheMechAssist',
-    title: 'Pro plan',
+    title: 'Plans & credits',
     lead:
-      'Choose monthly or yearly billing. Payment is processed by Lemon Squeezy; after checkout you will receive confirmation and can manage the subscription via email or the provider dashboard.',
+      'Registered users get 100 welcome credits per area (lab, machines, hydraulics). Each calc session (~12 min) and each PDF costs 10 credits. Pick Starter (\u20ac9/mo with PDF allowance), Unlimited (\u20ac25/mo) or unlock one calculator for \u20ac1/month.',
+    starterMonthly: 'Starter \u2014 \u20ac9/month',
+    starterAnnual: 'Starter annual \u2014 \u20ac79/year',
+    unlimitedMonthly: 'Unlimited \u2014 \u20ac25/month',
+    creditsNote:
+      'Single-calculator unlock (~\u20ac1): set Lemon custom field calc_slug (e.g. calc-gears.html) on the product.',
     signedAs: (name, email) => `Signed in: ${name} (${email})`,
     stripeBtn: 'Pay with card (Stripe)',
-    monthlyPlan: 'Monthly plan \u2014 \u20ac9/month',
-    annualPlan: 'Annual plan \u2014 \u20ac79/year',
+    monthlyPlan: 'Starter \u2014 \u20ac9/month',
+    annualPlan: 'Starter annual \u2014 \u20ac79/year',
     checkoutPayNote:
       'Checkout is handled by Lemon Squeezy (secure). Use one of the plan buttons above; if a Stripe option appears, it is an alternative depending on configuration.',
     withdrawalLabelHtml:
@@ -79,6 +91,7 @@ const TX = {
     legalLinks:
       'By paying you accept the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a>.',
     footPrivacy: 'Privacy',
+    footTrust: 'Trust',
     footTerms: 'Terms',
     footCookies: 'Cookies',
     footCookiePrefs: 'Cookie settings',
@@ -173,16 +186,25 @@ function applyTx(t) {
   set('coDemoNote', t.checkoutPayNote);
   const m = document.getElementById('coLemonMonthly');
   const ann = document.getElementById('coLemonAnnual');
-  if (m) m.textContent = t.monthlyPlan;
-  if (ann) ann.textContent = t.annualPlan;
+  const unl = document.getElementById('coLemonUnlimited');
+  if (m) m.textContent = t.starterMonthly || t.monthlyPlan;
+  if (ann) ann.textContent = t.starterAnnual || t.annualPlan;
+  if (unl) unl.textContent = t.unlimitedMonthly || 'Ilimitado';
+  const note = document.getElementById('coCreditsNote');
+  if (note && t.creditsNote) {
+    note.textContent = t.creditsNote;
+    note.hidden = false;
+  }
   const bh = document.getElementById('coBackHome');
   if (bh) bh.textContent = t.backHome;
   const legal = document.getElementById('coLegalLinks');
   if (legal && t.legalLinks) legal.innerHTML = t.legalLinks;
   const f1 = document.getElementById('coFootPrivacy');
+  const f1b = document.getElementById('coFootTrust');
   const f2 = document.getElementById('coFootTerms');
   const f3 = document.getElementById('coFootCookies');
   if (f1) f1.textContent = t.footPrivacy;
+  if (f1b) f1b.textContent = t.footTrust;
   if (f2) f2.textContent = t.footTerms;
   if (f3) f3.textContent = t.footCookies;
   const f4 = document.getElementById('coFootCookiePrefs');
@@ -241,6 +263,25 @@ export async function mountCheckoutPage() {
   applyTx(t);
   applyManageSubscriptionBlock(t);
 
+  const lemon = FEATURES.lemonCheckout || {};
+  const lemonM = document.getElementById('coLemonMonthly');
+  const lemonA = document.getElementById('coLemonAnnual');
+  const lemonU = document.getElementById('coLemonUnlimited');
+  if (lemonM instanceof HTMLAnchorElement && lemon.starterMonthly) lemonM.href = lemon.starterMonthly;
+  if (lemonA instanceof HTMLAnchorElement && lemon.starterAnnual) lemonA.href = lemon.starterAnnual;
+  if (lemonU instanceof HTMLAnchorElement) {
+    const u = String(lemon.unlimitedMonthly || '').trim();
+    if (u) {
+      lemonU.href = u;
+      lemonU.hidden = false;
+    }
+  }
+
+  if (isCreditsSystemEnabled()) {
+    const { refreshCreditsAfterAuth } = await import('../services/creditsApi.js');
+    await refreshCreditsAfterAuth().catch(() => {});
+  }
+
   if (paidCheckoutComplete) {
     const welcomeEl = document.getElementById('coProWelcome');
     if (welcomeEl) {
@@ -294,7 +335,7 @@ export async function mountCheckoutPage() {
     }
   }
 
-  ['coLemonMonthly', 'coLemonAnnual'].forEach((id) => {
+  ['coLemonMonthly', 'coLemonAnnual', 'coLemonUnlimited'].forEach((id) => {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('click', (ev) => {

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Diámetro mínimo de eje macizo por torsión y combinación con flexión (Von Mises/Tresca). Predimensionado mecánico. Herramienta online gratuita." />
+    <meta name="description" content="Diámetro mínimo por par y tensión torsional admisible. Eje macizo a torsión pura orientativa." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,13 +11,13 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/calc-shaft.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/calc-shaft.html" />
-    <meta property="og:title" content="Calculadora de eje a torsión diámetro mínimo online" />
-    <meta property="og:description" content="Diámetro mínimo de eje macizo por torsión y combinación con flexión (Von Mises/Tresca). Predimensionado mecánico. Herramienta online gratuita." />
+    <meta property="og:url" content="https://www.themechassist.com/calc-shaft.html" id="mdr-og-url" />
+    <meta property="og:title" content="Eje a torsión — TheMechAssist" />
+    <meta property="og:description" content="Diámetro mínimo por par y tensión torsional admisible. Eje macizo a torsión pura orientativa." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de eje a torsión diámetro mínimo online" />
+    <meta name="twitter:title" content="Eje a torsión — TheMechAssist" />
 
-    <title>Calculadora de eje a torsión diámetro mínimo online — TheMechAssist</title>
+    <title>Eje a torsión — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -30,6 +30,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -44,14 +46,38 @@
       </div>
     </header>
     <main class="lab-main">
-      <section class="lab-panel">
-        <h2>Eje macizo · torsión y flexión (modo básico/avanzado)</h2>
-        <p class="calc-seo-intro">
-          Este módulo estima el diámetro necesario de un eje macizo sometido primero a torsión pura y, en modo avanzado, a la combinación de momento flector y par torsor mediante tensión equivalente de Von Mises o Tresca con coeficientes de concentración orientativos. El resultado sirve como predimensionado previo a un análisis de fatiga detallado o a la normativa corporativa del proyecto. Lo usan ingenieros de diseño de máquinas y mantenimiento cuando hay que sustituir un eje o validar un aumento de potencia. Por ejemplo, puede dimensionar el eje de salida de un reductor antes de encargar el mecanizado cuando cambian la polea y la cinta arrastrada.
-        </p>
-        <p class="lab-lead">Modo básico: torsión pura. Modo avanzado: combina T y M con Von Mises o Tresca e incluye Kt. Resultado orientativo para predimensionado.</p>
+      <section class="lab-panel lab-panel--accent">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="shaft.h2">Eje macizo · torsión y flexión (modo básico/avanzado)</h2>
+          <p class="lab-calc-hero-lead" data-i18n="shaft.heroLeadHtml" data-i18n-html>
+            Obtén el <strong>diámetro mínimo</strong> por torsión pura o, en avanzado, tensión equivalente con <strong>M</strong> y <strong>Kt</strong> (Von Mises / Tresca). Compara con un Ø comercial o diagnostica un eje ya dimensionado.
+          </p>
+          <details class="lab-calc-seo">
+            <summary data-i18n="shaft.seoSummary">Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro">
+              Este módulo estima el diámetro necesario de un eje macizo sometido primero a torsión pura y, en modo avanzado, a la combinación de momento flector y par torsor mediante tensión equivalente de Von Mises o Tresca con coeficientes de concentración orientativos. El resultado sirve como predimensionado previo a un análisis de fatiga detallado o a la normativa corporativa del proyecto. Lo usan ingenieros de diseño de máquinas y mantenimiento cuando hay que sustituir un eje o validar un aumento de potencia. Por ejemplo, puede dimensionar el eje de salida de un reductor antes de encargar el mecanizado cuando cambian la polea y la cinta arrastrada.
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="shaft.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help">
+                Modo <strong>diseño</strong>: torsión con <strong>τ = 16T/(πd³)</strong> y comparación con un Ø comercial. Modo <strong>avanzado</strong>: tensión equivalente Von Mises o Tresca con <strong>M</strong> y <strong>Kt</strong> orientativos.
+                No incluye fatiga detallada ni concentraciones reales de chavetas o roscas; use como predimensionado y valide con su normativa.
+              </p>
+            </div>
+          </details>
+        </header>
+        <nav class="lab-next-steps" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li><a href="calc-keys-din6885.html">Chavetas DIN 6885</a> — acople de elementos al eje.</li>
+            <li><a href="calc-bearings.html">Rodamientos · L10</a> — apoyos en vanos de diseño.</li>
+            <li><a href="calc-gears.html">Engranajes cilíndricos</a> — si dimensiona antes el par en el piñón.</li>
+          </ul>
+        </nav>
         <div class="lab-presets-row">
-          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <span class="lab-presets-row__label" data-i18n="shaft.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="shPresetsBar"></div>
         </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
@@ -59,7 +85,7 @@
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
               <p class="lab-diagram-wrap__title">Vista esquemática · torsión (y flexión en avanzado)</p>
               <svg id="shDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de eje sometido a par"></svg>
-              <p class="lab-diagram-caption">Par <strong>T</strong> aplicado en extremos; en avanzado se representa <strong>M</strong> transversal. Modelo orientativo (sin fatiga detallada).</p>
+              <p class="lab-diagram-caption">Vista lateral con <strong>T</strong> en extremos y arcos de par <strong>debajo</strong> del eje; a la derecha, sección circular <strong>Ø d</strong>. Con flexión, <strong>M</strong> se indica arriba del tramo central.</p>
             </div>
           </div>
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
@@ -224,10 +250,6 @@
             </div>
             <div id="shHero"></div>
             <div id="shAlerts" class="lab-alerts"></div>
-            <div class="lab-results-share" id="shShareLinkWrap" aria-live="polite">
-              <button type="button" class="lab-btn" id="shCopyLinkBtn">Copiar enlace</button>
-              <div class="lab-copy-toast" id="shCopyToast" role="status">¡Enlace copiado!</div>
-            </div>
             <div class="lab-results-wrap" id="shResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
@@ -238,9 +260,21 @@
                 </svg>
                 <span class="lab-results-computing__label">Recalculando</span>
               </div>
-              <div class="lab-results" id="shResults"></div>
+              <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked">
+                <summary data-i18n="shaft.summaryFull">Resultado completo</summary>
+                <div class="lab-results" id="shResults"></div>
+              </details>
+              <div class="lab-results-actions">
+                <button type="button" class="lab-btn lab-btn--block" id="shCopyResults" data-i18n="shaft.copyResults">
+                  Copiar resultados
+                </button>
+              </div>
             </div>
             <div id="labPurchaseSuggestions" hidden></div>
+            <div class="lab-results-share lab-results-share--footer" id="shShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="shCopyLinkBtn" data-i18n="shaft.copyLink">Copiar enlace</button>
+              <div class="lab-copy-toast" id="shCopyToast" role="status" data-i18n="shaft.copyToast">¡Enlace copiado!</div>
+            </div>
           </div>
         </div>
       </section>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Relación i, velocidad lineal y frecuencia de articulación en cadena de rodillos DIN 8187 / ISO 606. Transmisión por cadenas y piñones online." />
+    <meta name="description" content="Cinemática de transmisión por cadena: relación, velocidad lineal, frecuencia de articulación y lubricación." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,13 +11,13 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/calc-chains.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/calc-chains.html" />
-    <meta property="og:title" content="Calculadora de cadenas y piñones online" />
-    <meta property="og:description" content="Relación i, velocidad lineal y frecuencia de articulación en cadena de rodillos DIN 8187 / ISO 606. Transmisión por cadenas y piñones online." />
+    <meta property="og:url" content="https://www.themechassist.com/calc-chains.html" id="mdr-og-url" />
+    <meta property="og:title" content="Cadenas y piñones — TheMechAssist" />
+    <meta property="og:description" content="Cinemática de transmisión por cadena: relación, velocidad lineal, frecuencia de articulación y lubricación." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de cadenas y piñones online" />
+    <meta name="twitter:title" content="Cadenas y piñones — TheMechAssist" />
 
-    <title>Calculadora de cadenas y piñones online — TheMechAssist</title>
+    <title data-i18n="chains.docTitle">Cadenas y piñones — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -30,6 +30,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -45,155 +47,168 @@
     </header>
     <main class="lab-main">
       <section class="lab-panel lab-panel--accent">
-        <h2>Cadena de rodillos · dos piñones</h2>
-        <p class="calc-seo-intro">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="chains.h2">Cadena de rodillos · dos piñones</h2>
+          <p class="lab-calc-hero-lead" data-i18n="chains.heroLead">
+            Cinemática DIN 8187 / ISO 606: primitivos, relación, longitud en pasos, velocidad lineal y avisos de articulación y lubricación.
+          </p>
+          <details class="lab-calc-seo">
+            <summary data-i18n="chains.seoSummary">Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro" data-i18n="chains.calcSeoIntro">
           La calculadora aborda la cinemática de la transmisión por cadenas y piñones con paso métrico según DIN 8187 e ISO 606: diámetros primitivos, relación de velocidades, longitud en eslabones y régimen de velocidad lineal en el pasador. Los avisos de frecuencia de articulación y lubricación ayudan a orientar el mantenimiento cuando el centro entre ejes es fijo. Interesa a proyectistas de transportadores y reductores compactos que deben conciliar paso comercial y cadena en stock. Visualice validar si una cadena más corta sigue siendo compatible cuando se incrementa la distancia entre centros en un convoy existente.
-        </p>
-        <p class="lab-lead">
-          Cadena de rodillos según <strong>DIN 8187 / ISO 606</strong> (paso métrico) y referencias <strong>ANSI B29.1</strong> en el catálogo demo. Longitud en <strong>pasos</strong> con centro fijo; cinemática en primitivos
-          <code>D = p / sin(π/z)</code>.
-        </p>
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="chains.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help" data-i18n="chains.methodologyHtml" data-i18n-html>
+                Cadena de rodillos según <strong>DIN 8187 / ISO 606</strong> (paso métrico) y referencias <strong>ANSI B29.1</strong> en el catálogo demo. Longitud en <strong>pasos</strong> con centro fijo; cinemática en primitivos
+                <code>D = p / sin(π/z)</code>. Frecuencia de articulación y lubricación son orientativas; valide con norma y fabricante.
+              </p>
+            </div>
+          </details>
+        </header>
         <div class="lab-presets-row">
-          <span class="lab-presets-row__label">Ejemplos típicos:</span>
+          <span class="lab-presets-row__label" data-i18n="chains.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="cPresetsBar"></div>
         </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-              <p class="lab-diagram-wrap__title">Vista esquemática · piñones y tramos rectos</p>
-              <svg id="cDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de cadena y piñones"></svg>
-              <p class="lab-diagram-caption">Primitivos <strong>D = p/sin(π/z)</strong>; rodillos solo en tangentes. z₁ a la derecha en el dibujo (motor).</p>
+              <p class="lab-diagram-wrap__title" data-i18n="chains.diagTitle">Vista esquemática · piñones y tramos rectos</p>
+              <svg id="cDiagram" xmlns="http://www.w3.org/2000/svg" data-i18n="chains.diagAriaLabel" data-i18n-attr="aria-label" aria-label="Diagrama de cadena y piñones"></svg>
+              <p class="lab-diagram-caption" data-i18n="chains.diagCaptionHtml" data-i18n-html>Primitivos <strong>D = p/sin(π/z)</strong>; rodillos solo en tangentes. z₁ a la derecha en el dibujo (motor).</p>
             </div>
           </div>
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field lab-field--wide">
                 <label for="cChainRef" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Norma y paso de catálogo">
+                  <span class="lab-field-ico" data-i18n-attrs="title=chains.icoChainType" title="Norma y paso de catálogo">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <ellipse cx="8" cy="12" rx="3" ry="4" />
                       <ellipse cx="16" cy="12" rx="3" ry="4" />
                       <path d="M11 12h2" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Referencia cadena (norma)</span>
+                  <span class="lab-field__label-text" data-i18n="chains.labelChainRef">Referencia cadena (norma)</span>
                 </label>
                 <select id="cChainRef"></select>
-                <span class="hint">ISO 606 serie B y referencias ANSI habituales — <em>p</em> según catálogo</span>
-                <p class="lab-field-help">Elige el <strong>paso p</strong> y la designación de cadena; el valor de <em>p</em> fija el primitivo y la longitud en pasos.</p>
+                <span class="hint" data-i18n="chains.hintChainType">ISO 606 serie B y referencias ANSI habituales — <em>p</em> según catálogo</span>
+                <p class="lab-field-help" data-i18n="chains.helpChainType" data-i18n-html>Elige el <strong>paso p</strong> y la designación de cadena; el valor de <em>p</em> fija el primitivo y la longitud en pasos.</p>
               </div>
               <div class="lab-field lab-field--wide lab-field--check">
                 <label class="lab-check">
                   <input id="cManualPitch" type="checkbox" />
-                  <span>Usar paso <em>p</em> manual (ignora el desplegable)</span>
+                  <span data-i18n="chains.labelManualPitch">Usar paso <em>p</em> manual (ignora el desplegable)</span>
                 </label>
-                <p class="lab-field-help">Útil si su paso no está en el catálogo demo o quiere probar una hipótesis sin cambiar el desplegable.</p>
+                <p class="lab-field-help" data-i18n="chains.helpCustomPitch">Útil si su paso no está en el catálogo demo o quiere probar una hipótesis sin cambiar el desplegable.</p>
               </div>
               <div class="lab-field">
                 <label for="cPitch" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Paso de cadena">
+                  <span class="lab-field-ico" data-i18n-attrs="title=chains.icoPitch" title="Paso de cadena">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M5 12h14" />
                       <path d="M8 9v6M16 9v6" />
                       <path d="M6 12h2M16 12h2" stroke-dasharray="1 2" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Paso p (mm)</span>
+                  <span class="lab-field__label-text" data-i18n="chains.labelPitch">Paso p (mm)</span>
                 </label>
                 <input id="cPitch" type="number" step="0.001" min="4" value="19.05" disabled />
-                <span class="hint">Solo activo con la casilla anterior</span>
-                <p class="lab-field-help"><strong>Paso p</strong> (mm): distancia entre ejes de pasadores consecutivos; con <strong>z</strong> define <strong>D = p/sin(π/z)</strong>.</p>
+                <span class="hint" data-i18n="chains.hintPitchManual">Solo activo con la casilla anterior</span>
+                <p class="lab-field-help" data-i18n="chains.helpPitch" data-i18n-html><strong>Paso p</strong> (mm): distancia entre ejes de pasadores consecutivos; con <strong>z</strong> define <strong>D = p/sin(π/z)</strong>.</p>
               </div>
               <div class="lab-field">
                 <label for="cZ1" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Dientes piñón motor">
+                  <span class="lab-field-ico" data-i18n-attrs="title=chains.icoZ1" title="Dientes piñón motor">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="3.2" />
                       <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">z₁ (motor)</span>
+                  <span class="lab-field__label-text" data-i18n="chains.labelZ1">z₁ (motor)</span>
                 </label>
                 <input id="cZ1" type="number" min="6" value="17" />
-                <p class="lab-field-help">Dientes del piñón motor. Valores bajos aumentan el <strong>efecto poligonal</strong> (irregularidad de velocidad); normas suelen recomendar mínimos según paso.</p>
+                <p class="lab-field-help" data-i18n="chains.helpZ1" data-i18n-html>Dientes del piñón motor. Valores bajos aumentan el <strong>efecto poligonal</strong> (irregularidad de velocidad); normas suelen recomendar mínimos según paso.</p>
               </div>
               <div class="lab-field">
                 <label for="cZ2" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Dientes piñón conducido">
+                  <span class="lab-field-ico" data-i18n-attrs="title=chains.icoZ2" title="Dientes piñón conducido">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="6" />
                       <circle cx="12" cy="12" r="2.5" />
                       <path d="M12 1.5v3M12 19.5v3" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">z₂</span>
+                  <span class="lab-field__label-text" data-i18n="chains.labelZ2">z₂</span>
                 </label>
                 <input id="cZ2" type="number" min="6" value="25" />
-                <p class="lab-field-help">Piñón conducido. Relación aproximada de rpm: <strong>n₂/n₁ ≈ z₁/z₂</strong> en el primitivo.</p>
+                <p class="lab-field-help" data-i18n="chains.helpZ2" data-i18n-html>Piñón conducido. Relación aproximada de rpm: <strong>n₂/n₁ ≈ z₁/z₂</strong> en el primitivo.</p>
               </div>
               <div class="lab-field">
                 <label for="cCenter" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Distancia entre centros">
+                  <span class="lab-field-ico" data-i18n-attrs="title=chains.icoCentre" title="Distancia entre centros">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="7" cy="12" r="3" />
                       <circle cx="17" cy="12" r="3" />
                       <path d="M10 12h4" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Centro C (mm)</span>
+                  <span class="lab-field__label-text" data-i18n="chains.labelCentre">Centro C (mm)</span>
                 </label>
                 <input id="cCenter" type="number" min="50" value="450" />
-                <span class="hint">Se muestra también en m (SI)</span>
-                <p class="lab-field-help">Distancia entre centros de los piñones; con <strong>p</strong> y <strong>z</strong> determina la longitud de cadena en pasos (modelo de montaje centrado).</p>
+                <span class="hint" data-i18n="chains.hintCentre">Se muestra también en m (SI)</span>
+                <p class="lab-field-help" data-i18n="chains.helpCentre" data-i18n-html>Distancia entre centros de los piñones; con <strong>p</strong> y <strong>z</strong> determina la longitud de cadena en pasos (modelo de montaje centrado).</p>
               </div>
               <div class="lab-field">
                 <label for="cN1" class="lab-field__label-row">
-                  <span class="lab-field-ico" title="RPM entrada">
+                  <span class="lab-field-ico" data-i18n-attrs="title=chains.icoN1" title="RPM entrada">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="8" />
                       <path d="M16 8l2-4M18 4l4 2" />
                       <path d="M12 8v4l3 2" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Giro motor n₁ (RPM)</span>
+                  <span class="lab-field__label-text" data-i18n="chains.labelN1">Giro motor n₁ (RPM)</span>
                 </label>
                 <input id="cN1" type="number" min="0" value="1455" />
-                <span class="hint">v lineal, articulaciones/s y lubricación</span>
-                <p class="lab-field-help">RPM del eje motriz. La <strong>frecuencia de articulación</strong> en el piñón 1 es del orden de <strong>z₁·n₁/60</strong> Hz (cada paso articula).</p>
+                <span class="hint" data-i18n="chains.hintN1">v lineal, articulaciones/s y lubricación</span>
+                <p class="lab-field-help" data-i18n="chains.helpN1" data-i18n-html>RPM del eje motriz. La <strong>frecuencia de articulación</strong> en el piñón 1 es del orden de <strong>z₁·n₁/60</strong> Hz (cada paso articula).</p>
               </div>
               <div class="lab-field lab-field--wide">
                 <label class="lab-field__label-row">
-                  <span class="lab-field-ico" title="Guía de lubricación por velocidad">
+                  <span class="lab-field-ico" data-i18n-attrs="title=chains.icoLubGuide" title="Guía de lubricación por velocidad">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M12 3c-3 4-6 7-6 11a6 6 0 1012 0c0-4-3-7-6-11z" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Guía de lubricación por velocidad de cadena</span>
+                  <span class="lab-field__label-text" data-i18n="chains.labelLubTable">Guía de lubricación por velocidad de cadena</span>
                 </label>
                 <div style="overflow-x: auto">
                   <table class="lab-catalog-table" style="margin-top: 0">
                     <thead>
                       <tr>
-                        <th>Velocidad cadena</th>
-                        <th>Lubricación recomendada</th>
+                        <th data-i18n="chains.thChainSpeed">Velocidad cadena</th>
+                        <th data-i18n="chains.thLubRec">Lubricación recomendada</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
-                        <td>v &lt; 0.5 m/s</td>
-                        <td>Manual periódica (brocha/aceitera)</td>
+                        <td data-i18n="chains.lubRow1">v &lt; 0.5 m/s</td>
+                        <td data-i18n="chains.lubRec1">Manual periódica (brocha/aceitera)</td>
                       </tr>
                       <tr>
-                        <td>0.5 – 4 m/s</td>
-                        <td>Baño de aceite o salpicadura</td>
+                        <td data-i18n="chains.lubRow2">0.5 – 4 m/s</td>
+                        <td data-i18n="chains.lubRec2">Baño de aceite o salpicadura</td>
                       </tr>
                       <tr>
-                        <td>4 – 8 m/s</td>
-                        <td>Circulación forzada con bomba</td>
+                        <td data-i18n="chains.lubRow3">4 – 8 m/s</td>
+                        <td data-i18n="chains.lubRec3">Circulación forzada con bomba</td>
                       </tr>
                       <tr>
-                        <td>&gt; 8 m/s</td>
-                        <td>Circulación forzada + refrigeración</td>
+                        <td data-i18n="chains.lubRow4">&gt; 8 m/s</td>
+                        <td data-i18n="chains.lubRec4">Circulación forzada + refrigeración</td>
                       </tr>
                     </tbody>
                   </table>
@@ -205,46 +220,43 @@
             <div
               class="lab-units-bar"
               role="group"
+              data-i18n-attrs="aria-label=chains.unitsAriaLabel data-lab-convert-title=chains.convertTitle data-lab-convert-tip=chains.convertTip"
               aria-label="Unidades de los resultados"
               data-lab-convert-categories="length rotation linear"
               data-lab-convert-title="Conversor (cadenas de rodillos)"
               data-lab-convert-tip="Paso y cotas en mm; RPM del piñon o cadena; velocidad lineal de la cadena."
             >
-              <span class="lab-units-bar__title">Cómo ver los resultados</span>
+              <span class="lab-units-bar__title" data-i18n="chains.unitsBarTitle">Cómo ver los resultados</span>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Distancias</span>
+                <span class="lab-units-bar__lbl" data-i18n="chains.lblLength">Distancias</span>
                 <select id="labUnitLength" class="lab-units-bar__select">
-                  <option value="mm">mm (taller)</option>
-                  <option value="cm">cm</option>
-                  <option value="m">m (SI)</option>
+                  <option value="mm" data-i18n="chains.optMm">mm (taller)</option>
+                  <option value="cm" data-i18n="chains.optCm">cm</option>
+                  <option value="m" data-i18n="chains.optM">m (SI)</option>
                 </select>
               </label>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Giro</span>
+                <span class="lab-units-bar__lbl" data-i18n="chains.lblRotation">Giro</span>
                 <select id="labUnitRotation" class="lab-units-bar__select">
-                  <option value="rpm">RPM</option>
-                  <option value="rad_s">rad/s</option>
+                  <option value="rpm" data-i18n="chains.optRpm">RPM</option>
+                  <option value="rad_s" data-i18n="chains.optRadS">rad/s</option>
                 </select>
               </label>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Velocidad lineal</span>
+                <span class="lab-units-bar__lbl" data-i18n="chains.lblLinear">Velocidad lineal</span>
                 <select id="labUnitLinear" class="lab-units-bar__select">
-                  <option value="m_s">m/s</option>
-                  <option value="mm_s">mm/s</option>
-                  <option value="km_h">km/h</option>
+                  <option value="m_s" data-i18n="chains.optMs">m/s</option>
+                  <option value="mm_s" data-i18n="chains.optMms">mm/s</option>
+                  <option value="km_h" data-i18n="chains.optKmh">km/h</option>
                 </select>
               </label>
             </div>
             <div id="cHero"></div>
             <details class="lab-results-details lab-results-details--chevron-end">
-              <summary>Resultados por elemento</summary>
+              <summary data-i18n="chains.summaryPerElement">Resultados por elemento</summary>
               <div id="cElementResults" class="lab-element-columns"></div>
             </details>
             <div id="cAlerts" class="lab-alerts"></div>
-            <div class="lab-results-share" id="cShareLinkWrap" aria-live="polite">
-              <button type="button" class="lab-btn" id="cCopyLinkBtn">Copiar enlace</button>
-              <div class="lab-copy-toast" id="cCopyToast" role="status">¡Enlace copiado!</div>
-            </div>
             <div class="lab-results-wrap" id="cResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
@@ -253,16 +265,29 @@
                     d="M32 8l2.2 4.4 4.9-1.3 1.3 4.9 4.4 2.2-2.2 4.4 1.3 4.9-4.9 1.3-2.2 4.4-4.4-2.2-4.9 1.3-1.3-4.9-4.4-2.2 2.2-4.4-1.3-4.9 4.9-1.3 4.4-2.2zm0 10a14 14 0 100 28 14 14 0 000-28z"
                   />
                 </svg>
-                <span class="lab-results-computing__label">Recalculando</span>
+                <span class="lab-results-computing__label" data-i18n="chains.recalculating">Recalculando</span>
               </div>
-              <details class="lab-results-details lab-results-details--chevron-end">
-                <summary>Resultado completo</summary>
+              <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked">
+                <summary data-i18n="chains.summaryFull">Resultado completo</summary>
                 <div class="lab-results" id="cResults"></div>
               </details>
+              <div class="lab-results-actions">
+                <button type="button" class="lab-btn lab-btn--block" id="cCopyResults" data-i18n="chains.copyResults">
+                  Copiar resultados
+                </button>
+              </div>
             </div>
+            <p class="lab-related-hint" data-i18n="chains.relatedHintHtml" data-i18n-html>
+              ¿Dimensionando una transmisión completa?
+              <a href="machines-hub.html">Calcula también la máquina accionada →</a>
+            </p>
             <div id="cSubstitution"></div>
             <div class="lab-results lab-results--note" id="cAssembly"></div>
             <div id="labPurchaseSuggestions" hidden></div>
+            <div class="lab-results-share lab-results-share--footer" id="cShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="cCopyLinkBtn" data-i18n="chains.copyLink">Copiar enlace</button>
+              <div class="lab-copy-toast" id="cCopyToast" role="status" data-i18n="chains.copyToast">¡Enlace copiado!</div>
+            </div>
           </div>
         </div>
       </section>

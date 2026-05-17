@@ -3,6 +3,7 @@
  */
 
 import { getCurrentLang, setCurrentLang } from '../config/locales.js';
+import { applyMachinePresetLabels } from '../lab/i18n/machineHubPresetLabels.js';
 import { refreshMountingConfigSection } from './mountingConfigSection.js';
 
 export const BUCKET_ELEVATOR_LANG_EVENT = 'mdr-home-lang-changed';
@@ -194,20 +195,30 @@ function applyDataBeI18n(lang) {
     beLblRho: en
       ? 'Apparent bulk density \u03b3'
       : 'Peso espec\u00edfico aparente \u03b3',
-    beHintRho: en ? 'kg/m\u00b3' : 'kg/m\u00b3',
+    beFldCtxH: en ? 'Typ. 12\u201345 m (grain / cement)' : 'T\u00edp. 12\u201345 m (grano / cemento)',
+    beFldCtxQ: en
+      ? 'Typ. 30\u2013150 t/h for small/medium elevators'
+      : 'T\u00edp. 30\u2013150 t/h en elevadores medianos',
+    beFldCtxRho: en ? 'Typ. 650\u20131200 kg/m\u00b3 bulk' : 'T\u00edp. 650\u20131200 kg/m\u00b3 a granel',
+    beFldCtxVbelt: en
+      ? '1.0\u20132.0 m/s grain \u00b7 slower if fragile / abrasive'
+      : '1,0\u20132,0 m/s grano \u00b7 m\u00e1s lento si fr\u00e1gil / abrasivo',
+    beFldCtxDrum: en
+      ? 'Head drum typ. 0.5\u20131.2 m \u00b7 boot 0.4\u20130.9 m'
+      : 'Tambor cabeza t\u00edp. 0,5\u20131,2 m \u00b7 bota 0,4\u20130,9 m',
+    beFldCtxSigma: en
+      ? 'Typ. ST-class belt strength (demo catalog)'
+      : 'Resistencia ST orientativa (cat\u00e1logo demo)',
     beLblParticle: en ? 'Mean particle size' : 'Granulometr\u00eda media',
     beHintParticle: en ? 'mm (characteristic)' : 'mm (tama\u00f1o caracter\u00edstico)',
     beLblFluid: en ? 'Flowability (fill)' : 'Fluidez (llenado)',
     beLblNature: en ? 'Product nature' : 'Naturaleza del producto',
     beLblQ: en ? 'Required capacity' : 'Capacidad requerida',
-    beHintQ: en ? 't/h (TPH)' : 't/h (TPH)',
     beLblH: en ? 'Lift height <em>H</em>' : 'Altura de elevaci\u00f3n <em>H</em>',
-    beHintH: en ? 'm (useful vertical lift)' : 'm (cota vertical \u00fatil)',
     beLblC: en ? 'Drum center distance <em>C</em>' : 'Distancia entre centros de tambores <em>C</em>',
     beHintC: en ? 'm (approx. circuit envelope)' : 'm (envolvente aproximada del circuito)',
     beLblDhead: en ? 'Head drum \u00d8' : '\u00d8 tambor de cabeza',
     beLblDboot: en ? 'Boot drum \u00d8' : '\u00d8 tambor de pie (bota)',
-    beHintM: en ? 'm' : 'm',
     beDiagNote: en
       ? 'The diagram on the right <strong>grows</strong> with <em>H</em> to show elevator scale.'
       : 'El diagrama a la derecha <strong>crece</strong> con <em>H</em> para visualizar la escala del elevador.',
@@ -222,7 +233,6 @@ function applyDataBeI18n(lang) {
       : 'Centr\u00edfuga: materiales fluidos y mayor velocidad. Gravedad: materiales fr\u00e1giles/abrasivos y menor velocidad. Mixta: punto intermedio.',
     beLblWidth: en ? 'Adopted belt width' : 'Ancho de banda adoptado',
     beLblSigma: en ? 'Nominal belt strength (demo)' : 'Resistencia nominal banda (demo)',
-    beHintSigma: en ? 'N/mm (indicative ST class)' : 'N/mm (ST clase orientativa)',
     beLblEta: en ? '\u03b7 lift (pulleys, slack)' : '\u03b7 elevaci\u00f3n (poleas, holguras)',
     beLblKboot: en ? '<em>k</em> boot drag' : '<em>k</em> arrastre bota / dragado',
     beHintKboot: en ? 'fraction of <em>P</em><sub>e</sub>' : 'fracci\u00f3n sobre <em>P</em>\u2091',
@@ -298,6 +308,7 @@ export function applyBucketElevatorStaticI18n(lang = getCurrentLang()) {
   applyDataBeI18n(lang);
   applyChips(lang);
   applySelectOptions(lang);
+  if (en) applyMachinePresetLabels('en');
 
   const wz = document.getElementById('beWizardNav');
   if (wz) wz.setAttribute('aria-label', en ? 'Assistant steps' : 'Pasos del asistente');
@@ -320,22 +331,22 @@ function syncLangButtons() {
 
 export function initBucketElevatorLangChrome() {
   const host = document.getElementById('beLangHost');
-  if (!host) return;
-
-  host.innerHTML = `
+  if (host) {
+    host.innerHTML = `
     <div class="hub-lang" role="group" aria-label="">
       <button type="button" class="hub-lang__btn" data-lang="es" aria-pressed="false">ES</button>
       <button type="button" class="hub-lang__btn" data-lang="en" aria-pressed="false">EN</button>
     </div>`;
 
-  host.querySelectorAll('[data-lang]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const l = btn.getAttribute('data-lang');
-      if (l !== 'es' && l !== 'en') return;
-      setCurrentLang(l);
-      applyBucketElevatorPageLanguage();
+    host.querySelectorAll('[data-lang]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const l = btn.getAttribute('data-lang');
+        if (l !== 'es' && l !== 'en') return;
+        setCurrentLang(l);
+        applyBucketElevatorPageLanguage();
+      });
     });
-  });
+  }
 
   applyBucketElevatorPageLanguage();
 }

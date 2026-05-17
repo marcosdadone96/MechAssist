@@ -1,6 +1,7 @@
 # Restaurar cobros / Pro de pago (referencia manual)
 # Cuando quiera volver a monetizar: ponga `publicFreeRelease: false` en js/config/features.js
 # y restaure valores como los siguientes (revise tambien Netlify env y Lemon).
+# Checklist detallada: docs/go-live-billing-checklist.md
 
 publicFreeRelease: false
 devSimulatePremium: false

@@ -8,10 +8,24 @@ import {
   mountLabPresetsBar,
   updateLabShareVisibility,
   wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { withCalcCredits } from '../services/creditSession.js';
+import { isCreditsSystemEnabled } from '../config/credits.js';
 import { DEEP_GROOVE_SERIES } from '../data/skfFagDeepGroove.js';
 import { renderCatalogDeepGrooveSection } from '../lab/diagramCatalogModules.js';
+import { getLabLang } from '../lab/i18n/labLang.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { BEARING_CATALOG_EN } from '../lab/i18n/pages/bearingCatalogEn.js';
+
+function bx(es, en) {
+  return getLabLang() === 'en' ? en : es;
+}
+
+function numLocale(n) {
+  return n.toLocaleString(getLabLang() === 'en' ? 'en-US' : 'es-ES');
+}
 
 function l10_revolutions(C, P) {
   if (P <= 0) return Infinity;
@@ -41,6 +55,7 @@ function fillBearingSelect(seriesId) {
 const BC_PRESETS = [
   {
     label: '6205-2Z · servicio medio',
+    labelKey: 'bcat.preset1',
     values: {
       bcSeries: '6200',
       bcBearing: '6205-2Z',
@@ -52,6 +67,7 @@ const BC_PRESETS = [
   },
   {
     label: '6308-2Z · alta carga',
+    labelKey: 'bcat.preset2',
     values: {
       bcSeries: '6300',
       bcBearing: '6308-2Z',
@@ -120,13 +136,13 @@ function render() {
   if (!b) {
     out.innerHTML = '';
     tbl.innerHTML = '';
-    if (autoGeom) autoGeom.textContent = 'Geometría y C del rodamiento seleccionado.';
+    if (autoGeom) autoGeom.textContent = bx('Geometría y C del rodamiento seleccionado.', 'Geometry and C of selected bearing.');
     updateLabShareVisibility('bcShareLinkWrap', 'bcOut');
     if (!bcUrl.hydrating) serializeBcFullUrl();
     return;
   }
   if (autoGeom) {
-    autoGeom.textContent = `${b.designation}: d=${b.d} mm · D=${b.D} mm · B=${b.B} mm · C=${b.C_N.toLocaleString('es-ES')} N`;
+    autoGeom.textContent = `${b.designation}: d=${b.d} mm · D=${b.D} mm · B=${b.B} mm · C=${numLocale(b.C_N)} N`;
   }
 
   renderCatalogDeepGrooveSection(document.getElementById('bcDiagram'), {
@@ -143,7 +159,10 @@ function render() {
   const hpdUse = Number.isFinite(hpd) && hpd > 0 ? Math.min(24, hpd) : null;
   const Lh = nUse != null ? l10_hours(Lrev, nUse) : NaN;
   if (nUse == null || hpdUse == null) {
-    out.innerHTML = '<p class=\"lab-verdict lab-verdict--err\">Entrada no válida: use n &gt; 0 min⁻¹ y horas/día &gt; 0.</p>';
+    out.innerHTML = `<p class="lab-verdict lab-verdict--err">${bx(
+      'Entrada no válida: use n > 0 min⁻¹ y horas/día > 0.',
+      'Invalid input: use n > 0 min⁻¹ and hours/day > 0.',
+    )}</p>`;
     tbl.innerHTML = '';
     updateLabShareVisibility('bcShareLinkWrap', 'bcOut');
     if (!bcUrl.hydrating) serializeBcFullUrl();
@@ -154,38 +173,38 @@ function render() {
   const margin = Lreq > 0 ? (Lh - Lreq) / Lreq : 0;
   const ok = Lh >= Lreq;
 
+  const yearsWord = bx('años', 'years');
   if (ok && margin >= 0.5) {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--ok"><strong>APTO con margen</strong>: ${b.designation} supera las ${Lreq.toLocaleString(
-      'es-ES',
-    )} h con margen ≥ 50% (L<sub>10h</sub> ≈ ${Lh.toFixed(0)} h; ${Lyears.toFixed(2)} años).</p>`;
+    out.innerHTML = `<p class="lab-verdict lab-verdict--ok"><strong>${bx('APTO con margen', 'OK with margin')}</strong>: ${b.designation} ${bx('supera las', 'exceeds')} ${numLocale(Lreq)} h ${bx('con margen ≥ 50%', 'with margin ≥ 50%')} (L<sub>10h</sub> ≈ ${Lh.toFixed(0)} h; ${Lyears.toFixed(2)} ${yearsWord}).</p>`;
   } else if (ok) {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--warn"><strong>APTO ajustado</strong>: ${b.designation} supera el objetivo, pero con margen < 50% (L<sub>10h</sub> ≈ ${Lh.toFixed(
+    out.innerHTML = `<p class="lab-verdict lab-verdict--warn"><strong>${bx('APTO ajustado', 'OK (tight)')}</strong>: ${b.designation} ${bx('supera el objetivo, pero con margen < 50%', 'meets target but margin < 50%')} (L<sub>10h</sub> ≈ ${Lh.toFixed(
       0,
-    )} h; ${Lyears.toFixed(2)} años).</p>`;
+    )} h; ${Lyears.toFixed(2)} ${yearsWord}).</p>`;
   } else {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>INSUFICIENTE</strong>: ${b.designation} no alcanza ${Lreq.toLocaleString(
-      'es-ES',
-    )} h (L<sub>10h</sub> ≈ ${Lh.toFixed(0)} h; ${Lyears.toFixed(2)} años). Elija mayor C o menor P.</p>`;
+    out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>${bx('INSUFICIENTE', 'INSUFFICIENT')}</strong>: ${b.designation} ${bx('no alcanza', 'does not reach')} ${numLocale(Lreq)} h (L<sub>10h</sub> ≈ ${Lh.toFixed(0)} h; ${Lyears.toFixed(2)} ${yearsWord}). ${bx('Elija mayor C o menor P.', 'Choose higher C or lower P.')}</p>`;
   }
 
   tbl.innerHTML = `
     <table class="lab-catalog-table">
-      <thead><tr><th>Catálogo</th><th>Aplicación</th></tr></thead>
+      <thead><tr><th>${bx('Catálogo', 'Catalogue')}</th><th>${bx('Aplicación', 'Application')}</th></tr></thead>
       <tbody>
-        <tr><td>Designación</td><td>${b.designation}</td></tr>
+        <tr><td>${bx('Designación', 'Designation')}</td><td>${b.designation}</td></tr>
         <tr><td>d × D × B</td><td>${b.d} × ${b.D} × ${b.B} mm</td></tr>
-        <tr><td>C (dinámica)</td><td>${C.toLocaleString('es-ES')} N</td></tr>
-        <tr><td>C₀</td><td>${b.Co_N.toLocaleString('es-ES')} N</td></tr>
-        <tr><td>P equivalente</td><td>${Puse.toLocaleString('es-ES')} N</td></tr>
-        <tr><td>n trabajo</td><td>${nUse.toFixed(0)} min⁻¹</td></tr>
-        <tr><td>Horas servicio por día</td><td>${hpdUse.toFixed(0)} h/día</td></tr>
-        <tr><td>L<sub>10</sub> (mill. rev)</td><td>${(Lrev / 1e6).toFixed(3)}</td></tr>
+        <tr><td>C (${bx('dinámica', 'dynamic')})</td><td>${numLocale(C)} N</td></tr>
+        <tr><td>C₀</td><td>${numLocale(b.Co_N)} N</td></tr>
+        <tr><td>P ${bx('equivalente', 'equivalent')}</td><td>${numLocale(Puse)} N</td></tr>
+        <tr><td>n ${bx('trabajo', 'operating')}</td><td>${nUse.toFixed(0)} min⁻¹</td></tr>
+        <tr><td>${bx('Horas servicio por día', 'Service hours per day')}</td><td>${hpdUse.toFixed(0)} h/${bx('día', 'day')}</td></tr>
+        <tr><td>L<sub>10</sub> (${bx('mill. rev', 'mill. rev')})</td><td>${(Lrev / 1e6).toFixed(3)}</td></tr>
         <tr><td>L<sub>10h</sub></td><td><strong>${Lh.toFixed(0)} h</strong></td></tr>
-        <tr><td>Vida en años</td><td><strong>${Lyears.toFixed(2)} años</strong></td></tr>
-        <tr><td>Horas requeridas</td><td>${Lreq.toLocaleString('es-ES')} h (${reqYears.toFixed(2)} años)</td></tr>
+        <tr><td>${bx('Vida en años', 'Life in years')}</td><td><strong>${Lyears.toFixed(2)} ${yearsWord}</strong></td></tr>
+        <tr><td>${bx('Horas requeridas', 'Required hours')}</td><td>${numLocale(Lreq)} h (${reqYears.toFixed(2)} ${yearsWord})</td></tr>
       </tbody>
     </table>
-    <p class="lab-small-print">C y C₀ son valores demostrativos (±10%). Vida según L = (C/P)³ y horas = L/(60n).</p>`;
+    <p class="lab-small-print">${bx(
+      'C y C₀ son valores demostrativos (±10%). Vida según L = (C/P)³ y horas = L/(60n).',
+      'C and C₀ are demonstration values (±10%). Life per L = (C/P)³ and hours = L/(60n).',
+    )}</p>`;
 
   updateLabShareVisibility('bcShareLinkWrap', 'bcOut');
   if (!bcUrl.hydrating) serializeBcFullUrl();
@@ -203,13 +222,14 @@ bindInputValidation([
 
 bcUrl.hydrateFromUrl();
 
-mountLabPresetsBar('bcPresetsBar', BC_PRESETS, render);
+mountLabPresetsBar('bcPresetsBar', BC_PRESETS, scheduleBcRender);
 
 function scheduleBcRender() {
   if (!bcUrl.hydrating) {
     document.querySelectorAll('#bcPresetsBar .lab-preset-btn').forEach((b) => b.classList.remove('is-active'));
   }
-  render();
+  if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
+  else render();
 }
 
 document.getElementById('bcSeries')?.addEventListener('change', (e) => {
@@ -223,6 +243,11 @@ document.getElementById('bcBearing')?.addEventListener('change', scheduleBcRende
 });
 
 wireLabCopyLink('bcCopyLinkBtn', 'bcCopyToast');
+wireLabCopyResultsButton('bcCopyResults', {
+  moduleTitle: bx('Cat\u00e1logo rodamientos', 'Bearing catalogue'),
+});
 
-render();
-mountLabCloudSaveBar('Cat\u00e1logo rodamientos');
+if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
+else render();
+mountLabCloudSaveBar(bx('Cat\u00e1logo rodamientos', 'Bearing catalogue'));
+watchLangAndApply(BEARING_CATALOG_EN, { onEnApplied: () => scheduleBcRender() });

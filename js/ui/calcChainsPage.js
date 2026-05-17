@@ -1,3 +1,7 @@
+import { CHAINS_EN } from '../lab/i18n/pages/chainsEn.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { LAB_LANG_EVENT, getLabLang } from '../lab/i18n/labLang.js';
+import { chainsRuntimeStrings, localizeChainLubrication } from '../lab/i18n/runtime/chainsRuntime.js';
 import { mountTierStatusBar } from './paywallMount.js';
 import { computeRollerChain } from '../lab/chains.js';
 import { CHAIN_CATALOG } from '../lab/chainCatalog.js';
@@ -25,6 +29,7 @@ import {
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { commerceIdForChainRef } from '../data/commerceCatalog.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
@@ -34,7 +39,7 @@ import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 mountTierStatusBar();
-bootSmartDashboardIfEnabled('Cadenas · laboratorio');
+bootSmartDashboardIfEnabled(chainsRuntimeStrings(getLabLang()).dashboardBoot);
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
 
@@ -80,6 +85,7 @@ function elementCardHtml(title, rows) {
 const CHAIN_PRESETS = [
   {
     label: 'ISO 12B · centrado',
+    labelKey: 'chains.preset1',
     values: {
       cManualPitch: false,
       cChainRef: 'iso-12b-1',
@@ -92,6 +98,7 @@ const CHAIN_PRESETS = [
   },
   {
     label: 'ISO 08B · lento',
+    labelKey: 'chains.preset2',
     values: {
       cManualPitch: false,
       cChainRef: 'iso-08b-1',
@@ -104,6 +111,7 @@ const CHAIN_PRESETS = [
   },
   {
     label: 'Paso manual 15 mm',
+    labelKey: 'chains.preset3',
     values: {
       cManualPitch: true,
       cPitch: 15,
@@ -170,6 +178,8 @@ manualEl?.addEventListener('change', syncPitchDisabled);
 syncPitchDisabled();
 
 function refreshCore() {
+  const lang = getLabLang();
+  const t = chainsRuntimeStrings(lang);
   const u = getLabUnitPrefs();
   const useManual = manualEl instanceof HTMLInputElement && manualEl.checked;
   const validationMsgs = [];
@@ -189,11 +199,11 @@ function refreshCore() {
   markFieldInvalid('cCenter', centerInvalid, 'Center distance must be > 0');
   markFieldInvalid('cN1', n1Invalid, 'Input speed cannot be negative');
   markFieldInvalid('cPitch', pitchInvalid, 'Manual pitch must be > 0');
-  if (z1Invalid) validationMsgs.push('Revise z1: use at least 6 teeth.');
-  if (z2Invalid) validationMsgs.push('Revise z2: use at least 6 teeth.');
-  if (centerInvalid) validationMsgs.push('Revise center distance C: it must be greater than 0.');
-  if (n1Invalid) validationMsgs.push('Revise input speed n1: it cannot be negative.');
-  if (pitchInvalid) validationMsgs.push('Revise manual pitch p: it must be greater than 0.');
+  if (z1Invalid) validationMsgs.push(t.valZ1);
+  if (z2Invalid) validationMsgs.push(t.valZ2);
+  if (centerInvalid) validationMsgs.push(t.valCenter);
+  if (n1Invalid) validationMsgs.push(t.valN1);
+  if (pitchInvalid) validationMsgs.push(t.valPitch);
 
   const chainRefId = sel instanceof HTMLSelectElement ? sel.value : '';
   const n1 = readInput('cN1', 0);
@@ -207,6 +217,8 @@ function refreshCore() {
     n1_rpm: n1 > 0 ? n1 : undefined,
   };
   const r = computeRollerChain(p);
+  const lub = localizeChainLubrication(r.chainLubrication, lang);
+  const normsNote = lang === 'en' ? t.normsNote : r.normsNote;
 
   const hasPolyWarn = Boolean(r.polygonalEffect?.active);
   const articDanger = r.articulationFrequency_Hz != null && r.articulationFrequency_Hz > 50;
@@ -217,17 +229,17 @@ function refreshCore() {
   if (heroEl) {
     heroEl.innerHTML = renderResultHero(
       [
-      {
-        label: 'ω₂ — velocidad angular · piñón 2 (conducido, z₂)',
-        display: r.n2_rpm != null ? formatRotation(r.n2_rpm, u.rotation) : '—',
-        hint: 'En el primitivo, proporcional a z₁/z₂.',
-      },
-      {
-        label: 'Velocidad de la cadena (primitivo · piñón 1)',
-        display: formatLinearSpeed(r.linearSpeed_m_s, u.linear),
-        hint: 'Media en el primitivo del piñón motor (piñón 1, z₁).',
-      },
-    ],
+        {
+          label: t.heroOmega2,
+          display: r.n2_rpm != null ? formatRotation(r.n2_rpm, u.rotation) : '—',
+          hint: t.heroOmega2Hint,
+        },
+        {
+          label: t.heroChainSpeed,
+          display: formatLinearSpeed(r.linearSpeed_m_s, u.linear),
+          hint: t.heroChainSpeedHint,
+        },
+      ],
       { verdict: chainVerdict },
     );
   }
@@ -236,81 +248,81 @@ function refreshCore() {
   const elementBox = document.getElementById('cElementResults');
   if (elementBox) {
     elementBox.innerHTML = [
-      elementCardHtml('Piñón 1 · Motor', [
-        ['Dientes (z1)', String(r.z1)],
-        ['Diam. primitivo (D1)', formatLength(r.pitchDiameter1_mm, u.length)],
-        ['Velocidad (n1)', formatRotation(r.n1_rpm, u.rotation)],
+      elementCardHtml(t.card1, [
+        [t.kvZ1, String(r.z1)],
+        [t.kvD1, formatLength(r.pitchDiameter1_mm, u.length)],
+        [t.kvN1, formatRotation(r.n1_rpm, u.rotation)],
       ]),
-      elementCardHtml('Piñón 2 · Conducido', [
-        ['Dientes (z2)', String(r.z2)],
-        ['Diam. primitivo (D2)', formatLength(r.pitchDiameter2_mm, u.length)],
-        ['Velocidad (n2)', r.n2_rpm != null ? formatRotation(r.n2_rpm, u.rotation) : '—'],
+      elementCardHtml(t.card2, [
+        [t.kvZ2, String(r.z2)],
+        [t.kvD2, formatLength(r.pitchDiameter2_mm, u.length)],
+        [t.kvN2, r.n2_rpm != null ? formatRotation(r.n2_rpm, u.rotation) : '—'],
       ]),
-      elementCardHtml('Cadena · Tramo', [
-        ['Paso (p)', formatLength(r.pitch_mm, u.length)],
-        ['Longitud (L)', `${r.chainLength_pitches.toFixed(2)} pasos`],
-        ['Velocidad lineal (v)', formatLinearSpeed(r.linearSpeed_m_s, u.linear)],
+      elementCardHtml(t.card3, [
+        [t.kvPitch, formatLength(r.pitch_mm, u.length)],
+        [t.kvLength, `${r.chainLength_pitches.toFixed(2)} ${t.lengthUnit}`],
+        [t.kvLinearV, formatLinearSpeed(r.linearSpeed_m_s, u.linear)],
       ]),
     ].join('');
   }
 
   if (box) {
-    const refLine = r.chainRefLabel ? `${r.chainRefLabel}` : 'Paso manual';
+    const refLine = r.chainRefLabel ? `${r.chainRefLabel}` : t.refManual;
     const cells = [
       metricHtml(
-        'Referencia de cadena',
+        t.mChainRef,
         refLine,
-        `${r.chainNorm || r.normsNote || ''} Paso de catálogo y norma definen carga admisible.`,
+        t.mChainRefHint(r.chainNorm || normsNote || ''),
       ),
       metricHtml(
-        'Relación de dientes (z₂/z₁)',
+        t.mTeethRatio,
         r.ratio_teeth.toFixed(2),
-        `En primitivos, D₂/D₁ = ${r.ratio_primitive.toFixed(2)} (ligero desvío por polígono).`,
+        t.mTeethRatioHint(r.ratio_primitive),
       ),
       metricHtml(
-        'Longitud (pasos de cadena)',
-        `${r.chainLength_pitches.toFixed(2)} pasos`,
-        `Redondeo práctico al alza: ${r.chainLength_pitches_roundUp} pasos.`,
+        t.mLength,
+        `${r.chainLength_pitches.toFixed(2)} ${t.lengthUnit}`,
+        t.mLengthHint(r.chainLength_pitches_roundUp),
       ),
       metricHtml(
-        'Distancia entre ejes',
+        t.mCenter,
         formatLength(r.center_mm, u.length),
-        `Equivale a ≈ ${r.center_pitches.toFixed(2)} pasos de paso p.`,
+        t.mCenterHint(r.center_pitches),
       ),
       metricHtml(
-        'D₁ — diámetro primitivo · piñón 1 (motor, z₁)',
+        t.mD1,
         formatLength(r.pitchDiameter1_mm, u.length),
-        'Fórmula D = p / sin(π/z) en el piñón motriz.',
+        t.mD1Hint,
       ),
       metricHtml(
-        'D₂ — diámetro primitivo · piñón 2 (conducido, z₂)',
+        t.mD2,
         formatLength(r.pitchDiameter2_mm, u.length),
-        'Primitivo del piñón conducido.',
+        t.mD2Hint,
       ),
       metricHtml(
-        'ω₁ — velocidad angular · piñón 1 (motor)',
+        t.mW1,
         formatRotation(r.n1_rpm, u.rotation),
-        'Entrada del formulario en las unidades elegidas.',
+        t.mW1Hint,
       ),
       metricHtml(
-        'ω₂ — velocidad angular · piñón 2 (conducido)',
+        t.mW2,
         formatRotation(r.n2_rpm, u.rotation),
-        'Salida cinemática en primitivo.',
+        t.mW2Hint,
       ),
       metricHtml(
-        'Velocidad lineal de cadena',
+        t.mLinear,
         formatLinearSpeed(r.linearSpeed_m_s, u.linear),
-        'Tramos rectos; guía lubricación y desgaste.',
+        t.mLinearHint,
       ),
       metricHtml(
-        'Frecuencia de articulación · piñón 1 (motor)',
+        t.mArtic,
         r.articulationFrequency_Hz != null ? `${r.articulationFrequency_Hz.toFixed(2)} Hz` : '—',
-        '≈ z₁ × ω₁/2π; más Hz suele exigir mejor lubricación.',
+        t.mArticHint,
       ),
       metricHtml(
-        'Lubricación sugerida',
-        `${r.chainLubrication.class} — ${r.chainLubrication.label}`,
-        `${r.chainLubrication.detail} Confirme con ISO 10823 y fabricante.`,
+        t.mLub,
+        `${lub.class} — ${lub.label}`,
+        t.mLubHint(lub.detail),
       ),
     ];
     box.innerHTML = cells.join('');
@@ -343,40 +355,20 @@ function refreshCore() {
     );
     validationMsgs.forEach((msg) => parts.push(labAlert('danger', esc(msg))));
     if (r.polygonalEffect?.active) {
-      parts.push(labAlert('warn', esc(r.polygonalEffect.text)));
+      parts.push(labAlert('warn', esc(lang === 'en' ? t.polyEffect : r.polygonalEffect.text)));
     }
     if (r.z1 < 17) {
-      parts.push(
-        labAlert(
-          'warn',
-          'z₁ < 17: el efecto poligonal en el piñón motriz puede ser significativo y generar vibraciones. Se recomienda usar z₁ ≥ 17 siempre que sea posible.',
-        ),
-      );
+      parts.push(labAlert('warn', esc(t.alertZ1Low)));
     }
     if (r.articulationFrequency_Hz != null && r.articulationFrequency_Hz > 50) {
-      parts.push(
-        labAlert(
-          'danger',
-          `Frecuencia de articulación alta (${r.articulationFrequency_Hz.toFixed(2)} Hz): posible riesgo de resonancia. Requiere estudio dinámico del sistema.`,
-        ),
-      );
+      parts.push(labAlert('danger', esc(t.alertArticHigh(r.articulationFrequency_Hz))));
     }
     if (parts.length === 0) {
-      parts.push(
-        labAlert(
-          'info',
-          `${esc(r.normsNote)} Articulación y lubricación son orientativas; confirme con ISO 10823 y fabricante.`,
-        ),
-      );
+      parts.push(labAlert('info', esc(`${normsNote}${t.alertNormsSuffix}`)));
     } else {
-      parts.push(labAlert('info', esc(r.normsNote)));
+      parts.push(labAlert('info', esc(normsNote)));
     }
-    parts.push(
-      labAlert(
-        'info',
-        'Hipótesis del modelo: no verifica la resistencia a tracción de la cadena ni su vida a fatiga; la selección final debe cerrarse con catálogo del fabricante.',
-      ),
-    );
+    parts.push(labAlert('info', esc(t.alertModel)));
     alerts.innerHTML = parts.join('');
   }
 
@@ -388,24 +380,24 @@ function refreshCore() {
     sub.innerHTML = `
       <details class="calc-substitution">
         <summary class="calc-substitution__summary">
-          <span class="calc-substitution__title">Sustitución — cinemática en primitivo</span>
+          <span class="calc-substitution__title">${esc(t.subTitle)}</span>
         </summary>
         <div class="calc-substitution__inner">
           <p class="calc-substitution__step">
-            Diámetros primitivos: <code>D = p / sin(π/z)</code> →
-            <code>D₁ = ${D1.toFixed(2)} mm</code> (piñón 1), <code>D₂ = ${D2.toFixed(2)} mm</code> (piñón 2)
+            ${esc(t.subD)} <code>D = p / sin(\u03c0/z)</code> \u2192
+            <code>D\u2081 = ${D1.toFixed(2)} mm</code>, <code>D\u2082 = ${D2.toFixed(2)} mm</code>
           </p>
           <p class="calc-substitution__step">
-            Giro · piñón 2 (RPM): <code>n₂ = n₁ · D₁/D₂ = ${r.n1_rpm.toFixed(2)} × ${D1.toFixed(2)} / ${D2.toFixed(2)} = ${r.n2_rpm != null ? r.n2_rpm.toFixed(2) : '—'} RPM</code>
+            ${esc(t.subN2)} <code>n\u2082 = n\u2081 \u00b7 D\u2081/D\u2082 = ${r.n1_rpm.toFixed(2)} \u00d7 ${D1.toFixed(2)} / ${D2.toFixed(2)} = ${r.n2_rpm != null ? r.n2_rpm.toFixed(2) : '\u2014'} RPM</code>
           </p>
           <p class="calc-substitution__step">
-            Mismo resultado en sus unidades: <strong>${formatRotation(r.n2_rpm, u.rotation)}</strong>
+            ${esc(t.subUnits)} <strong>${formatRotation(r.n2_rpm, u.rotation)}</strong>
           </p>
           <p class="calc-substitution__step">
-            Velocidad media de cadena: <strong>${vDisp}</strong>
+            ${esc(t.subV)} <strong>${vDisp}</strong>
           </p>
           <p class="calc-substitution__step">
-            Articulaciones por segundo · piñón 1: <strong>${r.articulationFrequency_Hz != null ? `${r.articulationFrequency_Hz.toFixed(2)} Hz` : '—'}</strong>
+            ${esc(t.subArtic)} <strong>${r.articulationFrequency_Hz != null ? `${r.articulationFrequency_Hz.toFixed(2)} Hz` : '\u2014'}</strong>
           </p>
         </div>
       </details>`;
@@ -419,14 +411,11 @@ function refreshCore() {
     assem.innerHTML = `
       <div class="lab-metric lab-metric--wide">
         <div class="lab-metric__head">
-          <span class="k">Montaje · eslabones de unión</span>
-          ${labHelpTooltipMarkup(a.notes, 'Notas de montaje')}
+          <span class="k">${esc(t.asmTitle)}</span>
+          ${labHelpTooltipMarkup(a.notes, t.asmNotes)}
         </div>
         <div class="v lab-metric__text">
-          Eslabón de unión (conector con clip): típicamente <strong>${a.connectingLink_count_typical}</strong> unidad.
-          Pasos al alza: <strong>${a.Lp_round_up}</strong> (${a.oddAfterRoundUp ? 'impar' : 'par'}).
-          Alternativa par recomendada: <strong>${a.recommended_even_pitches}</strong> pasos.
-          ${a.offsetLink_recommended ? '<br /><strong>Eslabón desplazado (½ paso):</strong> valorar si cierra en bucle con longitud impar en pasos.' : ''}
+          ${t.asmBody(a)}
         </div>
       </div>
     `;
@@ -439,18 +428,18 @@ function refreshCore() {
     {
       commerceId: commerceIdForChainRef(cref),
       qty: 1,
-      note: useManual ? 'Paso manual · kit orientativo' : r.chainRefLabel || cref,
+      note: useManual ? t.shopNoteManual : r.chainRefLabel || cref,
     },
   ];
   emitEngineeringSnapshot({
     page: 'calc-chains',
-    moduleLabel: 'Cadenas',
+    moduleLabel: t.moduleLabel,
     advisorContext: {},
     shoppingLines,
     metrics: { energyEfficiencyPct: 97, materialUtilizationPct: null },
   });
   setLabPurchaseFromShoppingLines(document.getElementById('labPurchaseSuggestions'), shoppingLines, [
-    { label: 'Piñon cadena a juego', searchQuery: 'piñon cadena rodillos acero' },
+    { label: t.shopPinion, searchQuery: t.shopQ },
   ]);
 
   updateLabShareVisibility('cShareLinkWrap', 'cResults');
@@ -479,5 +468,13 @@ bindLabUnitSelectors(scheduleChainRecalc);
 });
 manualEl?.addEventListener('change', scheduleChainRecalc);
 wireLabCopyLink('cCopyLinkBtn', 'cCopyToast');
+wireLabCopyResultsButton('cCopyResults', {
+  moduleTitle: chainsRuntimeStrings(getLabLang()).moduleLabel,
+});
 runCalcWithIndustrialFeedback(wrap, refreshCore);
-mountLabCloudSaveBar('Cadenas de transmisi\u00f3n');
+mountLabCloudSaveBar(chainsRuntimeStrings(getLabLang()).moduleLabel);
+watchLangAndApply(CHAINS_EN, { onEnApplied: () => scheduleChainRecalc() });
+window.addEventListener(LAB_LANG_EVENT, () => {
+  bootSmartDashboardIfEnabled(chainsRuntimeStrings(getLabLang()).dashboardBoot);
+  scheduleChainRecalc();
+});

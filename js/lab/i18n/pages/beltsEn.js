@@ -1,9 +1,19 @@
 /** English strings for calc-belts.html (`belt.*` keys). ASCII-safe. */
 export const BELTS_PAGE_EN = {
   'belt.docTitle': 'Belt drive calculator \u2014 kinematics and speed regime \u2014 TheMechAssist',
+  'belt.metaDesc':
+    'V, synchronous, flat or Poly-V belt: ratio, length, linear speed and sketch. Indicative.',
   'belt.h2': 'Belt drives \u00b7 kinematics and speed regime',
+  'belt.heroLead':
+    'Speed ratio, open-belt primitive length and a linear-speed verdict by belt family (V, synchronous, flat, Poly-V).',
+  'belt.seoSummary': 'Expanded context and usage notes',
   'belt.calcSeoIntro':
     'This calculator covers belt drive kinematics between two pulleys: speed ratio, open-belt primitive length, and allowable linear speed band by belt family. It blends common design cues for ISO 4184 V-belts, synchronous pitch/tooth count, plus indicative flat and Poly-V modes. Useful when sizing compact drives or checking a field swap before ordering from the supplier. For example, you can check whether a shorter belt still keeps enough wrap angle after the centre distance changes on an industrial retrofit.',
+  'belt.methodSummary': 'Methodology and model limits',
+  'belt.presetsLabel': 'Typical examples:',
+  'belt.preset1': 'Motor \u2192 industrial fan',
+  'belt.preset2': 'Servo \u2192 CNC spindle',
+  'belt.preset3': 'Motor \u2192 centrifugal pump',
   'belt.leadHtml':
     'Pick the <strong>belt family</strong>; the form and model adapt: <strong>V-belt</strong> (ISO 4184 profile + 1\u20133&nbsp;% slip), <strong>synchronous</strong> (tooth count Z and pitch p, no kinematic slip), <strong>flat</strong> and <strong>Poly-V</strong> (focus on <strong>v</strong> and wrap angle). Primitive length for an <strong>open belt</strong> and a linear-speed <strong>verdict</strong> on the driving pulley primitive.',
   'belt.diagTitle': 'Schematic view \u00b7 scale from primitives',
@@ -90,4 +100,9 @@ export const BELTS_PAGE_EN = {
   'belt.summaryPerElement': 'Results by element',
   'belt.summaryFull': 'Full results',
   'belt.recalculating': 'Recalculating\u2026',
+  'belt.copyLink': 'Copy link',
+  'belt.copyToast': 'Link copied!',
+  'belt.relatedHintHtml':
+    'Sizing a full drive? <a href="machines-hub.html">Calculate the driven machine too \u2192</a>',
+  'belt.copyResults': 'Copy results',
 };

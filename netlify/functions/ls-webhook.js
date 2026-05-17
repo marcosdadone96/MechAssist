@@ -17,6 +17,12 @@ const {
   isVariantAllowed,
   subscriptionRecordActive,
 } = require('./lib/proEntitlementLogic.js');
+const {
+  tierFromVariant,
+  applySubscription,
+  applyCalcUnlock,
+  calcSlugFromCustomData,
+} = require('./lib/creditsLogic.js');
 
 function getHeader(headers, name) {
   if (!headers) return '';
@@ -217,6 +223,25 @@ exports.handler = async (event) => {
 
   const stored = toStored(rec);
   await store.setJSON(key, stored);
+
+  const creditTier = tierFromVariant(rec.variantId);
+  if (creditTier === 'unlimited' && stored.active) {
+    await applySubscription(store, rec.email, {
+      tier: 'unlimited',
+      endsAt: rec.endsAt,
+    });
+  } else if (creditTier === 'starter' && stored.active) {
+    await applySubscription(store, rec.email, {
+      tier: 'starter',
+      endsAt: rec.endsAt,
+    });
+  } else if (creditTier === 'calc_unlock' && stored.active) {
+    const slug =
+      calcSlugFromCustomData(attrs.custom_data) ||
+      calcSlugFromCustomData(attrs.checkout_data) ||
+      '';
+    if (slug) await applyCalcUnlock(store, rec.email, slug);
+  }
 
   console.log(`ls-webhook: event=${eventName} email=${rec.email} active=${stored.active}`);
 

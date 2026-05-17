@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Curva Q-H, punto de operación, potencia en la bomba centrífuga y NPSH orientativo. Hidráulica industrial. Gratis online." />
+    <meta name="description" content="Curva, punto de operación, potencia y NPSH orientativos. Pro; no sustituye datos de fabricante." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -11,13 +11,13 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
     <link rel="canonical" href="https://www.themechassist.com/centrifugal-pump.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.themechassist.com/centrifugal-pump.html" />
-    <meta property="og:title" content="Calculadora de bomba centrífuga potencia NPSH online" />
-    <meta property="og:description" content="Curva Q-H, punto de operación, potencia en la bomba centrífuga y NPSH orientativo. Hidráulica industrial. Gratis online." />
+    <meta property="og:url" content="https://www.themechassist.com/centrifugal-pump.html" id="mdr-og-url" />
+    <meta property="og:title" content="Bomba centrífuga — TheMechAssist" />
+    <meta property="og:description" content="Curva, punto de operación, potencia y NPSH orientativos. Pro; no sustituye datos de fabricante." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Calculadora de bomba centrífuga potencia NPSH online" />
+    <meta name="twitter:title" content="Bomba centrífuga — TheMechAssist" />
 
-    <title>Calculadora de bomba centrífuga potencia NPSH online — TheMechAssist</title>
+    <title>Bomba centrífuga — TheMechAssist</title>
     <link rel="stylesheet" href="css/app.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
@@ -43,6 +43,8 @@
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -61,41 +63,67 @@
       <aside class="panel flat-sidebar">
         <header class="flat-sidebar__head">
           <p class="flat-sidebar__eyebrow">TheMechAssist</p>
-          <h2 class="flat-sidebar__title">Bomba centrífuga</h2>
-          <p class="calc-seo-intro">
-            El módulo obtiene la potencia en el eje de la bomba centrífuga y el régimen de aspiración a partir del punto de trabajo caudal–altura, del rendimiento hidráulico y de las propiedades del fluido, incluyendo indicios de NPSH disponible frente al requerido según las hipótesis simplificadas que documenta la ayuda interna. Sirve a ingenieros de instalaciones fluidos y mantenimiento de grandes superficies que comparan curvas cuando cambian válvulas de estrangulación o la densidad del medio. Piense en una línea de lavado industrial donde sube la temperatura del líquido y cae el margen NPSH hasta obligar a rebajar la altura manométrica o mejorar la línea de aspiración.
-          </p>
-          <p class="flat-sidebar__lead">
-            Punto de operación Q-H, rendimiento, fluido y accionamiento. A la derecha verá resultados, diagrama y comprobador de motorreductores.
-          </p>
+          <h2 class="flat-sidebar__title" data-i18n="cPump.h2">Bomba centrífuga</h2>
+          <details class="flat-sidebar-intro">
+            <summary class="flat-sidebar-intro__summary" data-i18n="pumpConv.introSummary">
+              Descripción y alcance de la calculadora
+            </summary>
+            <div class="flat-sidebar-intro__body">
+              <p class="calc-seo-intro" data-i18n="cPump.calcSeoIntro">
+                El módulo obtiene la potencia en el eje de la bomba centrífuga y el régimen de aspiración a partir del punto de trabajo caudal–altura, del rendimiento hidráulico y de las propiedades del fluido, incluyendo indicios de NPSH disponible frente al requerido según las hipótesis simplificadas que documenta la ayuda interna. Sirve a ingenieros de instalaciones fluidos y mantenimiento de grandes superficies que comparan curvas cuando cambian válvulas de estrangulación o la densidad del medio. Piense en una línea de lavado industrial donde sube la temperatura del líquido y cae el margen NPSH hasta obligar a rebajar la altura manométrica o mejorar la línea de aspiración.
+              </p>
+              <p class="flat-sidebar__lead" data-i18n="cPump.lead">
+                Punto de operación Q-H, rendimiento, fluido y accionamiento. A la derecha verá resultados, diagrama y comprobador de motorreductores.
+              </p>
+            </div>
+          </details>
         </header>
 
+        <section class="flat-ux-panel" aria-labelledby="pumpUxPresetsTitle">
+          <h3 id="pumpUxPresetsTitle" class="flat-ux-panel__title" data-i18n="machineHub.uxPresetsTitle">Casos reales (un clic)</h3>
+          <p class="flat-ux-panel__lead muted" data-i18n="machineHub.uxPresetsLead">
+            Rellena un punto de trabajo típico; puede ajustar después.
+          </p>
+          <div class="flat-ux-preset-row" role="group" aria-label="Presets bomba">
+            <button type="button" class="btn-flat-preset" data-pump-preset="chilled_water" title="ACS / agua glicolada ligera">
+              <span class="btn-flat-preset__name">ACS · agua</span>
+            </button>
+            <button type="button" class="btn-flat-preset" data-pump-preset="process_transfer" title="Transferencia industrial, fluido más denso">
+              <span class="btn-flat-preset__name">Proceso · salmuera</span>
+            </button>
+            <button type="button" class="btn-flat-preset" data-pump-preset="viscous_duty" title="Aceite caliente, Q menor, η más baja">
+              <span class="btn-flat-preset__name">Aceite · viscoso</span>
+            </button>
+          </div>
+        </section>
+
         <div class="field" style="margin: 0 0 0.65rem">
-          <label for="pumpCalcMode">¿Qué desea hacer?</label>
+          <label for="pumpCalcMode" data-i18n="cPump.labelCalcMode">¿Qué desea hacer?</label>
           <select id="pumpCalcMode">
-            <option value="design" selected>Diseño — Q, H y rendimiento → potencia y accionamiento</option>
-            <option value="diagnostic">Diagnóstico — comparar punto de trabajo con potencia de placa</option>
+            <option value="design" selected data-i18n="cPump.optDesign">Diseño — Q, H y rendimiento → potencia y accionamiento</option>
+            <option value="diagnostic" data-i18n="cPump.optDiagnostic">Diagnóstico — comparar punto de trabajo con potencia de placa</option>
           </select>
-          <span class="field-hint" id="pumpCalcModeHint">En diseño se obtiene la potencia de eje necesaria. En diagnóstico, introduzca la potencia nominal del motor o de la placa de bomba para estimar margen respecto a P<sub>eje</sub> y P<sub>diseño</sub> (×SF).</span>
+          <span class="field-hint" id="pumpCalcModeHint" data-i18n="cPump.calcModeHint" data-i18n-html>En diseño se obtiene la potencia de eje necesaria. En diagnóstico, introduzca la potencia nominal del motor o de la placa de bomba para estimar margen respecto a P<sub>eje</sub> y P<sub>diseño</sub> (×SF).</span>
         </div>
         <div class="field" id="pumpNameplateRow" hidden style="margin-bottom: 0.65rem">
-          <label for="pumpNameplateKw">Potencia de placa / motor nominal (kW)</label>
+          <label for="pumpNameplateKw" data-i18n="cPump.labelNameplateKw">Potencia de placa / motor nominal (kW)</label>
           <input id="pumpNameplateKw" type="number" step="any" min="0.01" value="22" />
-          <span class="field-hint">Típicamente P<sub>motor</sub> nominal ≥ P<sub>eje bomba</sub> y, a ser posible, ≥ P<sub>diseño</sub> con factor de servicio.</span>
+          <p class="field-context muted">Típicamente P<sub>motor</sub> nominal ≥ P<sub>eje bomba</sub> y, a ser posible, ≥ P<sub>diseño</sub> con factor de servicio</p>
         </div>
 
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label">Parámetros de operación</span>
+            <span class="flat-accordion__label" data-i18n="cPump.accOperating">Parámetros de operación</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
-            <label for="pumpFlow">Caudal Q <span class="info-chip" title="Caudal volumétrico en el punto de trabajo. Debe corresponder a la misma condición usada para H y η." aria-label="Ayuda caudal.">?</span></label>
-            <input id="pumpFlow" type="number" step="any" min="0.001" value="48" />
+            <label for="pumpFlow" data-i18n="cPump.labelFlow">Caudal Q <span class="info-chip" data-i18n-attrs="title=cPump.tipFlow" title="Caudal volumétrico en el punto de trabajo. Debe corresponder a la misma condición usada para H y η." aria-label="Ayuda caudal.">?</span></label>
+            <input id="pumpFlow" type="number" step="any" min="0.001" value="48" placeholder="ej. 30–150 m³/h" />
+            <p class="field-context muted">Típ. 15–400 m³/h (industria / HVAC); L/min en dosificación</p>
           </div>
           <div class="field">
-            <label for="pumpFlowUnit">Unidad de caudal <span class="info-chip" title="Seleccione m³/h o L/min; internamente se convierte a m³/s para el cálculo." aria-label="Ayuda unidad de caudal.">?</span></label>
+            <label for="pumpFlowUnit">Unidad de caudal <span class="info-chip" data-i18n-attrs="title=cPump.tipFlowUnit" title="Seleccione m³/h o L/min; internamente se convierte a m³/s para el cálculo." aria-label="Ayuda unidad de caudal.">?</span></label>
             <select id="pumpFlowUnit" name="pumpFlowUnit">
               <option value="m3h" selected>m³/h</option>
               <option value="lmin">L/min</option>
@@ -103,15 +131,22 @@
             <span class="field-hint">Se convierte a m³/s en el cálculo.</span>
           </div>
           <div class="field">
-            <label for="pumpHead">Altura manométrica total H <span class="info-chip" title="Altura equivalente total (geodésica + pérdidas según su criterio). Impacta linealmente en potencia." aria-label="Ayuda altura manométrica.">?</span></label>
-            <input id="pumpHead" type="number" step="0.1" min="0.1" value="38" />
-            <span class="field-hint">m de columna de fluido (geodésica + pérdidas ya integradas en su criterio).</span>
+            <label for="pumpHead" data-i18n="cPump.labelHead">Altura manométrica total H <span class="info-chip" data-i18n-attrs="title=cPump.tipHead" title="Altura equivalente total (geodésica + pérdidas según su criterio). Impacta linealmente en potencia." aria-label="Ayuda altura manométrica.">?</span></label>
+            <div class="flat-field__num">
+              <input id="pumpHead" type="number" step="0.1" min="0.1" value="38" placeholder="ej. 25–55 m" />
+              <span class="field-hint">m</span>
+            </div>
+            <p class="field-context muted">Típ. 15–80 m en transferencias; mayor en multietapa</p>
+            <p class="field-context muted">m de columna de fluido (geodésica + pérdidas ya integradas en su criterio)</p>
           </div>
           <div class="field">
-            <label for="pumpEta">Eficiencia de la bomba η <span class="info-chip" title="Rendimiento de la bomba en el punto (Q,H). Valores típicos 60–85%." aria-label="Ayuda eficiencia de bomba.">?</span></label>
-            <input id="pumpEta" type="number" step="0.1" min="1" max="99" value="74" />
-            <span class="field-hint">% en el punto (Q, H); típ. ~60–85 según máquina.</span>
-            <span class="field-hint">Orientativo: centrífuga pequeña 50–65%, industrial media 65–80%, gran caudal 80–88%.</span>
+            <label for="pumpEta" data-i18n="cPump.labelPumpEff">Eficiencia de la bomba η <span class="info-chip" data-i18n-attrs="title=cPump.tipEta" title="Rendimiento de la bomba en el punto (Q,H). Valores típicos 60–85%." aria-label="Ayuda eficiencia de bomba.">?</span></label>
+            <div class="flat-field__num">
+              <input id="pumpEta" type="number" step="0.1" min="1" max="99" value="74" placeholder="ej. 65–78 %" />
+              <span class="field-hint">%</span>
+            </div>
+            <p class="field-context muted">% en el punto (Q, H); típ. ~60–85 según máquina</p>
+            <p class="field-context muted">Orientativo: centrífuga pequeña 50–65 %, industrial media 65–80 %, gran caudal 80–88 %</p>
           </div>
           </div>
         </details>
@@ -119,11 +154,11 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label">Propiedades del fluido</span>
+            <span class="flat-accordion__label" data-i18n="cPump.accFluid">Propiedades del fluido</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
-            <label for="fluidType">Tipo de fluido <span class="info-chip" title="Aplica presets orientativos de densidad y viscosidad; puede ajustar manualmente abajo." aria-label="Ayuda tipo de fluido.">?</span></label>
+            <label for="fluidType" data-i18n="cPump.labelFluidType">Tipo de fluido <span class="info-chip" data-i18n-attrs="title=cPump.tipFluidType" title="Aplica presets orientativos de densidad y viscosidad; puede ajustar manualmente abajo." aria-label="Ayuda tipo de fluido.">?</span></label>
             <select id="fluidType" name="fluidType">
               <option value="water" selected>Agua</option>
               <option value="oil">Aceite</option>
@@ -133,19 +168,28 @@
             <span class="field-hint">Ajusta densidad y viscosidad por defecto; puede editarlas abajo.</span>
           </div>
           <div class="field">
-            <label for="rho">Densidad ρ <span class="info-chip" title="Densidad del fluido en kg/m³. A mayor densidad, mayor potencia hidráulica para mismo Q y H." aria-label="Ayuda densidad.">?</span></label>
-            <input id="rho" type="number" step="1" min="400" value="1000" />
-            <span class="field-hint">kg/m³</span>
+            <label for="rho" data-i18n="cPump.labelDensity">Densidad ρ <span class="info-chip" data-i18n-attrs="title=cPump.tipDensity" title="Densidad del fluido en kg/m³. A mayor densidad, mayor potencia hidráulica para mismo Q y H." aria-label="Ayuda densidad.">?</span></label>
+            <div class="flat-field__num">
+              <input id="rho" type="number" step="1" min="400" value="1000" placeholder="ej. 1000 kg/m³ agua" />
+              <span class="field-hint">kg/m³</span>
+            </div>
+            <p class="field-context muted">Agua ~1000; aceites 800–920; salmueras y lodos según concentración</p>
           </div>
           <div class="field">
-            <label for="viscosity">Viscosidad cinemática <span class="info-chip" title="Viscosidad en mm²/s (cSt). Se usa para una corrección orientativa de potencia." aria-label="Ayuda viscosidad.">?</span></label>
-            <input id="viscosity" type="number" step="0.1" min="0.1" value="1" />
-            <span class="field-hint">mm²/s (cSt). Influye en corrección orientativa de potencia.</span>
+            <label for="viscosity" data-i18n="cPump.labelViscosity">Viscosidad cinemática <span class="info-chip" data-i18n-attrs="title=cPump.tipViscosity" title="Viscosidad en mm²/s (cSt). Se usa para una corrección orientativa de potencia." aria-label="Ayuda viscosidad.">?</span></label>
+            <div class="flat-field__num">
+              <input id="viscosity" type="number" step="0.1" min="0.1" value="1" placeholder="ej. 1–4 cSt agua" />
+              <span class="field-hint">cSt</span>
+            </div>
+            <p class="field-context muted">mm²/s (cSt). Influye en corrección orientativa de potencia</p>
           </div>
           <div class="field">
-            <label for="tempC">Temperatura de trabajo <span class="info-chip" title="Temperatura del fluido. Relevante para documentación y riesgo de cavitación/NPSH." aria-label="Ayuda temperatura.">?</span></label>
-            <input id="tempC" type="number" step="0.5" value="25" />
-            <span class="field-hint">°C — documentación y riesgo NPSH (avisos con datos Pro en succión).</span>
+            <label for="tempC">Temperatura de trabajo <span class="info-chip" data-i18n-attrs="title=cPump.tipTemp" title="Temperatura del fluido. Relevante para documentación y riesgo de cavitación/NPSH." aria-label="Ayuda temperatura.">?</span></label>
+            <div class="flat-field__num">
+              <input id="tempC" type="number" step="0.5" value="25" placeholder="ej. 8–90 °C" />
+              <span class="field-hint">°C</span>
+            </div>
+            <p class="field-context muted">Documentación y riesgo NPSH (avisos con datos Pro en succión)</p>
           </div>
           </div>
         </details>
@@ -153,7 +197,7 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label"><span class="premium-flag">Pro</span> Configuración de la instalación</span>
+            <span class="flat-accordion__label" data-i18n="cPump.accInstallHtml" data-i18n-html><span class="premium-flag">Pro</span> Configuración de la instalación</span>
           </summary>
           <div class="flat-accordion__body">
         <div id="proInstallWrap" class="pro-install-wrap pro-install-wrap--locked">
@@ -186,7 +230,7 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label">Carga del accionamiento y datos eléctricos</span>
+            <span class="flat-accordion__label" data-i18n="cPump.accDrive">Carga del accionamiento y datos eléctricos</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
@@ -200,12 +244,12 @@
             <p class="field-hint" id="pumpLoadDutyHint"></p>
           </div>
           <div class="field">
-            <label for="pumpServiceFactor">Factor de servicio SF <span class="info-chip" title="Margen de diseño sobre par/potencia de régimen para selección del accionamiento." aria-label="Ayuda factor de servicio bomba.">?</span></label>
+            <label for="pumpServiceFactor" data-i18n="cPump.labelServiceFactor">Factor de servicio SF <span class="info-chip" data-i18n-attrs="title=cPump.tipServiceFactor" title="Margen de diseño sobre par/potencia de régimen para selección del accionamiento." aria-label="Ayuda factor de servicio bomba.">?</span></label>
             <input id="pumpServiceFactor" type="number" step="0.05" min="1" max="3" value="1.35" />
           </div>
           <div class="field">
-            <label for="pumpSpeedRpm">Régimen nominal eje bomba <span class="info-chip" title="Velocidad de giro del eje de la bomba para calcular par (T=P/ω)." aria-label="Ayuda régimen eje bomba.">?</span></label>
-            <input id="pumpSpeedRpm" type="number" step="1" min="100" value="1455" />
+            <label for="pumpSpeedRpm" data-i18n="cPump.labelShaftSpeed">Régimen nominal eje bomba <span class="info-chip" data-i18n-attrs="title=cPump.tipShaftSpeed" title="Velocidad de giro del eje de la bomba para calcular par (T=P/ω)." aria-label="Ayuda régimen eje bomba.">?</span></label>
+            <input id="pumpSpeedRpm" type="number" step="1" min="100" value="1455" placeholder="ej. 1450 min⁻¹" />
             <span class="field-hint">min⁻¹ — acople directo o salida de reductor.</span>
           </div>
           <div class="field">
@@ -232,24 +276,71 @@
 
         <div id="mountingConfigHost" class="mounting-config-host"></div>
 
-        <button type="button" class="btn-calc" id="btnPumpCalc" title="Actualiza resultados y motorreductores">
+        <button type="button" class="btn-calc" id="btnPumpCalc" title="Actualiza resultados y motorreductores" data-i18n="cPump.btnCalc">
           Calcular y mostrar motorreductor
         </button>
         <div class="pump-quick-actions" aria-label="Accesos rápidos">
-          <button type="button" class="pump-quick-actions__btn" id="btnPumpResults">Ver resultados</button>
-          <button type="button" class="pump-quick-actions__btn" id="btnPumpMotors">Ir a motorreductores</button>
+          <button type="button" class="pump-quick-actions__btn" id="btnPumpResults" data-i18n="cPump.btnResults">Ver resultados</button>
+          <button type="button" class="pump-quick-actions__btn" id="btnPumpMotors" data-i18n="cPump.btnMotors">Ir a motorreductores</button>
         </div>
-        <p class="calc-hint">Los valores se actualizan al cambiar los campos habilitados. Use servidor HTTP, no <code>file://</code>.</p>
+        <p class="calc-hint" data-i18n="cPump.calcHint">Los valores se actualizan al cambiar los campos habilitados. Use servidor HTTP, no <code>file://</code>.</p>
       </aside>
 
       <div class="flat-stage layout-right">
 
         <section class="panel flat-dashboard">
-          <h2><span class="panel-icon">∑</span> Resultados (hidráulica y eje)</h2>
-          <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
-            Potencia útil al fluido, potencia mecánica en el eje de la bomba y magnitudes de diseño con factor de servicio.
-          </p>
+          <header class="flat-dashboard__head">
+            <h2 class="flat-dashboard__title" data-i18n="cPump.resultsTitleHtml" data-i18n-html><span class="panel-icon">∑</span> Resultados (hidráulica y eje)</h2>
+            <p class="flat-dashboard__lead muted" data-i18n="cPump.resultsLead" data-i18n-html>
+              Potencia útil al fluido, potencia mecánica en el eje de la bomba y magnitudes de diseño con factor de servicio.
+              <a href="#pump-assumptions">Hipótesis</a>
+            </p>
+          </header>
+
+          <section class="flat-scope-panel" aria-labelledby="pumpScopeTitle">
+            <h3 id="pumpScopeTitle" class="flat-scope-panel__title" data-i18n="pumpConv.scopeTitle">Qué resuelve esta herramienta</h3>
+            <p class="flat-scope-panel__intro muted" data-i18n="pumpConv.scopeIntro">
+              Punto (Q, H) y fluido: potencia de eje, par y régimen para un RFQ o correo al proveedor de bomba/motorreductor. No sustituye curvas completas del fabricante ni paquetes API/ATEX.
+            </p>
+            <ul class="flat-scope-panel__list">
+              <li data-i18n="pumpConv.scopeLi1">Convierte el punto de operación y el rendimiento en potencia de eje y potencia de diseño con factor de servicio.</li>
+              <li data-i18n="pumpConv.scopeLi2">Compara motorreductores de ejemplo con la velocidad y el par requeridos.</li>
+              <li data-i18n="pumpConv.scopeLi3">Propiedades del fluido simplificadas; valide curvas y NPSH con el fabricante.</li>
+              <li data-i18n="pumpConv.scopeLi4">PDF completo en Pro si está activo; el resumen copiable es gratuito.</li>
+            </ul>
+          </section>
+
           <div class="results-grid" id="pumpResultsGrid"></div>
+
+          <section class="flat-rfq-panel" aria-labelledby="pumpRfqTitle">
+            <h3 id="pumpRfqTitle" class="flat-rfq-panel__title" data-i18n="pumpConv.rfqTitle">Resumen para proveedor (gratis)</h3>
+            <p class="flat-rfq-panel__lead muted" data-i18n="pumpConv.rfqLead">
+              Copie punto de operación y resultados en texto o CSV.
+            </p>
+            <div class="flat-rfq-panel__actions">
+              <button
+                type="button"
+                id="machineRfqCopyText"
+                class="button button--secondary flat-rfq-panel__btn"
+                data-i18n="pumpConv.rfqBtnText"
+                data-i18n-attrs="title=pumpConv.rfqBtnTextTitle"
+                title="Copia un bloque de texto con el punto actual"
+              >
+                Copiar texto
+              </button>
+              <button
+                type="button"
+                id="machineRfqCopyCsv"
+                class="button button--ghost flat-rfq-panel__btn"
+                data-i18n="pumpConv.rfqBtnCsv"
+                data-i18n-attrs="title=pumpConv.rfqBtnCsvTitle"
+                title="Copia una fila CSV (encabezado + valores)"
+              >
+                Copiar CSV
+              </button>
+            </div>
+          </section>
+
           <div id="pumpQualityChecklist" class="design-alerts" aria-live="polite" style="margin-top: 0.9rem"></div>
         </section>
 
@@ -269,7 +360,7 @@
                   decoding="async"
                 />
               </div>
-              <figcaption class="flat-visual__caption">
+              <figcaption class="flat-visual__caption" data-i18n="cPump.photoCaptionHtml" data-i18n-html>
                 Bomba centrífuga en estación de bombeo.
                 <a href="https://commons.wikimedia.org/wiki/File:Pump_station.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.
               </figcaption>
@@ -279,8 +370,8 @@
 
         <section class="panel">
           <div class="verify-panel" id="pumpVerifyPanel">
-            <h2><span class="panel-icon">✓</span> Comprobar un motorreductor que ya tengo</h2>
-            <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
+            <h2 data-i18n="cPump.verifyH2Html" data-i18n-html><span class="panel-icon">✓</span> Comprobar un motorreductor que ya tengo</h2>
+            <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem" data-i18n="cPump.verifyLead">
               Misma verificación que en cintas: potencia, par de salida y velocidad vs. punto de la bomba.
             </p>
             <div class="verify-grid">
@@ -303,7 +394,7 @@
                 <select id="pumpVerifyModel" data-verify-model size="1"></select>
               </div>
             </div>
-            <button type="button" data-verify-run style="margin-top: 1rem; width: 100%">Comprobar para esta bomba</button>
+            <button type="button" data-verify-run style="margin-top: 1rem; width: 100%" data-i18n="cPump.verifyRunBtn">Comprobar para esta bomba</button>
             <div data-verify-out></div>
           </div>
         </section>
@@ -314,13 +405,13 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">⌗</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title">Desglose de ingeniería</span>
-                  <span class="motors-details__hint">Plegado por defecto — pulse para ver reductor, estrategias y pasos</span>
+                  <span class="motors-details__title" data-i18n="cPump.engTitle">Desglose de ingeniería</span>
+                  <span class="motors-details__hint" data-i18n="cPump.engHint">Plegado por defecto — pulse para ver reductor, estrategias y pasos</span>
                 </span>
               </span>
             </summary>
             <div class="motors-details__body">
-              <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">Reductor orientativo, estrategias de motor y pasos del modelo.</p>
+              <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem" data-i18n="cPump.engLead">Reductor orientativo, estrategias de motor y pasos del modelo.</p>
               <div id="pumpEngineeringReport" class="eng-report"></div>
             </div>
           </details>
@@ -332,8 +423,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">◎</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title">Motorreductores (catálogo ejemplo)</span>
-                  <span class="motors-details__hint">Plegado por defecto — pulse para ver recomendaciones, exportación y comprobador</span>
+                  <span class="motors-details__title" data-i18n="cPump.motorsTitle">Motorreductores (catálogo ejemplo)</span>
+                  <span class="motors-details__hint" data-i18n="cPump.motorsHint">Plegado por defecto — pulse para ver recomendaciones, exportación y comprobador</span>
                 </span>
               </span>
             </summary>
@@ -343,14 +434,14 @@
           </details>
         </section>
 
-        <section class="panel">
+        <section class="panel" id="pump-assumptions">
           <details class="motors-details result-focus-extra">
             <summary class="motors-details__summary">
               <span class="motors-details__summary-main">
                 <span class="panel-icon">※</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title">Hipótesis del modelo</span>
-                  <span class="motors-details__hint">Supuestos y límites usados en el cálculo</span>
+                  <span class="motors-details__title" data-i18n="cPump.assumptionsTitle">Hipótesis del modelo</span>
+                  <span class="motors-details__hint" data-i18n="cPump.assumptionsHint">Supuestos y límites usados en el cálculo</span>
                 </span>
               </span>
             </summary>
@@ -361,7 +452,7 @@
         </section>
 
         <section class="panel">
-          <h2><span class="panel-icon">PDF</span> Exportar informe</h2>
+          <h2 data-i18n="cPump.pdfExportH2Html" data-i18n-html><span class="panel-icon">PDF</span> Exportar informe</h2>
           <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
         </section>
 

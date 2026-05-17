@@ -8,14 +8,24 @@ import {
   mountLabPresetsBar,
   updateLabShareVisibility,
   wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { withCalcCredits } from '../services/creditSession.js';
+import { isCreditsSystemEnabled } from '../config/credits.js';
 import {
   DIN6885_FORM_A_ROWS,
   DIN6885_STANDARD_LENGTHS,
   KEY_MATERIAL_ALLOWABLE_MPA,
 } from '../data/din6885ParallelKeys.js';
 import { renderParallelKeyShaftDiagram } from '../lab/diagramCatalogModules.js';
+import { getLabLang } from '../lab/i18n/labLang.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { KEYS_DIN_EN } from '../lab/i18n/pages/keysDinEn.js';
+
+function bx(es, en) {
+  return getLabLang() === 'en' ? en : es;
+}
 
 function lookupKey(d_shaft) {
   const d = Number(d_shaft);
@@ -44,14 +54,17 @@ function nextStandardLength(l_need_mm) {
 const KY_PRESETS = [
   {
     label: 'Eje Ø32 · C45',
+    labelKey: 'keys.preset1',
     values: { kyD: 32, kyT: 180, kyL: '', kyMat: 'c45' },
   },
   {
     label: 'Eje Ø50 · alto par',
+    labelKey: 'keys.preset2',
     values: { kyD: 50, kyT: 420, kyL: 70, kyMat: 'c45' },
   },
   {
     label: 'Eje Ø25 · ac.inox',
+    labelKey: 'keys.preset3',
     values: { kyD: 25, kyT: 95, kyL: '', kyMat: 'inox' },
   },
 ];
@@ -80,7 +93,10 @@ function render() {
   const sigAdm = KEY_MATERIAL_ALLOWABLE_MPA[mat]?.sigma_lim_MPa ?? 100;
 
   if (!row) {
-    out.innerHTML = '<p class="lab-verdict lab-verdict--err">Diámetro fuera de tabla (mín. 6 mm en este extracto).</p>';
+    out.innerHTML = `<p class="lab-verdict lab-verdict--err">${bx(
+      'Di\u00e1metro fuera de tabla (m\u00edn. 6 mm en este extracto).',
+      'Diameter outside table (min. 6 mm in this extract).',
+    )}</p>`;
     tbl.innerHTML = '';
     updateLabShareVisibility('kyShareLinkWrap', 'kyOut');
     if (!kyUrl.hydrating) kyUrl.serializeToUrl();
@@ -112,15 +128,28 @@ function render() {
     L: l_use,
   });
 
+  const matLabel = KEY_MATERIAL_ALLOWABLE_MPA[mat]?.label ?? mat;
   if (ok) {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--ok"><strong>APTO</strong> criterio de aplastamiento orientativo frente a ${KEY_MATERIAL_ALLOWABLE_MPA[mat].label} (σ<sub>ap</sub> ≈ ${sigma.toFixed(1)} MPa ≤ σ<sub>adm</sub> ${sigAdm} MPa).<br/>
-      <strong>Referencia norma:</strong> dimensiones según tabla paralela tipo DIN 6885-1 (extracto educativo).</p>`;
+    out.innerHTML = `<p class="lab-verdict lab-verdict--ok"><strong>${bx('APTO', 'OK')}</strong> ${bx(
+      `criterio de aplastamiento orientativo frente a ${matLabel}`,
+      `indicative crushing criterion vs ${matLabel}`,
+    )} (\u03c3<sub>ap</sub> \u2248 ${sigma.toFixed(1)} MPa \u2264 \u03c3<sub>adm</sub> ${sigAdm} MPa).<br/>
+      <strong>${bx('Referencia norma:', 'Standard ref.:')}</strong> ${bx(
+      'dimensiones seg\u00fan tabla paralela tipo DIN 6885-1 (extracto educativo).',
+      'dimensions per DIN 6885-1 parallel key table (educational extract).',
+    )}</p>`;
   } else {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>INSUFICIENTE</strong> en aplastamiento (σ<sub>ap</sub> ≈ ${sigma.toFixed(1)} MPa &gt; σ<sub>adm</sub> ${sigAdm} MPa).<br/>
-      ${suggestL ? `<strong>Recomendado:</strong> longitud comercial ≥ <strong>${suggestL} mm</strong> (verificar ranura en eje/cubo).` : ''}</p>`;
+    out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>${bx('INSUFICIENTE', 'INSUFFICIENT')}</strong> ${bx(
+      'en aplastamiento',
+      'in crushing',
+    )} (\u03c3<sub>ap</sub> \u2248 ${sigma.toFixed(1)} MPa &gt; \u03c3<sub>adm</sub> ${sigAdm} MPa).<br/>
+      ${suggestL ? `<strong>${bx('Recomendado:', 'Suggested:')}</strong> ${bx('longitud comercial', 'commercial length')} \u2265 <strong>${suggestL} mm</strong> (${bx('verificar ranura en eje/cubo', 'check groove in shaft/hub')}).` : ''}</p>`;
   }
   if (overLengthAdvisory) {
-    out.innerHTML += `<p class="lab-verdict lab-verdict--warn"><strong>Aviso orientativo:</strong> L = ${l_use.toFixed(1)} mm supera 1.5·d ≈ ${lLimit.toFixed(1)} mm. Para chavetas estándar, revise la recomendación L ≤ 1.5·d.</p>`;
+    out.innerHTML += `<p class="lab-verdict lab-verdict--warn"><strong>${bx('Aviso orientativo:', 'Advisory:')}</strong> L = ${l_use.toFixed(1)} mm ${bx('supera', 'exceeds')} 1.5\u00b7d \u2248 ${lLimit.toFixed(1)} mm. ${bx(
+      'Para chavetas est\u00e1ndar, revise la recomendaci\u00f3n L \u2264 1.5\u00b7d.',
+      'For standard keys, review recommendation L \u2264 1.5\u00b7d.',
+    )}</p>`;
   }
 
   const rowsHtml = DIN6885_FORM_A_ROWS.map((r) => {
@@ -134,17 +163,17 @@ function render() {
   }).join('');
   tbl.innerHTML = `
     <table class="lab-catalog-table">
-      <thead><tr><th>Ø eje (mm)</th><th>b × h (mm)</th><th>t₁ (mm)</th><th>t₂ (mm)</th></tr></thead>
+      <thead><tr><th>${bx('\u00d8 eje (mm)', 'Shaft \u00d8 (mm)')}</th><th>b \u00d7 h (mm)</th><th>t\u2081 (mm)</th><th>t\u2082 (mm)</th></tr></thead>
       <tbody>${rowsHtml}</tbody>
     </table>
     <table class="lab-catalog-table" style="margin-top:.55rem">
-      <thead><tr><th>Parámetro de cálculo</th><th>Valor</th></tr></thead>
+      <thead><tr><th>${bx('Par\u00e1metro de c\u00e1lculo', 'Parameter')}</th><th>${bx('Valor', 'Value')}</th></tr></thead>
       <tbody>
-        <tr><td>Longitud analizada L</td><td>${l_use} mm</td></tr>
-        <tr><td>Par aplicado |T|</td><td>${T.toFixed(2)} N·m</td></tr>
-        <tr><td>σap (modelo simplificado)</td><td>${sigma.toFixed(1)} MPa</td></tr>
-        <tr><td>σadm material</td><td>${sigAdm} MPa (${KEY_MATERIAL_ALLOWABLE_MPA[mat].label})</td></tr>
-        <tr><td>Veredicto aplastamiento</td><td><strong>${ok ? 'APTO' : 'INSUFICIENTE'}</strong></td></tr>
+        <tr><td>${bx('Longitud analizada L', 'Analysed length L')}</td><td>${l_use} mm</td></tr>
+        <tr><td>${bx('Par aplicado |T|', 'Applied torque |T|')}</td><td>${T.toFixed(2)} N\u00b7m</td></tr>
+        <tr><td>\u03c3<sub>ap</sub> (${bx('modelo simplificado', 'simplified model')})</td><td>${sigma.toFixed(1)} MPa</td></tr>
+        <tr><td>\u03c3<sub>adm</sub> ${bx('material', 'material')}</td><td>${sigAdm} MPa (${matLabel})</td></tr>
+        <tr><td>${bx('Veredicto aplastamiento', 'Crushing verdict')}</td><td><strong>${ok ? bx('APTO', 'OK') : bx('INSUFICIENTE', 'INSUFFICIENT')}</strong></td></tr>
       </tbody>
     </table>`;
 
@@ -166,13 +195,19 @@ function scheduleKyRender() {
   if (!kyUrl.hydrating) {
     document.querySelectorAll('#kyPresetsBar .lab-preset-btn').forEach((b) => b.classList.remove('is-active'));
   }
-  render();
+  if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
+  else render();
 }
 
 ['kyD', 'kyT', 'kyL', 'kyMat'].forEach((id) => document.getElementById(id)?.addEventListener('input', scheduleKyRender));
 document.getElementById('kyMat')?.addEventListener('change', scheduleKyRender);
 
 wireLabCopyLink('kyCopyLinkBtn', 'kyCopyToast');
+wireLabCopyResultsButton('kyCopyResults', {
+  moduleTitle: bx('Chavetas paralelas DIN 6885', 'Parallel keys DIN 6885'),
+});
 
-render();
-mountLabCloudSaveBar('Chavetas paralelas DIN 6885');
+if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
+else render();
+mountLabCloudSaveBar(bx('Chavetas paralelas DIN 6885', 'Parallel keys DIN 6885'));
+watchLangAndApply(KEYS_DIN_EN, { onEnApplied: () => scheduleKyRender() });

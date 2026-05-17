@@ -5,7 +5,6 @@ import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { HYDRAULIC_CYLINDER_EN } from '../lab/i18n/pages/hydCylEn.js';
-import { mountLabCloudSaveBar } from './labCloudSave.js';
 
 const G = 9.81;
 /** @type {object | null} */
@@ -27,15 +26,8 @@ const ISO_3320_RODS_BY_BORE = {
   125: [56, 70, 90],
   160: [70, 90, 110],
 };
-const LANG_KEY = 'mdr-home-lang';
-
 function getLang() {
-  try {
-    const v = localStorage.getItem(LANG_KEY);
-    return v === 'en' ? 'en' : 'es';
-  } catch (_) {
-    return 'es';
-  }
+  return getCurrentLang();
 }
 const I18N = {
   es: {
@@ -105,6 +97,10 @@ const I18N = {
     inpRod: 'Diámetro vástago (mm)',
     inpStroke: 'Carrera (mm)',
     inpLoad: 'Carga de trabajo (kg)',
+    fieldHelpLoadDesign:
+      'Se convierte a N para comparar con fuerza disponible y factor de seguridad. El pandeo Euler usa esta carga como compresión axial en el vástago; si en su instalación solo una fracción del peso comprime el vástago, interprete el FS con margen o ajuste la carga.',
+    fieldHelpLoadDiag:
+      'En modo diagnóstico se calcula como capacidad máxima del cilindro para la presión y diámetro actuales.',
     inpSpeed: 'Velocidad objetivo (m/s)',
     inpPumpFlow: 'Caudal disponible bomba (L/min)',
     inpPort: 'Diametro interno de puertos (mm)',
@@ -190,6 +186,10 @@ const I18N = {
     inpRod: 'Rod diameter (mm)',
     inpStroke: 'Stroke (mm)',
     inpLoad: 'Working load (kg)',
+    fieldHelpLoadDesign:
+      'Converted to N to compare against available force and safety factor. Euler buckling uses this value as axial compression on the rod; if only part of the weight compresses the rod in your setup, treat the FS as conservative or adjust the load.',
+    fieldHelpLoadDiag:
+      'In diagnostic mode, load is computed as maximum cylinder capacity for current pressure and diameter.',
     inpSpeed: 'Target speed (m/s)',
     inpPumpFlow: 'Available pump flow (L/min)',
     inpPort: 'Port inner diameter (mm)',
@@ -219,7 +219,6 @@ function applyStaticI18n() {
   document.documentElement.setAttribute('lang', getLang());
   document.title = t('pageTitle');
   const h2 = document.querySelector('.lab-panel h2');
-  const lead = document.querySelector('.lab-lead');
   const verdict = document.getElementById('hcVerdict');
   const mapEn = {
     Inicio: 'Home',
@@ -288,8 +287,8 @@ function applyStaticI18n() {
     'Carga de trabajo (kg)': 'Working load (kg)',
     'Carga mecánica externa': 'External mechanical load',
     'Carga mecanica externa': 'External mechanical load',
-    'Se convierte a N para comparar con fuerza disponible y factor de seguridad.':
-      'Converted to N to compare against available force and safety factor.',
+    'Se convierte a N para comparar con fuerza disponible y factor de seguridad. El pandeo Euler usa esta carga como compresión axial en el vástago; si en su instalación solo una fracción del peso comprime el vástago, interprete el FS con margen o ajuste la carga.':
+      'Converted to N to compare against available force and safety factor. Euler buckling uses this value as axial compression on the rod; if only part of the weight compresses the rod in your setup, treat the FS as conservative or adjust the load.',
     'Velocidad objetivo (m/s)': 'Target speed (m/s)',
     'Define caudal requerido': 'Defines required flow',
     'Con el área de pistón permite dimensionar el caudal que debe entregar la bomba.':
@@ -349,7 +348,6 @@ function applyStaticI18n() {
     getLang() === 'en' ? 'Main navigation' : 'Navegaci\u00f3n principal',
   );
   if (h2) h2.textContent = t('title');
-  if (lead) lead.textContent = t('lead');
   if (verdict) verdict.textContent = t('verdictOk');
 }
 
@@ -698,6 +696,7 @@ function computeAndRender() {
         `Buckling uses stroke (${fmt(strokeMm, 0)} mm) * factor ${fmt(eulerLengthFactor, 2)} as unsupported length proxy.`,
         `Tube check: sigma_allow = ${fmt(SIGMA_ALLOW / 1e6, 0)} MPa nominal table value.`,
         'Euler buckling here is a simplified check (straight column, centred axial load). Rods with side load or partial guiding need more detailed analysis.',
+        'Buckling uses the working load you enter as the compressive load on the rod; if your mechanism applies only part of that load to the rod, treat FS as conservative or reduce the entered load.',
         'Does not replace ISO 6020/6022 manufacturer ratings.',
       ]
     : [
@@ -705,6 +704,7 @@ function computeAndRender() {
         `Pandeo: longitud libre modelada como carrera (${fmt(strokeMm, 0)} mm) × ${fmt(eulerLengthFactor, 2)}.`,
         `Tubo: sigma_adm de referencia ${fmt(SIGMA_ALLOW / 1e6, 0)} MPa en el módulo.`,
         'El pandeo Euler aquí es verificación simplificada (columna recta, carga axial centrada). Vástagos con carga lateral o guiado parcial requieren análisis más detallado.',
+        'El pandeo usa la carga de trabajo introducida como compresión en el vástago; si en su mecanismo solo una parte de esa carga comprime el vástago, el FS es conservador o reduzca la carga nominal.',
         'No sustituye catálogos ISO 6020/6022 del fabricante.',
       ];
 
@@ -873,13 +873,7 @@ function syncModeUi() {
         : (getLang() === 'en' ? 'External mechanical load' : 'Carga mecánica externa');
     }
     if (help) {
-      help.textContent = mode === 'diagnostic'
-        ? (getLang() === 'en'
-          ? 'In diagnostic mode, load is computed as maximum cylinder capacity for current pressure and diameter.'
-          : 'En modo diagnóstico se calcula como capacidad máxima del cilindro para la presión y diámetro actuales.')
-        : (getLang() === 'en'
-          ? 'Converted to N to compare against available force and safety factor.'
-          : 'Se convierte a N para comparar con fuerza disponible y factor de seguridad.');
+      help.textContent = mode === 'diagnostic' ? t('fieldHelpLoadDiag') : t('fieldHelpLoadDesign');
     }
   }
 }
@@ -965,4 +959,3 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountHc'), {
     return svg instanceof SVGSVGElement ? [svg] : [];
   },
 });
-mountLabCloudSaveBar('Cilindro hidr\u00e1ulico');

@@ -3,21 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Checkout Pro &#8212; TheMechAssist</title>
-    <meta name="description" content="Contratar el plan Pro TheMechAssist (Lemon Squeezy, no indexado)." />
+    <title>Checkout Pro — TheMechAssist</title>
+    <meta name="description" content="Contratar o simular pago del plan Pro TheMechAssist (no indexado)." />
     <meta name="robots" content="noindex" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
 
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
-    <link rel="canonical" href="" id="mdr-canonical" />
+    <link rel="canonical" href="https://www.themechassist.com/checkout.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="" id="mdr-og-url" />
-    <meta property="og:title" content="Checkout Pro &#8212; TheMechAssist" />
-    <meta property="og:description" content="Contratar el plan Pro TheMechAssist (Lemon Squeezy, no indexado)." />
+    <meta property="og:url" content="https://www.themechassist.com/checkout.html" id="mdr-og-url" />
+    <meta property="og:title" content="Checkout Pro — TheMechAssist" />
+    <meta property="og:description" content="Contratar o simular pago del plan Pro TheMechAssist (no indexado)." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Checkout Pro &#8212; TheMechAssist" />
+    <meta name="twitter:title" content="Checkout Pro — TheMechAssist" />
     <link rel="stylesheet" href="css/app.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
@@ -58,7 +58,7 @@
     <main class="app-main register-page checkout-page">
       <div class="register-card checkout-card">
         <p class="register-card__eyebrow" id="coEyebrow">TheMechAssist</p>
-        <h1 class="register-card__title" id="coTitle">Plan Pro</h1>
+        <h1 class="register-card__title" id="coTitle">Planes y créditos</h1>
         <p class="register-card__lead" id="coLead"></p>
         <p class="checkout-user" id="coUserLine"></p>
 
@@ -89,6 +89,14 @@
             class="button button--accent"
             data-lemon-squeezy
             >Plan anual &#8212; 79 &#8364;/a&#241;o</a>
+          <a
+            id="coLemonUnlimited"
+            href=""
+            class="button button--accent"
+            data-lemon-squeezy
+            hidden
+            >Ilimitado &#8212; 25 &#8364;/mes</a>
+          <p class="register-card__terms checkout-credits-note" id="coCreditsNote" hidden></p>
         </div>
         <p class="register-card__terms" id="coLegalLinks"></p>
         <section id="coManageSub" class="checkout-manage" aria-labelledby="coManageTitle" hidden>
@@ -115,6 +123,7 @@
     <footer class="app-legal-foot">
       <nav class="app-legal-foot__links" aria-label="Legal">
         <a href="privacy.html" id="coFootPrivacy">Privacidad</a>
+        <a href="trust.html" id="coFootTrust">Confianza</a>
         <a href="terms.html" id="coFootTerms">T&eacute;rminos</a>
         <a href="cookies.html" id="coFootCookies">Cookies</a>
         <a href="cookie-preferences.html" id="coFootCookiePrefs">Preferencias cookies</a>

@@ -1,8 +1,8 @@
 /**
- * Pùginas legales: privacy.html, terms.html, cookies.html (data-legal-doc en body).
+ * P\u00e1ginas legales: privacy.html, terms.html, cookies.html, trust.html (data-legal-doc en body).
  */
 
-import { getCookiesDoc, getPrivacyDoc, getTermsDoc } from './legalCopy.js';
+import { getCookiesDoc, getPrivacyDoc, getTermsDoc, getTrustDoc } from './legalCopy.js';
 
 function getLang() {
   try {
@@ -16,6 +16,7 @@ const DOCS = {
   privacy: getPrivacyDoc,
   terms: getTermsDoc,
   cookies: getCookiesDoc,
+  trust: getTrustDoc,
 };
 
 function escapeHtml(s) {
@@ -40,6 +41,7 @@ function render(doc) {
   const back = lang === 'en' ? 'Home' : 'Inicio';
   const navPrivacy = lang === 'en' ? 'Privacy' : 'Privacidad';
   const navTerms = lang === 'en' ? 'Terms' : 'T\u00e9rminos';
+  const navTrust = lang === 'en' ? 'Trust' : 'Confianza';
   const navCookies = 'Cookies';
   const navPrefs = lang === 'en' ? 'Cookie settings' : 'Preferencias';
   const updated =
@@ -69,6 +71,7 @@ function render(doc) {
     const k = a.getAttribute('data-legal-nav');
     if (k === 'privacy') a.textContent = navPrivacy;
     if (k === 'terms') a.textContent = navTerms;
+    if (k === 'trust') a.textContent = navTrust;
     if (k === 'cookies') a.textContent = navCookies;
     if (k === 'prefs') a.textContent = navPrefs;
     if (k === 'home') a.textContent = back;

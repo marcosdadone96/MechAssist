@@ -1,5 +1,5 @@
 /**
- * Verificación orientativa al espíritu AGMA 2001-D04 (engranajes cilíndricos rectos).
+ * Verificación orientativa al espíritu AGMA 2001-D04 (engranajes cilíndricos rectos u helicoidales simplificados).
  * Modelo educativo simplificado: Lewis + contacto Hertziano aproximado — NO sustituye
  * análisis AGMA completo (K_v, K_B, K_Hβ, Z_I, factores de distribución, etc.).
  */
@@ -70,7 +70,9 @@ export function contactStressApprox_MPa(Ft_N, b_mm, d1_mm, u) {
  * @param {object} p
  * @param {number} p.z1
  * @param {number} p.z2
- * @param {number} p.module_mm
+ * @param {number} p.module_mm — módulo normal mₙ (mm); en recto = mₜ
+ * @param {number} [p.module_transverse_mm] — mₜ (helicoidal); si no se pasa, se usa module_mm
+ * @param {number} [p.helixAngle_deg] — β (°); 0 = recto
  * @param {number} p.d1_mm
  * @param {number} p.faceWidth_mm
  * @param {number} p.n1_rpm
@@ -81,12 +83,19 @@ export function contactStressApprox_MPa(Ft_N, b_mm, d1_mm, u) {
 export function computeAgmaSimplifiedCheck(p) {
   const z1 = p.z1;
   const m = p.module_mm;
+  const mt = Number(p.module_transverse_mm);
+  const mT = Number.isFinite(mt) && mt > 0 ? mt : m;
+  const betaDeg = Number(p.helixAngle_deg);
+  const β = ((Number.isFinite(betaDeg) ? Math.max(0, Math.min(45, betaDeg)) : 0) * Math.PI) / 180;
+  const cosB = Math.cos(β);
+  const zv1 = β > 1e-8 && cosB > 1e-8 ? z1 / (cosB * cosB * cosB) : z1;
+
   const d1 = p.d1_mm;
   const b = Math.max(0.5, p.faceWidth_mm);
   const n1raw = Number(p.n1_rpm);
   const n1 = Number.isFinite(n1raw) && n1raw > 0 ? n1raw : 0;
   const u = p.z2 / p.z1;
-  const Y = lewisFormFactorY(z1);
+  const Y = lewisFormFactorY(zv1);
   const v_p = n1 > 0 ? pitchLineVelocity_m_s(d1, n1) : 0;
 
   let T = Number(p.torquePinion_Nm);
@@ -101,8 +110,11 @@ export function computeAgmaSimplifiedCheck(p) {
 
   const hasLoad = Number.isFinite(T) && T > 0;
   const Ft = hasLoad ? tangentialLoad_N(T, d1) : NaN;
-  const sigmaF = hasLoad ? bendingStressLewis_MPa(Ft, b, m, Y) : NaN;
-  const sigmaH = hasLoad ? contactStressApprox_MPa(Ft, b, d1, u) : NaN;
+  const sigmaF = hasLoad ? bendingStressLewis_MPa(Ft, b, mT, Y) : NaN;
+  let sigmaH = hasLoad ? contactStressApprox_MPa(Ft, b, d1, u) : NaN;
+  if (hasLoad && β > 1e-8 && cosB > 1e-8) {
+    sigmaH *= Math.sqrt(cosB);
+  }
 
   /** Valores orientativos acero templado/revenido gama industrial (no certificación). */
   const sigmaFallow = 420;

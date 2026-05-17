@@ -21,7 +21,7 @@ const CHIPS = {
       aria: 'capacidad requerida del tornillo',
     },
     en: {
-      title: 'Target throughput. If you use t/h, it converts using bulk density from the Material section.',
+      title: 'Target capacity. Actual screw speed is estimated from fill, diameter and pitch.',
       aria: 'required screw capacity',
     },
   },
@@ -42,7 +42,7 @@ const CHIPS = {
       aria: 'di\u00e1metro de tornillo',
     },
     en: {
-      title: 'Outside screw diameter. Typical industrial range: 150\u2013600 mm. Larger diameters often need lower RPM.',
+      title: 'Helix outer diameter D (mm). Larger D \u2192 lower rpm for the same throughput.',
       aria: 'screw diameter',
     },
   },
@@ -62,7 +62,7 @@ const CHIPS = {
       aria: 'paso de tornillo',
     },
     en: {
-      title: 'Axial advance per turn. Rule of thumb: p\u2248D for many designs; lower p for difficult materials.',
+      title: 'Helix pitch p (mm). Standard: p \u2248 D. Short pitch (p \u2248 0.8D): inclined or sticky. Long pitch (p \u2248 1.5D): free-flowing at low speed.',
       aria: 'screw pitch',
     },
   },
@@ -82,7 +82,7 @@ const CHIPS = {
       aria: 'longitud de transporte',
     },
     en: {
-      title: 'Effective conveying length in metres. Longer runs increase equivalent resistance and power.',
+      title: 'Conveyor axis length L (m). Longer conveyors require more power and may need intermediate bearings.',
       aria: 'conveying length',
     },
   },
@@ -93,7 +93,7 @@ const CHIPS = {
       aria: 'inclinaci\u00f3n del tornillo',
     },
     en: {
-      title: 'Angle from horizontal. Performance may drop at high angles; validate with the OEM.',
+      title: 'Inclination angle \u03b8 (\u00b0). Reduces effective capacity; 0\u00b0 = horizontal. Max typical: ~20\u00b0 for free-flowing materials.',
       aria: 'screw inclination',
     },
   },
@@ -104,7 +104,7 @@ const CHIPS = {
       aria: 'densidad aparente',
     },
     en: {
-      title: 'Bulk density (kg/m\u00b3). Typical: 500\u2013900 grain/feed, 900\u20131500 fine minerals.',
+      title: 'Bulk density \u03c1 (kg/m\u00b3). Use vendor datasheet or standard tables.',
       aria: 'bulk density',
     },
   },
@@ -114,7 +114,7 @@ const CHIPS = {
       aria: 'porcentaje de llenado del canal',
     },
     en: {
-      title: 'Trough cross-section fill. 15% fluid-like, 30% general duty, 45% difficult materials.',
+      title: 'Trough fill factor \u03c6 (%). 15\u201345% typical; higher fill raises rpm and power disproportionately.',
       aria: 'trough fill percentage',
     },
   },
@@ -145,7 +145,7 @@ const CHIPS = {
       aria: 'coeficiente de rozamiento',
     },
     en: {
-      title: 'Equivalent friction in trough. Typical: 0.20\u20130.35 freer-flowing; 0.35\u20130.60 more difficult.',
+      title: 'Solid\u2013steel friction. Affects shaft torque; use 0.20\u20130.35 for free-flowing, 0.35\u20130.55 for sticky or abrasive.',
       aria: 'friction coefficient',
     },
   },
@@ -155,7 +155,7 @@ const CHIPS = {
       aria: 'rendimiento mec\u00e1nico',
     },
     en: {
-      title: 'Aggregate mechanical efficiency of bearings/drive. Typical starting point: 90\u201395%.',
+      title: 'Bearing + seal efficiency on the screw shaft. Typical 0.90\u20130.97.',
       aria: 'mechanical efficiency',
     },
   },
@@ -222,6 +222,30 @@ function applyChips(lang) {
     const t = CHIPS[k][en ? 'en' : 'es'];
     el.setAttribute('title', t.title);
     el.setAttribute('aria-label', chipAria(t.aria, lang));
+  });
+}
+
+/** Rangos / ejemplos orientativos junto al valor (como cinta plana). */
+const REC = {
+  cap: {
+    es: 'T\u00edp. 10\u2013120 m\u00b3/h \u00b7 alimentaci\u00f3n / 15\u201380 t/h mineral fino',
+    en: 'Typ. 10\u2013120 m\u00b3/h \u00b7 food / 15\u201380 t/h fine ore',
+  },
+  diam: { es: '\u00d8 200\u2013500 mm uso general \u00b7 >500 proyectos pesados', en: '\u00d8 200\u2013500 mm general \u00b7 >500 mm heavy' },
+  pitch: { es: 'p \u2248 0,8\u20131,0 \u00b7 D (CEMA orientativo)', en: 'p \u2248 0.8\u20131.0 \u00b7 D (rule of thumb)' },
+  length: { es: 'L 4\u201325 m t\u00edpico \u00b7 >30 m revisar apoyos', en: 'L 4\u201325 m typical \u00b7 >30 m check supports' },
+  angle: { es: '\u03b8 0\u201312\u00b0 horizontal-casi \u00b7 12\u201325\u00b0 con cuidado', en: '\u03b8 0\u201312\u00b0 mild \u00b7 12\u201325\u00b0 check OEM' },
+  rho: { es: '550\u2013850 piensos \u00b7 1200\u20131600 finos/mineral', en: '550\u2013850 feed \u00b7 1200\u20131600 fines/mineral' },
+  mu: { es: '\u03bc 0,25\u20130,40 fluidos \u00b7 0,40\u20130,55 dif\u00edciles', en: '\u03bc 0.25\u20130.40 easy \u00b7 0.40\u20130.55 sticky' },
+  bearingEta: { es: '\u03b7 88\u201394 % cadena mec\u00e1nica t\u00edpica', en: '\u03b7 88\u201394 % typical mechanical train' },
+};
+
+function applyRecommendHints(lang) {
+  const t = lang === 'en' ? 'en' : 'es';
+  document.querySelectorAll('[data-sc-rec]').forEach((el) => {
+    const k = el.getAttribute('data-sc-rec');
+    if (!k || !REC[k]) return;
+    el.textContent = REC[k][t];
   });
 }
 
@@ -475,6 +499,7 @@ export function applyScrewConveyorStaticI18n(lang = getCurrentLang()) {
   applyLabelsAndRanges(lang);
   applySelectOptions(lang);
   applyChips(lang);
+  applyRecommendHints(lang);
   applyBlocks(lang);
 
   const host = document.getElementById('scLangHost');
@@ -500,19 +525,20 @@ export function applyScrewConveyorPageLanguage() {
 
 export function initScrewConveyorLangChrome() {
   const host = document.getElementById('scLangHost');
-  if (!host) return;
-  host.innerHTML = `
+  if (host) {
+    host.innerHTML = `
     <div class="hub-lang" role="group" aria-label="">
       <button type="button" class="hub-lang__btn" data-lang="es" aria-pressed="false">ES</button>
       <button type="button" class="hub-lang__btn" data-lang="en" aria-pressed="false">EN</button>
     </div>`;
-  host.querySelectorAll('[data-lang]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const l = btn.getAttribute('data-lang');
-      if (l !== 'es' && l !== 'en') return;
-      setCurrentLang(l);
-      applyScrewConveyorPageLanguage();
+    host.querySelectorAll('[data-lang]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const l = btn.getAttribute('data-lang');
+        if (l !== 'es' && l !== 'en') return;
+        setCurrentLang(l);
+        applyScrewConveyorPageLanguage();
+      });
     });
-  });
+  }
   applyScrewConveyorPageLanguage();
 }

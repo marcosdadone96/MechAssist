@@ -17,7 +17,15 @@ import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels, getCurrentLang } from '../config/i18nLabels.js';
 import { HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
 import { FEATURES } from '../config/features.js';
-import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
+import { CAR_LIFT_EN } from '../lab/i18n/pages/carLiftEn.js';
+import { applyCarLiftScrewPageLanguage } from './carLiftScrewStaticI18n.js';
+import { CAR_LIFT_PRESET_BY_ID } from '../modules/machineHubPresets.js';
+
+const CAR_LIFT_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...CAR_LIFT_EN };
+import { incrementCalcCounter } from '../services/calcCounter.js';
 
 function recoCopyCarLift(en) {
   return en
@@ -87,6 +95,143 @@ function formatMounting(pref) {
     ? { B3: 'B3 foot', B5: 'B5 flange', B14: 'B14 flange', hollowShaft: 'Hollow shaft' }
     : { B3: 'B3 patas', B5: 'B5 brida', B14: 'B14 brida', hollowShaft: 'Eje hueco' };
   return `${typeMap[pref.mountingType] || pref.mountingType} \u00b7 ${pref.orientation === 'vertical' ? 'Vertical' : 'Horizontal'}`;
+}
+
+/**
+ * @param {ReturnType<typeof buildParams>} raw
+ * @param {ReturnType<typeof computeCarLiftScrew>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ * @param {'es'|'en'} lang
+ */
+function buildCarLiftRfqPlainText(raw, r, mount, lang) {
+  const en = lang === 'en';
+  const dr = r.drive || {};
+  const inp = r.inputs || {};
+  const nut = r.nut || {};
+  const geo = r.geometry || {};
+  const when = new Date().toISOString().slice(0, 19).replace('T', ' ') + ' UTC';
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const head = en
+    ? 'TheMechAssist — Screw car lift (indicative duty)'
+    : 'TheMechAssist — Elevador coches por husillo (punto orientativo)';
+  const hIn = en ? '== Inputs ==' : '== Entradas ==';
+  const hOut = en ? '== Results (indicative) ==' : '== Resultados (orientativos) ==';
+  const hMount = en ? '== Mounting preference (for RFQ) ==' : '== Preferencia de montaje (RFQ) ==';
+  const disc =
+    typeof r.disclaimer === 'string'
+      ? r.disclaimer
+      : en
+        ? 'Educational model; verify brake, safety nut and applicable codes.'
+        : 'Modelo educativo; verifique freno, tuerca de seguridad y normativa.';
+
+  const parts = [
+    head,
+    `${en ? 'Timestamp (UTC)' : 'Fecha (UTC)'}: ${when}`,
+  ];
+  if (url) parts.push(`${en ? 'Source' : 'Origen'}: ${url}`);
+  parts.push(
+    '',
+    hIn,
+    `${en ? 'Capacity' : 'Capacidad'} (kg): ${formatNum(inp.capacity_kg, 0)}`,
+    `${en ? 'Lift height' : 'Carrera H'} (m): ${formatNum(inp.liftHeight_m, 3)}`,
+    `${en ? 'Lift time' : 'Tiempo t'} (s): ${formatNum(inp.liftTime_s, 1)}`,
+    `${en ? 'Pitch p' : 'Paso p'} (mm): ${formatNum(inp.pitch_mm, 2)}`,
+    `${en ? 'Screw diameter d' : 'Diámetro d'} (mm): ${formatNum(inp.screwDiameter_mm, 2)}`,
+    `${en ? 'Nut length' : 'Longitud tuerca'} (mm): ${formatNum(inp.nutLength_mm, 0)}`,
+    `${en ? 'Thread friction mu' : 'μ rosca'}: ${formatNum(inp.mu_thread, 3)}`,
+    `${en ? 'Service factor' : 'Factor servicio'}: ${formatNum(inp.serviceFactor, 3)}`,
+    `${en ? 'Allowable nut pressure' : 'p adm. tuerca'} (MPa): ${formatNum(inp.pAllow_MPa, 2)}`,
+    `${en ? 'Columns' : 'Columnas'}: ${inp.columns ?? 2}`,
+    '',
+    hOut,
+    `${en ? 'Screw rpm' : 'RPM husillo'}: ${formatNum(dr.screw_rpm, 2)}`,
+    `${en ? 'Total torque' : 'Par total'} (N·m): ${formatNum(dr.torqueTotal_Nm, 2)}`,
+    `${en ? 'Design torque (incl. SF)' : 'Par diseño (incl. SF)'} (N·m): ${formatNum(dr.torqueDesign_Nm, 2)}`,
+    `${en ? 'Mechanical power (no SF)' : 'Potencia mecánica'} (kW): ${formatNum(dr.power_kW, 3)}`,
+    `${en ? 'Design power (incl. SF)' : 'Potencia diseño'} (kW): ${formatNum(dr.powerDesign_kW, 3)}`,
+    `${en ? 'Nut contact pressure' : 'Presión tuerca'} (MPa): ${formatNum(nut.contactPressure_MPa, 3)}`,
+    `${en ? 'Helix angle' : 'Ángulo hélice'} (deg): ${formatNum(geo.helixAngle_deg, 3)}`,
+    `${en ? 'Friction angle' : 'Ángulo fricción'} (deg): ${formatNum(geo.frictionAngle_deg, 3)}`,
+    `${en ? 'Self-locking (model)' : 'Autofrenado (modelo)'}: ${r.selfLocking ? (en ? 'yes' : 'sí') : en ? 'no' : 'no'}`,
+    '',
+    hMount,
+    formatMounting(mount) +
+      (mount.machineShaftDiameter_mm != null
+        ? ` · ${en ? 'Machine shaft Ø' : 'Ø eje máquina'} ${formatNum(mount.machineShaftDiameter_mm, 1)} mm`
+        : ''),
+    '',
+    disc,
+  );
+  return parts.join('\n');
+}
+
+/**
+ * @param {ReturnType<typeof buildParams>} raw
+ * @param {ReturnType<typeof computeCarLiftScrew>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ */
+function buildCarLiftRfqCsv(raw, r, mount) {
+  const dr = r.drive || {};
+  const inp = r.inputs || {};
+  const nut = r.nut || {};
+  const geo = r.geometry || {};
+  const headers = [
+    'product',
+    'generated_utc',
+    'page_url',
+    'capacity_kg',
+    'lift_m',
+    'time_s',
+    'pitch_mm',
+    'd_mm',
+    'nut_L_mm',
+    'mu_thread',
+    'service_factor',
+    'p_allow_MPa',
+    'columns',
+    'mounting',
+    'orientation',
+    'machine_shaft_d_mm',
+    'screw_rpm',
+    'torque_total_Nm',
+    'torque_design_Nm',
+    'power_kW',
+    'power_design_kW',
+    'p_nut_MPa',
+    'helix_deg',
+    'friction_deg',
+    'self_locking',
+  ];
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const when = new Date().toISOString();
+  const values = [
+    'TheMechAssist_car_lift_screw',
+    when,
+    url,
+    inp.capacity_kg,
+    inp.liftHeight_m,
+    inp.liftTime_s,
+    inp.pitch_mm,
+    inp.screwDiameter_mm,
+    inp.nutLength_mm,
+    inp.mu_thread,
+    inp.serviceFactor,
+    inp.pAllow_MPa,
+    inp.columns ?? 2,
+    mount.mountingType,
+    mount.orientation,
+    mount.machineShaftDiameter_mm ?? '',
+    dr.screw_rpm,
+    dr.torqueTotal_Nm,
+    dr.torqueDesign_Nm,
+    dr.power_kW,
+    dr.powerDesign_kW,
+    nut.contactPressure_MPa,
+    geo.helixAngle_deg,
+    geo.frictionAngle_deg,
+    r.selfLocking ? '1' : '0',
+  ];
+  return `${headers.map(escapeCsvCell).join(',')}\n${values.map(escapeCsvCell).join(',')}`;
 }
 
 function clampNum(n, lo, hi) {
@@ -193,6 +338,49 @@ function syncThreadPresetUi() {
   }
 }
 
+function writeCarLiftFormValue(id, val) {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement) && !(el instanceof HTMLSelectElement)) return;
+  el.value = val === '' || val == null ? '' : String(val);
+}
+
+function syncCarLiftRangeSlidersFromNumberInputs() {
+  const pairs = [
+    ['clCapacityR', 'clCapacity', 800, 6000, 50],
+    ['clHR', 'clH', 1.2, 4.5, 0.05],
+    ['clTR', 'clT', 15, 120, 1],
+    ['clPitchR', 'clPitch', 4, 20, 0.5],
+    ['clDR', 'clD', 30, 90, 1],
+    ['clNutLR', 'clNutL', 40, 200, 5],
+    ['clMuR', 'clMu', 0.06, 0.22, 0.01],
+    ['clPallowR', 'clPallow', 5, 22, 0.5],
+    ['clSFR', 'clSF', 1, 2.2, 0.05],
+  ];
+  for (const [rangeId, numId, lo, hi, step] of pairs) {
+    const range = document.getElementById(rangeId);
+    const num = document.getElementById(numId);
+    if (!(range instanceof HTMLInputElement) || !(num instanceof HTMLInputElement)) continue;
+    if (num.readOnly && (numId === 'clPitch' || numId === 'clD')) continue;
+    let v = parseFloat(String(num.value).replace(',', '.'));
+    if (!Number.isFinite(v)) v = lo;
+    v = clampNum(v, lo, hi);
+    if (step != null && step > 0) v = Math.round(v / step) * step;
+    num.value = String(v);
+    if (!range.disabled) range.value = String(v);
+  }
+}
+
+function applyCarLiftPresetFromId(presetId) {
+  const def = CAR_LIFT_PRESET_BY_ID[presetId];
+  if (!def) return;
+  for (const [k, v] of Object.entries(def.values)) {
+    writeCarLiftFormValue(k, v);
+  }
+  syncThreadPresetUi();
+  syncCarLiftRangeSlidersFromNumberInputs();
+  refresh();
+}
+
 function buildParams() {
   return {
     lang: getCurrentLang(),
@@ -244,8 +432,9 @@ function localizeCarLiftStaticContent() {
     if (el) el.innerHTML = h;
   };
   setText('.flat-sidebar__title', 'Screw-type car lift');
+  setText('details.flat-sidebar-intro .flat-sidebar-intro__summary', 'Calculator description and scope');
   setText(
-    '.flat-sidebar__lead',
+    'details.flat-sidebar-intro .flat-sidebar__lead',
     'Two columns, power screw and bronze nut. Torque, power, nut pressure and self-locking (lambda < phi) — same workflow as belt tools: form on the left, schematic and results on the right.',
   );
   setText('.help-details.flat-help > summary', 'Quick guide');
@@ -510,6 +699,7 @@ function refresh() {
     console.error(e);
     return;
   }
+  if (Number.isFinite(r.drive.powerDesign_kW)) incrementCalcCounter();
 
   const svg = document.getElementById('clDiagram');
   renderCarLiftScrewDiagram(
@@ -729,8 +919,54 @@ try {
 }
 refresh();
 
+wireMachineRfqExport({
+  getPayload: () => {
+    const raw = buildParams();
+    try {
+      return { raw, result: computeCarLiftScrew(raw), mount: readMountingPreferences() };
+    } catch {
+      const stub = {
+        drive: {
+          screw_rpm: 0,
+          torqueTotal_Nm: 0,
+          torqueDesign_Nm: 0,
+          power_kW: 0,
+          powerDesign_kW: 0,
+        },
+        inputs: raw,
+        nut: { contactPressure_MPa: 0 },
+        geometry: { helixAngle_deg: 0, frictionAngle_deg: 0 },
+        selfLocking: false,
+        disclaimer: '',
+      };
+      return { raw, result: stub, mount: readMountingPreferences() };
+    }
+  },
+  buildPlainText: buildCarLiftRfqPlainText,
+  buildCsv: buildCarLiftRfqCsv,
+  toastCopiedEn: MACHINE_HUB_UX_EN['machineHub.toastRfqCopied'],
+  toastErrEn: MACHINE_HUB_UX_EN['machineHub.toastRfqErr'],
+});
+
+watchLangAndApply(CAR_LIFT_PAGE_EN, {
+  onEnApplied: () => {
+    document.documentElement.lang = 'en';
+    applyCarLiftScrewPageLanguage();
+    localizeCarLiftStaticContent();
+    syncThreadPresetUi();
+    initInfoChipPopovers(document.body);
+    refresh();
+  },
+});
+
+document.querySelector('.flat-sidebar')?.addEventListener('click', (e) => {
+  const t = e.target instanceof Element ? e.target.closest('[data-cl-preset]') : null;
+  if (!(t instanceof HTMLButtonElement)) return;
+  const id = t.getAttribute('data-cl-preset');
+  if (id) applyCarLiftPresetFromId(id);
+});
+
 window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
   location.reload();
 });
 
-mountLabCloudSaveBar('Elevador de autos (husillo)');

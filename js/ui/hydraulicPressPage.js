@@ -3,7 +3,18 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
-import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { HYDRAULIC_PRESS_EN } from '../lab/i18n/pages/hydraulicPressEn.js';
+import { applyHydraulicPressPageLanguage } from './hydraulicPressStaticI18n.js';
+
+function pressLang() {
+  return getCurrentLang() === 'en';
+}
+
+/** @param {string} es @param {string} enStr */
+function pressLbl(es, enStr) {
+  return pressLang() ? enStr : es;
+}
 
 const G = 9.81;
 const PI = Math.PI;
@@ -67,10 +78,21 @@ function renderPressDiagram(svg, pistonMm, forceTon, nCols) {
     .map((x) => `<rect x="${x}" y="${yColTop}" width="${colW}" height="${colH}" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>`)
     .join('');
 
+  const en = pressLang();
   const titleDiag = nCols === 2
-    ? 'Prensa hidráulica de 2 columnas — vista funcional'
-    : 'Prensa hidráulica de 4 columnas — vista funcional';
-  const lblCols = nCols === 2 ? 'Columnas (laterales)' : 'Columnas';
+    ? en
+      ? '2-column hydraulic press \u2014 functional view'
+      : 'Prensa hidr\u00e1ulica de 2 columnas \u2014 vista funcional'
+    : en
+      ? '4-column hydraulic press \u2014 functional view'
+      : 'Prensa hidr\u00e1ulica de 4 columnas \u2014 vista funcional';
+  const lblCols = nCols === 2
+    ? en
+      ? 'Columns (sides)'
+      : 'Columnas (laterales)'
+    : en
+      ? 'Columns'
+      : 'Columnas';
 
   svg.setAttribute('viewBox', '0 0 760 300');
   svg.innerHTML = `
@@ -89,14 +111,14 @@ function renderPressDiagram(svg, pistonMm, forceTon, nCols) {
     <rect x="${cx - rodW / 2}" y="${rodTop}" width="${rodW}" height="${rodH}" rx="4" fill="#d4d4d8" stroke="#64748b" stroke-width="1.1"/>
     <rect x="244" y="${yPlaten}" width="272" height="${platenH}" rx="4" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="1.25"/>
     <rect x="292" y="${yPlaten + platenH + 8}" width="176" height="18" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-dasharray="5 4"/>
-    <text x="380" y="${yPlaten + platenH + 20}" class="fluid-svg-lbl" font-size="9" fill="#475569" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Zona de prensado</text>
+    <text x="380" y="${yPlaten + platenH + 20}" class="fluid-svg-lbl" font-size="9" fill="#475569" font-family="Inter,system-ui,sans-serif" text-anchor="middle">${en ? 'Pressing zone' : 'Zona de prensado'}</text>
     <path d="M${cx} ${yCyl + 22} L${cx} ${yPlaten - 2}" stroke="#0d9488" stroke-width="2.6" marker-end="url(#hppArrow)"/>
 
     <g font-family="Inter,system-ui,sans-serif">
-      <text x="556" y="88" class="fluid-svg-lbl" font-size="9.5" font-weight="700" fill="#0369a1">Presión aplicada</text>
-      <text x="556" y="104" class="fluid-svg-lbl" font-size="9.5" fill="#334155">F ≈ ${fmt(forceTon, 1)} t</text>
-      <text x="556" y="126" class="fluid-svg-lbl" font-size="9" fill="#475569">Cilindro · vástago · plato</text>
-      <text x="556" y="142" class="fluid-svg-lbl" font-size="9" fill="#475569">Mesa fija (referencia)</text>
+      <text x="556" y="88" class="fluid-svg-lbl" font-size="9.5" font-weight="700" fill="#0369a1">${en ? 'Applied pressure' : 'Presi\u00f3n aplicada'}</text>
+      <text x="556" y="104" class="fluid-svg-lbl" font-size="9.5" fill="#334155">F \u2248 ${fmt(forceTon, 1)} t</text>
+      <text x="556" y="126" class="fluid-svg-lbl" font-size="9" fill="#475569">${en ? 'Cylinder \u00b7 rod \u00b7 platen' : 'Cilindro \u00b7 v\u00e1stago \u00b7 plato'}</text>
+      <text x="556" y="142" class="fluid-svg-lbl" font-size="9" fill="#475569">${en ? 'Fixed table (reference)' : 'Mesa fija (referencia)'}</text>
       <text x="556" y="160" class="fluid-svg-lbl" font-size="8.8" fill="#64748b">${lblCols}</text>
     </g>
   `;
@@ -113,20 +135,135 @@ function syncLabTierUi() {
 function productivityBadgeHtml(cycleS) {
   const cph = 3600 / Math.max(0.01, cycleS);
   let cls = 'hpp-prod-badge--low';
-  let label = 'Baja productividad';
+  const en = pressLang();
+  let label = en ? 'Low productivity' : 'Baja productividad';
   if (cph > 30) {
     cls = 'hpp-prod-badge--high';
-    label = 'Alta productividad';
+    label = en ? 'High productivity' : 'Alta productividad';
   } else if (cph >= 10) {
     cls = 'hpp-prod-badge--mid';
-    label = 'Media productividad';
+    label = en ? 'Medium productivity' : 'Media productividad';
   }
+  const cyclesText = en
+    ? `\u2248 ${fmt(cph, 1)} cycles/h (cycle time ${fmt(cycleS, 1)} s)`
+    : `\u2248 ${fmt(cph, 1)} ciclos/h (seg\u00fan tiempo de ciclo ${fmt(cycleS, 1)} s)`;
   return `
     <div class="hpp-prod-row">
       <span class="hpp-prod-badge ${cls}">${label}</span>
-      <span class="hpp-prod-text">≈ ${fmt(cph, 1)} ciclos/h (según tiempo de ciclo ${fmt(cycleS, 1)} s)</span>
+      <span class="hpp-prod-text">${cyclesText}</span>
     </div>
   `;
+}
+
+function buildPressAlerts(en, ctx) {
+  const {
+    pBar, mode, labTier, fsEulerCol, fmt, userColMm, colDiaSafeMm, nCols,
+    pumpFlowLmin, qReqLmin, tApproach, motorKwFromPump, motorKw, cycleRealS,
+    tonReal, diagColMm, maxTonByCols,
+  } = ctx;
+  const alerts = [];
+  const wrap = (cls, title, body) =>
+    `<div class="lab-alert lab-alert--${cls}"><div class="lab-alert__body"><strong>${title}</strong> ${body}</div></div>`;
+
+  if (pBar > 350) {
+    alerts.push(
+      wrap(
+        'danger',
+        en ? 'Extreme pressure:' : 'Presi\u00f3n extrema:',
+        en
+          ? 'Requires high-end components and special seals. Consider increasing piston bore to work at standard pressures (210\u2013250 bar).'
+          : 'Requiere componentes de alta gama y sellos especiales. Considere aumentar el di\u00e1metro del pist\u00f3n para trabajar a presiones est\u00e1ndar (210\u2013250 bar).',
+      ),
+    );
+  }
+  if (mode === 'diagnostic' && pBar > 250) {
+    alerts.push(
+      wrap(
+        'danger',
+        en ? 'Warning:' : 'Peligro:',
+        en
+          ? 'exceeding design pressure. Risk of column fatigue or seal failure.'
+          : 'est\u00e1 superando la presi\u00f3n de dise\u00f1o. Riesgo de fatiga en columnas o rotura de sellos.',
+      ),
+    );
+  }
+  if (labTier === 'project' && Number.isFinite(fsEulerCol) && fsEulerCol < 2) {
+    alerts.push(
+      wrap(
+        'danger',
+        en ? 'Column buckling:' : 'Pandeo columnas:',
+        en
+          ? `Euler FS ${fmt(fsEulerCol, 2)} &lt; 2. Increase diameter, bracing or reduce L/K.`
+          : `FS Euler ${fmt(fsEulerCol, 2)} &lt; 2. Aumente di\u00e1metro, arriostre o reduzca L/K.`,
+      ),
+    );
+  }
+  if (Number.isFinite(userColMm)) {
+    if (userColMm + 0.01 >= colDiaSafeMm) {
+      alerts.push(
+        wrap(
+          'info',
+          en ? 'Available column:' : 'Columna disponible:',
+          en
+            ? `\u00d8 ${fmt(userColMm, 1)} mm \u2265 indicative minimum ${fmt(colDiaSafeMm, 1)} mm (axial stress \u00d71.2).`
+            : `\u00d8 ${fmt(userColMm, 1)} mm \u2265 m\u00ednimo orientativo ${fmt(colDiaSafeMm, 1)} mm (tensi\u00f3n axial \u00d71,2).`,
+        ),
+      );
+    } else {
+      alerts.push(
+        wrap(
+          'warn',
+          en ? 'Available column:' : 'Columna disponible:',
+          en
+            ? `\u00d8 ${fmt(userColMm, 1)} mm is below indicative minimum ${fmt(colDiaSafeMm, 1)} mm for load split across ${nCols} columns.`
+            : `\u00d8 ${fmt(userColMm, 1)} mm es inferior al m\u00ednimo orientativo ${fmt(colDiaSafeMm, 1)} mm para la carga repartida en ${nCols} columnas.`,
+        ),
+      );
+    }
+  }
+  if (pumpFlowLmin < qReqLmin) {
+    alerts.push(
+      wrap(
+        'warn',
+        en ? 'Optimization:' : 'Optimizaci\u00f3n:',
+        en
+          ? `To lower the platen in ${fmt(tApproach, 1)} s, current pump flow is insufficient. You need ${fmt(qReqLmin, 1)} L/min.`
+          : `Para bajar el plato en ${fmt(tApproach, 1)} s, su bomba actual es insuficiente. Necesita un caudal de ${fmt(qReqLmin, 1)} L/min.`,
+      ),
+    );
+  }
+  if (motorKwFromPump < motorKw) {
+    alerts.push(
+      wrap(
+        'danger',
+        en ? 'Power warning:' : 'Advertencia de potencia:',
+        en
+          ? `To meet your cycle-time target you need ${fmt(motorKw, 2)} kW. With ${fmt(motorKwFromPump, 2)} kW available (from current flow), cycle time will rise to ${fmt(cycleRealS, 2)} s.`
+          : `Para cumplir su objetivo de tiempo de ciclo necesita ${fmt(motorKw, 2)} kW. Con una potencia disponible de ${fmt(motorKwFromPump, 2)} kW (equivalente al caudal actual), el tiempo de ciclo aumentar\u00e1 a ${fmt(cycleRealS, 2)} s.`,
+      ),
+    );
+  }
+  alerts.push(
+    wrap(
+      'info',
+      en ? 'Safety:' : 'Seguridad:',
+      en
+        ? `At ${fmt(tonReal, 1)} tonnes, columns need a minimum diameter of ${fmt(colDiaSafeMm, 1)} mm to limit elastic deformation (axial stress).`
+        : `Con ${fmt(tonReal, 1)} toneladas, las columnas deben tener un di\u00e1metro m\u00ednimo de ${fmt(colDiaSafeMm, 1)} mm para evitar deformaci\u00f3n el\u00e1stica (tensi\u00f3n axial).`,
+    ),
+  );
+  if (mode === 'diagnostic') {
+    alerts.push(
+      wrap(
+        'info',
+        en ? 'Structural verdict:' : 'Veredicto estructural:',
+        en
+          ? `your ${fmt(diagColMm, 1)} mm columns support up to ${fmt(maxTonByCols, 1)} tonnes before yielding (axial).`
+          : `sus columnas de ${fmt(diagColMm, 1)} mm soportan un m\u00e1ximo de ${fmt(maxTonByCols, 1)} toneladas antes de deformarse (axial).`,
+      ),
+    );
+  }
+  return alerts;
 }
 
 function updateApproachNote(strokeMm, cycleS, approachFactor) {
@@ -136,12 +273,16 @@ function updateApproachNote(strokeMm, cycleS, approachFactor) {
   const vWork = (strokeMm / 1000) / Math.max(0.1, tWork);
   const denom = vWork * approachFactor;
   const tEst = denom > 0 ? (strokeMm / 1000) / denom : NaN;
+  const en = pressLang();
   el.textContent = Number.isFinite(tEst)
-    ? `Con factor ${fmt(approachFactor, 2)}, el plato baja ${fmt(approachFactor, 2)} veces más rápido en vacío que bajo carga. Tiempo estimado de aproximación: ${fmt(tEst, 2)} s (carrera / (v trabajo × ${fmt(approachFactor, 2)})).`
+    ? en
+      ? `With factor ${fmt(approachFactor, 2)}, the platen descends ${fmt(approachFactor, 2)}\u00d7 faster in idle than under load. Estimated approach time: ${fmt(tEst, 2)} s.`
+      : `Con factor ${fmt(approachFactor, 2)}, el plato baja ${fmt(approachFactor, 2)} veces m\u00e1s r\u00e1pido en vac\u00edo que bajo carga. Tiempo estimado de aproximaci\u00f3n: ${fmt(tEst, 2)} s.`
     : '';
 }
 
 function computeAndRender() {
+  const en = pressLang();
   const mode = document.getElementById('hppMode') instanceof HTMLSelectElement
     ? document.getElementById('hppMode').value
     : 'design';
@@ -163,24 +304,24 @@ function computeAndRender() {
     return r.ok ? r.value : NaN;
   };
 
-  const forceTon = need(readLabNumber('hppForceTon', 1, undefined, 'Fuerza de prensado (t)'));
-  const pBar = need(readLabNumber('hppPressureBar', 50, undefined, 'Presión máxima (bar)'));
-  const strokeMm = need(readLabNumber('hppStrokeMm', 20, undefined, 'Carrera (mm)'));
-  const cycleS = need(readLabNumber('hppCycleS', 1, undefined, 'Tiempo de ciclo (s)'));
-  const approachFactor = need(readLabNumber('hppApproachFactor', 1, 6, 'Factor velocidad aproximación'));
-  const pumpFlowLmin = need(readLabNumber('hppPumpFlowLmin', 1, undefined, 'Caudal de bomba (L/min)'));
-  const sigmaAllowMpa = need(readLabNumber('hppSteelMpa', 80, undefined, 'Tensión admisible columna (MPa)'));
+  const forceTon = need(readLabNumber('hppForceTon', 1, undefined, pressLbl('Fuerza de prensado (t)', 'Pressing force (t)')));
+  const pBar = need(readLabNumber('hppPressureBar', 50, undefined, pressLbl('Presi\u00f3n m\u00e1xima (bar)', 'Maximum pressure (bar)')));
+  const strokeMm = need(readLabNumber('hppStrokeMm', 20, undefined, pressLbl('Carrera (mm)', 'Stroke (mm)')));
+  const cycleS = need(readLabNumber('hppCycleS', 1, undefined, pressLbl('Tiempo de ciclo (s)', 'Cycle time (s)')));
+  const approachFactor = need(readLabNumber('hppApproachFactor', 1, 6, pressLbl('Factor velocidad aproximaci\u00f3n', 'Approach speed factor')));
+  const pumpFlowLmin = need(readLabNumber('hppPumpFlowLmin', 1, undefined, pressLbl('Caudal de bomba (L/min)', 'Pump flow (L/min)')));
+  const sigmaAllowMpa = need(readLabNumber('hppSteelMpa', 80, undefined, pressLbl('Tensi\u00f3n admisible columna (MPa)', 'Allowable column stress (MPa)')));
 
   const colsEl = document.getElementById('hppColumns');
   const nColsRaw = colsEl instanceof HTMLSelectElement ? Number(colsEl.value) : NaN;
   let nCols = 4;
   if (nColsRaw === 2 || nColsRaw === 4) nCols = nColsRaw;
-  else errors.push('Número de columnas: valor no válido.');
+  else errors.push(pressLbl('N\u00famero de columnas: valor no v\u00e1lido.', 'Number of columns: invalid value.'));
 
   const userColEl = document.getElementById('hppUserColumnMm');
   let userColMm = NaN;
   if (userColEl instanceof HTMLInputElement && String(userColEl.value).trim() !== '') {
-    const ru = readLabNumber('hppUserColumnMm', 20, 2000, 'Diámetro de columna disponible (mm)');
+    const ru = readLabNumber('hppUserColumnMm', 20, 2000, pressLbl('Di\u00e1metro de columna disponible (mm)', 'Available column diameter (mm)'));
     if (!ru.ok) errors.push(ru.error);
     else userColMm = ru.value;
   }
@@ -188,8 +329,8 @@ function computeAndRender() {
   let diagPistonMm = 250;
   let diagColMm = 110;
   if (mode === 'diagnostic') {
-    const dp = readLabNumber('hppDiagPistonMm', 20, undefined, 'Diámetro pistón existente (mm)');
-    const dc = readLabNumber('hppDiagColumnMm', 20, undefined, 'Diámetro real de columnas (mm)');
+    const dp = readLabNumber('hppDiagPistonMm', 20, undefined, pressLbl('Di\u00e1metro pist\u00f3n existente (mm)', 'Existing piston diameter (mm)'));
+    const dc = readLabNumber('hppDiagColumnMm', 20, undefined, pressLbl('Di\u00e1metro real de columnas (mm)', 'Actual column diameter (mm)'));
     if (!dp.ok) errors.push(dp.error);
     else diagPistonMm = dp.value;
     if (!dc.ok) errors.push(dc.error);
@@ -200,15 +341,15 @@ function computeAndRender() {
   let colK = 0.7;
   let eGpa = 210;
   if (labTier === 'project') {
-    const rL = readLabNumber('hppColLengthMm', 200, 20000, 'Longitud libre columna (mm)');
-    const rE = readLabNumber('hppEGpa', 70, 220, 'Módulo E (GPa)');
+    const rL = readLabNumber('hppColLengthMm', 200, 20000, pressLbl('Longitud libre columna (mm)', 'Column free length (mm)'));
+    const rE = readLabNumber('hppEGpa', 70, 220, pressLbl('M\u00f3dulo E (GPa)', 'Modulus E (GPa)'));
     if (!rL.ok) errors.push(rL.error);
     else colLengthMm = rL.value;
     if (!rE.ok) errors.push(rE.error);
     else eGpa = rE.value;
     const kEl = document.getElementById('hppColK');
     colK = kEl instanceof HTMLSelectElement ? Number(kEl.value) : 0.7;
-    if (!Number.isFinite(colK) || colK <= 0) errors.push('Coeficiente K: valor no válido.');
+    if (!Number.isFinite(colK) || colK <= 0) errors.push(pressLbl('Coeficiente K: valor no v\u00e1lido.', 'K factor: invalid value.'));
   }
 
   if (!errors.length && Number.isFinite(strokeMm) && Number.isFinite(cycleS) && Number.isFinite(approachFactor)) {
@@ -220,17 +361,33 @@ function computeAndRender() {
     const note = document.getElementById('hppApproachDynamicNote');
     if (note instanceof HTMLElement) note.textContent = '';
     if (formulaBody instanceof HTMLElement) formulaBody.innerHTML = '';
-    advisor.innerHTML = `<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>Entrada no válida:</strong><ul style="margin:0.4em 0 1.1em;padding:0">${errors.map((e) => `<li>${e}</li>`).join('')}</ul></div></div>`;
+    advisor.innerHTML = `<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${en ? 'Invalid input:' : 'Entrada no v\u00e1lida:'}</strong><ul style="margin:0.4em 0 1.1em;padding:0">${errors.map((e) => `<li>${e}</li>`).join('')}</ul></div></div>`;
     verdict.className = 'lab-verdict lab-verdict--err';
-    verdict.textContent = 'Revise los valores del formulario.';
+    verdict.textContent = en ? 'Check form values.' : 'Revise los valores del formulario.';
     const titleEl = document.getElementById('hppDiagramTitle');
-    if (titleEl) titleEl.textContent = nCols === 2 ? 'Prensa hidráulica de 2 columnas (esquema funcional)' : 'Prensa hidráulica de 4 columnas (esquema funcional)';
+    if (titleEl) {
+      titleEl.textContent =
+        nCols === 2
+          ? en
+            ? '2-column hydraulic press (functional schematic)'
+            : 'Prensa hidr\u00e1ulica de 2 columnas (esquema funcional)'
+          : en
+            ? '4-column hydraulic press (functional schematic)'
+            : 'Prensa hidr\u00e1ulica de 4 columnas (esquema funcional)';
+    }
     return;
   }
 
   const diagTitle = document.getElementById('hppDiagramTitle');
   if (diagTitle) {
-    diagTitle.textContent = nCols === 2 ? 'Prensa hidráulica de 2 columnas (esquema funcional)' : 'Prensa hidráulica de 4 columnas (esquema funcional)';
+    diagTitle.textContent =
+      nCols === 2
+        ? en
+          ? '2-column hydraulic press (functional schematic)'
+          : 'Prensa hidr\u00e1ulica de 2 columnas (esquema funcional)'
+        : en
+          ? '4-column hydraulic press (functional schematic)'
+          : 'Prensa hidr\u00e1ulica de 4 columnas (esquema funcional)';
   }
 
   const forceNDesign = forceTon * 1000 * G;
@@ -281,21 +438,65 @@ function computeAndRender() {
   renderPressDiagram(document.getElementById('hpPressDiagram'), pistonUseMm, tonReal, nCols);
 
   const mainCards = [
-    metric('Tonelaje real', `${fmt(tonReal, 1)} t`, mode === 'diagnostic' ? `estimado por D = ${fmt(diagPistonMm, 1)} mm` : `objetivo ${fmt(forceTon, 1)} t`),
-    metric('Diámetro pistón sugerido (ISO)', `${fmt(pistonIsoMm, 0)} mm`, `req. teórico ${fmt(pistonReqMm, 1)} mm`),
-    metric('Caudal bomba necesario', `${fmt(qReqLmin, 1)} L/min`, `aprox. ${fmt(qApproachLmin, 1)} / trabajo ${fmt(qWorkLmin, 1)}`),
-    metric('Potencia motor eléctrico', `${fmt(motorKw, 2)} kW`, `normalizado ${fmt(motorRec, 1)} kW`),
+    metric(
+      en ? 'Actual tonnage' : 'Tonelaje real',
+      `${fmt(tonReal, 1)} t`,
+      mode === 'diagnostic'
+        ? en
+          ? `estimated from D = ${fmt(diagPistonMm, 1)} mm`
+          : `estimado por D = ${fmt(diagPistonMm, 1)} mm`
+        : en
+          ? `target ${fmt(forceTon, 1)} t`
+          : `objetivo ${fmt(forceTon, 1)} t`,
+    ),
+    metric(
+      en ? 'Suggested piston diameter (ISO)' : 'Di\u00e1metro pist\u00f3n sugerido (ISO)',
+      `${fmt(pistonIsoMm, 0)} mm`,
+      en ? `theoretical req. ${fmt(pistonReqMm, 1)} mm` : `req. te\u00f3rico ${fmt(pistonReqMm, 1)} mm`,
+    ),
+    metric(
+      en ? 'Required pump flow' : 'Caudal bomba necesario',
+      `${fmt(qReqLmin, 1)} L/min`,
+      en
+        ? `approach ${fmt(qApproachLmin, 1)} / work ${fmt(qWorkLmin, 1)}`
+        : `aprox. ${fmt(qApproachLmin, 1)} / trabajo ${fmt(qWorkLmin, 1)}`,
+    ),
+    metric(
+      en ? 'Electric motor power' : 'Potencia motor el\u00e9ctrico',
+      `${fmt(motorKw, 2)} kW`,
+      en ? `standardized ${fmt(motorRec, 1)} kW` : `normalizado ${fmt(motorRec, 1)} kW`,
+    ),
   ].join('');
 
   const secondaryCards = [
-    metric('Caudal de aproximación', `${fmt(qApproachLmin, 1)} L/min`, `factor aprox. ${fmt(approachFactor, 2)}×`),
-    metric('Caudal de trabajo', `${fmt(qWorkLmin, 1)} L/min`, `fase de prensado`),
-    metric('Potencia disponible (bomba actual)', `${fmt(motorKwFromPump, 2)} kW`, `Q actual ${fmt(pumpFlowLmin, 1)} L/min`),
-    metric('Tiempo de ciclo estimado con bomba actual', `${fmt(cycleRealS, 2)} s`, `objetivo ${fmt(cycleS, 2)} s`),
+    metric(
+      en ? 'Approach flow' : 'Caudal de aproximaci\u00f3n',
+      `${fmt(qApproachLmin, 1)} L/min`,
+      en ? `approach factor ${fmt(approachFactor, 2)}\u00d7` : `factor aprox. ${fmt(approachFactor, 2)}\u00d7`,
+    ),
+    metric(
+      en ? 'Working flow' : 'Caudal de trabajo',
+      `${fmt(qWorkLmin, 1)} L/min`,
+      en ? 'pressing phase' : 'fase de prensado',
+    ),
+    metric(
+      en ? 'Available power (current pump)' : 'Potencia disponible (bomba actual)',
+      `${fmt(motorKwFromPump, 2)} kW`,
+      en ? `current Q ${fmt(pumpFlowLmin, 1)} L/min` : `Q actual ${fmt(pumpFlowLmin, 1)} L/min`,
+    ),
+    metric(
+      en ? 'Estimated cycle time (current pump)' : 'Tiempo de ciclo estimado con bomba actual',
+      `${fmt(cycleRealS, 2)} s`,
+      en ? `target ${fmt(cycleS, 2)} s` : `objetivo ${fmt(cycleS, 2)} s`,
+    ),
   ];
   if (labTier === 'project' && Number.isFinite(pCrColN)) {
     secondaryCards.push(
-      metric('Carga crít. Euler columna', `${fmt(pCrColN / 1000, 1)} kN`, `FS ${fmt(fsEulerCol, 2)} (D = ${fmt(dColEulerMm, 0)} mm)`),
+      metric(
+        en ? 'Column Euler critical load' : 'Carga cr\u00edt. Euler columna',
+        `${fmt(pCrColN / 1000, 1)} kN`,
+        `FS ${fmt(fsEulerCol, 2)} (D = ${fmt(dColEulerMm, 0)} mm)`,
+      ),
     );
   }
 
@@ -303,80 +504,103 @@ function computeAndRender() {
     ${mainCards}
     ${productivityBadgeHtml(cycleS)}
     <details class="hpp-more-details">
-      <summary>Datos técnicos secundarios</summary>
+      <summary>${en ? 'Secondary technical data' : 'Datos t\u00e9cnicos secundarios'}</summary>
       <div class="hpp-more-details__body">
         <div class="lab-results">${secondaryCards.join('')}</div>
       </div>
     </details>
   `;
 
-  const formulaLines = [
-    'Fuerza objetivo (diseño): F = m_t × 1000 × g con m_t en toneladas métricas (equiv. ~kN/g).',
-    'Área pistón requerida: A_req = F / p con p en Pa (bar × 1e5).',
-    'Diámetro teórico: d = √(4×A_req/π). Se normaliza a carrera ISO de pistón.',
-    `Caudal trabajo: Q = A × v × 60000 L/min con v = carrera_m / t_trabajo (t_trabajo = 0,55 × t_ciclo).`,
-    'Caudal aproximación: Q_aprox = A × v_aprox × 60000 con v_aprox = factor × v_trabajo.',
-    'Potencia hidráulica aprox.: P_kW = (p_bar × Q_Lmin) / (600 × η) con η = 0,85.',
-    'Columnas (tensión axial): A_col = (F/n) / σ_adm; d_min = √(4×A_col/π); sugerido ×1,2.',
-  ];
+  const formulaLines = en
+    ? [
+        'Target force (design): F = m_t \u00d7 1000 \u00d7 g with m_t in metric tons (~kN/g).',
+        'Required piston area: A_req = F / p with p in Pa (bar \u00d7 1e5).',
+        'Theoretical diameter: d = \u221a(4\u00d7A_req/\u03c0). Normalized to ISO piston bore.',
+        `Working flow: Q = A \u00d7 v \u00d7 60000 L/min with v = stroke_m / t_work (t_work = 0.55 \u00d7 t_cycle).`,
+        'Approach flow: Q_approach = A \u00d7 v_approach \u00d7 60000 with v_approach = factor \u00d7 v_work.',
+        'Approx. hydraulic power: P_kW = (p_bar \u00d7 Q_Lmin) / (600 \u00d7 \u03b7) with \u03b7 = 0.85.',
+        'Columns (axial stress): A_col = (F/n) / \u03c3_allow; d_min = \u221a(4\u00d7A_col/\u03c0); suggested \u00d71.2.',
+      ]
+    : [
+        'Fuerza objetivo (dise\u00f1o): F = m_t \u00d7 1000 \u00d7 g con m_t en toneladas m\u00e9tricas (equiv. ~kN/g).',
+        '\u00c1rea pist\u00f3n requerida: A_req = F / p con p en Pa (bar \u00d7 1e5).',
+        'Di\u00e1metro te\u00f3rico: d = \u221a(4\u00d7A_req/\u03c0). Se normaliza a carrera ISO de pist\u00f3n.',
+        `Caudal trabajo: Q = A \u00d7 v \u00d7 60000 L/min con v = carrera_m / t_trabajo (t_trabajo = 0,55 \u00d7 t_ciclo).`,
+        'Caudal aproximaci\u00f3n: Q_aprox = A \u00d7 v_aprox \u00d7 60000 con v_aprox = factor \u00d7 v_trabajo.',
+        'Potencia hidr\u00e1ulica aprox.: P_kW = (p_bar \u00d7 Q_Lmin) / (600 \u00d7 \u03b7) con \u03b7 = 0,85.',
+        'Columnas (tensi\u00f3n axial): A_col = (F/n) / \u03c3_adm; d_min = \u221a(4\u00d7A_col/\u03c0); sugerido \u00d71,2.',
+      ];
   if (labTier === 'project' && Number.isFinite(pCrColN)) {
-    formulaLines.push('Pandeo Euler: I = π×d⁴/64, P_cr = π²×E×I/(K×L)² con L en m, E en Pa, K coef. longitud efectiva.');
-    formulaLines.push(`D usado en I: ${mode === 'diagnostic' ? 'diámetro real columnas' : 'diámetro mínimo ×1,2 (diseño)'}.`);
+    formulaLines.push(
+      en
+        ? 'Euler buckling: I = \u03c0\u00d7d\u2074/64, P_cr = \u03c0\u00b2\u00d7E\u00d7I/(K\u00d7L)\u00b2 with L in m, E in Pa, K effective-length factor.'
+        : 'Pandeo Euler: I = \u03c0\u00d7d\u2074/64, P_cr = \u03c0\u00b2\u00d7E\u00d7I/(K\u00d7L)\u00b2 con L en m, E en Pa, K coef. longitud efectiva.',
+    );
+    formulaLines.push(
+      en
+        ? `D used in I: ${mode === 'diagnostic' ? 'actual column diameter' : 'minimum diameter \u00d71.2 (design)'}.`
+        : `D usado en I: ${mode === 'diagnostic' ? 'di\u00e1metro real columnas' : 'di\u00e1metro m\u00ednimo \u00d71,2 (dise\u00f1o)'}.`,
+    );
   } else if (labTier === 'basic') {
-    formulaLines.push('Modo aula: no se evalúa pandeo de columnas; el chequeo axial es orientativo.');
+    formulaLines.push(
+      en
+        ? 'Classroom mode: column buckling is not evaluated; axial check is indicative only.'
+        : 'Modo aula: no se eval\u00faa pandeo de columnas; el chequeo axial es orientativo.',
+    );
   }
 
-  const assumptions = [
-    'g = 9,81 m/s². Presión uniforme en pistón sin caída dinámica modelada.',
-    'Rendimiento mecánico/hidráulico agregado 0,85 en potencia de motor.',
-    mode === 'diagnostic' ? `Modo diagnóstico: fuerza efectiva ~ η_diag = ${ETA_DIAG} sobre p×A.` : 'Modo diseño: fuerza nominal p×A sin η de diagnóstico.',
-    labTier === 'project'
-      ? `Pandeo: columna circular maciza, E = ${fmt(eGpa, 0)} GPa, L = ${fmt(colLengthMm, 0)} mm, K = ${fmt(colK, 2)}.`
-      : 'Sin verificación de pandeo de columnas en modo aula.',
-    'El modelo no calcula la rigidez del bastidor (deflexión del travesaño superior) ni la distribución de carga entre columnas ante excentricidad de la pieza.',
-    'No sustituye análisis FEM, fatiga ni guiado de plato.',
-  ];
+  const assumptions = en
+    ? [
+        'g = 9.81 m/s\u00b2. Uniform pressure on piston; dynamic pressure drop not modeled.',
+        'Aggregate mechanical/hydraulic efficiency 0.85 for motor power.',
+        mode === 'diagnostic'
+          ? `Diagnostic mode: effective force ~ \u03b7_diag = ${ETA_DIAG} on p\u00d7A.`
+          : 'Design mode: nominal force p\u00d7A without diagnostic \u03b7.',
+        labTier === 'project'
+          ? `Buckling: solid circular column, E = ${fmt(eGpa, 0)} GPa, L = ${fmt(colLengthMm, 0)} mm, K = ${fmt(colK, 2)}.`
+          : 'No column buckling check in classroom mode.',
+        'The model does not compute frame stiffness (top beam deflection) or load sharing between columns under part eccentricity.',
+        'Does not replace FEA, fatigue or platen guidance analysis.',
+      ]
+    : [
+        'g = 9,81 m/s\u00b2. Presi\u00f3n uniforme en pist\u00f3n sin ca\u00edda din\u00e1mica modelada.',
+        'Rendimiento mec\u00e1nico/hidr\u00e1ulico agregado 0,85 en potencia de motor.',
+        mode === 'diagnostic'
+          ? `Modo diagn\u00f3stico: fuerza efectiva ~ \u03b7_diag = ${ETA_DIAG} sobre p\u00d7A.`
+          : 'Modo dise\u00f1o: fuerza nominal p\u00d7A sin \u03b7 de diagn\u00f3stico.',
+        labTier === 'project'
+          ? `Pandeo: columna circular maciza, E = ${fmt(eGpa, 0)} GPa, L = ${fmt(colLengthMm, 0)} mm, K = ${fmt(colK, 2)}.`
+          : 'Sin verificaci\u00f3n de pandeo de columnas en modo aula.',
+        'El modelo no calcula la rigidez del bastidor (deflexi\u00f3n del travesa\u00f1o superior) ni la distribuci\u00f3n de carga entre columnas ante excentricidad de la pieza.',
+        'No sustituye an\u00e1lisis FEM, fatiga ni guiado de plato.',
+      ];
 
   if (formulaBody instanceof HTMLElement) {
+    const lead =
+      labTier === 'project'
+        ? en
+          ? 'Project mode: includes Euler buckling on columns.'
+          : 'Modo proyecto: incluye pandeo Euler en columnas.'
+        : en
+          ? 'Classroom mode: basic formulas and axial stress on columns.'
+          : 'Modo aula: f\u00f3rmulas b\u00e1sicas y tensi\u00f3n axial en columnas.';
     formulaBody.innerHTML = `
-      <p class="lab-fluid-formulas__lead">${labTier === 'project' ? 'Modo proyecto: incluye pandeo Euler en columnas.' : 'Modo aula: fórmulas básicas y tensión axial en columnas.'}</p>
+      <p class="lab-fluid-formulas__lead">${lead}</p>
       <ol class="lab-fluid-formulas__list">
         ${formulaLines.map((x) => `<li>${x}</li>`).join('')}
       </ol>
-      <p class="lab-fluid-formulas__sub"><strong>Supuestos</strong></p>
+      <p class="lab-fluid-formulas__sub"><strong>${en ? 'Assumptions' : 'Supuestos'}</strong></p>
       <ul class="lab-fluid-formulas__list">
         ${assumptions.map((x) => `<li>${x}</li>`).join('')}
       </ul>
     `;
   }
 
-  const alerts = [];
-  if (pBar > 350) {
-    alerts.push('<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>Presión extrema:</strong> Requiere componentes de alta gama y sellos especiales. Considere aumentar el diámetro del pistón para trabajar a presiones estándar (210–250 bar).</div></div>');
-  }
-  if (mode === 'diagnostic' && pBar > 250) {
-    alerts.push('<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>Peligro:</strong> está superando la presión de diseño. Riesgo de fatiga en columnas o rotura de sellos.</div></div>');
-  }
-  if (labTier === 'project' && Number.isFinite(fsEulerCol) && fsEulerCol < 2) {
-    alerts.push(`<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>Pandeo columnas:</strong> FS Euler ${fmt(fsEulerCol, 2)} &lt; 2. Aumente diámetro, arriostre o reduzca L/K.</div></div>`);
-  }
-  if (Number.isFinite(userColMm)) {
-    if (userColMm + 0.01 >= colDiaSafeMm) {
-      alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body"><strong>Columna disponible:</strong> Ø ${fmt(userColMm, 1)} mm ≥ mínimo orientativo ${fmt(colDiaSafeMm, 1)} mm (tensión axial ×1,2).</div></div>`);
-    } else {
-      alerts.push(`<div class="lab-alert lab-alert--warn"><div class="lab-alert__body"><strong>Columna disponible:</strong> Ø ${fmt(userColMm, 1)} mm es inferior al mínimo orientativo ${fmt(colDiaSafeMm, 1)} mm para la carga repartida en ${nCols} columnas.</div></div>`);
-    }
-  }
-  if (pumpFlowLmin < qReqLmin) {
-    alerts.push(`<div class="lab-alert lab-alert--warn"><div class="lab-alert__body"><strong>Optimización:</strong> Para bajar el plato en ${fmt(tApproach, 1)} s, su bomba actual es insuficiente. Necesita un caudal de ${fmt(qReqLmin, 1)} L/min.</div></div>`);
-  }
-  if (motorKwFromPump < motorKw) {
-    alerts.push(`<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>Advertencia de potencia:</strong> Para cumplir su objetivo de tiempo de ciclo necesita ${fmt(motorKw, 2)} kW. Con una potencia disponible de ${fmt(motorKwFromPump, 2)} kW (equivalente al caudal actual), el tiempo de ciclo aumentará a ${fmt(cycleRealS, 2)} s.</div></div>`);
-  }
-  alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body"><strong>Seguridad:</strong> Con ${fmt(tonReal, 1)} toneladas, las columnas deben tener un diámetro mínimo de ${fmt(colDiaSafeMm, 1)} mm para evitar deformación elástica (tensión axial).</div></div>`);
-  if (mode === 'diagnostic') {
-    alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body"><strong>Veredicto estructural:</strong> sus columnas de ${fmt(diagColMm, 1)} mm soportan un máximo de ${fmt(maxTonByCols, 1)} toneladas antes de deformarse (axial).</div></div>`);
-  }
+  const alerts = buildPressAlerts(en, {
+    pBar, mode, labTier, fsEulerCol, fmt, userColMm, colDiaSafeMm, nCols,
+    pumpFlowLmin, qReqLmin, tApproach, motorKwFromPump, motorKw, cycleRealS,
+    tonReal, diagColMm, maxTonByCols,
+  });
   advisor.innerHTML = alerts.join('');
 
   const balanced = pBar <= 300 && pumpFlowLmin >= qReqLmin * 0.95 && motorRec <= motorKw * 1.3 && (mode !== 'diagnostic' || maxTonByCols >= tonReal)
@@ -384,14 +608,18 @@ function computeAndRender() {
     && !(Number.isFinite(userColMm) && userColMm + 0.01 < colDiaSafeMm);
   verdict.className = balanced ? 'lab-verdict lab-verdict--ok' : 'lab-verdict lab-verdict--muted';
   verdict.textContent = balanced
-    ? 'CONFIGURACIÓN EQUILIBRADA — Productividad y coste de potencia en rango razonable.'
-    : 'CONFIGURACIÓN AJUSTABLE — Revise caudal de bomba, presión de trabajo y potencia instalada para equilibrar productividad frente a coste.';
+    ? en
+      ? 'BALANCED CONFIGURATION \u2014 Productivity and power cost in a reasonable range.'
+      : 'CONFIGURACI\u00d3N EQUILIBRADA \u2014 Productividad y coste de potencia en rango razonable.'
+    : en
+      ? 'TUNABLE CONFIGURATION \u2014 Review pump flow, working pressure and installed power to balance productivity vs. cost.'
+      : 'CONFIGURACI\u00d3N AJUSTABLE \u2014 Revise caudal de bomba, presi\u00f3n de trabajo y potencia instalada para equilibrar productividad frente a coste.';
 
   const lang = getCurrentLang();
   const ts = formatDateTimeLocale(new Date(), lang);
   pressPdfSnapshot = {
     valid: true,
-    title: lang === 'en' ? 'Report — Industrial hydraulic press' : 'Informe — Prensa hidráulica industrial',
+    title: lang === 'en' ? 'Report \u2014 Industrial hydraulic press' : 'Informe \u2014 Prensa hidr\u00e1ulica industrial',
     fileBase: `${lang === 'en' ? 'report-hydraulic-press' : 'informe-prensa-hidraulica'}-${new Date().toISOString().slice(0, 10)}`,
     timestamp: ts,
     tierLabel: labTier === 'project' ? (lang === 'en' ? 'Mode: Project (detailed)' : 'Modo: Proyecto (detallado)') : (lang === 'en' ? 'Mode: Classroom (basic)' : 'Modo: Aula (básico)'),
@@ -481,18 +709,18 @@ syncModeUi();
 mountCompactLabFieldHelp();
 
 bindInputValidation([
-  { id: 'hppColLengthMm', min: 50, max: 50000, label: 'Longitud columna' },
-  { id: 'hppEGpa', min: 70, max: 220, label: 'E módulo' },
-  { id: 'hppForceTon', min: 0.01, max: 50000, label: 'Fuerza' },
-  { id: 'hppDiagPistonMm', min: 10, max: 5000, label: 'Ø pistón' },
-  { id: 'hppPressureBar', min: 1, max: 600, label: 'Presión' },
-  { id: 'hppStrokeMm', min: 10, max: 100000, label: 'Carrera' },
-  { id: 'hppCycleS', min: 0.1, max: 86400, label: 'Tiempo ciclo' },
-  { id: 'hppApproachFactor', min: 1, max: 20, label: 'Factor aproximación' },
-  { id: 'hppPumpFlowLmin', min: 0.01, max: 500000, label: 'Caudal bomba' },
-  { id: 'hppSteelMpa', min: 50, max: 2000, label: 'σ acero' },
-  { id: 'hppUserColumnMm', min: 10, max: 5000, label: 'Columna usuario' },
-  { id: 'hppDiagColumnMm', min: 10, max: 5000, label: 'Ø columna' },
+  { id: 'hppColLengthMm', min: 50, max: 50000, label: pressLbl('Longitud columna', 'Column length') },
+  { id: 'hppEGpa', min: 70, max: 220, label: pressLbl('E m\u00f3dulo', 'E modulus') },
+  { id: 'hppForceTon', min: 0.01, max: 50000, label: pressLbl('Fuerza', 'Force') },
+  { id: 'hppDiagPistonMm', min: 10, max: 5000, label: pressLbl('\u00d8 pist\u00f3n', 'Piston \u00d8') },
+  { id: 'hppPressureBar', min: 1, max: 600, label: pressLbl('Presi\u00f3n', 'Pressure') },
+  { id: 'hppStrokeMm', min: 10, max: 100000, label: pressLbl('Carrera', 'Stroke') },
+  { id: 'hppCycleS', min: 0.1, max: 86400, label: pressLbl('Tiempo ciclo', 'Cycle time') },
+  { id: 'hppApproachFactor', min: 1, max: 20, label: pressLbl('Factor aproximaci\u00f3n', 'Approach factor') },
+  { id: 'hppPumpFlowLmin', min: 0.01, max: 500000, label: pressLbl('Caudal bomba', 'Pump flow') },
+  { id: 'hppSteelMpa', min: 50, max: 2000, label: pressLbl('\u03c3 acero', 'Steel \u03c3') },
+  { id: 'hppUserColumnMm', min: 10, max: 5000, label: pressLbl('Columna usuario', 'User column') },
+  { id: 'hppDiagColumnMm', min: 10, max: 5000, label: pressLbl('\u00d8 columna', 'Column \u00d8') },
 ]);
 
 computeAndRender();
@@ -504,4 +732,24 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMount'), {
     return svg instanceof SVGSVGElement ? [svg] : [];
   },
 });
-mountLabCloudSaveBar('Prensa hidr\u00e1ulica');
+
+applyHydraulicPressPageLanguage();
+
+function onPressLabLangChange() {
+  if (getCurrentLang() === 'en') {
+    applyHydraulicPressPageLanguage();
+    computeAndRender();
+  } else {
+    location.reload();
+  }
+}
+window.addEventListener('lab-language-changed', onPressLabLangChange);
+window.addEventListener('home-language-changed', onPressLabLangChange);
+
+watchLangAndApply(HYDRAULIC_PRESS_EN, {
+  onEnApplied: () => {
+    applyHydraulicPressPageLanguage();
+    syncModeUi();
+    computeAndRender();
+  },
+});

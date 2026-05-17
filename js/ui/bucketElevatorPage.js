@@ -27,8 +27,18 @@ import { renderFullEngineeringAside } from './engineeringReport.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
-import { BUCKET_ELEVATOR_LANG_EVENT } from './bucketElevatorStaticI18n.js';
-import { mountLabCloudSaveBar } from './labCloudSave.js';
+import {
+  applyBucketElevatorPageLanguage,
+  BUCKET_ELEVATOR_LANG_EVENT,
+} from './bucketElevatorStaticI18n.js';
+import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
+import { BUCKET_ELEVATOR_EN } from '../lab/i18n/pages/bucketElevatorEn.js';
+
+const BUCKET_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...BUCKET_ELEVATOR_EN };
+import { BUCKET_PRESET_BY_ID } from '../modules/machineHubPresets.js';
+import { incrementCalcCounter } from '../services/calcCounter.js';
 
 let animPhase = 0;
 let animId = 0;
@@ -124,6 +134,157 @@ function formatMounting(pref, lang = getCurrentLang()) {
   return `${typeMap[pref.mountingType] || pref.mountingType} \u00b7 ${ori}`;
 }
 
+function beRfqFmt(x, d = 2) {
+  return Number.isFinite(x) ? x.toFixed(d) : '\u2014';
+}
+
+/**
+ * @param {ReturnType<typeof buildParams>} raw
+ * @param {ReturnType<typeof computeBucketElevator>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ * @param {'es'|'en'} lang
+ */
+function buildBucketRfqPlainText(raw, r, mount, lang) {
+  const en = lang === 'en';
+  const inp = r.inputs || {};
+  const pw = r.power || {};
+  const ten = r.tension || {};
+  const ce = r.centrifugal || {};
+  const when = new Date().toISOString().slice(0, 19).replace('T', ' ') + ' UTC';
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const head = en
+    ? 'TheMechAssist — Bucket elevator (indicative CEMA-style)'
+    : 'TheMechAssist — Elevador de cangilones (orientativo CEMA)';
+  const hIn = en ? '== Inputs (summary) ==' : '== Entradas (resumen) ==';
+  const hOut = en ? '== Results (indicative) ==' : '== Resultados (orientativos) ==';
+  const hMount = en ? '== Mounting preference (for RFQ) ==' : '== Preferencia de montaje (RFQ) ==';
+  const disc = typeof r.disclaimer === 'string' ? r.disclaimer : '';
+
+  const parts = [
+    head,
+    `${en ? 'Timestamp (UTC)' : 'Fecha (UTC)'}: ${when}`,
+  ];
+  if (url) parts.push(`${en ? 'Source' : 'Origen'}: ${url}`);
+  parts.push(
+    '',
+    hIn,
+    `rho: ${beRfqFmt(inp.rho, 0)} kg/m³ · H: ${beRfqFmt(inp.H, 2)} m · C: ${beRfqFmt(inp.C, 2)} m`,
+    `Q: ${beRfqFmt(inp.Q, 2)} t/h · v: ${beRfqFmt(inp.v, 2)} m/s · D_head: ${beRfqFmt(inp.D_head, 3)} m`,
+    `B: ${beRfqFmt(inp.B, 0)} mm · sigma: ${beRfqFmt(inp.sigma, 1)} N/mm · ${en ? 'discharge' : 'descarga'}: ${raw.dischargeType}`,
+    `${en ? 'Fill factor (model)' : 'Llenado (modelo)'}: ${beRfqFmt(r.fillFactor, 3)}`,
+    `etaElev: ${beRfqFmt(pw.etaElev, 3)} · kBoot: ${beRfqFmt(pw.kBootDrag, 3)} · etaTrans: ${beRfqFmt(pw.etaTransmission, 3)}`,
+    '',
+    hOut,
+    `pitch: ${beRfqFmt(r.pitch_mm, 1)} mm · fill: ${beRfqFmt(r.fillFactor, 3)} · Q_check: ${beRfqFmt(r.capacity_check_tph, 2)} t/h`,
+    `P_lift: ${beRfqFmt(pw.pureLift_kW, 3)} kW · P_boot: ${beRfqFmt(pw.dragBoot_kW, 3)} kW · P_shaft: ${beRfqFmt(pw.shaft_kW, 3)} kW`,
+    `T_work/T_adm: ${beRfqFmt(ten.working_N, 0)} / ${beRfqFmt(ten.admissible_N, 0)} N · ratio: ${beRfqFmt(ten.ratio, 3)} · ok: ${ten.ok ? (en ? 'yes' : 'sí') : en ? 'no' : 'no'}`,
+    `K_cent: ${beRfqFmt(ce.K, 4)} · D_drum: ${beRfqFmt(ce.drumDiameter_m, 3)} m`,
+    '',
+    hMount,
+    formatMounting(mount, lang) +
+      (mount.machineShaftDiameter_mm != null
+        ? ` · ${en ? 'Machine shaft Ø' : 'Ø eje máquina'} ${beRfqFmt(mount.machineShaftDiameter_mm, 1)} mm`
+        : ''),
+    '',
+    disc,
+  );
+  return parts.join('\n');
+}
+
+/**
+ * @param {ReturnType<typeof buildParams>} raw
+ * @param {ReturnType<typeof computeBucketElevator>} r
+ * @param {ReturnType<typeof readMountingPreferences>} mount
+ */
+function buildBucketRfqCsv(raw, r, mount) {
+  const inp = r.inputs || {};
+  const pw = r.power || {};
+  const ten = r.tension || {};
+  const ce = r.centrifugal || {};
+  const headers = [
+    'product',
+    'generated_utc',
+    'page_url',
+    'rho',
+    'H_m',
+    'C_m',
+    'Q_tph',
+    'v_m_s',
+    'D_head_m',
+    'B_mm',
+    'sigma_N_mm',
+    'discharge_type',
+    'fill_model',
+    'eta_elev',
+    'k_boot',
+    'eta_trans',
+    'mounting',
+    'orientation',
+    'machine_shaft_d_mm',
+    'pitch_mm',
+    'Q_check_tph',
+    'P_lift_kW',
+    'P_boot_kW',
+    'P_shaft_kW',
+    'T_work_N',
+    'T_adm_N',
+    'tension_ratio',
+    'tension_ok',
+    'K_cent',
+    'D_drum_m',
+  ];
+  const url = typeof location !== 'undefined' ? String(location.href || '').split('#')[0] : '';
+  const when = new Date().toISOString();
+  const values = [
+    'TheMechAssist_bucket_elevator',
+    when,
+    url,
+    inp.rho,
+    inp.H,
+    inp.C,
+    inp.Q,
+    inp.v,
+    inp.D_head,
+    inp.B,
+    inp.sigma,
+    raw.dischargeType,
+    r.fillFactor,
+    pw.etaElev,
+    pw.kBootDrag,
+    pw.etaTransmission,
+    mount.mountingType,
+    mount.orientation,
+    mount.machineShaftDiameter_mm ?? '',
+    r.pitch_mm,
+    r.capacity_check_tph,
+    pw.pureLift_kW,
+    pw.dragBoot_kW,
+    pw.shaft_kW,
+    ten.working_N,
+    ten.admissible_N,
+    ten.ratio,
+    ten.ok ? '1' : '0',
+    ce.K,
+    ce.drumDiameter_m,
+  ];
+  return `${headers.map(escapeCsvCell).join(',')}\n${values.map(escapeCsvCell).join(',')}`;
+}
+
+function writeBeFormValue(id, val) {
+  const el = document.getElementById(id);
+  if (!(el instanceof HTMLInputElement) && !(el instanceof HTMLSelectElement)) return;
+  el.value = val === '' || val == null ? '' : String(val);
+}
+
+function applyBePresetFromId(presetId) {
+  const def = BUCKET_PRESET_BY_ID[presetId];
+  if (!def) return;
+  for (const [k, v] of Object.entries(def.values)) {
+    writeBeFormValue(k, v);
+  }
+  computeAndRender();
+}
+
 function drawDiagramOnly() {
   const svg = document.getElementById('beDiagram');
   if (!lastP || !lastR) return;
@@ -153,6 +314,7 @@ function computeAndRender() {
   }
   lastP = p;
   lastR = r;
+  if (Number.isFinite(r.power?.shaft_kW)) incrementCalcCounter();
 
   const recoCopyBucketElevator = en
     ? {
@@ -489,5 +651,46 @@ setStep(1);
 computeAndRender();
 initInfoChipPopovers(document.body);
 
-mountLabCloudSaveBar('Elevador de cangilones');
+document.querySelector('main.app-main--be')?.addEventListener('click', (e) => {
+  const t = e.target instanceof Element ? e.target.closest('[data-be-preset]') : null;
+  if (!(t instanceof HTMLButtonElement)) return;
+  const id = t.getAttribute('data-be-preset');
+  if (id) applyBePresetFromId(id);
+});
+
+wireMachineRfqExport({
+  getPayload: () => {
+    const raw = buildParams();
+    const lang = getCurrentLang();
+    try {
+      return { raw, result: computeBucketElevator(raw, lang), mount: readMountingPreferences() };
+    } catch {
+      const stub = {
+        inputs: { rho: 0, H: 0, C: 0, Q: 0, D_head: 0, D_boot: 0, v: 0, V_L: 0, B: 0, sigma: 0, phi: 0, fluidity: '', nature: '' },
+        fillFactor: 0,
+        pitch_mm: 0,
+        capacity_check_tph: 0,
+        power: { pureLift_kW: 0, dragBoot_kW: 0, shaft_kW: 0, etaElev: 0, kBootDrag: 0, etaTransmission: 0 },
+        tension: { working_N: 0, admissible_N: 0, ratio: 0, ok: false },
+        centrifugal: { K: 0, drumDiameter_m: 0 },
+        disclaimer: '',
+      };
+      return { raw, result: stub, mount: readMountingPreferences() };
+    }
+  },
+  buildPlainText: buildBucketRfqPlainText,
+  buildCsv: buildBucketRfqCsv,
+  toastCopiedEn: MACHINE_HUB_UX_EN['machineHub.toastRfqCopied'],
+  toastErrEn: MACHINE_HUB_UX_EN['machineHub.toastRfqErr'],
+});
+
+watchLangAndApply(BUCKET_PAGE_EN, {
+  onEnApplied: () => {
+    applyBucketElevatorPageLanguage();
+    fillBucketSelect();
+    initInfoChipPopovers(document.body);
+    computeAndRender();
+  },
+});
+
 

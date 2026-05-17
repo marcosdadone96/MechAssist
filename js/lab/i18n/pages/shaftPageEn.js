@@ -1,0 +1,43 @@
+/** English strings for calc-shaft.html (`shaft.*`). ASCII-safe. */
+export const SHAFT_PAGE_EN = {
+  'shaft.docTitle': 'Solid shaft torsion calculator \u2014 TheMechAssist',
+  'shaft.h2': 'Solid shaft \u00b7 torsion and bending (basic/advanced)',
+  'shaft.heroLeadHtml':
+    'Get the <strong>minimum diameter</strong> for pure torsion or, in advanced mode, equivalent stress with <strong>M</strong> and <strong>Kt</strong> (Von Mises / Tresca). Compare with a commercial \u00d8 or diagnose an installed shaft.',
+  'shaft.seoSummary': 'Expanded context and usage notes',
+  'shaft.seoIntro':
+    'This module estimates the diameter of a solid shaft under pure torsion first and, in advanced mode, combined bending and torque via Von Mises or Tresca equivalent stress with indicative concentration factors. The result is a pre-design step before detailed fatigue analysis or corporate standards. Typical for machine designers and maintenance when replacing a shaft or validating a power upgrade.',
+  'shaft.helpSummary': 'Methodology and model limits',
+  'shaft.helpBodyHtml':
+    '<strong>Design</strong> mode: torsion with <strong>\u03c4 = 16T/(\u03c0d\u00b3)</strong> and comparison with a commercial \u00d8. <strong>Advanced</strong> mode: Von Mises or Tresca equivalent with indicative <strong>M</strong> and <strong>Kt</strong>. Does not include detailed fatigue or real keyway/thread concentrations; use as pre-design and validate with your standard.',
+  'shaft.nextStepsAria': 'Typical next step',
+  'shaft.nextStepsTitle': 'Typical next step',
+  'shaft.nextLi1Html': '<a href="calc-keys-din6885.html">Keys DIN 6885</a> \u2014 coupling elements to the shaft.',
+  'shaft.nextLi2Html': '<a href="calc-bearings.html">Bearings \u00b7 L10</a> \u2014 supports in design spans.',
+  'shaft.nextLi3Html': '<a href="calc-gears.html">Cylindrical gears</a> \u2014 if you size pinion torque first.',
+  'shaft.presetsLabel': 'Typical examples:',
+  'shaft.preset1': 'Torsion \u00b7 design',
+  'shaft.preset2': 'T + M \u00b7 Von Mises',
+  'shaft.preset3': 'Diagnostic \u00d840',
+  'shaft.diagTitle': 'Schematic view \u00b7 torsion (and bending in advanced)',
+  'shaft.diagAriaLabel': 'Shaft torque diagram',
+  'shaft.diagCaptionHtml':
+    'Side view with <strong>T</strong> at ends and torque arcs <strong>below</strong> the shaft; at right, circular section <strong>\u00d8 d</strong>. With bending, <strong>M</strong> is shown above the central span.',
+  'shaft.labelMode': 'Working mode',
+  'shaft.optDesign': 'Design \u2014 load and material \u2192 minimum diameter',
+  'shaft.optDiagnostic': 'Diagnostic \u2014 installed diameter \u2192 stress and suitability',
+  'shaft.labelT': 'Torque T (N\u00b7m)',
+  'shaft.labelTau': 'Allowable shear \u03c4 (MPa)',
+  'shaft.labelBending': 'Include bending (advanced)',
+  'shaft.labelM': 'Bending moment M (N\u00b7m)',
+  'shaft.labelCriterion': 'Equivalent criterion',
+  'shaft.optVonMises': 'Von Mises',
+  'shaft.optTresca': 'Tresca',
+  'shaft.labelKt': 'Stress concentration Kt',
+  'shaft.labelD': 'Available / commercial diameter (mm)',
+  'shaft.unitsAria': 'Result units',
+  'shaft.summaryFull': 'Full results',
+  'shaft.copyLink': 'Copy link',
+  'shaft.copyToast': 'Link copied!',
+  'shaft.copyResults': 'Copy results',
+};

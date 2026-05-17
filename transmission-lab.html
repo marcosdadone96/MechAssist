@@ -3,26 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Laboratorio de transmisi&#243;n &#8212; TheMechAssist</title>
+    <title data-i18n="page.transmissionLab.docTitle">Laboratorio de transmisión — TheMechAssist</title>
     <meta
       name="description"
-      content="Engranajes, correas, cadenas, rodamientos, ejes, chavetas, ajustes ISO, Seeger, acoplamientos y torniller&#237;a: calculadoras con diagramas. TheMechAssist."
+      data-i18n="page.transmissionLab.metaDesc"
+      data-i18n-attr="content"
+      content="Engranajes, correas, cadenas, rodamientos, ejes, chavetas, ajustes ISO, Seeger, acoplamientos y tornillería: calculadoras con diagramas. TheMechAssist."
     />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
 
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
-    <link rel="canonical" href="" id="mdr-canonical" />
+    <link rel="canonical" href="https://www.themechassist.com/transmission-lab.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="" id="mdr-og-url" />
-    <meta property="og:title" content="Laboratorio de transmisi&#243;n &#8212; TheMechAssist" />
+    <meta property="og:url" content="https://www.themechassist.com/transmission-lab.html" id="mdr-og-url" />
+    <meta
+      property="og:title"
+      data-i18n="page.transmissionLab.docTitle"
+      data-i18n-attr="content"
+      content="Laboratorio de transmisión — TheMechAssist"
+    />
     <meta
       property="og:description"
-      content="Calculadoras r&#225;pidas de elementos de m&#225;quina con esquemas t&#233;cnicos y textos de alcance normativo."
+      data-i18n="page.transmissionLab.metaDesc"
+      data-i18n-attr="content"
+      content="Engranajes, correas, cadenas, rodamientos, ejes, chavetas, ajustes ISO, Seeger, acoplamientos y tornillería: calculadoras con diagramas. TheMechAssist."
     />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Laboratorio de transmisi&#243;n &#8212; TheMechAssist" />
+    <meta
+      name="twitter:title"
+      data-i18n="page.transmissionLab.docTitle"
+      data-i18n-attr="content"
+      content="Laboratorio de transmisión — TheMechAssist"
+    />
+    <link rel="alternate" hreflang="es" href="https://www.themechassist.com/transmission-lab.html" />
+    <link rel="alternate" hreflang="en" href="https://www.themechassist.com/transmission-lab.html?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://www.themechassist.com/transmission-lab.html" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -30,14 +47,18 @@
     <link rel="stylesheet" href="css/freemium.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
-  <body class="lab-body">
+  <body class="lab-body lab-body--hub">
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html">
         <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
         <span class="site-nav__title">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" aria-current="page" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
+        <a class="site-nav__link" href="my-saved-calcs.html" data-i18n="nav.mySavedCalcs">Mis cálculos guardados</a>
       </nav>
       <div class="site-nav__end">
         <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
@@ -51,100 +72,294 @@
       </div>
     </header>
     <main class="lab-main">
-      <section class="lab-panel">
-        <h1>Laboratorio de elementos de m&#225;quina</h1>
-        <p class="lab-start-hint">&#191;No sabes por d&#243;nde empezar? Si tienes un motor y una carga, empieza por Engranajes o Correas.</p>
-        <p class="lab-lead">
+      <section class="lab-panel lab-panel--hub" id="lab-hub-root" data-lab-hub-id="transmission-lab">
+        <p class="lab-hub-eyebrow" data-i18n="hub.lab.eyebrow">Laboratorio</p>
+        <h1 data-i18n="hub.lab.title">Laboratorio de elementos de m&#225;quina</h1>
+        <p class="lab-start-hint" data-i18n="hub.lab.startHint">
+          &#191;No sabes por d&#243;nde empezar? Si tienes un motor y una carga, empieza por Engranajes o Correas.
+        </p>
+        <p
+          class="lab-lead lab-lead--hub"
+          data-i18n="hub.lab.leadHtml"
+          data-i18n-html
+        >
           Calculadoras r&#225;pidas con <strong>diagramas t&#233;cnicos</strong>. Pensadas para dimensionar o verificar transmisiones habituales antes de abrir el cat&#225;logo. El
           <a href="transmission-canvas.html">lienzo t&#233;cnico</a> permite multieje con arrastre y validaciones en vivo.
         </p>
-        <h2 class="lab-index-section">Transmisi&#243;n cinem&#225;tica</h2>
-        <div class="lab-index-grid">
-          <a class="lab-card" href="calc-gears.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Engranajes cil&#237;ndricos</h3>
-            <p>m, z&#8321;, z&#8322;, b, n&#8321; &#8212; i, n&#8322;, v en primitivo; modelo simplificado AGMA 2001 y alertas por lubricaci&#243;n.</p>
+        <div class="lab-hub-filter-row">
+          <label class="lab-hub-filter-row__label" for="lab-hub-filter-input" data-i18n="labHub.filterLabel">Filtrar</label>
+          <input
+            id="lab-hub-filter-input"
+            class="lab-hub-filter-row__input"
+            type="search"
+            data-lab-hub-filter
+            data-i18n="labHub.searchPlaceholder"
+            data-i18n-attr="placeholder"
+            placeholder="Buscar calculadora&#8230;"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+        <h2 class="lab-index-section lab-index-section--hub" data-i18n="hub.lab.sectionKinematic">Transmisi&#243;n cinem&#225;tica</h2>
+        <div class="lab-index-grid lab-index-grid--hub">
+          <a class="lab-card lab-card--hub" href="calc-gears.html" data-lab-hub-keywords="engranajes gears modulo z dientes agma cinematica lubricacion spur helical">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <circle cx="13" cy="20" r="7.5" stroke="currentColor" stroke-width="2" />
+                <circle cx="27" cy="20" r="7.5" stroke="currentColor" stroke-width="2" />
+                <path
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  d="M13 11v3m0 12v3m-6.5-7.5h3m13 0h3M27 11v3m0 12v3m-6.5-7.5h3m13 0h3"
+                />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.gears.title">Engranajes cil&#237;ndricos</h3>
+            <p data-i18n="hub.lab.gears.desc">
+              m, z&#8321;, z&#8322;, b, n&#8321; &#8212; i, n&#8322;, v en primitivo; modelo simplificado AGMA 2001 y alertas por lubricaci&#243;n.
+            </p>
           </a>
-          <a class="lab-card" href="calc-belts.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Correas &#183; V, s&#237;ncrona, plana, Poly-V</h3>
-            <p>Tipo de correa, cinem&#225;tica (i, n&#8322;, v, L), esquema SVG y veredicto por velocidad lineal (5&#8211;30 m/s &#243;ptimo).</p>
+          <a class="lab-card lab-card--hub" href="calc-belts.html" data-lab-hub-keywords="correas belts v poly poleas sincrona plana cinematica belt timing flat">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <circle cx="12" cy="20" r="7" stroke="currentColor" stroke-width="2" />
+                <circle cx="28" cy="20" r="5.5" stroke="currentColor" stroke-width="2" />
+                <path
+                  d="M5 14.5Q20 7 35 14.5"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M5 25.5Q20 33 35 25.5"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.belts.title">Correas &#183; V, s&#237;ncrona, plana, Poly-V</h3>
+            <p data-i18n="hub.lab.belts.desc">
+              Tipo de correa, cinem&#225;tica (i, n&#8322;, v, L), esquema SVG y veredicto por velocidad lineal (5&#8211;30 m/s &#243;ptimo).
+            </p>
           </a>
-          <a class="lab-card" href="calc-chains.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Cadenas y pi&#241;ones</h3>
-            <p>Paso, z&#8321;, z&#8322;, n&#8321; &#8212; &#969;&#8322;, v lineal, frecuencia de articulaci&#243;n; efecto poligonal y lubricaci&#243;n por v.</p>
+          <a class="lab-card lab-card--hub" href="calc-chains.html" data-lab-hub-keywords="cadena chain pinon sprocket paso cinematica roller">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <circle cx="11" cy="20" r="7" stroke="currentColor" stroke-width="2" />
+                <circle cx="29" cy="20" r="7" stroke="currentColor" stroke-width="2" />
+                <path
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  d="M4 16h32M4 24h32M8 12v4m24-4v4M8 24v4m24-4v4"
+                />
+                <circle cx="4" cy="16" r="1.6" fill="currentColor" />
+                <circle cx="20" cy="16" r="1.6" fill="currentColor" />
+                <circle cx="36" cy="16" r="1.6" fill="currentColor" />
+                <circle cx="4" cy="24" r="1.6" fill="currentColor" />
+                <circle cx="20" cy="24" r="1.6" fill="currentColor" />
+                <circle cx="36" cy="24" r="1.6" fill="currentColor" />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.chains.title">Cadenas y pi&#241;ones</h3>
+            <p data-i18n="hub.lab.chains.desc">
+              Paso, z&#8321;, z&#8322;, n&#8321; &#8212; &#969;&#8322;, v lineal, frecuencia de articulaci&#243;n; efecto poligonal y lubricaci&#243;n por v.
+            </p>
           </a>
         </div>
 
-        <h2 class="lab-index-section">Elementos de eje</h2>
-        <div class="lab-index-grid">
-          <a class="lab-card" href="calc-bearings.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Rodamientos &#183; L10</h3>
-            <p>Carga din&#225;mica C, carga equivalente P &#8212; vida nominal b&#225;sica (ISO simplificada). <strong>&#218;salo cuando ya tienes C del cat&#225;logo.</strong></p>
+        <p class="lab-hub-path-hint" data-i18n="labHub.bearingsPathHint">
+          &#191;Rodamientos? Si ya tienes la carga din&#225;mica C del cat&#225;logo, abre L10. Si quieres elegir la referencia en series 62xx, usa el m&#243;dulo de cat&#225;logo.
+        </p>
+
+        <h2 class="lab-index-section lab-index-section--hub" data-i18n="hub.lab.sectionShaft">Elementos de eje</h2>
+        <div class="lab-index-grid lab-index-grid--hub">
+          <a class="lab-card lab-card--hub" href="calc-bearings.html" data-lab-hub-keywords="rodamiento bearing L10 vida catalogo carga dinamica rolling life">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <circle cx="20" cy="20" r="14" stroke="currentColor" stroke-width="2" />
+                <circle cx="20" cy="20" r="7.5" stroke="currentColor" stroke-width="2" />
+                <circle cx="14" cy="20" r="2" fill="currentColor" />
+                <circle cx="26" cy="20" r="2" fill="currentColor" />
+                <circle cx="20" cy="14" r="2" fill="currentColor" />
+                <circle cx="20" cy="26" r="2" fill="currentColor" />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.bearingsL10.title">Rodamientos &#183; L10</h3>
+            <p data-i18n="hub.lab.bearingsL10.desc">
+              Carga din&#225;mica C, carga equivalente P &#8212; vida nominal b&#225;sica (ISO simplificada). &#218;salo cuando ya tienes C del cat&#225;logo.
+            </p>
           </a>
-          <a class="lab-card" href="calc-shaft.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Eje &#183; torsi&#243;n</h3>
-            <p>Par y tensi&#243;n admisible &#8212; di&#225;metro m&#237;nimo orientativo (macizo).</p>
+          <a class="lab-card lab-card--hub" href="calc-shaft.html" data-lab-hub-keywords="eje shaft torsion diametro par torque torsion diameter">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <rect x="6" y="14" width="28" height="12" rx="3" stroke="currentColor" stroke-width="2" />
+                <path
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  d="M9 20h22M14 20l-3-3m0 6l3-3m14 0l3-3m0 6l-3-3"
+                />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.shaft.title">Eje &#183; torsi&#243;n</h3>
+            <p data-i18n="hub.lab.shaft.desc">Par y tensi&#243;n admisible &#8212; di&#225;metro m&#237;nimo orientativo (macizo).</p>
           </a>
-          <a class="lab-card" href="calc-keys-din6885.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Chavetas DIN 6885</h3>
-            <p>Autocompletar b&#215;h por &#216; eje; aplastamiento con L y material (C45/inox).</p>
+          <a class="lab-card lab-card--hub" href="calc-keys-din6885.html" data-lab-hub-keywords="chaveta key din 6885 eje aplastamiento parallel key splined">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <rect x="8" y="12" width="24" height="16" rx="2" stroke="currentColor" stroke-width="2" />
+                <rect x="14" y="17" width="14" height="8" rx="1" fill="currentColor" opacity="0.35" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.keys.title">Chavetas DIN 6885</h3>
+            <p data-i18n="hub.lab.keys.desc">Autocompletar b&#215;h por &#216; eje; aplastamiento con L y material (C45/inox).</p>
           </a>
-          <a class="lab-card" href="calc-iso-fit.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Ajustes ISO 286</h3>
-            <p>&#216; nominal, letra e IT agujero/eje &#8212; l&#237;mites, juego o apriete y esquema de zonas (extracto 1&#8211;500 mm).</p>
+          <a class="lab-card lab-card--hub" href="calc-iso-fit.html" data-lab-hub-keywords="ajuste iso 286 tolerancia holgura interferencia fit tolerance clearance">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <rect x="8" y="9" width="17" height="22" rx="1" stroke="currentColor" stroke-width="2" />
+                <rect x="17" y="13" width="13" height="14" rx="1" stroke="currentColor" stroke-width="1.8" />
+                <path stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M4 20h2m30 0h2" />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.isoFit.title">Ajustes ISO 286</h3>
+            <p data-i18n="hub.lab.isoFit.desc">
+              &#216; nominal, letra e IT agujero/eje &#8212; l&#237;mites, juego o apriete y esquema de zonas (extracto 1&#8211;500 mm).
+            </p>
           </a>
-          <a class="lab-card" href="calc-seeger.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Anillos Seeger &#183; DIN 471 / 472</h3>
-            <p>&#216; eje o agujero &#8594; designaci&#243;n, norma y cotas de ranura; diagrama de montaje.</p>
+          <a class="lab-card lab-card--hub" href="calc-seeger.html" data-lab-hub-keywords="seeger anillo retaining ring din 471 472 ranura circlip snap ring">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <path
+                  d="M30 11a14 14 0 1 0 0 18"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                />
+                <path stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M30 11v5M30 29v-5" />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.seeger.title">Anillos Seeger &#183; DIN 471 / 472</h3>
+            <p data-i18n="hub.lab.seeger.desc">&#216; eje o agujero &#8594; designaci&#243;n, norma y cotas de ranura; diagrama de montaje.</p>
           </a>
-          <a class="lab-card" href="calc-bearings-catalog.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Rodamientos &#183; cat&#225;logo 62xx</h3>
-            <p>Series 6000/6200/6300 con C demo; L&#8321;&#8320;h y veredicto vs horas objetivo. <strong>&#218;salo para seleccionar la referencia directamente por serie.</strong></p>
+          <a class="lab-card lab-card--hub" href="calc-bearings-catalog.html" data-lab-hub-keywords="rodamiento bearing 62xx catalogo seleccion serie SKF FAG catalogue 62 series">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <circle cx="20" cy="20" r="14" stroke="currentColor" stroke-width="2" />
+                <circle cx="20" cy="20" r="9" stroke="currentColor" stroke-width="1.6" />
+                <circle cx="20" cy="20" r="4" stroke="currentColor" stroke-width="1.8" />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.bearingsCat.title">Rodamientos &#183; cat&#225;logo 62xx</h3>
+            <p data-i18n="hub.lab.bearingsCat.desc">
+              Series 6000/6200/6300 con C demo; L&#8321;&#8320;h y veredicto vs horas objetivo. &#218;salo para seleccionar la referencia directamente por serie.
+            </p>
           </a>
         </div>
 
-        <h2 class="lab-index-section">Uni&#243;n y fijaci&#243;n</h2>
-        <div class="lab-index-grid">
-          <a class="lab-card" href="calc-couplings.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Acoplamientos &#183; cat&#225;logo</h3>
-            <p>P, n, K &#8212; par de dise&#241;o vs T nom Lovejoy/KTR/Flender (demo); error y modelo superior sugerido.</p>
+        <h2 class="lab-index-section lab-index-section--hub" data-i18n="hub.lab.sectionJoin">Uni&#243;n y fijaci&#243;n</h2>
+        <div class="lab-index-grid lab-index-grid--hub">
+          <a class="lab-card lab-card--hub" href="calc-couplings.html" data-lab-hub-keywords="acoplamiento coupling lovejoy ktr flender par flexible jaw">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <circle cx="11" cy="20" r="6.5" stroke="currentColor" stroke-width="2" />
+                <circle cx="29" cy="20" r="6.5" stroke="currentColor" stroke-width="2" />
+                <path d="M17.5 20h5" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                <path
+                  d="M15.5 15.5c2.5 3 4.5 3 9 0M15.5 24.5c2.5-3 4.5-3 9 0"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.couplings.title">Acoplamientos &#183; cat&#225;logo</h3>
+            <p data-i18n="hub.lab.couplings.desc">
+              P, n, K &#8212; par de dise&#241;o vs T nom Lovejoy/KTR/Flender (demo); error y modelo superior sugerido.
+            </p>
           </a>
-          <a class="lab-card" href="calc-bolts-iso898.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Torniller&#237;a ISO 898-1</h3>
-            <p>M6&#8211;M36, 8.8/10.9/12.9; precarga y par de apriete; aptitud vs fuerza de tracci&#243;n.</p>
+          <a class="lab-card lab-card--hub" href="calc-bolts-iso898.html" data-lab-hub-keywords="tornillo bolt tornilleria apriete iso 898 precarga bolting fastener">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <path
+                  d="M14 9l8-3.5 8 3.5v9l-8 3.5-8-3.5V9z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linejoin="round"
+                />
+                <line x1="20" y1="21.5" x2="20" y2="33" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                <path d="M16 33h8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.bolts.title">Torniller&#237;a ISO 898-1</h3>
+            <p data-i18n="hub.lab.bolts.desc">M6&#8211;M36, 8.8/10.9/12.9; precarga y par de apriete; aptitud vs fuerza de tracci&#243;n.</p>
           </a>
         </div>
 
-        <h2 class="lab-index-section">Din&#225;mica</h2>
-        <div class="lab-index-grid">
-          <a class="lab-card" href="calc-gearmotor-inertia.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Motor &#183; inercia J</h3>
-            <p>Cat&#225;logo demo de motorreductores, relaci&#243;n J<sub>ext</sub>/J<sub>mot</sub> y gr&#225;fico par motor vs carga.</p>
+        <h2 class="lab-index-section lab-index-section--hub" data-i18n="hub.lab.sectionDynamic">Din&#225;mica</h2>
+        <div class="lab-index-grid lab-index-grid--hub">
+          <a class="lab-card lab-card--hub" href="calc-gearmotor-inertia.html" data-lab-hub-keywords="motor inercia J motorreductor sew siemens carga inertia reflected load">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <rect x="6" y="13" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2" />
+                <rect x="24" y="16" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.8" />
+                <line x1="32" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+                <circle cx="11" cy="20" r="3" stroke="currentColor" stroke-width="1.6" />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.gearmotor.title">Motor &#183; inercia J</h3>
+            <p data-i18n="hub.lab.gearmotor.desc">
+              Cat&#225;logo demo de motorreductores, relaci&#243;n J<sub>ext</sub>/J<sub>mot</sub> y gr&#225;fico par motor vs carga.
+            </p>
           </a>
-          <a class="lab-card" href="calc-compression-spring.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Muelle helicoidal compresi&#243;n &#183; DIN 2089</h3>
-            <p>k, F&#8345;, &#964; con factor de Wahl; esquema SVG din&#225;mico, gr&#225;fico F&#8211;s y simulaci&#243;n Pro por deslizador.</p>
+          <a class="lab-card lab-card--hub" href="calc-compression-spring.html" data-lab-hub-keywords="muelle spring resorte helicoidal compresion din 2089 wahl coil helix">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <path
+                  d="M8 28c2.2-5 5-5 7.2 0S22.8 33 25 28s5-5 7.2 0 5 5 7.2 0"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.spring.title">Muelle helicoidal compresi&#243;n &#183; DIN 2089</h3>
+            <p data-i18n="hub.lab.spring.desc">
+              k, F&#8345;, &#964; con factor de Wahl; esquema SVG din&#225;mico, gr&#225;fico F&#8211;s y simulaci&#243;n Pro por deslizador.
+            </p>
           </a>
         </div>
 
-        <h2 class="lab-index-section">Lienzo multieje</h2>
-        <div class="lab-index-grid">
-          <a class="lab-card" href="transmission-canvas.html">
-            <span class="lab-badge lab-badge--free">GRATIS</span>
-            <h3>Lienzo t&#233;cnico multieje</h3>
-            <p>
+        <h2 class="lab-index-section lab-index-section--hub" data-i18n="hub.lab.sectionCanvas">Lienzo multieje</h2>
+        <div class="lab-index-grid lab-index-grid--hub">
+          <a class="lab-card lab-card--hub" href="transmission-canvas.html" data-lab-hub-keywords="lienzo canvas multieje transmission esquema arrastre n T multishaft diagram">
+            <span class="lab-card--hub__icon" aria-hidden="true">
+              <svg class="lab-card--hub__icon-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <circle cx="10" cy="13" r="3.2" fill="currentColor" />
+                <circle cx="30" cy="13" r="3.2" fill="currentColor" />
+                <circle cx="20" cy="27" r="3.2" fill="currentColor" />
+                <path d="M12.5 15.5l5.5 9M27.5 15.5l-5.5 9M13 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+              </svg>
+            </span>
+            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <h3 data-i18n="hub.lab.canvas.title">Lienzo t&#233;cnico multieje</h3>
+            <p data-i18n="hub.lab.canvas.desc">
               Construye transmisiones multieje con arrastre directo de elementos, propagaci&#243;n autom&#225;tica de n/T y veredictos en vivo mientras editas.
             </p>
           </a>
@@ -162,5 +377,17 @@
     <script type="module" src="js/ui/homeI18n.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/labDonationFooter.js"></script>
+    <script type="module">
+      import { initLabHubCardFilter } from './js/ui/labHubFilter.js';
+      import { initLabHubFavorites } from './js/ui/labHubFavorites.js';
+      import { initLabHubCardArt } from './js/ui/labHubCardArt.js';
+
+      const root = document.getElementById('lab-hub-root');
+      if (root) {
+        initLabHubCardArt(root);
+        initLabHubFavorites(root);
+        initLabHubCardFilter(root);
+      }
+    </script>
   </body>
 </html>

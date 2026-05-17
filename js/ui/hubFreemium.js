@@ -6,6 +6,7 @@ import { getCurrentUser, clearLocalUser } from '../services/accountAuth.js';
 import { clearProEntitlementClient } from '../services/proEntitlement.js';
 import { FEATURES } from '../config/features.js';
 import { isProCalculatorPath } from '../config/freemium.js';
+import { creditPoolFromPath, isCreditsSystemEnabled } from '../config/credits.js';
 
 function lang() {
   return window.__homeLang === 'en' ? 'en' : 'es';
@@ -86,9 +87,15 @@ function mountHomeAccountControls() {
     out.className = 'site-nav__btn site-nav__btn--ghost';
     out.setAttribute('data-logout', '');
     out.textContent = t('auth.logout', lang() === 'en' ? 'Log out' : 'Cerrar sesi\u00f3n');
-    out.addEventListener('click', () => {
+    out.addEventListener('click', async () => {
       clearLocalUser();
       clearProEntitlementClient();
+      try {
+        const { clearCreditsCache } = await import('../services/creditsApi.js');
+        clearCreditsCache();
+      } catch (_) {
+        /* ignore */
+      }
       window.location.reload();
     });
     wrap.appendChild(userEl);
@@ -138,6 +145,16 @@ function mountHomeAccountControls() {
 applyPublicFreeReleaseHomeUi();
 renderHubProBadges();
 mountHomeAccountControls();
+
+if (isCreditsSystemEnabled()) {
+  queueMicrotask(async () => {
+    const { initGuestCalcMode } = await import('./guestCalcMode.js');
+    initGuestCalcMode();
+    const { mountCreditsBar } = await import('./creditsUi.js');
+    const pool = creditPoolFromPath();
+    await mountCreditsBar(pool);
+  });
+}
 
 if (FEATURES.useServerAuth) {
   queueMicrotask(() => {

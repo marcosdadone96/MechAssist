@@ -26,14 +26,15 @@ function escTitle(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 }
 
-function buildBlock(title, description) {
+function buildBlock(title, description, canonical) {
   const t = escAttr(title);
   const d = escAttr(description);
+  const c = escAttr(canonical || '');
   return `    <meta name="description" content="${d}" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="canonical" href="" id="mdr-canonical" />
+    <link rel="canonical" href="${c}" id="mdr-canonical" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="" id="mdr-og-url" />
+    <meta property="og:url" content="${c}" id="mdr-og-url" />
     <meta property="og:title" content="${t}" />
     <meta property="og:description" content="${d}" />
     <meta name="twitter:card" content="summary" />
@@ -57,13 +58,16 @@ const SKIP = new Set([
 function main() {
   const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'seo-meta.json'), 'utf8'));
   let n = 0;
-  for (const [file, { title, description }] of Object.entries(data)) {
+  for (const [file, meta] of Object.entries(data)) {
     if (SKIP.has(file)) continue;
+    const { title, description } = meta;
+    const canonical =
+      meta.canonical || `https://www.themechassist.com/${file}`;
     const full = path.join(root, file);
     if (!fs.existsSync(full)) continue;
     let html = fs.readFileSync(full, 'utf8');
     if (html.includes('favicon.svg')) continue;
-    const block = buildBlock(title, description);
+    const block = buildBlock(title, description, canonical);
     if (!viewportRe.test(html)) continue;
     html = html.replace(viewportRe, (m) => `${m}\n${block}`);
     html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escTitle(title)}</title>`);

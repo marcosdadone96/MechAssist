@@ -52,6 +52,9 @@ function finishAuthSuccess() {
   pendingAuthNext = '';
   clearAuthFormError();
   closeModal();
+  import('../services/creditsApi.js')
+    .then((m) => m.refreshCreditsAfterAuth())
+    .catch(() => {});
   if (next) {
     try {
       const url = new URL(next, window.location.href);
@@ -155,8 +158,16 @@ document.addEventListener('click', (e) => {
     const panel = authSubmit.closest('.ma-auth__panel');
     const panelKind = panel instanceof HTMLElement ? panel.getAttribute('data-panel') : null;
     const lang = modalLang();
+    const i18nKey = authSubmit.getAttribute('data-i18n');
+    const originalText = authSubmit.textContent;
     void (async () => {
       try {
+        authSubmit.disabled = true;
+        if (panelKind === AUTH_TAB_REGISTER) {
+          authSubmit.textContent = lang === 'en' ? 'Creating account…' : 'Creando cuenta…';
+        } else {
+          authSubmit.textContent = lang === 'en' ? 'Signing in…' : 'Entrando…';
+        }
         if (panelKind === AUTH_TAB_REGISTER) {
           const nameEl = document.getElementById('ma-auth-reg-name');
           const emailEl = document.getElementById('ma-auth-reg-email');
@@ -194,6 +205,13 @@ document.addEventListener('click', (e) => {
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         showAuthFormError(msg);
+      } finally {
+        authSubmit.disabled = false;
+        if (i18nKey && typeof window.__t === 'function') {
+          authSubmit.textContent = window.__t(i18nKey);
+        } else {
+          authSubmit.textContent = originalText;
+        }
       }
     })();
     return;
