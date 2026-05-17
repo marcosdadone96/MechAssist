@@ -8,7 +8,8 @@ import { getCurrentLang, t, formatNumberLocale, formatDateTimeLocale } from '../
 import { FEATURES, isPremiumViaQueryProUiAllowed } from '../config/features.js';
 import { isCreditsSystemEnabled, getCreditCosts } from '../config/credits.js';
 import { isPremiumEffective, isPdfReportUiUnlocked } from './accessTier.js';
-import { ensurePdfExportCharged } from './creditSession.js';
+import { ensurePdfExportCharged, shouldLockCalcInputsForCredits } from './creditSession.js';
+import { getCurrentUser } from './localAuth.js';
 import { labPdfSignInMessage, labPdfSignInUrl } from './labPdfAuth.js';
 import { buildRegisterUrlWithNextCheckout } from './proCheckoutFlow.js';
 import { LOAD_DUTY_OPTIONS, LOAD_DUTY_OPTIONS_EN } from '../modules/serviceFactorByDuty.js';
@@ -1121,10 +1122,13 @@ export function mountPremiumPdfExportBar(el, opts) {
   if (!el) return;
   const lang = getCurrentLang();
   const en = lang === 'en';
-  const pdfUnlocked = opts.isPremium === true || isPdfReportUiUnlocked();
+  const signedIn = Boolean(getCurrentUser()?.email && getCurrentUser()?.serverAuth);
+  const noCreditsLocked = isCreditsSystemEnabled() && signedIn && shouldLockCalcInputsForCredits();
+  const pdfUnlocked = (opts.isPremium === true || isPdfReportUiUnlocked()) && !noCreditsLocked;
   const proBadge = isPremiumEffective();
   const creditsPdf = isCreditsSystemEnabled() && pdfUnlocked && !proBadge;
   const pdfCost = getCreditCosts().pdf;
+  const checkout = FEATURES.proCheckoutPagePath || 'checkout.html';
   let reportCfg = {};
   try {
     reportCfg = JSON.parse(window.localStorage.getItem(REPORT_CFG_KEY) || '{}') || {};
@@ -1258,6 +1262,25 @@ export function mountPremiumPdfExportBar(el, opts) {
         showToast(String(e?.message || e), { variant: 'error', duration: 8000 });
       }
     });
+  } else if (noCreditsLocked) {
+    el.hidden = false;
+    const teaserEn = `You have no credits left in this area. Add credits or upgrade to export the <strong>PDF</strong> report.`;
+    const teaserEs = `No le quedan cr\u00e9ditos en esta zona. Recargue o mejore el plan para exportar el informe <strong>PDF</strong>.`;
+    const linkEn = 'View plans';
+    const linkEs = 'Ver planes';
+    el.innerHTML = en
+      ? `
+      <div class="premium-export premium-export--teaser">
+        <span class="premium-export__badge premium-export__badge--muted">PDF</span>
+        <p class="premium-export__teaser-text">${teaserEn}</p>
+        <a class="premium-export__link" href="${checkout}">${linkEn}</a>
+      </div>`
+      : `
+      <div class="premium-export premium-export--teaser">
+        <span class="premium-export__badge premium-export__badge--muted">PDF</span>
+        <p class="premium-export__teaser-text">${teaserEs}</p>
+        <a class="premium-export__link" href="${checkout}">${linkEs}</a>
+      </div>`;
   } else {
     el.hidden = false;
     const signUrl = isCreditsSystemEnabled()

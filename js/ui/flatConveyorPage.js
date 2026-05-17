@@ -34,7 +34,7 @@ import { getCurrentLang } from '../config/locales.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { FLAT_CONVEYOR_EN } from '../lab/i18n/pages/flatConvEn.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
-import { wrapCalcRefresh } from './creditsPageBoot.js';
+import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { incrementCalcCounter } from '../services/calcCounter.js';
 
 const inputIds = [
@@ -960,9 +960,7 @@ watchLangAndApply(FLAT_CONVEYOR_EN, {
   },
 });
 
-if (getCurrentLang() !== 'en') {
-  refresh();
-}
+bootMachineCalcView(refresh);
 
 
 if (location.hash === '#flat-conveyor-assumptions') {

@@ -21,7 +21,7 @@ import { mountMachineConfigBar } from './machineConfigMount.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
-import { wrapCalcRefresh } from './creditsPageBoot.js';
+import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { incrementCalcCounter } from '../services/calcCounter.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
@@ -912,7 +912,7 @@ bindRollerRangeSlider('efficiencyR', 'efficiency', 70, 99, 0.5);
 bindRollerRangeSlider('rollerPitchR', 'rollerPitch', 50, 250, 1);
 
 localizeRollerStaticContent();
-refresh();
+bootMachineCalcView(refresh);
 
 wireMachineRfqExport({
   getPayload: () => {

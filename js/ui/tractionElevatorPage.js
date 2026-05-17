@@ -21,7 +21,7 @@ import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
-import { wrapCalcRefresh } from './creditsPageBoot.js';
+import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { TRACTION_ELEVATOR_EN } from '../lab/i18n/pages/tractionElevatorEn.js';
@@ -600,7 +600,7 @@ window.addEventListener(TRACTION_LANG_EVENT, () => {
 
 syncCwManualUi();
 syncReevingVisual();
-computeAndRender();
+bootMachineCalcView(computeAndRender);
 initInfoChipPopovers(document.body);
 
 document.querySelector('main.app-main')?.addEventListener('click', (e) => {

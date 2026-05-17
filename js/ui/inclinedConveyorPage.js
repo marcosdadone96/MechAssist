@@ -21,7 +21,7 @@ import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
-import { wrapCalcRefresh } from './creditsPageBoot.js';
+import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { incrementCalcCounter } from '../services/calcCounter.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
@@ -1087,8 +1087,7 @@ bindIncRangeSlider('incSpeedR', 'incSpeed', 0.05, 5, 0.01);
 bindIncRangeSlider('incRollerDR', 'incRollerD', 50, 1200, 1);
 bindIncRangeSlider('incFrictionR', 'incFriction', 0.15, 0.65, 0.01);
 
-refresh();
-
+bootMachineCalcView(refresh);
 
 wireMachineRfqExport({
   getPayload: () => {

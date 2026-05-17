@@ -32,7 +32,7 @@ import {
   BUCKET_ELEVATOR_LANG_EVENT,
 } from './bucketElevatorStaticI18n.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
-import { wrapCalcRefresh } from './creditsPageBoot.js';
+import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { BUCKET_ELEVATOR_EN } from '../lab/i18n/pages/bucketElevatorEn.js';
@@ -649,7 +649,7 @@ try {
 }
 
 setStep(1);
-computeAndRender();
+bootMachineCalcView(computeAndRender);
 initInfoChipPopovers(document.body);
 
 document.querySelector('main.app-main--be')?.addEventListener('click', (e) => {

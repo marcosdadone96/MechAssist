@@ -559,7 +559,10 @@ export function runCalcWithIndustrialFeedback(wrap, fn) {
   }
   ensureCalcSessionCharged().then((gate) => {
     if (!gate.allowed) {
-      if (gate.reason === 'no_credits') showNoCreditsModal();
+      if (gate.reason === 'no_credits') {
+        showNoCreditsModal();
+        import('./noCreditsLockMode.js').then((m) => m.syncNoCreditsInputLock());
+      }
       return;
     }
     runCalcFeedbackInner(wrap, fn);

@@ -18,6 +18,30 @@ import { getCurrentUser } from './localAuth.js';
 
 const SS_PREFIX = 'mdr-credit-session:';
 
+/** Saldo del hub actual insuficiente para abrir otra sesion de calculo (bloquea edicion). */
+export function shouldLockCalcInputsForCredits() {
+  if (!isCreditsSystemEnabled()) return false;
+
+  const user = getCurrentUser();
+  if (!user?.email || !user?.serverAuth) return false;
+
+  const state = getCachedCreditsState();
+  if (!state?.balance) return false;
+  if (state.unlimited) return false;
+
+  const calcSlug = calcSlugFromPath();
+  if (isCalcSlugUnlocked(calcSlug, state)) return false;
+
+  const pool = creditPoolFromPath();
+  const bal = Number(state.balance[pool]) || 0;
+  const cost =
+    Number(state.balance?.costs?.calcSession) > 0
+      ? Number(state.balance.costs.calcSession)
+      : getCreditCosts().calcSession;
+
+  return bal < cost;
+}
+
 /**
  * @returns {Promise<{ allowed: boolean, reason?: string }>}
  */
@@ -75,6 +99,11 @@ export async function ensureCalcSessionCharged() {
   }
 
   if (result.error === 'insufficient_credits') {
+    try {
+      sessionStorage.removeItem(sessionKey);
+    } catch (_) {
+      /* ignore */
+    }
     await fetchCreditsBalance(calcSlug).catch(() => {});
     return { allowed: false, reason: 'no_credits' };
   }
@@ -131,7 +160,9 @@ export async function withCalcCredits(fn) {
   if (!gate.allowed) {
     if (gate.reason === 'no_credits') {
       const { showNoCreditsModal } = await import('../ui/creditsUi.js');
+      const { syncNoCreditsInputLock } = await import('../ui/noCreditsLockMode.js');
       showNoCreditsModal();
+      syncNoCreditsInputLock();
     }
     return;
   }

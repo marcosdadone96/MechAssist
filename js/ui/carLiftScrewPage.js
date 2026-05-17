@@ -18,7 +18,7 @@ import { getI18nLabels, getCurrentLang } from '../config/i18nLabels.js';
 import { HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
 import { FEATURES } from '../config/features.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
-import { wrapCalcRefresh } from './creditsPageBoot.js';
+import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { CAR_LIFT_EN } from '../lab/i18n/pages/carLiftEn.js';
@@ -919,7 +919,7 @@ try {
 } catch (e) {
   console.error(e);
 }
-refresh();
+bootMachineCalcView(refresh);
 
 wireMachineRfqExport({
   getPayload: () => {

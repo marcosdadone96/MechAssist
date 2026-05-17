@@ -1517,6 +1517,8 @@ body {
 }
 
 .machine-visual-duo .be-diag-wrap svg {
+  width: 100%;
+  min-height: min(42vh, 360px);
   max-height: min(52vh, 360px);
 }
 

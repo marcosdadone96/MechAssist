@@ -24,7 +24,7 @@ import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
-import { wrapCalcRefresh } from './creditsPageBoot.js';
+import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { CENTRIFUGAL_PUMP_EN } from '../lab/i18n/pages/centrifugalPumpEn.js';
@@ -1165,7 +1165,7 @@ patchProInstallTeaserCheckoutLink();
 syncLoadDutyUi();
 syncPumpCalcModeUi();
 initInfoChipPopovers(document.body);
-refresh();
+bootMachineCalcView(refresh);
 
 wireMachineRfqExport({
   getPayload: () => {

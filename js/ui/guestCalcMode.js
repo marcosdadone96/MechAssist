@@ -4,6 +4,7 @@
 import { isCreditsSystemEnabled } from '../config/credits.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { showCreditsModal } from './creditsUi.js';
+import { findCalcInputsRoot, lockCalcInputs } from './calcInputLock.js';
 
 function langEn() {
   return document.documentElement.lang?.toLowerCase().startsWith('en');
@@ -36,28 +37,6 @@ function mountGuestBanner(root) {
   }
 }
 
-/**
- * @param {HTMLElement} panel
- */
-function lockEditableFields(panel) {
-  const allowSelector = '.lab-presets-bar, .lab-presets-row, [data-lab-preset], [data-guest-allow]';
-  panel.querySelectorAll('input, select, textarea, button').forEach((el) => {
-    if (el.closest(allowSelector)) return;
-    if (el.closest('.site-nav, .hub-lang, .guest-calc-banner')) return;
-    if (el.type === 'hidden') return;
-
-    if (el instanceof HTMLButtonElement) {
-      if (el.closest('.lab-presets-bar')) return;
-    }
-
-    if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement) {
-      el.readOnly = true;
-      el.setAttribute('aria-readonly', 'true');
-      el.classList.add('guest-field--locked');
-    }
-  });
-}
-
 function showGuestRegisterModal() {
   const en = langEn();
   showCreditsModal({
@@ -88,13 +67,8 @@ export function initGuestCalcMode() {
   document.documentElement.setAttribute('data-guest-calc', '1');
   mountGuestBanner(root);
 
-  const inputsRoot =
-    root.querySelector('.lab-calc-layout__inputs') ||
-    root.querySelector('.lab-grid') ||
-    root.querySelector('.form-stack') ||
-    root;
-
-  lockEditableFields(inputsRoot);
+  const inputsRoot = findCalcInputsRoot() || root;
+  lockCalcInputs(inputsRoot, { allowPresets: true });
 
   inputsRoot.addEventListener(
     'focusin',
@@ -103,7 +77,7 @@ export function initGuestCalcMode() {
       if (!(t instanceof HTMLElement)) return;
       if (!t.matches('input, select, textarea')) return;
       if (t.closest('.lab-presets-bar, [data-guest-allow]')) return;
-      if (t.classList.contains('guest-field--locked')) {
+      if (t.classList.contains('calc-input-locked')) {
         showGuestRegisterModal();
         t.blur();
       }
