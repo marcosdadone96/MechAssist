@@ -98,6 +98,7 @@ export async function mountCreditsBar(pool = 'lab') {
   if (!isCreditsSystemEnabled()) return;
   const user = getCurrentUser();
   if (!user?.email) return;
+  if (document.querySelector('.hub-user-menu')) return;
 
   let bar = document.getElementById('credits-balance-bar');
   if (!bar) {

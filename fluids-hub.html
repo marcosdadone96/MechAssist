@@ -140,6 +140,9 @@
         initLabHubCardArt(root);
         initLabHubFavorites(root);
         initLabHubCardFilter(root);
+        const { applyHubCalcCreditBadges, watchHubCalcCreditBadges } = await import('./js/ui/hubCreditsBadges.js');
+        applyHubCalcCreditBadges(root);
+        watchHubCalcCreditBadges(root);
       }
     </script>
   </body>

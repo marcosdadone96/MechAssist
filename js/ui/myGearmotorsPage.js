@@ -14,7 +14,7 @@ import {
   subscribeUserGearmotorsRealtime,
   takeLastGearmotorCloudErrorMessage,
 } from '../services/userGearmotorLibrary.js';
-import { isPremiumEffective } from '../services/accessTier.js';
+import { canUseGearmotorCloudSave } from '../services/accessTier.js';
 import { isPremiumViaQueryProUiAllowed, isPublicFreeRelease } from '../config/features.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { startProCheckoutFlow, buildRegisterUrlWithNextCheckout } from '../services/proCheckoutFlow.js';
@@ -662,7 +662,7 @@ function wireGearmotorPageHandlers() {
 let unsubRealtime = null;
 
 async function boot() {
-  if (!isPremiumEffective() && !isPublicFreeRelease()) {
+  if (!canUseGearmotorCloudSave() && !isPublicFreeRelease()) {
     mountGearmotorsPaywall();
     return;
   }

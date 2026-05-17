@@ -15,6 +15,7 @@ import { FEATURES } from '../config/features.js';
 import { calcSlugFromPath, isCreditsSystemEnabled } from '../config/credits.js';
 import { hasProductionProSessionCache } from './proEntitlement.js';
 import { getCachedCreditsState } from './creditsApi.js';
+import { getCurrentUser } from './localAuth.js';
 
 /** Atajos Pro solo-navegador desactivados (licencia local, URL, usos prueba). */
 function clientProShortcutsDisabled() {
@@ -199,6 +200,17 @@ export function isPremiumEffective() {
   if (hasCreditsUnlimitedAccess()) return true;
   if (FEATURES.proClientPolicy === 'production' && hasProductionProSessionCache()) return true;
   return getEffectiveTier() === 'premium';
+}
+
+/** Motorreductores en TheMechAssist Cloud (Pro o registro con flag de créditos). */
+export function canUseGearmotorCloudSave() {
+  if (FEATURES.publicFreeRelease === true) return true;
+  if (isPremiumEffective()) return true;
+  if (FEATURES.credits?.allowRegisteredGearmotorSave === true) {
+    const u = getCurrentUser();
+    return Boolean(u?.email && u?.serverAuth);
+  }
+  return false;
 }
 
 /**

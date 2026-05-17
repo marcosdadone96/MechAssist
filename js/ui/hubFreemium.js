@@ -2,11 +2,15 @@
  * Hub (home): cuenta en cabecera + badges si existiera el aro radial (legacy).
  */
 
-import { getCurrentUser, clearLocalUser } from '../services/accountAuth.js';
-import { clearProEntitlementClient } from '../services/proEntitlement.js';
+import { getCurrentUser } from '../services/accountAuth.js';
 import { FEATURES } from '../config/features.js';
 import { isProCalculatorPath } from '../config/freemium.js';
-import { creditPoolFromPath, isCreditsSystemEnabled } from '../config/credits.js';
+import { isCreditsSystemEnabled } from '../config/credits.js';
+import {
+  applyLoggedInNavChrome,
+  mountProfileMenu,
+  wirePlansLinksForLoggedInUser,
+} from './hubProfileMenu.js';
 
 function lang() {
   return window.__homeLang === 'en' ? 'en' : 'es';
@@ -18,10 +22,6 @@ function t(key, fallback) {
     if (v && v !== key) return v;
   }
   return fallback;
-}
-
-function helloLabel(name) {
-  return lang() === 'en' ? `Hi, ${name}` : `Hola, ${name}`;
 }
 
 function badgeText() {
@@ -72,35 +72,15 @@ function mountHomeAccountControls() {
     document.querySelector('#hub-header-auth-slot') || document.querySelector('.site-nav__auth');
   if (!(slot instanceof HTMLElement)) return;
   slot.replaceChildren();
+  slot.classList.remove('site-nav__auth--has-menu');
 
   const user = getCurrentUser();
   const hasAuthModal = !!document.getElementById('ma-modal-auth');
 
-  if (user) {
-    const wrap = document.createElement('div');
-    wrap.className = 'site-nav__account';
-    const userEl = document.createElement('span');
-    userEl.className = 'site-nav__user';
-    userEl.textContent = helloLabel(user.name);
-    const out = document.createElement('button');
-    out.type = 'button';
-    out.className = 'site-nav__btn site-nav__btn--ghost';
-    out.setAttribute('data-logout', '');
-    out.textContent = t('auth.logout', lang() === 'en' ? 'Log out' : 'Cerrar sesi\u00f3n');
-    out.addEventListener('click', async () => {
-      clearLocalUser();
-      clearProEntitlementClient();
-      try {
-        const { clearCreditsCache } = await import('../services/creditsApi.js');
-        clearCreditsCache();
-      } catch (_) {
-        /* ignore */
-      }
-      window.location.reload();
-    });
-    wrap.appendChild(userEl);
-    wrap.appendChild(out);
-    slot.appendChild(wrap);
+  if (user?.email) {
+    mountProfileMenu(slot);
+    applyLoggedInNavChrome();
+    wirePlansLinksForLoggedInUser();
     return;
   }
 
@@ -140,19 +120,29 @@ function mountHomeAccountControls() {
   }
 
   slot.appendChild(wrap);
+  applyLoggedInNavChrome();
 }
 
 applyPublicFreeReleaseHomeUi();
 renderHubProBadges();
 mountHomeAccountControls();
+wirePlansLinksForLoggedInUser();
 
 if (isCreditsSystemEnabled()) {
   queueMicrotask(async () => {
-    const { initGuestCalcMode } = await import('./guestCalcMode.js');
-    initGuestCalcMode();
-    const { mountCreditsBar } = await import('./creditsUi.js');
-    const pool = creditPoolFromPath();
-    await mountCreditsBar(pool);
+    if (!getCurrentUser()?.email) {
+      const { initGuestCalcMode } = await import('./guestCalcMode.js');
+      initGuestCalcMode();
+    } else {
+      const { fetchCreditsBalance } = await import('../services/creditsApi.js');
+      await fetchCreditsBalance().catch(() => {});
+    }
+    const hubRoot = document.getElementById('lab-hub-root');
+    if (hubRoot) {
+      const { applyHubCalcCreditBadges, watchHubCalcCreditBadges } = await import('./hubCreditsBadges.js');
+      applyHubCalcCreditBadges(hubRoot);
+      watchHubCalcCreditBadges(hubRoot);
+    }
   });
 }
 
@@ -168,4 +158,9 @@ window.addEventListener('home-language-changed', () => {
   applyPublicFreeReleaseHomeUi();
   renderHubProBadges();
   mountHomeAccountControls();
+  wirePlansLinksForLoggedInUser();
+  const hubRoot = document.getElementById('lab-hub-root');
+  if (hubRoot) {
+    import('./hubCreditsBadges.js').then((m) => m.applyHubCalcCreditBadges(hubRoot));
+  }
 });

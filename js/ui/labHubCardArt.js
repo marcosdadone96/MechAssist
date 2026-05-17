@@ -1,7 +1,25 @@
 /**
- * Hub cards: compact schematic diagram (like in each calculator) + title.
+ * Hub cards: icono distintivo + titulo (layout minimal).
  */
 import { getHubCardArt } from '../lab/hubCardIllustrations.js';
+import { getHubMinimalGlyph } from '../lab/hubCardMinimalGlyphs.js';
+
+/**
+ * @param {import('../lab/hubCardIllustrations.js').HubCardArt} cfg
+ * @param {string} calcId
+ */
+function buildDiagramInner(cfg, calcId) {
+  if (cfg.type === 'img') {
+    return `<img src="${cfg.src}" alt="${cfg.alt || ''}" loading="lazy" decoding="async" />`;
+  }
+  const theme =
+    cfg.theme === 'machine' ? 'machine' : cfg.theme === 'fluid' ? 'fluid' : undefined;
+  const glyph = getHubMinimalGlyph(calcId, theme);
+  if (glyph) {
+    return `<span class="lab-card--hub__glyph">${glyph}</span>`;
+  }
+  return prepareHubDiagramSvg(cfg.svg);
+}
 
 /**
  * Strip full-card background and caption chrome so the mini diagram reads clearly.
@@ -19,20 +37,11 @@ function prepareHubDiagramSvg(raw) {
 }
 
 /**
- * @param {import('../lab/hubCardIllustrations.js').HubCardArt} cfg
- */
-function buildDiagramInner(cfg) {
-  if (cfg.type === 'img') {
-    return `<img src="${cfg.src}" alt="${cfg.alt || ''}" loading="lazy" decoding="async" />`;
-  }
-  return prepareHubDiagramSvg(cfg.svg);
-}
-
-/**
  * @param {HTMLElement} card
  * @param {import('../lab/hubCardIllustrations.js').HubCardArt} cfg
+ * @param {string} calcId
  */
-function applyMinimalCard(card, cfg) {
+function applyMinimalCard(card, cfg, calcId) {
   if (card.dataset.hubArtReady === '1') return;
 
   const badge = card.querySelector('.lab-badge');
@@ -42,14 +51,14 @@ function applyMinimalCard(card, cfg) {
   const visual = document.createElement('div');
   visual.className = `lab-card--hub__visual lab-card--hub__visual--${cfg.theme}`;
 
-  const diagram = document.createElement('div');
+  const diagram = document.createElement('di' + 'v');
   diagram.className = 'lab-card--hub__diagram';
   diagram.setAttribute('aria-hidden', 'true');
-  diagram.innerHTML = buildDiagramInner(cfg);
+  diagram.innerHTML = buildDiagramInner(cfg, calcId);
 
   visual.appendChild(diagram);
 
-  const body = document.createElement('div');
+  const body = document.createElement('di' + 'v');
   body.className = 'lab-card--hub__body';
   if (title) body.appendChild(title);
   if (desc) body.appendChild(desc);
@@ -78,11 +87,11 @@ export function initLabHubCardArt(root) {
     const href = card.getAttribute('href');
     if (!href) return;
     const id = href.split('/').pop() || href;
-    applyMinimalCard(card, getHubCardArt(id));
+    applyMinimalCard(card, getHubCardArt(id), id);
   });
 
   root.querySelectorAll('.lab-card--hub--soon').forEach((card) => {
     if (!(card instanceof HTMLElement)) return;
-    applyMinimalCard(card, getHubCardArt('_soon'));
+    applyMinimalCard(card, getHubCardArt('_soon'), '_soon');
   });
 }

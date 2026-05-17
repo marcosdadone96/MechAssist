@@ -179,6 +179,210 @@ a.site-nav__btn {
   color: #14532d;
 }
 
+.site-nav__link--in-menu {
+  display: none !important;
+}
+
+/* Men\u00fa de perfil (usuario con sesi\u00f3n) */
+.hub-user-menu {
+  position: relative;
+}
+
+.hub-user-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.28rem 0.5rem 0.28rem 0.28rem;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 999px;
+  background: #fff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+}
+
+.hub-user-menu__trigger:hover {
+  border-color: rgba(100, 116, 139, 0.65);
+  background: #f8fafc;
+}
+
+.hub-user-menu__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #16a34a, #15803d);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.hub-user-menu__name {
+  max-width: 7.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hub-user-menu__chev {
+  font-size: 0.7rem;
+  color: #64748b;
+  transition: transform 0.15s ease;
+}
+
+.hub-user-menu.is-open .hub-user-menu__chev {
+  transform: rotate(180deg);
+}
+
+.hub-user-menu__panel {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  z-index: 60;
+  min-width: min(18rem, 92vw);
+  padding: 0.65rem 0;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.14);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+}
+
+.hub-user-menu.is-open .hub-user-menu__panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.hub-user-menu__head {
+  padding: 0 0.85rem 0.55rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.hub-user-menu__head-name {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.hub-user-menu__head-email {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  color: #64748b;
+  word-break: break-all;
+}
+
+.hub-user-menu__credits {
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.hub-user-menu__credits-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.hub-user-menu__credits-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hub-user-menu__credits-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.82rem;
+  color: #334155;
+  padding: 0.12rem 0;
+}
+
+.hub-user-menu__credits-row strong {
+  color: #0f172a;
+}
+
+.hub-user-menu__credits-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.hub-user-menu__credits-line--unlimited {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #166534;
+}
+
+.hub-user-menu__credits-badge {
+  display: inline-block;
+  margin-right: 0.25rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: rgba(22, 163, 74, 0.15);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.hub-user-menu__nav {
+  display: flex;
+  flex-direction: column;
+  padding: 0.35rem 0;
+}
+
+.hub-user-menu__link {
+  display: block;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: #334155;
+  text-decoration: none;
+}
+
+.hub-user-menu__link:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.hub-user-menu__link--accent {
+  color: #166534;
+  font-weight: 600;
+}
+
+.hub-user-menu__logout {
+  display: block;
+  width: calc(100% - 1.7rem);
+  margin: 0.35rem 0.85rem 0;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 8px;
+  background: #f8fafc;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  text-align: center;
+}
+
+.hub-user-menu__logout:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
 /* Idioma: solo texto pequeùo, sin cùpsula */
 .site-nav .site-nav__lang.hub-lang,
 .site-nav__lang.hub-lang {

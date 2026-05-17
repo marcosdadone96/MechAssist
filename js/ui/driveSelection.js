@@ -23,7 +23,7 @@ import {
 } from '../modules/mountingPreferences.js';
 import { FEATURES, isPremiumViaQueryProUiAllowed } from '../config/features.js';
 import { buildRegisterUrlWithNextCheckout, startProCheckoutFlow } from '../services/proCheckoutFlow.js';
-import { isPremiumEffective } from '../services/accessTier.js';
+import { canUseGearmotorCloudSave, isPremiumEffective } from '../services/accessTier.js';
 import {
   USER_SAVED_BRAND_VALUE,
   listUserGearmotors,
@@ -413,7 +413,7 @@ function getVerifySaveToolbarHtml() {
 function ensureUserBrandOption(brandEl) {
   if (!brandEl) return;
   const existing = brandEl.querySelector(`option[value="${USER_SAVED_BRAND_VALUE}"]`);
-  if (!isPremiumEffective()) {
+  if (!canUseGearmotorCloudSave()) {
     if (existing) {
       if (brandEl.value === USER_SAVED_BRAND_VALUE) {
         const firstOther = Array.from(brandEl.options).find((o) => o.value && o.value !== USER_SAVED_BRAND_VALUE);
@@ -584,7 +584,7 @@ function wireUserGearmotorDelegation(root) {
     const saveBtn = /** @type {HTMLElement | null} */ (e.target.closest('[data-verify-save-user-gearmotor]'));
     if (saveBtn && root.contains(saveBtn)) {
       e.preventDefault();
-      if (!isPremiumEffective()) {
+      if (!canUseGearmotorCloudSave()) {
         startProCheckoutFlow();
         return;
       }
@@ -672,7 +672,7 @@ function wireUserGearmotorDelegation(root) {
     const delBtn = /** @type {HTMLElement | null} */ (e.target.closest('[data-user-gearmotor-delete]'));
     if (delBtn && root.contains(delBtn)) {
       e.preventDefault();
-      if (!isPremiumEffective()) {
+      if (!canUseGearmotorCloudSave()) {
         startProCheckoutFlow();
         return;
       }

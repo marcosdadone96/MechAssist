@@ -1152,6 +1152,20 @@ details > summary {
   border-color: #a7f3d0;
 }
 
+a.lab-badge--unlock {
+  text-decoration: none;
+  cursor: pointer;
+  color: #7c2d12;
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+
+a.lab-badge--unlock:hover {
+  background: #ffedd5;
+  border-color: #f97316;
+  color: #9a3412;
+}
+
 .lab-badge--beta {
   background: #ffedd5;
   color: #9a3412;
@@ -5031,6 +5045,33 @@ details > summary {
   display: block;
 }
 
+.lab-card--hub__glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #0f766e;
+}
+
+.lab-card--hub__visual--machine .lab-card--hub__glyph {
+  color: #c2410c;
+}
+
+.lab-card--hub__visual--fluid .lab-card--hub__glyph {
+  color: #0284c7;
+}
+
+.lab-card--hub__visual--canvas .lab-card--hub__glyph {
+  color: #2dd4bf;
+}
+
+.lab-card--hub__glyph svg {
+  width: 2.35rem;
+  height: 2.35rem;
+  display: block;
+}
+
 .lab-card--hub--minimal .lab-card--hub__body {
   flex: 1;
   display: flex;
@@ -5088,6 +5129,15 @@ details > summary {
   font-size: 0.58rem;
   padding: 0.12rem 0.4rem;
   letter-spacing: 0.06em;
+}
+
+.lab-card--hub--minimal a.lab-badge--unlock {
+  font-size: 0.56rem;
+  padding: 0.14rem 0.42rem;
+  max-width: calc(100% - 6.5rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 a.lab-card--hub--minimal:hover .lab-card--hub__chev {

@@ -2,7 +2,7 @@
  * Freemium UI: auth modal, tab switching, Escape, local register/login.
  */
 
-import { registerAccount, loginAccount } from '../services/accountAuth.js';
+import { registerAccount, loginAccount, getCurrentUser } from '../services/accountAuth.js';
 import { FEATURES } from '../config/features.js';
 import { showToast } from './toast.js';
 
@@ -146,7 +146,16 @@ document.addEventListener('click', (e) => {
     e.preventDefault();
     const authTab = opener.getAttribute('data-auth-tab');
     const next = opener.getAttribute('data-auth-next');
-    pendingAuthNext = next != null && next !== '' ? next.trim() : '';
+    const nextPath = next != null && next !== '' ? next.trim() : '';
+    if (getCurrentUser()?.email && nextPath) {
+      try {
+        window.location.assign(new URL(nextPath, window.location.href).href);
+      } catch (_) {
+        window.location.assign(nextPath);
+      }
+      return;
+    }
+    pendingAuthNext = nextPath;
     openModal(id, { authTab });
     return;
   }

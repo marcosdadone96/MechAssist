@@ -6,6 +6,15 @@ import { isCreditsSystemEnabled } from '../config/credits.js';
 
 const LS_BALANCE = 'mdr-credits-balance-v1';
 const LS_BALANCE_AT = 'mdr-credits-balance-at-v1';
+const CREDITS_CHANGED = 'mdr-credits-changed';
+
+function notifyCreditsChanged() {
+  try {
+    window.dispatchEvent(new CustomEvent(CREDITS_CHANGED));
+  } catch (_) {
+    /* ignore */
+  }
+}
 
 function functionsBase() {
   return '/.netlify/functions';
@@ -41,6 +50,7 @@ export async function fetchCreditsBalance(calcSlug = '') {
   try {
     localStorage.setItem(LS_BALANCE, JSON.stringify(data));
     localStorage.setItem(LS_BALANCE_AT, String(Date.now()));
+    notifyCreditsChanged();
   } catch (_) {
     /* ignore */
   }
@@ -93,6 +103,7 @@ export async function consumeCredits(req) {
         }),
       );
       localStorage.setItem(LS_BALANCE_AT, String(Date.now()));
+      notifyCreditsChanged();
     } catch (_) {
       /* ignore */
     }
@@ -104,6 +115,7 @@ export function clearCreditsCache() {
   try {
     localStorage.removeItem(LS_BALANCE);
     localStorage.removeItem(LS_BALANCE_AT);
+    notifyCreditsChanged();
   } catch (_) {
     /* ignore */
   }
