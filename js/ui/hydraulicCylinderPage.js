@@ -1,4 +1,5 @@
 import { bindInputValidation } from './labCalcUx.js';
+import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
@@ -507,7 +508,7 @@ function renderHcVerdictSummary(opts) {
   `;
 }
 
-function computeAndRender() {
+function computeAndRenderCore() {
   const mode = document.getElementById('hcMode') instanceof HTMLSelectElement
     ? document.getElementById('hcMode').value
     : 'design';
@@ -878,6 +879,7 @@ function syncModeUi() {
   }
 }
 
+const computeAndRender = wrapCalcRefresh(computeAndRenderCore);
 [
   'hcPressureBar',
   'hcBoreMm',

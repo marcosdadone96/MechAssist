@@ -6,10 +6,10 @@
  * Env:
  * - SUPABASE_URL o NEXT_PUBLIC_SUPABASE_URL
  * - SUPABASE_SERVICE_ROLE_KEY
- * - NEXT_PUBLIC_SUPABASE_ANON_KEY o SUPABASE_ANON_KEY (misma que usa el front)
  * - AUTH_JWT_SECRET o PRO_JWT_SECRET (validar JWT Netlify)
  *
- * Blob verificado: opcional supabaseShadowPassword (solo servidor) para signInWithPassword.
+ * La sesión se emite solo con service role (generateLink + verifyOtp), sin depender de la anon key en Netlify.
+ * Blob verificado: opcional supabaseShadowPassword (solo servidor) al crear el usuario Auth.
  */
 
 const { createClient } = require('@supabase/supabase-js');
@@ -66,6 +66,47 @@ async function findAuthUserIdByEmail(admin, email) {
   return null;
 }
 
+function trimEnv(v) {
+  return String(v || '').trim();
+}
+
+function normalizeSupabaseUrl(raw) {
+  const u = trimEnv(raw).replace(/\/+$/, '');
+  if (!u) return '';
+  try {
+    const parsed = new URL(u);
+    if (!parsed.hostname.endsWith('.supabase.co')) return '';
+    return parsed.origin;
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Emite access/refresh con service role (no usa anon key de Netlify).
+ * @param {import('@supabase/supabase-js').SupabaseClient} admin
+ * @param {string} email
+ */
+async function mintSessionViaAdminLink(admin, email) {
+  const { data: linkData, error: linkErr } = await admin.auth.admin.generateLink({
+    type: 'magiclink',
+    email,
+  });
+  const hashed = linkData?.properties?.hashed_token;
+  if (linkErr || !hashed) {
+    return { session: null, error: linkErr || new Error('generate_link_failed') };
+  }
+  const { data: verifyData, error: verifyErr } = await admin.auth.verifyOtp({
+    email,
+    token_hash: hashed,
+    type: 'email',
+  });
+  if (verifyErr || !verifyData?.session) {
+    return { session: null, error: verifyErr || new Error('verify_otp_failed') };
+  }
+  return { session: verifyData.session, error: null };
+}
+
 exports.handler = async (event) => {
   const cors = corsHeaders(event);
   if (event.httpMethod === 'OPTIONS') {
@@ -91,10 +132,11 @@ exports.handler = async (event) => {
     return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'unauthorized' }) };
   }
 
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
-  if (!url || !serviceKey || !anonKey) {
+  const url = normalizeSupabaseUrl(
+    process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL,
+  );
+  const serviceKey = trimEnv(process.env.SUPABASE_SERVICE_ROLE_KEY);
+  if (!url || !serviceKey) {
     return { statusCode: 500, headers: cors, body: JSON.stringify({ error: 'misconfigured_supabase' }) };
   }
 
@@ -110,9 +152,6 @@ exports.handler = async (event) => {
   }
 
   const admin = createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-  const sessionClient = createClient(url, anonKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
@@ -158,13 +197,9 @@ exports.handler = async (event) => {
     };
   }
 
-  async function signInOnce() {
-    return sessionClient.auth.signInWithPassword({ email, password: shadowPw });
-  }
+  let { session: mintedSession, error: mintErr } = await mintSessionViaAdminLink(admin, email);
 
-  let { data: sess, error: se } = await signInOnce();
-
-  if ((se || !sess?.session) && shadowPw) {
+  if ((mintErr || !mintedSession) && shadowPw) {
     const uid = await findAuthUserIdByEmail(admin, email);
     if (uid) {
       const newPw = randomPassword();
@@ -176,21 +211,26 @@ exports.handler = async (event) => {
         shadowPw = newPw;
         user.supabaseShadowPassword = newPw;
         await store.setJSON(verifiedUserKey(email), user);
-        ({ data: sess, error: se } = await signInOnce());
+        ({ session: mintedSession, error: mintErr } = await mintSessionViaAdminLink(admin, email));
       }
     }
   }
 
-  if (se || !sess?.session) {
-    console.warn('[supabase-session-mint] signIn', se);
+  if (mintErr || !mintedSession) {
+    const msg = mintErr?.message || 'no_session';
+    console.warn('[supabase-session-mint] mint session', mintErr, 'host=', new URL(url).hostname);
     return {
       statusCode: 500,
       headers: { ...cors, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'sign_in', message: se?.message || 'no_session' }),
+      body: JSON.stringify({
+        error: 'sign_in',
+        message: msg,
+        hint: 'Compruebe SUPABASE_SERVICE_ROLE_KEY y NEXT_PUBLIC_SUPABASE_URL (mismo proyecto en Supabase → Settings → API).',
+      }),
     };
   }
 
-  const s = sess.session;
+  const s = mintedSession;
   return {
     statusCode: 200,
     headers: { ...cors, 'Content-Type': 'application/json' },

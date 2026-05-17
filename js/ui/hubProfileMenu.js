@@ -144,6 +144,14 @@ export function mountProfileMenu(slot) {
   wrap.appendChild(panel);
   slot.appendChild(wrap);
 
+  if (!window.__hubProfileMenuCreditsBound) {
+    window.__hubProfileMenuCreditsBound = true;
+    window.addEventListener('mdr-credits-changed', () => {
+      const host = document.getElementById('hub-user-menu-credits');
+      if (host && !host.hidden) void refreshMenuCredits(host);
+    });
+  }
+
   if (!window.__hubProfileMenuDocBound) {
     window.__hubProfileMenuDocBound = true;
     document.addEventListener('click', (e) => {

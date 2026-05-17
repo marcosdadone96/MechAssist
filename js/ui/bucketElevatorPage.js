@@ -32,6 +32,7 @@ import {
   BUCKET_ELEVATOR_LANG_EVENT,
 } from './bucketElevatorStaticI18n.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { BUCKET_ELEVATOR_EN } from '../lab/i18n/pages/bucketElevatorEn.js';
@@ -300,7 +301,7 @@ function drawDiagramOnly() {
   });
 }
 
-function computeAndRender() {
+function computeAndRenderCore() {
   const lang = getCurrentLang();
   const en = lang === 'en';
   const LBL = getI18nLabels();
@@ -619,6 +620,7 @@ const inputs = [
   'beKboot',
   'beEtaTrans',
 ];
+const computeAndRender = wrapCalcRefresh(computeAndRenderCore);
 inputs.forEach((id) => {
   document.getElementById(id)?.addEventListener('input', computeAndRender);
   document.getElementById(id)?.addEventListener('change', computeAndRender);

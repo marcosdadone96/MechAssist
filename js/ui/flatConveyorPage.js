@@ -34,6 +34,7 @@ import { getCurrentLang } from '../config/locales.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { FLAT_CONVEYOR_EN } from '../lab/i18n/pages/flatConvEn.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { incrementCalcCounter } from '../services/calcCounter.js';
 
 const inputIds = [
@@ -492,7 +493,7 @@ function initAdvancedDetailsPersistence() {
   });
 }
 
-function refresh() {
+function refreshCore() {
   const conveyorExtrasUnlocked = isPremiumEffective() || isFreeMachineFullAccess();
   const pdfReportUnlocked = isPremiumEffective();
   const LBL = getI18nLabels();
@@ -863,6 +864,8 @@ function refresh() {
     );
   }
 }
+
+const refresh = wrapCalcRefresh(refreshCore);
 
 inputIds.forEach((id) => {
   const el = document.getElementById(id);

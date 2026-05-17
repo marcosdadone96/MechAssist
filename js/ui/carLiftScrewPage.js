@@ -18,6 +18,7 @@ import { getI18nLabels, getCurrentLang } from '../config/i18nLabels.js';
 import { HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
 import { FEATURES } from '../config/features.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { CAR_LIFT_EN } from '../lab/i18n/pages/carLiftEn.js';
@@ -624,7 +625,7 @@ function localizeCarLiftStaticContent() {
   syncThreadPresetUi();
 }
 
-function refresh() {
+function refreshCore() {
   const LBL = getI18nLabels();
   const lang = getCurrentLang();
   const en = lang === 'en';
@@ -874,6 +875,8 @@ function refresh() {
   applyMachinePremiumGates();
   foldAllMachineDetailsOncePerPageLoad();
 }
+
+const refresh = wrapCalcRefresh(refreshCore);
 
 inputIds.forEach((id) => {
   document.getElementById(id)?.addEventListener('input', refresh);

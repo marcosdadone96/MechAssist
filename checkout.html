@@ -75,32 +75,54 @@
         </div>
         <p id="coWithdrawalError" class="register-error" hidden role="alert"></p>
 
-        <section class="checkout-plan-block" aria-labelledby="coSubsHeading">
-          <h2 class="checkout-plan-block__title" id="coSubsHeading">Suscripciones</h2>
-          <p class="checkout-plan-block__hint muted" id="coSubsHint"></p>
-          <div class="checkout-actions checkout-actions--subs">
-          <button type="button" class="button button--accent" id="coPayStripe" hidden>Pagar</button>
-          <a
-            id="coLemonMonthly"
-            href="https://mechassist.lemonsqueezy.com/checkout/buy/acd30d30-72e7-4434-827e-e51487e492ca"
-            class="button button--accent"
-            data-lemon-squeezy
-            >Plan mensual &#8212; 9 &#8364;/mes</a>
-          <a
-            id="coLemonAnnual"
-            href="https://mechassist.lemonsqueezy.com/checkout/buy/bfd83e87-ac81-46ad-a5cf-2c2c94b1d70d"
-            class="button button--accent"
-            data-lemon-squeezy
-            >Plan anual &#8212; 79 &#8364;/a&#241;o</a>
-          <a
-            id="coLemonUnlimited"
-            href=""
-            class="button button--accent"
-            data-lemon-squeezy
-            hidden
-            >Ilimitado &#8212; 25 &#8364;/mes</a>
-          </div>
-        </section>
+        <div class="checkout-plans">
+          <section class="checkout-plan-block checkout-plan-card checkout-plan-card--starter" aria-labelledby="coStarterHeading">
+            <div class="checkout-plan-card__head">
+              <h2 class="checkout-plan-block__title" id="coStarterHeading">Starter</h2>
+              <p class="checkout-plan-card__price" id="coStarterPrice">9 &#8364;/mes</p>
+            </div>
+            <p class="checkout-plan-block__hint muted" id="coStarterHint"></p>
+            <ul class="checkout-plan-card__list" id="coStarterBullets"></ul>
+            <div class="checkout-actions checkout-actions--subs">
+              <button type="button" class="button button--accent" id="coPayStripe" hidden>Pagar con tarjeta (Stripe)</button>
+              <a
+                id="coLemonMonthly"
+                href="https://mechassist.lemonsqueezy.com/checkout/buy/acd30d30-72e7-4434-827e-e51487e492ca"
+                class="button button--accent"
+                data-lemon-squeezy
+                >Starter &#8212; 9 &#8364;/mes</a>
+              <a
+                id="coLemonAnnual"
+                href="https://mechassist.lemonsqueezy.com/checkout/buy/bfd83e87-ac81-46ad-a5cf-2c2c94b1d70d"
+                class="button button--ghost checkout-plan-card__btn-secondary"
+                data-lemon-squeezy
+                >Starter anual &#8212; 79 &#8364;/a&#241;o</a>
+            </div>
+          </section>
+
+          <section
+            class="checkout-plan-block checkout-plan-card checkout-plan-card--unlimited"
+            id="coUnlimitedBlock"
+            aria-labelledby="coUnlimitedHeading"
+          >
+            <div class="checkout-plan-card__head">
+              <h2 class="checkout-plan-block__title" id="coUnlimitedHeading">Ilimitado</h2>
+              <p class="checkout-plan-card__price" id="coUnlimitedPrice">25 &#8364;/mes</p>
+            </div>
+            <p class="checkout-plan-block__hint muted" id="coUnlimitedHint"></p>
+            <ul class="checkout-plan-card__list" id="coUnlimitedBullets"></ul>
+            <div class="checkout-actions checkout-actions--subs">
+              <a
+                id="coLemonUnlimited"
+                href=""
+                class="button button--accent checkout-plan-card__btn-unlimited"
+                data-lemon-squeezy
+                hidden
+                >Ilimitado &#8212; 25 &#8364;/mes</a>
+              <p class="checkout-plan-card__pending muted" id="coUnlimitedPending" hidden></p>
+            </div>
+          </section>
+        </div>
 
         <section class="checkout-plan-block checkout-plan-block--unlock" id="coUnlockBlock" hidden aria-labelledby="coUnlockHeading">
           <h2 class="checkout-plan-block__title" id="coUnlockHeading">Solo una calculadora</h2>

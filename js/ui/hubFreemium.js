@@ -134,8 +134,8 @@ if (isCreditsSystemEnabled()) {
       const { initGuestCalcMode } = await import('./guestCalcMode.js');
       initGuestCalcMode();
     } else {
-      const { fetchCreditsBalance } = await import('../services/creditsApi.js');
-      await fetchCreditsBalance().catch(() => {});
+      const { bootPageCredits } = await import('./creditsPageBoot.js');
+      await bootPageCredits();
     }
     const hubRoot = document.getElementById('lab-hub-root');
     if (hubRoot) {

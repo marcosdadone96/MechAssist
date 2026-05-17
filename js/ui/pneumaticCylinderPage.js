@@ -1,4 +1,5 @@
 import { bindInputValidation } from './labCalcUx.js';
+import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
@@ -677,7 +678,7 @@ function renderCylinderDiagram(svg, strokeMm, rodMm, boreMm, cylinderType = 'dou
   `;
 }
 
-function computeAndRender() {
+function computeAndRenderCore() {
   const calcMode = document.getElementById('pcMode') instanceof HTMLSelectElement
     ? document.getElementById('pcMode').value
     : 'design';
@@ -1080,6 +1081,8 @@ function syncCalcModeUi() {
     if (help) help.textContent = calcMode === 'diagnostic' ? tr('fLoadHelpDiag') : tr('fLoadHelp');
   }
 }
+
+const computeAndRender = wrapCalcRefresh(computeAndRenderCore);
 
 document.getElementById('pcBoreIso')?.addEventListener('change', () => {
   const b = readLabNumber('pcBoreIso', 1, 1e9, '');

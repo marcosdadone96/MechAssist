@@ -24,6 +24,7 @@ import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { CENTRIFUGAL_PUMP_EN } from '../lab/i18n/pages/centrifugalPumpEn.js';
@@ -794,7 +795,7 @@ function clearRuntimeError() {
   box.textContent = '';
 }
 
-function refresh() {
+function refreshCore() {
   const LBL = getI18nLabels();
   const lang = getCurrentLang();
   const en = lang === 'en';
@@ -1108,6 +1109,8 @@ function refresh() {
     );
   }
 }
+
+const refresh = wrapCalcRefresh(refreshCore);
 
 pumpInputIds.forEach((id) => {
   const el = document.getElementById(id);

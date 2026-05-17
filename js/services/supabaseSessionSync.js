@@ -72,6 +72,11 @@ export function supabaseSessionSyncErrorMessage(reason, detail) {
       'Could not create Supabase user. Try again.',
     ],
   };
+  if (detail && /invalid api key/i.test(detail)) {
+    return en
+      ? 'Supabase API key mismatch: in Netlify set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to the same project as the site (Supabase ? Settings ? API), then redeploy. Signing out will not fix this.'
+      : 'Clave API de Supabase incorrecta en el servidor: en Netlify configure NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY con el mismo proyecto que la web (Supabase ? Settings ? API) y vuelva a desplegar. Cerrar sesión no lo soluciona.';
+  }
   const pair = map[String(reason || 'no_session')] || map.no_session;
   const base = en ? pair[1] : pair[0];
   if (detail && reason !== 'not_verified') {

@@ -21,6 +21,7 @@ import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { TRACTION_ELEVATOR_EN } from '../lab/i18n/pages/tractionElevatorEn.js';
@@ -319,7 +320,7 @@ function drawDiagram(H, reeving, lang) {
   });
 }
 
-function computeAndRender() {
+function computeAndRenderCore() {
   const LBL = getI18nLabels();
   const lang = getCurrentLang();
   const en = lang === 'en';
@@ -558,6 +559,8 @@ document.getElementById('teMcpManual')?.addEventListener('input', () => {
   const input = document.getElementById('teMcpManual');
   if (input instanceof HTMLInputElement) input.dataset.autoSuggestion = 'false';
 });
+
+const computeAndRender = wrapCalcRefresh(computeAndRenderCore);
 
 [
   'teQ',

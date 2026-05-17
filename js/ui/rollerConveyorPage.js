@@ -21,6 +21,7 @@ import { mountMachineConfigBar } from './machineConfigMount.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { incrementCalcCounter } from '../services/calcCounter.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
@@ -601,7 +602,7 @@ function localizeRollerStaticContent() {
   syncLoadSupportUi();
 }
 
-function refresh() {
+function refreshCore() {
   const conveyorExtrasUnlocked = isPremiumEffective() || isFreeMachineFullAccess();
   const pdfReportUnlocked = isPremiumEffective();
   const LBL = getI18nLabels();
@@ -839,6 +840,8 @@ function refresh() {
   applyMachinePremiumGates();
   foldAllMachineDetailsOncePerPageLoad();
 }
+
+const refresh = wrapCalcRefresh(refreshCore);
 
 inputIds.forEach((id) => {
   document.getElementById(id)?.addEventListener('input', refresh);

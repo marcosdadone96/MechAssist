@@ -23,8 +23,26 @@ const TX = {
     title: 'Planes y cr\u00e9ditos',
     lead:
       'Tres opciones independientes: suscripci\u00f3n Starter (9 \u20ac/mes), plan Ilimitado (25 \u20ac/mes) o desbloqueo de una sola calculadora (1 \u20ac/mes, uso ilimitado en esa herramienta durante 30 d\u00edas). No necesita suscripci\u00f3n para el desbloqueo puntual.',
-    subsHeading: 'Suscripciones',
-    subsHint: 'Starter: cr\u00e9ditos de bienvenida renovados con el plan y hasta 30 PDF/mes. Ilimitado: sin consumir cr\u00e9ditos.',
+    starterHeading: 'Starter',
+    starterPrice: '9 \u20ac/mes',
+    starterHint: 'Cr\u00e9ditos de bienvenida renovados con el plan y hasta 30 PDF/mes en todo el cat\u00e1logo.',
+    starterBullets: [
+      'Hasta 30 PDF/mes incluidos en el plan',
+      'Cr\u00e9ditos para sesiones de c\u00e1lculo en lab, m\u00e1quinas e hidr\u00e1ulica',
+      'Plan anual con descuento (79 \u20ac/a\u00f1o)',
+      'Gestione la suscripci\u00f3n en el portal Lemon',
+    ],
+    unlimitedHeading: 'Ilimitado',
+    unlimitedPrice: '25 \u20ac/mes',
+    unlimitedHint: 'Todo el cat\u00e1logo sin gastar cr\u00e9ditos ni l\u00edmite de PDF por cr\u00e9ditos.',
+    unlimitedBullets: [
+      'Acceso completo sin consumir cr\u00e9ditos',
+      'PDF y sesiones de c\u00e1lculo sin cargo por saldo',
+      'Ideal para oficinas t\u00e9cnicas con uso diario',
+      'Precio final e IVA en checkout seg\u00fan pa\u00eds',
+    ],
+    unlimitedPending:
+      'Enlace de pago en configuraci\u00f3n. A\u00f1ada la URL Lemon del plan 25 \u20ac en features.js (unlimitedMonthly).',
     unlockHeading: 'Solo una calculadora',
     unlockHint:
       '1 \u20ac/mes por calculadora elegida. Uso ilimitado (c\u00e1lculos y PDF) en esa p\u00e1gina durante 30 d\u00edas. Puede combinar varias compras puntuales sin contratar Starter.',
@@ -77,8 +95,26 @@ const TX = {
     title: 'Plans & credits',
     lead:
       'Three independent options: Starter subscription (\u20ac9/mo), Unlimited plan (\u20ac25/mo), or unlock a single calculator (\u20ac1/mo, unlimited use on that tool for 30 days). No subscription required for pay-per-calculator.',
-    subsHeading: 'Subscriptions',
-    subsHint: 'Starter: plan credits and up to 30 PDFs/month. Unlimited: no credit spend.',
+    starterHeading: 'Starter',
+    starterPrice: '\u20ac9/month',
+    starterHint: 'Plan credits renewed monthly and up to 30 PDFs/month across the catalog.',
+    starterBullets: [
+      'Up to 30 PDFs/month included',
+      'Credits for calc sessions in lab, machines and hydraulics',
+      'Annual plan with discount (\u20ac79/year)',
+      'Manage billing in the Lemon portal',
+    ],
+    unlimitedHeading: 'Unlimited',
+    unlimitedPrice: '\u20ac25/month',
+    unlimitedHint: 'Full catalog without spending credits or PDF credit limits.',
+    unlimitedBullets: [
+      'Full access without credit spend',
+      'PDF and calc sessions not limited by balance',
+      'Best for daily technical office use',
+      'Final price and VAT at checkout by country',
+    ],
+    unlimitedPending:
+      'Checkout link not configured yet. Add the Lemon URL for \u20ac25/mo in features.js (unlimitedMonthly).',
     unlockHeading: 'Single calculator only',
     unlockHint:
       '\u20ac1/month per calculator. Unlimited calc and PDF on that page for 30 days. Stack multiple unlocks without Starter.',
@@ -205,8 +241,26 @@ function applyTx(t) {
   if (m) m.textContent = t.starterMonthly || t.monthlyPlan;
   if (ann) ann.textContent = t.starterAnnual || t.annualPlan;
   if (unl) unl.textContent = t.unlimitedMonthly || 'Ilimitado';
-  set('coSubsHeading', t.subsHeading);
-  set('coSubsHint', t.subsHint);
+  set('coStarterHeading', t.starterHeading);
+  set('coStarterPrice', t.starterPrice);
+  set('coStarterHint', t.starterHint);
+  set('coUnlimitedHeading', t.unlimitedHeading);
+  set('coUnlimitedPrice', t.unlimitedPrice);
+  set('coUnlimitedHint', t.unlimitedHint);
+  const fillBullets = (id, items) => {
+    const ul = document.getElementById(id);
+    if (!(ul instanceof HTMLUListElement) || !Array.isArray(items)) return;
+    ul.replaceChildren();
+    for (const text of items) {
+      const li = document.createElement('li');
+      li.textContent = text;
+      ul.appendChild(li);
+    }
+  };
+  fillBullets('coStarterBullets', t.starterBullets);
+  fillBullets('coUnlimitedBullets', t.unlimitedBullets);
+  const pending = document.getElementById('coUnlimitedPending');
+  if (pending) pending.textContent = t.unlimitedPending || '';
   set('coUnlockHeading', t.unlockHeading);
   set('coUnlockHint', t.unlockHint);
   const pickLbl = document.querySelector('label[for="coUnlockCalc"]');
@@ -291,12 +345,21 @@ export async function mountCheckoutPage() {
   const lemonU = document.getElementById('coLemonUnlimited');
   if (lemonM instanceof HTMLAnchorElement && lemon.starterMonthly) lemonM.href = lemon.starterMonthly;
   if (lemonA instanceof HTMLAnchorElement && lemon.starterAnnual) lemonA.href = lemon.starterAnnual;
+  const unlimitedBlock = document.getElementById('coUnlimitedBlock');
+  const unlimitedPending = document.getElementById('coUnlimitedPending');
   if (lemonU instanceof HTMLAnchorElement) {
     const u = String(lemon.unlimitedMonthly || '').trim();
     if (u) {
       lemonU.href = u;
       lemonU.hidden = false;
+      if (unlimitedPending instanceof HTMLElement) unlimitedPending.hidden = true;
+    } else {
+      lemonU.hidden = true;
+      if (unlimitedPending instanceof HTMLElement) unlimitedPending.hidden = false;
     }
+  }
+  if (unlimitedBlock instanceof HTMLElement && window.location.hash === '#unlimited') {
+    unlimitedBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   if (isCreditsSystemEnabled()) {
@@ -318,8 +381,10 @@ export async function mountCheckoutPage() {
     }
     const lemonM = document.getElementById('coLemonMonthly');
     const lemonA = document.getElementById('coLemonAnnual');
+    const lemonU = document.getElementById('coLemonUnlimited');
     if (lemonM instanceof HTMLElement) lemonM.hidden = true;
     if (lemonA instanceof HTMLElement) lemonA.hidden = true;
+    if (lemonU instanceof HTMLElement) lemonU.hidden = true;
     const manageWrap = document.getElementById('coManageSub');
     if (manageWrap instanceof HTMLElement) manageWrap.hidden = false;
     const manageTitleEl = document.getElementById('coManageTitle');

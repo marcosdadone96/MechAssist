@@ -5,6 +5,7 @@
  * - Veredicto integral
  */
 import { bindInputValidation } from './labCalcUx.js';
+import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
@@ -541,7 +542,7 @@ function syncDiametersSuggestion() {
   if (p < s) pipeEl.value = suctionEl.value;
 }
 
-function computeAndRender() {
+function computeAndRenderCore() {
   const mode = val('hpMode', 'design');
   const type = val('hpType', 'gear');
   const pUnit = val('hpPressureUnit', 'bar');
@@ -899,6 +900,8 @@ function syncPumpModeUi() {
     flowInput.setAttribute('aria-readonly', mode === 'diagnostic' ? 'true' : 'false');
   }
 }
+
+const computeAndRender = wrapCalcRefresh(computeAndRenderCore);
 
 [
   'hpType',

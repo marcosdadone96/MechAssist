@@ -70,6 +70,7 @@ export async function ensureCalcSessionCharged() {
     } catch (_) {
       /* ignore */
     }
+    await fetchCreditsBalance(calcSlug).catch(() => {});
     return { allowed: true };
   }
 

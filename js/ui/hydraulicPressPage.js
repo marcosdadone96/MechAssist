@@ -1,4 +1,5 @@
 import { bindInputValidation } from './labCalcUx.js';
+import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
@@ -281,7 +282,7 @@ function updateApproachNote(strokeMm, cycleS, approachFactor) {
     : '';
 }
 
-function computeAndRender() {
+function computeAndRenderCore() {
   const en = pressLang();
   const mode = document.getElementById('hppMode') instanceof HTMLSelectElement
     ? document.getElementById('hppMode').value
@@ -669,6 +670,8 @@ function syncModeUi() {
   if (diagColField instanceof HTMLElement) diagColField.hidden = mode !== 'diagnostic';
   if (forceField instanceof HTMLElement) forceField.classList.toggle('lab-field--auto', mode === 'diagnostic');
 }
+
+const computeAndRender = wrapCalcRefresh(computeAndRenderCore);
 
 [
   'hppForceTon',

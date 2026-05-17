@@ -4975,12 +4975,105 @@ html[data-conveyor-tool='screw'] #screwMotorBlock .motor-card-grid {
   line-height: 1.45;
 }
 
+.checkout-plans {
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .checkout-plans {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.checkout-plan-card {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 14px;
+  padding: 1rem 1.05rem 1.15rem;
+  background: #fff;
+}
+
+.checkout-plan-card--starter {
+  border-color: rgba(124, 58, 237, 0.35);
+}
+
+.checkout-plan-card--unlimited {
+  border-color: rgba(13, 148, 136, 0.4);
+  background: linear-gradient(180deg, rgba(240, 253, 250, 0.65) 0%, #fff 42%);
+}
+
+.checkout-plan-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.checkout-plan-card__price {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #6d28d9;
+  white-space: nowrap;
+}
+
+.checkout-plan-card--unlimited .checkout-plan-card__price {
+  color: #0f766e;
+}
+
+.checkout-plan-card__list {
+  margin: 0 0 0.85rem;
+  padding-left: 1.15rem;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: #475569;
+}
+
+.checkout-plan-card__list li + li {
+  margin-top: 0.35rem;
+}
+
+.checkout-plan-card__btn-secondary {
+  margin-top: 0.15rem;
+}
+
+.checkout-plan-card__pending {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
 .checkout-plan-block--unlock {
   background: rgba(248, 250, 252, 0.85);
   border: 1px solid rgba(148, 163, 184, 0.28);
   border-radius: 12px;
   padding: 1rem 1rem 1.1rem;
   margin-top: 1.25rem;
+}
+
+.hub-pricing-card--unlimited {
+  border-color: rgba(13, 148, 136, 0.45);
+}
+
+.hub-pricing-card__ribbon--unlimited {
+  background: #0f766e;
+}
+
+.hub-pricing-card__price--unlimited {
+  color: #0f766e;
+}
+
+.hub-pricing-card__cta--unlimited {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #fff;
+}
+
+.hub-pricing-card__cta--unlimited:hover {
+  background: #115e59;
+  border-color: #115e59;
 }
 
 .checkout-unlock-row {
@@ -5005,9 +5098,15 @@ html[data-conveyor-tool='screw'] #screwMotorBlock .motor-card-grid {
 
 .hub-pricing__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
   align-items: stretch;
+}
+
+@media (min-width: 1100px) {
+  .hub-pricing__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .hub-pricing-card--unlock {

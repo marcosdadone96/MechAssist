@@ -23,6 +23,7 @@ import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
+import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { SCREW_CONVEYOR_EN } from '../lab/i18n/pages/screwConveyorEn.js';
@@ -718,6 +719,8 @@ function refresh() {
     showRuntimeError(`${TX.calcError} ${String(err.message || err)}`);
   }
 }
+
+const refresh = wrapCalcRefresh(refreshCore);
 
 inputIds.forEach((id) => {
   const el = document.getElementById(id);
