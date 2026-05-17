@@ -67,9 +67,9 @@ function setLastGearmotorCloudError(err) {
  * @returns {Promise<import('@supabase/supabase-js').User | null>}
  */
 async function requireSupabaseUserForGearmotors() {
-  const { user, syncReason } = await ensureSupabaseAuthUser();
+  const { user, syncReason, syncDetail } = await ensureSupabaseAuthUser();
   if (!user && syncReason) {
-    setLastGearmotorCloudError(supabaseSessionSyncErrorMessage(syncReason));
+    setLastGearmotorCloudError(supabaseSessionSyncErrorMessage(syncReason, syncDetail));
   }
   return user;
 }

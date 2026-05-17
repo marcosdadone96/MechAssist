@@ -199,9 +199,31 @@ export const HUB_CARD_ART = {
 
 /**
  * @param {string} hrefOrName
+ * @returns {string}
+ */
+export function normalizeHubCalcId(hrefOrName) {
+  let key = String(hrefOrName || '').trim();
+  if (!key) return '';
+  if (key.includes('/')) {
+    try {
+      key = new URL(key, 'https://example.com').pathname;
+    } catch {
+      /* keep key */
+    }
+    key = key.split('/').pop() || key;
+  }
+  return key.split('?')[0].split('#')[0];
+}
+
+/**
+ * @param {string} hrefOrName
  * @returns {HubCardArt}
  */
 export function getHubCardArt(hrefOrName) {
-  const key = String(hrefOrName || '').trim();
-  return HUB_CARD_ART[key] || HUB_CARD_ART._default;
+  const key = normalizeHubCalcId(hrefOrName);
+  if (key && HUB_CARD_ART[key]) return HUB_CARD_ART[key];
+  if (key && HUB_MACHINE_ART_SVG[key]) {
+    return { theme: 'machine', type: 'svg', svg: HUB_MACHINE_ART_SVG[key] };
+  }
+  return HUB_CARD_ART._default;
 }

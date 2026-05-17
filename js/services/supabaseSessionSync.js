@@ -8,9 +8,10 @@ import { supabase } from '../../scripts/supabaseClient.mjs';
 
 /**
  * @param {string} [reason]
+ * @param {string} [detail]
  * @returns {string}
  */
-export function supabaseSessionSyncErrorMessage(reason) {
+export function supabaseSessionSyncErrorMessage(reason, detail) {
   const en =
     typeof document !== 'undefined' &&
     String(document.documentElement.lang || '')
@@ -46,14 +47,42 @@ export function supabaseSessionSyncErrorMessage(reason) {
       'Guardado en nube desactivado en esta build.',
       'Cloud save is disabled in this build.',
     ],
+    not_verified: [
+      'Confirme su correo con el enlace de verificaci\u00f3n y vuelva a iniciar sesi\u00f3n.',
+      'Confirm your email via the verification link, then sign in again.',
+    ],
+    misconfigured_supabase: [
+      'Falta configuraci\u00f3n Supabase en Netlify (URL, anon key o service role).',
+      'Missing Supabase config on Netlify (URL, anon key or service role).',
+    ],
+    misconfigured_secret: [
+      'Falta AUTH_JWT_SECRET en Netlify.',
+      'Missing AUTH_JWT_SECRET on Netlify.',
+    ],
+    unauthorized: [
+      'Sesi\u00f3n caducada. Cierre sesi\u00f3n e inicie sesi\u00f3n de nuevo.',
+      'Session expired. Sign out and sign in again.',
+    ],
+    sign_in: [
+      'No se pudo enlazar su cuenta con Supabase. Cierre sesi\u00f3n e inicie sesi\u00f3n otra vez.',
+      'Could not link your account to Supabase. Sign out and sign in again.',
+    ],
+    supabase_user: [
+      'No se pudo crear el usuario en Supabase. Int\u00e9ntelo de nuevo.',
+      'Could not create Supabase user. Try again.',
+    ],
   };
   const pair = map[String(reason || 'no_session')] || map.no_session;
-  return en ? pair[1] : pair[0];
+  const base = en ? pair[1] : pair[0];
+  if (detail && reason !== 'not_verified') {
+    return `${base} (${detail})`;
+  }
+  return base;
 }
 
 /**
  * Sesiùn Supabase (RLS) lista para operaciones con auth.uid().
- * @returns {Promise<{ user: import('@supabase/supabase-js').User | null, syncReason?: string }>}
+ * @returns {Promise<{ user: import('@supabase/supabase-js').User | null, syncReason?: string, syncDetail?: string }>}
  */
 export async function ensureSupabaseAuthUser() {
   const u = getCurrentUser();
@@ -65,7 +94,13 @@ export async function ensureSupabaseAuthUser() {
     const sync = await syncSupabaseSessionFromNetlifyJwt();
     ({ data: authData } = await supabase.auth.getUser());
     user = authData?.user ?? null;
-    if (!user) return { user: null, syncReason: sync.reason || 'no_session' };
+    if (!user) {
+      return {
+        user: null,
+        syncReason: sync.reason || 'no_session',
+        syncDetail: sync.detail,
+      };
+    }
   }
   if (!user && u?.email && !u?.serverAuth) {
     return { user: null, syncReason: 'local_only' };
@@ -93,8 +128,12 @@ export async function syncSupabaseSessionFromNetlifyJwt() {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      console.warn('[supabaseSessionSync] mint failed', data);
-      return { ok: false, reason: 'mint_failed' };
+      console.warn('[supabaseSessionSync] mint failed', res.status, data);
+      const code =
+        data && typeof data.error === 'string' && data.error.trim() ? data.error.trim() : 'mint_failed';
+      const detail =
+        data && typeof data.message === 'string' && data.message.trim() ? data.message.trim() : '';
+      return { ok: false, reason: code, detail };
     }
     const { error } = await supabase.auth.setSession({
       access_token: data.access_token,

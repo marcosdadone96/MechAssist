@@ -676,6 +676,8 @@ async function boot() {
       await initUserCloudSync();
     }
     await ensureGearmotorsCacheLoaded();
+    const cloudErr = takeLastGearmotorCloudErrorMessage();
+    if (cloudErr) flashStatus(cloudErr, 'warn');
   } catch (_) {
     flashStatus(t('loadCloudErr'), 'warn');
   }

@@ -158,12 +158,30 @@ exports.handler = async (event) => {
     };
   }
 
-  const { data: sess, error: se } = await sessionClient.auth.signInWithPassword({
-    email,
-    password: shadowPw,
-  });
+  async function signInOnce() {
+    return sessionClient.auth.signInWithPassword({ email, password: shadowPw });
+  }
 
-  if (se || !sess.session) {
+  let { data: sess, error: se } = await signInOnce();
+
+  if ((se || !sess?.session) && shadowPw) {
+    const uid = await findAuthUserIdByEmail(admin, email);
+    if (uid) {
+      const newPw = randomPassword();
+      const { error: ue } = await admin.auth.admin.updateUserById(uid, {
+        password: newPw,
+        email_confirm: true,
+      });
+      if (!ue) {
+        shadowPw = newPw;
+        user.supabaseShadowPassword = newPw;
+        await store.setJSON(verifiedUserKey(email), user);
+        ({ data: sess, error: se } = await signInOnce());
+      }
+    }
+  }
+
+  if (se || !sess?.session) {
     console.warn('[supabase-session-mint] signIn', se);
     return {
       statusCode: 500,
