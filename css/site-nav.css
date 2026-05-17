@@ -5,7 +5,7 @@
 
 .site-nav {
   display: grid;
-  grid-template-columns: minmax(0, auto) minmax(0, 1fr) minmax(0, auto);
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) minmax(max-content, auto);
   align-items: center;
   gap: 0.65rem 1rem;
   padding: 0.75rem max(1.25rem, env(safe-area-inset-right, 0px)) 0.65rem max(1.25rem, env(safe-area-inset-left, 0px));
@@ -108,13 +108,14 @@
   justify-content: flex-end;
   gap: 0.45rem 0.75rem;
   flex-wrap: wrap;
-  min-width: 0;
+  min-width: max-content;
 }
 
 .site-nav__auth {
   display: flex;
   align-items: center;
   min-height: 2rem;
+  flex-shrink: 0;
 }
 
 /* Cuenta (hubFreemium) */
@@ -383,7 +384,7 @@ a.site-nav__btn {
   color: #0f172a;
 }
 
-/* Idioma: solo texto pequeùo, sin cùpsula */
+/* Idioma: solo texto peque?o, sin c?psula */
 .site-nav .site-nav__lang.hub-lang,
 .site-nav__lang.hub-lang {
   display: inline-flex;

@@ -28,10 +28,6 @@ function badgeText() {
   return t('badgePro', lang() === 'en' ? 'PRO' : 'PRO');
 }
 
-function freeBadgeText() {
-  return t('badgeFree', lang() === 'en' ? 'FREE' : 'GRATIS');
-}
-
 function isProNode(anchor) {
   const href = anchor.getAttribute('href') || '';
   return isProCalculatorPath(href);
@@ -52,19 +48,33 @@ function renderHubProBadges() {
     const current = a.querySelector(':scope > .hub-badge');
     if (current instanceof HTMLElement) current.remove();
 
-    const badge = document.createElement('span');
-    if (FEATURES.publicFreeRelease) {
-      badge.className = 'hub-badge hub-badge--free';
-      badge.textContent = freeBadgeText();
-    } else if (isProNode(a)) {
+    if (isProNode(a)) {
+      const badge = document.createElement('span');
       badge.className = 'hub-badge hub-badge--pro';
       badge.textContent = badgeText();
-    } else {
-      badge.className = 'hub-badge hub-badge--free';
-      badge.textContent = freeBadgeText();
+      a.appendChild(badge);
     }
-    a.appendChild(badge);
   });
+}
+
+function mountAuthFallback(slot) {
+  const wrap = document.createElement('div');
+  wrap.className = 'site-nav__account site-nav__account--anon';
+  wrap.setAttribute('data-auth-fallback', '1');
+
+  const loginA = document.createElement('a');
+  loginA.href = 'index.html?auth=login';
+  loginA.className = 'site-nav__btn site-nav__btn--ghost';
+  loginA.textContent = t('auth.login', lang() === 'en' ? 'Log in' : 'Iniciar sesi\u00f3n');
+
+  const regA = document.createElement('a');
+  regA.href = 'register.html';
+  regA.className = 'site-nav__btn site-nav__btn--register';
+  regA.textContent = t('auth.register', lang() === 'en' ? 'Sign up' : 'Registrarse');
+
+  wrap.appendChild(loginA);
+  wrap.appendChild(regA);
+  slot.replaceChildren(wrap);
 }
 
 function mountHomeAccountControls() {
@@ -123,9 +133,25 @@ function mountHomeAccountControls() {
   applyLoggedInNavChrome();
 }
 
+function ensureHomeAccountControls() {
+  try {
+    mountHomeAccountControls();
+  } catch (err) {
+    console.error('[hubFreemium] mountHomeAccountControls', err);
+    const slot =
+      document.querySelector('#hub-header-auth-slot') || document.querySelector('.site-nav__auth');
+    if (slot instanceof HTMLElement && !getCurrentUser()?.email) mountAuthFallback(slot);
+  }
+  const slot =
+    document.querySelector('#hub-header-auth-slot') || document.querySelector('.site-nav__auth');
+  if (slot instanceof HTMLElement && !slot.childElementCount && !getCurrentUser()?.email) {
+    mountAuthFallback(slot);
+  }
+}
+
 applyPublicFreeReleaseHomeUi();
 renderHubProBadges();
-mountHomeAccountControls();
+ensureHomeAccountControls();
 wirePlansLinksForLoggedInUser();
 
 if (isCreditsSystemEnabled()) {
@@ -157,7 +183,7 @@ if (FEATURES.useServerAuth) {
 window.addEventListener('home-language-changed', () => {
   applyPublicFreeReleaseHomeUi();
   renderHubProBadges();
-  mountHomeAccountControls();
+  ensureHomeAccountControls();
   wirePlansLinksForLoggedInUser();
   const hubRoot = document.getElementById('lab-hub-root');
   if (hubRoot) {

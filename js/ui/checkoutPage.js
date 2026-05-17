@@ -418,13 +418,15 @@ export async function mountCheckoutPage() {
     if (err) err.hidden = true;
   });
 
-  if (stripeBtn) {
-    stripeBtn.hidden = !useStripe;
+  if (stripeBtn instanceof HTMLElement) {
     if (useStripe) {
+      stripeBtn.hidden = false;
       stripeBtn.addEventListener('click', () => {
         if (!assertWithdrawalOrShowError(t)) return;
         window.location.href = FEATURES.stripeCheckoutSessionUrl;
       });
+    } else {
+      stripeBtn.remove();
     }
   }
 

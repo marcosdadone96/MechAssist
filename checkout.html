@@ -45,7 +45,12 @@
       </nav>
       <div class="site-nav__end">
         <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
-        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <div id="hub-header-auth-slot" class="site-nav__auth">
+          <div class="site-nav__account site-nav__account--anon" data-auth-fallback="1">
+            <a class="site-nav__btn site-nav__btn--ghost" href="index.html?auth=login">Iniciar sesión</a>
+            <a class="site-nav__btn site-nav__btn--register" href="register.html">Registrarse</a>
+          </div>
+        </div>
         <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
         <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
           <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>

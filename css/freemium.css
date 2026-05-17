@@ -25,6 +25,14 @@
   padding: 0.22rem 0.52rem;
 }
 
+/* Sin badge GRATIS/FREE en tarjetas (home, hubs, radial legacy) */
+.tier-badge--free,
+.lab-badge--free,
+.hub-badge--free,
+.hub-featured-card__pill {
+  display: none !important;
+}
+
 .tier-badge--pro {
   color: #5b21b6;
   background: linear-gradient(135deg, #f5f3ff 0%, #fefce8 100%);

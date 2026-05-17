@@ -70,7 +70,12 @@
       </nav>
       <div class="site-nav__end">
         <a class="site-nav__link site-nav__link--plans" href="#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
-        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <div id="hub-header-auth-slot" class="site-nav__auth">
+          <div class="site-nav__account site-nav__account--anon" data-auth-fallback="1">
+            <a class="site-nav__btn site-nav__btn--ghost" href="index.html?auth=login" data-i18n="auth.login">Iniciar sesión</a>
+            <a class="site-nav__btn site-nav__btn--register" href="register.html" data-i18n="auth.register">Registrarse</a>
+          </div>
+        </div>
         <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
         <div class="site-nav__lang hub-lang" role="group" aria-label="Language selector" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
           <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
@@ -227,56 +232,48 @@
         <div class="hub-featured__grid">
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--gear" aria-hidden="true">⚙️</div>
-            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.gears.title">Engranajes cilíndricos</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.gears.desc">Define relación y centros en segundos para validar si tu transmisión encaja antes de fabricar.</p>
             <a class="hub-featured-card__cta" href="calc-gears.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--belt" aria-hidden="true">🟦</div>
-            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.belts.title">Correas</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.belts.desc">Compara V, síncrona, plana o Poly-V y obtén una selección rápida para arrancar tu diseño.</p>
             <a class="hub-featured-card__cta" href="calc-belts.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--chain" aria-hidden="true">⛓️</div>
-            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.chains.title">Cadenas y piñones</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.chains.desc">Chequea dientes, paso y riesgo dinámico para evitar vibraciones y sobredimensionado innecesario.</p>
             <a class="hub-featured-card__cta" href="calc-chains.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--bearing" aria-hidden="true">⭕</div>
-            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.bearings.title">Rodamientos</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.bearings.desc">Selecciona por serie y valida vida útil esperada para decidir con mayor seguridad desde el inicio.</p>
             <a class="hub-featured-card__cta" href="calc-bearings-catalog.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--shaft" aria-hidden="true">🧱</div>
-            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.shaft.title">Eje · torsión</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.shaft.desc">Calcula diámetro mínimo y comprueba viabilidad para evitar fallos tempranos por subdimensionado.</p>
             <a class="hub-featured-card__cta" href="calc-shaft.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--spring" aria-hidden="true">🌀</div>
-            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.spring.title">Muelle helicoidal</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.spring.desc">Obtén rigidez y carrera útil rápidamente para pasar de idea a especificación sin perder tiempo.</p>
             <a class="hub-featured-card__cta" href="calc-compression-spring.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--bolt" aria-hidden="true">🔩</div>
-            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.bolts.title">Tornillería ISO 898-1</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.bolts.desc">Define par de apriete y precarga con criterio práctico para montaje confiable y repetible.</p>
             <a class="hub-featured-card__cta" href="calc-bolts-iso898.html" data-i18n="featured.cta">Probar ahora</a>
           </article>
           <article class="hub-featured-card">
             <div class="hub-featured-card__icon hub-featured-card__icon--iso" aria-hidden="true">📏</div>
-            <span class="hub-featured-card__pill tier-badge tier-badge--free" data-i18n="badgeFree">GRATIS</span>
             <h3 class="hub-featured-card__title" data-i18n="featured.iso.title">Ajustes ISO 286</h3>
             <p class="hub-featured-card__desc" data-i18n="featured.iso.desc">Elige ajuste correcto en minutos y evita retrabajos por holguras o interferencias mal definidas.</p>
             <a class="hub-featured-card__cta" href="calc-iso-fit.html" data-i18n="featured.cta">Probar ahora</a>

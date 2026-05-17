@@ -277,8 +277,7 @@ const dict = {
     'aria.machinesHub': 'Abrir listado de m\u00e1quinas y transporte',
     'aria.labHub': 'Abrir laboratorio de transmisi\u00f3n y calculadoras',
     'aria.fluidsHub': 'Abrir listado de hidr\u00e1ulica y neum\u00e1tica',
-    footnote:
-      'Badges: GRATIS (verde) = calculadora incluida en el plan gratuito; PRO (violeta) = requiere suscripci\u00f3n Pro. Pol\u00edtica sujeta a cambios antes del checkout.',
+    footnote: '',
     badgePro: 'PRO',
     badgeFree: 'GRATIS',
     'pricing.title': 'Elige tu plan',
@@ -631,8 +630,7 @@ const dict = {
     'aria.machinesHub': 'Open machine and bulk-handling calculators',
     'aria.labHub': 'Open transmission lab and calculators',
     'aria.fluidsHub': 'Open hydraulic and pneumatic calculators',
-    footnote:
-      'Badges: FREE (green) = included on the free plan; PRO (violet) = requires Pro. Policy may change before checkout.',
+    footnote: '',
     badgePro: 'PRO',
     badgeFree: 'FREE',
     'pricing.title': 'Choose your plan',

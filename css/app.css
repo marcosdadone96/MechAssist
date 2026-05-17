@@ -4979,6 +4979,7 @@ html[data-conveyor-tool='screw'] #screwMotorBlock .motor-card-grid {
   display: grid;
   gap: 1rem;
   margin-top: 0.5rem;
+  align-items: stretch;
 }
 
 @media (min-width: 640px) {
@@ -4988,10 +4989,20 @@ html[data-conveyor-tool='screw'] #screwMotorBlock .motor-card-grid {
 }
 
 .checkout-plan-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   border: 1px solid rgba(148, 163, 184, 0.35);
   border-radius: 14px;
   padding: 1rem 1.05rem 1.15rem;
   background: #fff;
+}
+
+.checkout-plan-card .checkout-actions--subs {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
 .checkout-plan-card--starter {

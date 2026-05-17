@@ -1406,6 +1406,10 @@ a.hub-account__btn--link:hover {
   line-height: 1.35;
 }
 
+.hub-footnote--detail:empty {
+  display: none;
+}
+
 .hub-footnote--detail {
   max-width: min(640px, 100%);
   text-transform: none;

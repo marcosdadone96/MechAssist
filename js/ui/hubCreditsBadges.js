@@ -80,7 +80,9 @@ function applyBadgeToCard(card, state) {
   const en = langEn();
 
   if (state.isGuest) {
-    if (badge instanceof HTMLElement) badge.hidden = false;
+    if (badge instanceof HTMLElement && badge.classList.contains('lab-badge--free')) {
+      badge.hidden = true;
+    }
     return;
   }
 
