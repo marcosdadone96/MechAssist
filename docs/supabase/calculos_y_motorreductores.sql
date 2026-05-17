@@ -1,13 +1,13 @@
 -- =============================================================================
--- TheMechAssist ù calculos_mecanicos + mis_motorreductores (RLS con auth.uid())
+-- TheMechAssist ? calculos_mecanicos + mis_motorreductores (RLS con auth.uid())
 -- Ejecutar en Supabase SQL Editor tras backup si ya hay datos en tablas antiguas.
 --
 -- Requisitos en el cliente:
---   - Sesiùn Supabase Auth (JWT). Tras login Netlify, llamar a
+--   - Sesi?n Supabase Auth (JWT). Tras login Netlify, llamar a
 --     /.netlify/functions/supabase-session-mint para setSession en el navegador.
---   - Sin sesiùn Supabase, anon no tiene permisos sobre estas tablas.
+--   - Sin sesi?n Supabase, anon no tiene permisos sobre estas tablas.
 --
--- Migraciùn desde esquema anterior (email + anon): las filas viejas sin user_id
+-- Migraci?n desde esquema anterior (email + anon): las filas viejas sin user_id
 -- deben backfillearse o borrarse antes de activar triggers NOT NULL.
 -- =============================================================================
 
@@ -57,7 +57,7 @@ AS $$
 BEGIN
   IF tg_op = 'INSERT' THEN
     NEW.owner_user_id := auth.uid();
-    NEW.owner_email := (SELECT email FROM auth.users WHERE id = auth.uid());
+    NEW.owner_email := nullif(trim(coalesce(auth.jwt() ->> 'email', '')), '');
   ELSIF tg_op = 'UPDATE' THEN
     NEW.owner_user_id := OLD.owner_user_id;
     NEW.owner_email := OLD.owner_email;
@@ -80,7 +80,7 @@ AS $$
 BEGIN
   IF tg_op = 'INSERT' THEN
     NEW.user_id := auth.uid();
-    NEW.cuenta_email := (SELECT email FROM auth.users WHERE id = auth.uid());
+    NEW.cuenta_email := nullif(trim(coalesce(auth.jwt() ->> 'email', '')), '');
   ELSIF tg_op = 'UPDATE' THEN
     NEW.user_id := OLD.user_id;
     NEW.cuenta_email := OLD.cuenta_email;
@@ -96,7 +96,7 @@ CREATE TRIGGER tr_mis_motorreductores_set_owner
   EXECUTE FUNCTION public.mis_motorreductores_set_owner();
 
 -- -----------------------------------------------------------------------------
--- 3. RLS (solo authenticated; anon sin polùticas = sin acceso)
+-- 3. RLS (solo authenticated; anon sin pol?ticas = sin acceso)
 -- -----------------------------------------------------------------------------
 ALTER TABLE public.calculos_mecanicos ENABLE ROW LEVEL SECURITY;
 

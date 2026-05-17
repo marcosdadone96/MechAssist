@@ -30,7 +30,8 @@
       data-i18n-attr="content"
       content="Engranajes, correas, cadenas, rodamientos, ejes, chavetas, ajustes ISO, Seeger, acoplamientos y tornillería: calculadoras con diagramas. TheMechAssist."
     />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:title"
       data-i18n="page.transmissionLab.docTitle"
@@ -380,11 +381,11 @@
     <script type="module">
       import { initLabHubCardFilter } from './js/ui/labHubFilter.js';
       import { initLabHubFavorites } from './js/ui/labHubFavorites.js';
-      import { initLabHubCardArt } from './js/ui/labHubCardArt.js';
+      import { initLabHubCardArt } from './js/ui/labHubCardArt.js?v=hub5';
 
       const root = document.getElementById('lab-hub-root');
       if (root) {
-        initLabHubCardArt(root);
+        await initLabHubCardArt(root);
         initLabHubFavorites(root);
         initLabHubCardFilter(root);
         const { applyHubCalcCreditBadges, watchHubCalcCreditBadges } = await import('./js/ui/hubCreditsBadges.js');

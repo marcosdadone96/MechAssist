@@ -15,7 +15,8 @@
     <meta property="og:url" content="https://www.themechassist.com/machines-hub.html" id="mdr-og-url" />
     <meta property="og:title" content="Máquinas y transporte — TheMechAssist" />
     <meta property="og:description" content="Calculadoras para cintas, rodillos, bombas centrífugas, elevadores, tornillo y ascensores: potencias, tensiones y parámetros orientativos." />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Máquinas y transporte — TheMechAssist" />
     <link rel="alternate" hreflang="es" href="https://www.themechassist.com/machines-hub.html" />
     <link rel="alternate" hreflang="en" href="https://www.themechassist.com/machines-hub.html?lang=en" />
@@ -157,11 +158,11 @@
     <script type="module">
       import { initLabHubCardFilter } from './js/ui/labHubFilter.js';
       import { initLabHubFavorites } from './js/ui/labHubFavorites.js';
-      import { initLabHubCardArt } from './js/ui/labHubCardArt.js';
+      import { initLabHubCardArt } from './js/ui/labHubCardArt.js?v=hub5';
 
       const root = document.getElementById('lab-hub-root');
       if (root) {
-        initLabHubCardArt(root);
+        await initLabHubCardArt(root);
         initLabHubFavorites(root);
         initLabHubCardFilter(root);
         const { applyHubCalcCreditBadges, watchHubCalcCreditBadges } = await import('./js/ui/hubCreditsBadges.js');

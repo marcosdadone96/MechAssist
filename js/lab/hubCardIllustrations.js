@@ -3,7 +3,7 @@
  * Mini schematics mirror each calculator diagram (not abstract icons).
  * @typedef {{ theme: string, type: 'svg', svg: string } | { theme: string, type: 'img', src: string, alt?: string }} HubCardArt
  */
-import { HUB_MACHINE_ART_SVG } from './hubMachineArtSvgs.js';
+/** SVG de mùquinas: carga diferida en labHubCardArt.js para no romper el hub si falta el archivo en deploy. */
 
 const HUB_VB = '0 0 160 96';
 const HUB_BG = `<rect width="160" height="96" fill="#f1f5f9"/>`;
@@ -80,9 +80,9 @@ function hubBearingsSvg() {
   </svg>`;
 }
 
-/** @param {string} page */
-function machineCardArt(page) {
-  return { theme: 'machine', type: 'svg', svg: HUB_MACHINE_ART_SVG[page] || HUB_MACHINE_ART_SVG['flat-conveyor.html'] };
+/** @param {string} _page */
+function machineCardArt(_page) {
+  return { theme: 'machine', type: 'svg', svg: '' };
 }
 
 /** @type {Record<string, HubCardArt>} */
@@ -222,8 +222,5 @@ export function normalizeHubCalcId(hrefOrName) {
 export function getHubCardArt(hrefOrName) {
   const key = normalizeHubCalcId(hrefOrName);
   if (key && HUB_CARD_ART[key]) return HUB_CARD_ART[key];
-  if (key && HUB_MACHINE_ART_SVG[key]) {
-    return { theme: 'machine', type: 'svg', svg: HUB_MACHINE_ART_SVG[key] };
-  }
   return HUB_CARD_ART._default;
 }
