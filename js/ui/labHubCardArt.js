@@ -16,7 +16,7 @@ export const MACHINE_HUB_SLUGS = new Set([
   'car-lift-screw.html',
 ]);
 
-const HUB_ART_VERSION = '6';
+const HUB_ART_VERSION = '7';
 
 /** @type {0|1|2|3} 0=default, 1=calc svg, 2=glyph, 3=machine diagram */
 const ART_TIER = {
@@ -53,12 +53,18 @@ function calcIdFromHref(href) {
  * @param {import('../lab/hubCardIllustrations.js').HubCardArt} cfg
  * @param {Record<string, string>} machineArt
  */
+function isMachineHubSlug(calcId) {
+  const id = normalizeHubCalcId(calcId);
+  return Boolean(id && MACHINE_HUB_SLUGS.has(id));
+}
+
 function resolveCardArt(calcId, cfg, machineArt) {
-  const machineSvg = calcId && machineArt[calcId];
+  const id = normalizeHubCalcId(calcId);
+  const machineSvg = id && machineArt[id];
   if (machineSvg) {
     return { theme: 'machine', type: 'svg', svg: machineSvg };
   }
-  if (MACHINE_HUB_SLUGS.has(calcId)) {
+  if (isMachineHubSlug(calcId)) {
     return { theme: 'machine', type: 'svg', svg: '' };
   }
   return cfg;
@@ -71,11 +77,12 @@ function resolveCardArt(calcId, cfg, machineArt) {
  * @returns {0|1|2|3}
  */
 function targetArtTier(calcId, cfg, machineArt) {
-  const machineSvg = calcId && machineArt[calcId];
+  const id = normalizeHubCalcId(calcId);
+  const machineSvg = id && machineArt[id];
   if (machineSvg && preparedDiagramHasShapes(prepareHubDiagramSvg(machineSvg))) {
     return ART_TIER.machineDiagram;
   }
-  if (MACHINE_HUB_SLUGS.has(calcId)) return ART_TIER.glyph;
+  if (isMachineHubSlug(calcId)) return ART_TIER.glyph;
   if (cfg.type === 'svg' && cfg.svg) return ART_TIER.calcSvg;
   return ART_TIER.default;
 }
@@ -148,8 +155,7 @@ function mountSvgInDiagram(diagram, rawSvg) {
  * @param {string} [theme]
  */
 function mountGlyphInDiagram(diagram, calcId, theme) {
-  const glyphTheme =
-    MACHINE_HUB_SLUGS.has(calcId) || theme === 'machine' ? 'machine' : theme;
+  const glyphTheme = isMachineHubSlug(calcId) || theme === 'machine' ? 'machine' : theme;
   const wrap = document.createElement('span');
   wrap.className = 'lab-card--hub__glyph';
   wrap.innerHTML = getHubMinimalGlyph(calcId, glyphTheme);
@@ -163,8 +169,9 @@ function mountGlyphInDiagram(diagram, calcId, theme) {
  * @param {Record<string, string>} machineArt
  */
 function fillDiagram(diagram, cfg, calcId, machineArt) {
-  if (MACHINE_HUB_SLUGS.has(calcId)) {
-    const machineSvg = machineArt[calcId];
+  const id = normalizeHubCalcId(calcId);
+  if (isMachineHubSlug(calcId)) {
+    const machineSvg = id && machineArt[id];
     if (machineSvg && mountSvgInDiagram(diagram, machineSvg)) return;
     mountGlyphInDiagram(diagram, calcId, 'machine');
     return;
@@ -182,8 +189,7 @@ function fillDiagram(diagram, cfg, calcId, machineArt) {
 
   const resolved = resolveCardArt(calcId, cfg, machineArt);
   const svgRaw =
-    (calcId && machineArt[calcId]) ||
-    (resolved.type === 'svg' && resolved.svg ? resolved.svg : '');
+    (id && machineArt[id]) || (resolved.type === 'svg' && resolved.svg ? resolved.svg : '');
 
   if (svgRaw && mountSvgInDiagram(diagram, svgRaw)) return;
 

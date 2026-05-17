@@ -31,7 +31,9 @@ function buildBlock(title, description, canonical) {
   const d = escAttr(description);
   const c = escAttr(canonical || '');
   return `    <meta name="description" content="${d}" />
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
+    <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
     <link rel="canonical" href="${c}" id="mdr-canonical" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${c}" id="mdr-og-url" />

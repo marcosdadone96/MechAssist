@@ -212,7 +212,13 @@ export function normalizeHubCalcId(hrefOrName) {
     }
     key = key.split('/').pop() || key;
   }
-  return key.split('?')[0].split('#')[0];
+  key = key.split('?')[0].split('#')[0];
+  if (!key || key === '_soon') return key;
+  // Netlify pretty URLs sirven /calc-gears sin .html; el catálogo usa calc-gears.html
+  if (!key.endsWith('.html') && !key.includes('.')) {
+    return `${key}.html`;
+  }
+  return key;
 }
 
 /**

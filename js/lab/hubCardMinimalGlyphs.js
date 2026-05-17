@@ -34,9 +34,11 @@ export const HUB_MINIMAL_GLYPHS = {
   _default: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="24" cy="24" r="12" stroke="currentColor" stroke-width="1.75"/><path d="M24 14v20M14 24h20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/></svg>`,
 };
 
+import { normalizeHubCalcId } from './hubCardIllustrations.js';
+
 /** @param {string} hrefOrName @param {string} [theme] */
 export function getHubMinimalGlyph(hrefOrName, theme) {
-  const key = String(hrefOrName || '').trim();
+  const key = normalizeHubCalcId(hrefOrName);
   if (HUB_MINIMAL_GLYPHS[key]) return HUB_MINIMAL_GLYPHS[key];
   if (theme === 'machine') return HUB_MINIMAL_GLYPHS._machine;
   if (key === '_soon') return HUB_MINIMAL_GLYPHS._soon;
