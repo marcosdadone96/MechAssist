@@ -14,7 +14,7 @@
 import { FEATURES } from '../config/features.js';
 import { calcSlugFromPath, isCreditsSystemEnabled } from '../config/credits.js';
 import { hasProductionProSessionCache } from './proEntitlement.js';
-import { getCachedCreditsState } from './creditsApi.js';
+import { getCachedCreditsState, isCalcSlugUnlocked } from './creditsApi.js';
 import { getCurrentUser } from './localAuth.js';
 
 /** Atajos Pro solo-navegador desactivados (licencia local, URL, usos prueba). */
@@ -188,10 +188,9 @@ function hasCreditsUnlimitedAccess() {
 
 function hasCreditsCalcUnlockForCurrentPage() {
   if (!isCreditsSystemEnabled()) return false;
-  const c = getCachedCreditsState();
-  if (!c?.calcUnlocked) return false;
   const slug = calcSlugFromPath();
-  return Boolean(slug && slug !== 'unknown');
+  if (!slug || slug === 'unknown') return false;
+  return isCalcSlugUnlocked(slug, getCachedCreditsState());
 }
 
 export function isPremiumEffective() {

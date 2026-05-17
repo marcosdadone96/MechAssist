@@ -1,8 +1,9 @@
 /**
  * UI: barra de creditos, modales de paywall.
  */
-import { isCreditsSystemEnabled } from '../config/credits.js';
-import { fetchCreditsBalance, getCachedCreditsState } from '../services/creditsApi.js';
+import { calcSlugFromPath, isCreditsSystemEnabled } from '../config/credits.js';
+import { fetchCreditsBalance, getCachedCreditsState, isCalcSlugUnlocked } from '../services/creditsApi.js';
+import { buildCalcUnlockCheckoutUrl } from '../services/calcUnlockCheckout.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { FEATURES } from '../config/features.js';
 
@@ -46,14 +47,20 @@ export function showCreditsModal(opts) {
 export function showNoCreditsModal() {
   const en = langEn();
   const checkout = FEATURES.proCheckoutPagePath || 'checkout.html';
+  const slug = calcSlugFromPath();
+  const unlockHref = slug && slug !== 'unknown' ? buildCalcUnlockCheckoutUrl(slug) : `${checkout}#unlock`;
+  const unlockLabel = en ? 'Unlock this calculator (\u20ac1/mo)' : 'Desbloquear esta calculadora (1 \u20ac/mes)';
   showCreditsModal({
     title: en ? 'Credits used up' : 'Cr\u00e9ditos agotados',
     body: en
-      ? 'You have used your free credits in this area. Subscribe from \u20ac9/month, unlock a single calculator for \u20ac1, or choose unlimited access at \u20ac25/month.'
-      : 'Has agotado los cr\u00e9ditos gratuitos en esta \u00e1rea. Suscr\u00edbete desde 9 \u20ac/mes, desbloquea una calculadora por 1 \u20ac o elige acceso ilimitado por 25 \u20ac/mes.',
-    primaryLabel: en ? 'View plans' : 'Ver planes',
+      ? 'Choose independently: Starter (\u20ac9/mo, credits + PDF allowance), Unlimited (\u20ac25/mo, everything), or unlock only this calculator (\u20ac1/mo, unlimited use here for 30 days).'
+      : 'Elija de forma independiente: Starter (9 \u20ac/mes, cr\u00e9ditos + PDF), Ilimitado (25 \u20ac/mes, todo) o solo esta calculadora (1 \u20ac/mes, uso ilimitado aqu\u00ed durante 30 d\u00edas).',
+    primaryLabel: en ? 'Subscriptions (9 / 25 \u20ac)' : 'Suscripciones (9 / 25 \u20ac)',
     primaryHref: checkout,
-    secondaryLabel: en ? 'Close' : 'Cerrar',
+    secondaryLabel: unlockLabel,
+    onSecondary: () => {
+      window.location.href = unlockHref;
+    },
   });
 }
 
@@ -80,6 +87,15 @@ function renderBarContent(bar, state, pool) {
     bar.innerHTML = en
       ? '<span class="credits-bar__badge">Unlimited</span> Full access active'
       : '<span class="credits-bar__badge">Ilimitado</span> Acceso completo activo';
+    bar.hidden = false;
+    return;
+  }
+  const slug = calcSlugFromPath();
+  if (slug && isCalcSlugUnlocked(slug, state)) {
+    bar.className = 'credits-bar credits-bar--unlimited';
+    bar.innerHTML = en
+      ? '<span class="credits-bar__badge">Unlocked</span> Unlimited on this calculator (30 days)'
+      : '<span class="credits-bar__badge">Desbloqueada</span> Uso ilimitado en esta calculadora (30 d\u00edas)';
     bar.hidden = false;
     return;
   }
@@ -120,7 +136,8 @@ export async function mountCreditsBar(pool = 'lab') {
     renderBarContent(bar, cached, pool);
   }
 
-  const data = await fetchCreditsBalance().catch(() => null);
+  const slug = calcSlugFromPath();
+  const data = await fetchCreditsBalance(slug && slug !== 'unknown' ? slug : '').catch(() => null);
   if (data?.ok) renderBarContent(bar, data, pool);
 }
 

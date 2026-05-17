@@ -1,5 +1,5 @@
 /**
- * Ledger de crÈditos por usuario (Netlify Blobs, store mechassist-pro).
+ * Ledger de crùditos por usuario (Netlify Blobs, store mechassist-pro).
  */
 const crypto = require('crypto');
 const { normalizeEmail, emailBlobKey } = require('./proEntitlementLogic.js');
@@ -82,6 +82,22 @@ function calcUnlockActive(rec, calcSlug) {
   if (!until) return false;
   const t = Date.parse(until);
   return Number.isFinite(t) && Date.now() < t;
+}
+
+/**
+ * Slugs con desbloqueo activo ? fecha ISO de caducidad.
+ * @param {import('./creditsLogic.js').CreditsRecord} rec
+ * @returns {Record<string, string>}
+ */
+function activeCalcUnlocks(rec) {
+  /** @type {Record<string, string>} */
+  const out = {};
+  const now = Date.now();
+  for (const [slug, until] of Object.entries(rec.calcUnlocks || {})) {
+    const t = Date.parse(until);
+    if (Number.isFinite(t) && now < t) out[slug] = String(until);
+  }
+  return out;
 }
 
 function resetPdfMonthIfNeeded(rec) {
@@ -338,4 +354,5 @@ module.exports = {
   applySubscription,
   applyCalcUnlock,
   calcSlugFromCustomData,
+  activeCalcUnlocks,
 };

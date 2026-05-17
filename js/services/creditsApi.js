@@ -47,6 +47,8 @@ export async function fetchCreditsBalance(calcSlug = '') {
   const data = await res.json().catch(() => ({}));
   if (!res.ok || !data.ok) return { ok: false, error: data.error || 'balance' };
 
+  if (calcSlug) data.calcSlug = calcSlug;
+
   try {
     localStorage.setItem(LS_BALANCE, JSON.stringify(data));
     localStorage.setItem(LS_BALANCE_AT, String(Date.now()));
@@ -109,6 +111,23 @@ export async function consumeCredits(req) {
     }
   }
   return data;
+}
+
+/**
+ * @param {string} slug
+ * @param {ReturnType<typeof getCachedCreditsState>} [state]
+ */
+export function isCalcSlugUnlocked(slug, state = getCachedCreditsState()) {
+  const s = String(slug || '').trim();
+  if (!s || !state) return false;
+  if (state.unlimited) return true;
+  if (state.calcSlug === s && state.calcUnlocked) return true;
+  const map = state.unlockedCalcs;
+  if (!map || typeof map !== 'object') return false;
+  const until = map[s];
+  if (!until) return false;
+  const t = Date.parse(until);
+  return Number.isFinite(t) && Date.now() < t;
 }
 
 export function clearCreditsCache() {

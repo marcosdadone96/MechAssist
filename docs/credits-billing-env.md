@@ -23,6 +23,18 @@ Tras activar `publicFreeRelease: false` y `credits.enabled: true` en `js/config/
 
 En checkout Lemon, añadir campo personalizado `calc_slug` (ej. `calc-gears.html`) en productos de desbloqueo.
 
+## Modelo de negocio (independiente)
+
+| Producto | Precio | Efecto |
+|----------|--------|--------|
+| **Starter** | 9 €/mes (79 €/año) | Suscripción: créditos + hasta 30 PDF/mes |
+| **Ilimitado** | 25 €/mes | Suscripción: sin gastar créditos en todo el sitio |
+| **Desbloqueo** | 1 €/mes por calculadora | **Sin suscripción**: uso ilimitado solo en esa URL durante ~30 días |
+
+El desbloqueo puntual usa `LEMON_VARIANT_CALC_UNLOCK_IDS` (distinto de Starter/Ilimitado). El webhook `order_created` llama a `applyCalcUnlock` con el `calc_slug` del pedido.
+
+En cliente: `FEATURES.lemonCheckout.calcUnlock` (URL base Lemon) y `buildCalcUnlockCheckoutUrl(slug)` en `js/services/calcUnlockCheckout.js`.
+
 ## Funciones
 
 - `credits-balance` (GET, Bearer sesión)

@@ -1166,6 +1166,24 @@ a.lab-badge--unlock:hover {
   color: #9a3412;
 }
 
+a.lab-badge--unlock-mini {
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  padding: 0.1rem 0.38rem;
+  color: #78716c;
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(148, 163, 184, 0.45);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+a.lab-badge--unlock-mini:hover {
+  color: #9a3412;
+  background: #fffbeb;
+  border-color: #fdba74;
+}
+
 .lab-badge--beta {
   background: #ffedd5;
   color: #9a3412;
@@ -4155,6 +4173,18 @@ a.lab-badge--unlock:hover {
     box-shadow: inset 0 0 0 1px rgba(71, 85, 105, 0.45);
   }
 
+  .lab-body--hub a.lab-badge--unlock-mini {
+    color: #a8a29e;
+    background: rgba(15, 23, 42, 0.88);
+    border-color: rgba(100, 116, 139, 0.5);
+  }
+
+  .lab-body--hub a.lab-badge--unlock-mini:hover {
+    color: #fdba74;
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(251, 146, 60, 0.45);
+  }
+
   .lab-body--hub .lab-card--hub__visual--canvas {
     background: #020617;
   }
@@ -5131,13 +5161,16 @@ a.lab-badge--unlock:hover {
   letter-spacing: 0.06em;
 }
 
-.lab-card--hub--minimal a.lab-badge--unlock {
-  font-size: 0.56rem;
-  padding: 0.14rem 0.42rem;
-  max-width: calc(100% - 6.5rem);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.lab-card--hub--minimal .lab-card--hub__visual {
+  position: relative;
+}
+
+.lab-card--hub--minimal .lab-card--hub__visual .lab-badge--unlock-mini {
+  top: auto;
+  bottom: 0.28rem;
+  right: 0.28rem;
+  left: auto;
+  margin: 0;
 }
 
 a.lab-card--hub--minimal:hover .lab-card--hub__chev {

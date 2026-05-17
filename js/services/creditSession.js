@@ -8,7 +8,12 @@ import {
   isCreditsSystemEnabled,
 } from '../config/credits.js';
 import { FEATURES } from '../config/features.js';
-import { consumeCredits, fetchCreditsBalance, getCachedCreditsState } from './creditsApi.js';
+import {
+  consumeCredits,
+  fetchCreditsBalance,
+  getCachedCreditsState,
+  isCalcSlugUnlocked,
+} from './creditsApi.js';
 import { getCurrentUser } from './localAuth.js';
 
 const SS_PREFIX = 'mdr-credit-session:';
@@ -28,7 +33,7 @@ export async function ensureCalcSessionCharged() {
   const sessionMs = Number(FEATURES.credits?.calcSessionMs) || 12 * 60 * 1000;
 
   const cached = getCachedCreditsState();
-  if (cached?.unlimited || cached?.calcUnlocked) return { allowed: true };
+  if (cached?.unlimited || isCalcSlugUnlocked(calcSlug, cached)) return { allowed: true };
 
   const sessionKey = `${SS_PREFIX}${pool}:${calcSlug}`;
   let session = null;
@@ -90,7 +95,7 @@ export async function ensurePdfExportCharged() {
   const costs = getCreditCosts();
 
   const cached = getCachedCreditsState();
-  if (cached?.unlimited) return { allowed: true };
+  if (cached?.unlimited || isCalcSlugUnlocked(calcSlug, cached)) return { allowed: true };
   if (cached?.starter && (cached.balance?.pdfCountMonth ?? 0) < (cached.balance?.limits?.starterPdfPerMonth ?? 30)) {
     /* starter: primeros PDF del mes sin crditos si bajo lmite  servidor decide */
   }

@@ -12,13 +12,14 @@ function buildDiagramInner(cfg, calcId) {
   if (cfg.type === 'img') {
     return `<img src="${cfg.src}" alt="${cfg.alt || ''}" loading="lazy" decoding="async" />`;
   }
+  if (cfg.type === 'svg' && cfg.svg) {
+    const prepared = prepareHubDiagramSvg(cfg.svg);
+    if (prepared) return prepared;
+  }
   const theme =
     cfg.theme === 'machine' ? 'machine' : cfg.theme === 'fluid' ? 'fluid' : undefined;
   const glyph = getHubMinimalGlyph(calcId, theme);
-  if (glyph) {
-    return `<span class="lab-card--hub__glyph">${glyph}</span>`;
-  }
-  return prepareHubDiagramSvg(cfg.svg);
+  return `<span class="lab-card--hub__glyph">${glyph}</span>`;
 }
 
 /**
@@ -42,7 +43,7 @@ function prepareHubDiagramSvg(raw) {
  * @param {string} calcId
  */
 function applyMinimalCard(card, cfg, calcId) {
-  if (card.dataset.hubArtReady === '1') return;
+  if (card.dataset.hubArtReady === '2') return;
 
   const badge = card.querySelector('.lab-badge');
   const title = card.querySelector('h3');
@@ -73,7 +74,7 @@ function applyMinimalCard(card, cfg, calcId) {
 
   card.classList.add('lab-card--hub--minimal');
   card.classList.remove('lab-card--hub--illustrated');
-  card.dataset.hubArtReady = '1';
+  card.dataset.hubArtReady = '2';
 }
 
 /**

@@ -75,7 +75,10 @@
         </div>
         <p id="coWithdrawalError" class="register-error" hidden role="alert"></p>
 
-        <div class="checkout-actions">
+        <section class="checkout-plan-block" aria-labelledby="coSubsHeading">
+          <h2 class="checkout-plan-block__title" id="coSubsHeading">Suscripciones</h2>
+          <p class="checkout-plan-block__hint muted" id="coSubsHint"></p>
+          <div class="checkout-actions checkout-actions--subs">
           <button type="button" class="button button--accent" id="coPayStripe" hidden>Pagar</button>
           <a
             id="coLemonMonthly"
@@ -96,8 +99,21 @@
             data-lemon-squeezy
             hidden
             >Ilimitado &#8212; 25 &#8364;/mes</a>
-          <p class="register-card__terms checkout-credits-note" id="coCreditsNote" hidden></p>
-        </div>
+          </div>
+        </section>
+
+        <section class="checkout-plan-block checkout-plan-block--unlock" id="coUnlockBlock" hidden aria-labelledby="coUnlockHeading">
+          <h2 class="checkout-plan-block__title" id="coUnlockHeading">Solo una calculadora</h2>
+          <p class="checkout-plan-block__hint muted" id="coUnlockHint"></p>
+          <div class="checkout-unlock-row">
+            <label class="checkout-unlock-row__label" for="coUnlockCalc">Elija la calculadora</label>
+            <select id="coUnlockCalc" class="checkout-unlock-row__select"></select>
+            <button type="button" class="button button--ghost checkout-unlock-row__btn" id="coUnlockCalcBtn">
+              Desbloquear por 1 &#8364;/mes
+            </button>
+          </div>
+        </section>
+        <p class="register-card__terms checkout-credits-note" id="coCreditsNote" hidden></p>
         <p class="register-card__terms" id="coLegalLinks"></p>
         <section id="coManageSub" class="checkout-manage" aria-labelledby="coManageTitle" hidden>
           <h2 id="coManageTitle" class="checkout-manage__title"></h2>

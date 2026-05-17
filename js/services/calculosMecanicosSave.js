@@ -6,28 +6,12 @@
 import { supabase } from '../../scripts/supabaseClient.mjs';
 import { getCurrentUser } from './localAuth.js';
 import { FEATURES } from '../config/features.js';
-import { syncSupabaseSessionFromNetlifyJwt } from './supabaseSessionSync.js';
+import { ensureSupabaseAuthUser } from './supabaseSessionSync.js';
 import { showToast } from '../ui/labToast.js';
 
 /** Tabla `calculos_mecanicos` en Supabase (nombre f�sico sin acentos). */
 export const CALCULOS_TABLE = 'calculos_mecanicos';
 
-/**
- * Sesion Supabase (RLS) o null si no hay usuario en Supabase Auth.
- * @returns {Promise<{ user: import('@supabase/supabase-js').User | null }>}
- */
-async function ensureSupabaseUserForCalculos() {
-  const u = getCurrentUser();
-  if (!FEATURES.useSupabaseRLS) return { user: null };
-  let { data: authData } = await supabase.auth.getUser();
-  let user = authData?.user ?? null;
-  if (!user && u?.serverAuth && u?.authToken) {
-    await syncSupabaseSessionFromNetlifyJwt();
-    ({ data: authData } = await supabase.auth.getUser());
-    user = authData?.user ?? null;
-  }
-  return { user };
-}
 
 /**
  * Recoge inputs con id en el �mbito (misma idea que machineConfigMount.collectFormState).
@@ -112,7 +96,7 @@ export async function insertCalculoMecanico(opts) {
 
   try {
     if (FEATURES.useSupabaseRLS) {
-      const { user } = await ensureSupabaseUserForCalculos();
+      const { user } = await ensureSupabaseAuthUser();
       if (!user) {
         showToast(
           langEs()
@@ -182,7 +166,7 @@ export async function listMyCalculosMecanicos(opts = {}) {
   }
 
   try {
-    const { user } = await ensureSupabaseUserForCalculos();
+    const { user } = await ensureSupabaseAuthUser();
     if (!user) {
       return { ok: false, rows: [], reason: 'no_session' };
     }
@@ -235,7 +219,7 @@ export async function deleteCalculoMecanicoById(id, opts = {}) {
   if (!rid) return { ok: false };
 
   try {
-    const { user } = await ensureSupabaseUserForCalculos();
+    const { user } = await ensureSupabaseAuthUser();
     if (!user) {
       if (!silent) {
         showToast(

@@ -3,7 +3,8 @@
  */
 import { FEATURES } from '../config/features.js';
 import { creditPoolFromPath, isCreditsSystemEnabled } from '../config/credits.js';
-import { getCachedCreditsState, fetchCreditsBalance } from '../services/creditsApi.js';
+import { getCachedCreditsState, fetchCreditsBalance, isCalcSlugUnlocked } from '../services/creditsApi.js';
+import { buildCalcUnlockCheckoutUrl } from '../services/calcUnlockCheckout.js';
 import { getCurrentUser } from '../services/localAuth.js';
 
 const CREDITS_CHANGED = 'mdr-credits-changed';
@@ -25,6 +26,15 @@ function poolFromHubRoot(root) {
 
 /**
  * @param {HTMLAnchorElement} card
+ * @returns {HTMLElement}
+ */
+function badgeHostForCard(card) {
+  const visual = card.querySelector('.lab-card--hub__visual');
+  return visual instanceof HTMLElement ? visual : card;
+}
+
+/**
+ * @param {HTMLAnchorElement} card
  */
 function calcSlugFromCard(card) {
   const href = card.getAttribute('href') || '';
@@ -35,18 +45,6 @@ function calcSlugFromCard(card) {
   }
 }
 
-/**
- * @param {string} calcSlug
- */
-function calcUnlockHref(calcSlug) {
-  const lemon = String(FEATURES.lemonCheckout?.calcUnlock || '').trim();
-  if (lemon) {
-    const u = lemon.includes('?') ? lemon : `${lemon}?`;
-    const sep = lemon.includes('?') && !lemon.endsWith('?') ? '&' : '';
-    return `${lemon}${sep}calc_slug=${encodeURIComponent(calcSlug)}`;
-  }
-  return `checkout.html?calc=${encodeURIComponent(calcSlug)}`;
-}
 
 /**
  * @param {'lab'|'machines'|'fluids'} pool
@@ -93,13 +91,22 @@ function applyBadgeToCard(card, state) {
 
   if (state.showUnlock) {
     const slug = calcSlugFromCard(card);
+    if (isCalcSlugUnlocked(slug, getCachedCreditsState())) {
+      if (badge instanceof HTMLElement) badge.hidden = true;
+      return;
+    }
+    const host = badgeHostForCard(card);
     if (!badge) {
       badge = document.createElement('a');
-      card.appendChild(badge);
     }
-    badge.className = 'lab-badge lab-badge--unlock';
-    badge.href = calcUnlockHref(slug);
-    badge.textContent = en ? 'Unlock \u00b7 \u20ac1' : 'Desbloquear \u00b7 1 \u20ac';
+    if (badge.parentElement !== host) {
+      host.appendChild(badge);
+    }
+    badge.className = 'lab-badge lab-badge--unlock lab-badge--unlock-mini';
+    badge.href = buildCalcUnlockCheckoutUrl(slug);
+    badge.textContent = en ? '\u20ac1' : '1 \u20ac';
+    badge.setAttribute('title', en ? 'Unlock this calculator (\u20ac1)' : 'Desbloquear esta calculadora (1 \u20ac)');
+    badge.setAttribute('aria-label', badge.getAttribute('title') || '');
     badge.hidden = false;
     badge.removeAttribute('data-i18n');
     return;

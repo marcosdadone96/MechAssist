@@ -17,6 +17,8 @@ import {
 import { canUseGearmotorCloudSave } from '../services/accessTier.js';
 import { isPremiumViaQueryProUiAllowed, isPublicFreeRelease } from '../config/features.js';
 import { getCurrentUser } from '../services/localAuth.js';
+import { initUserCloudSync } from '../services/userCloudSync.js';
+import { FEATURES } from '../config/features.js';
 import { startProCheckoutFlow, buildRegisterUrlWithNextCheckout } from '../services/proCheckoutFlow.js';
 import { BRANDS } from '../data/gearmotorCatalog.js';
 
@@ -670,6 +672,9 @@ async function boot() {
   applyStaticCopy();
   wireGearmotorPageHandlers();
   try {
+    if (FEATURES.useServerAuth && getCurrentUser()?.authToken) {
+      await initUserCloudSync();
+    }
     await ensureGearmotorsCacheLoaded();
   } catch (_) {
     flashStatus(t('loadCloudErr'), 'warn');

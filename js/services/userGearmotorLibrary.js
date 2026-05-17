@@ -5,7 +5,10 @@
 
 import { buildManualGearmotorModel } from '../modules/motorVerify.js';
 import { getCurrentUser } from './localAuth.js';
-import { supabase } from '../../scripts/supabaseClient.mjs';
+import {
+  ensureSupabaseAuthUser,
+  supabaseSessionSyncErrorMessage,
+} from './supabaseSessionSync.js';
 import {
   fetchMisMotorreductoresRows,
   insertMisMotorreductorRow,
@@ -49,11 +52,26 @@ export function takeLastGearmotorCloudErrorMessage() {
 }
 
 function setLastGearmotorCloudError(err) {
+  if (typeof err === 'string' && err.trim()) {
+    lastGearmotorCloudErrorMessage = err.trim();
+    return;
+  }
   if (err && typeof err === 'object' && 'message' in err) {
     lastGearmotorCloudErrorMessage = String(/** @type {{ message?: string }} */ (err).message || '');
   } else {
     lastGearmotorCloudErrorMessage = '';
   }
+}
+
+/**
+ * @returns {Promise<import('@supabase/supabase-js').User | null>}
+ */
+async function requireSupabaseUserForGearmotors() {
+  const { user, syncReason } = await ensureSupabaseAuthUser();
+  if (!user && syncReason) {
+    setLastGearmotorCloudError(supabaseSessionSyncErrorMessage(syncReason));
+  }
+  return user;
 }
 
 /** @type {UserGearmotorRecord[]} */
@@ -72,7 +90,7 @@ function notifyGearmotorChanged(detail = {}) {
  * @returns {Promise<void>}
  */
 export async function refreshUserGearmotorsFromCloud() {
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await requireSupabaseUserForGearmotors();
   if (!user) {
     gearmotorCache = [];
     notifyGearmotorChanged({ replace: true });
@@ -140,7 +158,7 @@ export function getUserGearmotor(id) {
  * @returns {Promise<UserGearmotorRecord | null>}
  */
 export async function addUserGearmotor(p) {
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await requireSupabaseUserForGearmotors();
   if (!user) return null;
 
   const motor_kW = Number(p.motor_kW);
@@ -167,6 +185,8 @@ export async function addUserGearmotor(p) {
  */
 export async function removeUserGearmotor(id) {
   if (!id) return false;
+  const user = await requireSupabaseUserForGearmotors();
+  if (!user) return false;
   setLastGearmotorCloudError(null);
   const del = await deleteMisMotorreductorRow(id);
   if (del.error) setLastGearmotorCloudError(del.error);
@@ -183,6 +203,8 @@ export async function removeUserGearmotor(id) {
  */
 export async function updateUserGearmotor(id, p) {
   if (!id) return null;
+  const user = await requireSupabaseUserForGearmotors();
+  if (!user) return null;
 
   const motor_kW = Number(p.motor_kW);
   const n2_rpm = Number(p.n2_rpm);
@@ -227,8 +249,8 @@ export function buildSavedGearmotorModel(entry) {
  * @returns {Promise<() => void>}
  */
 export async function subscribeUserGearmotorsRealtime(onAfterRefresh) {
-  const { data: { session } } = await supabase.auth.getSession();
-  const uid = session?.user?.id;
+  const user = await requireSupabaseUserForGearmotors();
+  const uid = user?.id;
   if (!uid) return () => {};
 
   return subscribeMisMotorreductoresRealtime(uid, async () => {

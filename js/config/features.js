@@ -202,19 +202,24 @@ export const FEATURES = Object.freeze({
     starterPdfLimitPerMonth: 30,
     /** Duración de sesión de cálculo facturada (ms) — un cargo por ventana. */
     calcSessionMs: 12 * 60 * 1000,
+    /** Días de uso ilimitado en una calculadora tras compra puntual (1 €). */
+    calcUnlockDays: 31,
     /** Guardar motorreductores en nube sin suscripción Pro (cuenta verificada). */
     allowRegisteredGearmotorSave: true,
   }),
 
   /**
    * Enlaces Lemon Squeezy (checkout/buy/{uuid}). Vacío = botón oculto en checkout.html.
-   * Desbloqueo calculadora: producto con campo personalizado `calc_slug` (p. ej. calc-gears.html).
+   * Desbloqueo 1 €: producto one-time/sub independiente; campo `calc_slug` o plantilla {{calc_slug}}.
+   * En Netlify: LEMON_VARIANT_CALC_UNLOCK_IDS (distinto de Starter/Ilimitado).
    */
   lemonCheckout: Object.freeze({
     starterMonthly: 'https://mechassist.lemonsqueezy.com/checkout/buy/acd30d30-72e7-4434-827e-e51487e492ca',
     starterAnnual: 'https://mechassist.lemonsqueezy.com/checkout/buy/bfd83e87-ac81-46ad-a5cf-2c2c94b1d70d',
     unlimitedMonthly: '',
-    calcUnlock: '',
+    /** Desbloqueo 1 €/mes por calculadora (campo Lemon: calc_slug) */
+    calcUnlock:
+      'https://mechassist.lemonsqueezy.com/checkout/buy/3e5a7c0f-4faf-47fd-aede-0a6488ef5f40?checkout[custom][calc_slug]={{calc_slug}}',
   }),
 
   monetization: Object.freeze({

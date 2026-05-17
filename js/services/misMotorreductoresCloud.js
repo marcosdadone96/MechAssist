@@ -50,6 +50,25 @@ export const TABLE_MR_FOLDERS = 'mis_motorreductores_folders';
 
 /** PostgREST embed por FK folder_id — requiere migración mis_mr_brand_folders.sql */
 const SELECT_MR_EMBED = '*, folder:mis_motorreductores_folders!folder_id(brand_id)';
+const SELECT_MR_PLAIN = '*';
+
+/**
+ * Tabla/carpeta o embed aún no desplegados en Supabase.
+ * @param {unknown} error
+ */
+function isMissingRelationOrEmbedError(error) {
+  if (!error || typeof error !== 'object') return false;
+  const e = /** @type {Record<string, unknown>} */ (error);
+  const code = String(e.code || '');
+  const msg = String(e.message || '').toLowerCase();
+  if (code === 'PGRST200' || code === 'PGRST204' || code === '42P01') return true;
+  return (
+    msg.includes('relationship') ||
+    msg.includes('mis_motorreductores_folders') ||
+    msg.includes('schema cache') ||
+    msg.includes('could not find')
+  );
+}
 
 /** @typedef {import('./userGearmotorLibrary.js').UserGearmotorRecord} UserGearmotorRecord */
 
@@ -147,10 +166,17 @@ export function mapRowToUserRecord(row) {
  * @returns {Promise<UserGearmotorRecord[]>}
  */
 export async function fetchMisMotorreductoresRows() {
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from(TABLE_MIS_MOTORREDUCTORES)
     .select(SELECT_MR_EMBED)
     .order('created_at', { ascending: false });
+
+  if (error && isMissingRelationOrEmbedError(error)) {
+    ({ data, error } = await supabase
+      .from(TABLE_MIS_MOTORREDUCTORES)
+      .select(SELECT_MR_PLAIN)
+      .order('created_at', { ascending: false }));
+  }
 
   if (error) {
     if (isUnauthorizedOrExpiredJwt(error)) {
@@ -205,7 +231,62 @@ function payloadToInsertRow(p, folderUuid) {
 async function resolveFolderForPayload(p) {
   const bid = p.brandId != null ? String(p.brandId).trim() : '';
   if (!bid) return { folderId: null, error: null };
-  return ensureBrandFolderForBrand(bid);
+  const resolved = await ensureBrandFolderForBrand(bid);
+  if (resolved.error && isMissingRelationOrEmbedError(resolved.error)) {
+    return { folderId: null, error: null };
+  }
+  return resolved;
+}
+
+/**
+ * @param {Record<string, unknown>} row
+ */
+function rowWithoutFolderId(row) {
+  const copy = { ...row };
+  copy.folder_id = null;
+  return copy;
+}
+
+/**
+ * @param {import('@supabase/supabase-js').PostgrestFilterBuilder<any, any, any>} qb
+ * @param {Record<string, unknown>} row
+ */
+async function insertRowWithSelectFallback(qb, row) {
+  let { data, error } = await qb.insert(row).select(SELECT_MR_EMBED).single();
+  if (!error) return { data, error };
+
+  if (!isMissingRelationOrEmbedError(error)) return { data, error };
+
+  let attempt = row;
+  if (attempt.folder_id) attempt = rowWithoutFolderId(attempt);
+  ({ data, error } = await supabase.from(TABLE_MIS_MOTORREDUCTORES).insert(attempt).select(SELECT_MR_PLAIN).single());
+  return { data, error };
+}
+
+/**
+ * @param {string} id
+ * @param {Record<string, unknown>} patch
+ */
+async function updateRowWithSelectFallback(id, patch) {
+  let { data, error } = await supabase
+    .from(TABLE_MIS_MOTORREDUCTORES)
+    .update(patch)
+    .eq('id', id)
+    .select(SELECT_MR_EMBED)
+    .single();
+  if (!error) return { data, error };
+
+  if (!isMissingRelationOrEmbedError(error)) return { data, error };
+
+  let attempt = patch;
+  if (attempt.folder_id) attempt = rowWithoutFolderId(patch);
+  ({ data, error } = await supabase
+    .from(TABLE_MIS_MOTORREDUCTORES)
+    .update(attempt)
+    .eq('id', id)
+    .select(SELECT_MR_PLAIN)
+    .single());
+  return { data, error };
 }
 
 /**
@@ -217,11 +298,10 @@ export async function insertMisMotorreductorRow(p) {
   if (fe) return { record: null, error: fe };
 
   const row = payloadToInsertRow(p, folderId);
-  const { data, error } = await supabase
-    .from(TABLE_MIS_MOTORREDUCTORES)
-    .insert(row)
-    .select(SELECT_MR_EMBED)
-    .single();
+  const { data, error } = await insertRowWithSelectFallback(
+    supabase.from(TABLE_MIS_MOTORREDUCTORES),
+    row,
+  );
 
   if (error) {
     console.warn('[mis_motorreductores] insert', error);
@@ -247,13 +327,7 @@ export async function updateMisMotorreductorRow(id, p) {
   if (fe) return { record: null, error: fe };
 
   const patch = payloadToInsertRow(p, folderId);
-
-  const { data, error } = await supabase
-    .from(TABLE_MIS_MOTORREDUCTORES)
-    .update(patch)
-    .eq('id', id)
-    .select(SELECT_MR_EMBED)
-    .single();
+  const { data, error } = await updateRowWithSelectFallback(id, patch);
 
   if (error) {
     console.warn('[mis_motorreductores] update', error);

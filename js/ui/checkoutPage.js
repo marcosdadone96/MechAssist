@@ -8,6 +8,7 @@ import { getCurrentUser } from '../services/localAuth.js';
 import { grantProLicensePersistent } from '../services/accessTier.js';
 import { claimAndVerifyProAfterCheckout } from '../services/proEntitlement.js';
 import { buildRegisterUrlWithNextCheckout, getHomeLang } from '../services/proCheckoutFlow.js';
+import { buildCalcUnlockCheckoutUrl } from '../services/calcUnlockCheckout.js';
 
 function getLang() {
   return getHomeLang();
@@ -21,12 +22,19 @@ const TX = {
     eyebrow: 'TheMechAssist',
     title: 'Planes y cr\u00e9ditos',
     lead:
-      'Registrado: 100 cr\u00e9ditos de bienvenida por \u00e1rea (laboratorio, m\u00e1quinas, hidr\u00e1ulica). Cada sesi\u00f3n de c\u00e1lculo (~12 min) y cada PDF consumen 10 cr\u00e9ditos. Elija Starter (9 \u20ac/mes, PDF incluidos), Ilimitado (25 \u20ac/mes) o desbloquee una calculadora por 1 \u20ac/mes.',
+      'Tres opciones independientes: suscripci\u00f3n Starter (9 \u20ac/mes), plan Ilimitado (25 \u20ac/mes) o desbloqueo de una sola calculadora (1 \u20ac/mes, uso ilimitado en esa herramienta durante 30 d\u00edas). No necesita suscripci\u00f3n para el desbloqueo puntual.',
+    subsHeading: 'Suscripciones',
+    subsHint: 'Starter: cr\u00e9ditos de bienvenida renovados con el plan y hasta 30 PDF/mes. Ilimitado: sin consumir cr\u00e9ditos.',
+    unlockHeading: 'Solo una calculadora',
+    unlockHint:
+      '1 \u20ac/mes por calculadora elegida. Uso ilimitado (c\u00e1lculos y PDF) en esa p\u00e1gina durante 30 d\u00edas. Puede combinar varias compras puntuales sin contratar Starter.',
+    unlockPick: 'Elija la calculadora',
+    unlockBtn: 'Desbloquear por 1 \u20ac/mes',
+    unlockFor: (name) => `Desbloquear: ${name}`,
     starterMonthly: 'Starter \u2014 9 \u20ac/mes',
     starterAnnual: 'Starter anual \u2014 79 \u20ac/a\u00f1o',
     unlimitedMonthly: 'Ilimitado \u2014 25 \u20ac/mes',
-    creditsNote:
-      'Desbloqueo puntual (~1 \u20ac): configure el producto Lemon con el campo personalizado calc_slug (p. ej. calc-gears.html).',
+    creditsNote: '',
     signedAs: (name, email) => `Sesion: ${name} (${email})`,
     stripeBtn: 'Pagar con tarjeta (Stripe)',
     monthlyPlan: 'Starter \u2014 9 \u20ac/mes',
@@ -68,12 +76,19 @@ const TX = {
     eyebrow: 'TheMechAssist',
     title: 'Plans & credits',
     lead:
-      'Registered users get 100 welcome credits per area (lab, machines, hydraulics). Each calc session (~12 min) and each PDF costs 10 credits. Pick Starter (\u20ac9/mo with PDF allowance), Unlimited (\u20ac25/mo) or unlock one calculator for \u20ac1/month.',
+      'Three independent options: Starter subscription (\u20ac9/mo), Unlimited plan (\u20ac25/mo), or unlock a single calculator (\u20ac1/mo, unlimited use on that tool for 30 days). No subscription required for pay-per-calculator.',
+    subsHeading: 'Subscriptions',
+    subsHint: 'Starter: plan credits and up to 30 PDFs/month. Unlimited: no credit spend.',
+    unlockHeading: 'Single calculator only',
+    unlockHint:
+      '\u20ac1/month per calculator. Unlimited calc and PDF on that page for 30 days. Stack multiple unlocks without Starter.',
+    unlockPick: 'Pick a calculator',
+    unlockBtn: 'Unlock for \u20ac1/month',
+    unlockFor: (name) => `Unlock: ${name}`,
     starterMonthly: 'Starter \u2014 \u20ac9/month',
     starterAnnual: 'Starter annual \u2014 \u20ac79/year',
     unlimitedMonthly: 'Unlimited \u2014 \u20ac25/month',
-    creditsNote:
-      'Single-calculator unlock (~\u20ac1): set Lemon custom field calc_slug (e.g. calc-gears.html) on the product.',
+    creditsNote: '',
     signedAs: (name, email) => `Signed in: ${name} (${email})`,
     stripeBtn: 'Pay with card (Stripe)',
     monthlyPlan: 'Starter \u2014 \u20ac9/month',
@@ -190,11 +205,16 @@ function applyTx(t) {
   if (m) m.textContent = t.starterMonthly || t.monthlyPlan;
   if (ann) ann.textContent = t.starterAnnual || t.annualPlan;
   if (unl) unl.textContent = t.unlimitedMonthly || 'Ilimitado';
+  set('coSubsHeading', t.subsHeading);
+  set('coSubsHint', t.subsHint);
+  set('coUnlockHeading', t.unlockHeading);
+  set('coUnlockHint', t.unlockHint);
+  const pickLbl = document.querySelector('label[for="coUnlockCalc"]');
+  if (pickLbl) pickLbl.textContent = t.unlockPick;
+  const unlockBtn = document.getElementById('coUnlockCalcBtn');
+  if (unlockBtn) unlockBtn.textContent = t.unlockBtn;
   const note = document.getElementById('coCreditsNote');
-  if (note && t.creditsNote) {
-    note.textContent = t.creditsNote;
-    note.hidden = false;
-  }
+  if (note) note.hidden = true;
   const bh = document.getElementById('coBackHome');
   if (bh) bh.textContent = t.backHome;
   const legal = document.getElementById('coLegalLinks');
@@ -247,10 +267,12 @@ export async function mountCheckoutPage() {
   try {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('paid') === '1') {
-      grantProLicensePersistent();
-      const user = getCurrentUser();
-      if (FEATURES.proClientPolicy === 'production') {
-        await claimAndVerifyProAfterCheckout(user?.email);
+      if (!isCreditsSystemEnabled()) {
+        grantProLicensePersistent();
+        const user = getCurrentUser();
+        if (FEATURES.proClientPolicy === 'production') {
+          await claimAndVerifyProAfterCheckout(user?.email);
+        }
       }
       const path = window.location.pathname || '/checkout.html';
       history.replaceState({}, '', path);
@@ -278,8 +300,14 @@ export async function mountCheckoutPage() {
   }
 
   if (isCreditsSystemEnabled()) {
-    const { refreshCreditsAfterAuth } = await import('../services/creditsApi.js');
+    const { refreshCreditsAfterAuth, fetchCreditsBalance } = await import('../services/creditsApi.js');
+    const unlockSlug = new URLSearchParams(window.location.search).get('unlock') || '';
+    await fetchCreditsBalance(unlockSlug).catch(() => {});
     await refreshCreditsAfterAuth().catch(() => {});
+    mountCalcUnlockCheckoutBlock(t, unlockSlug);
+    if (window.location.hash === '#unlock') {
+      document.getElementById('coUnlockBlock')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   if (paidCheckoutComplete) {
@@ -335,6 +363,14 @@ export async function mountCheckoutPage() {
     }
   }
 
+  document.getElementById('coUnlockCalcBtn')?.addEventListener('click', () => {
+    if (!assertWithdrawalOrShowError(t)) return;
+    const sel = document.getElementById('coUnlockCalc');
+    const slug = sel instanceof HTMLSelectElement ? sel.value : '';
+    if (!slug) return;
+    window.location.href = buildCalcUnlockCheckoutUrl(slug);
+  });
+
   ['coLemonMonthly', 'coLemonAnnual', 'coLemonUnlimited'].forEach((id) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -354,5 +390,59 @@ export async function mountCheckoutPage() {
       window.location.reload();
     });
     btn.classList.toggle('hub-lang__btn--active', btn.getAttribute('data-co-lang') === lang);
+  });
+}
+
+/** Calculadoras habituales para desbloqueo puntual. */
+const UNLOCK_CALC_OPTIONS = [
+  { slug: 'calc-gears.html', es: 'Engranajes', en: 'Spur gears' },
+  { slug: 'calc-belts.html', es: 'Correas', en: 'Belts' },
+  { slug: 'calc-bearings.html', es: 'Rodamientos L10', en: 'Bearings L10' },
+  { slug: 'calc-shaft.html', es: 'Eje a torsi\u00f3n', en: 'Shaft torsion' },
+  { slug: 'flat-conveyor.html', es: 'Cinta plana', en: 'Flat conveyor' },
+  { slug: 'inclined-conveyor.html', es: 'Cinta inclinada', en: 'Inclined conveyor' },
+  { slug: 'calc-hydraulic-cylinder.html', es: 'Cilindro hidr\u00e1ulico', en: 'Hydraulic cylinder' },
+  { slug: 'transmission-canvas.html', es: 'Lienzo multieje', en: 'Multi-shaft canvas' },
+];
+
+/**
+ * @param {typeof TX.es} t
+ * @param {string} preselect
+ */
+function mountCalcUnlockCheckoutBlock(t, preselect = '') {
+  const block = document.getElementById('coUnlockBlock');
+  const sel = document.getElementById('coUnlockCalc');
+  if (!(block instanceof HTMLElement) || !(sel instanceof HTMLSelectElement)) return;
+
+  block.hidden = false;
+  const en = getLang() === 'en';
+  sel.innerHTML = '';
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = t.unlockPick;
+  sel.appendChild(placeholder);
+
+  for (const opt of UNLOCK_CALC_OPTIONS) {
+    const o = document.createElement('option');
+    o.value = opt.slug;
+    o.textContent = en ? opt.en : opt.es;
+    sel.appendChild(o);
+  }
+
+  const fromUrl = String(preselect || '').trim();
+  if (fromUrl && [...sel.options].some((o) => o.value === fromUrl)) {
+    sel.value = fromUrl;
+  }
+
+  const btn = document.getElementById('coUnlockCalcBtn');
+  if (btn instanceof HTMLButtonElement && sel.value) {
+    const label = sel.selectedOptions[0]?.textContent || sel.value;
+    btn.textContent = typeof t.unlockFor === 'function' ? t.unlockFor(label) : t.unlockBtn;
+  }
+  sel.addEventListener('change', () => {
+    if (!(btn instanceof HTMLButtonElement)) return;
+    const label = sel.selectedOptions[0]?.textContent || '';
+    btn.textContent =
+      sel.value && typeof t.unlockFor === 'function' ? t.unlockFor(label) : t.unlockBtn;
   });
 }

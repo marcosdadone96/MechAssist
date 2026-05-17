@@ -1,5 +1,5 @@
 /**
- * GET — saldo de créditos y suscripción del usuario autenticado.
+ * GET  saldo de crditos y suscripcin del usuario autenticado.
  */
 const { getProStore } = require('./lib/blobStore.js');
 const { verifyJwt } = require('./lib/proJwt.js');
@@ -9,6 +9,7 @@ const {
   publicBalance,
   calcUnlockActive,
   subscriptionActive,
+  activeCalcUnlocks,
 } = require('./lib/creditsLogic.js');
 
 function corsHeaders(event) {
@@ -61,7 +62,8 @@ exports.handler = async (event) => {
   await ensureWelcomeCredits(store, email);
   const { rec } = await loadRecord(store, email);
 
-  const calcSlug = event.queryStringParameters?.calcSlug || '';
+  const calcSlug = String(event.queryStringParameters?.calcSlug || '').trim().slice(0, 80);
+  const unlockedCalcs = activeCalcUnlocks(rec);
   const unlockedCalc = calcSlug ? calcUnlockActive(rec, calcSlug) : false;
 
   return {
@@ -73,6 +75,8 @@ exports.handler = async (event) => {
       unlimited: subscriptionActive(rec) && rec.subscription === 'unlimited',
       starter: subscriptionActive(rec) && rec.subscription === 'starter',
       calcUnlocked: unlockedCalc,
+      calcSlug: calcSlug || undefined,
+      unlockedCalcs,
     }),
   };
 };
