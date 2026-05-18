@@ -91,7 +91,53 @@
           </div>
         </div>
 
-        <form id="registerForm" class="register-form" novalidate>
+        <div id="registerAuthPanels" class="register-auth-panels" hidden>
+          <div class="register-auth-tabs" role="tablist" aria-label="Cuenta">
+            <button type="button" class="register-auth-tabs__btn is-active" data-reg-auth-tab="register" role="tab" aria-selected="true" data-reg-tx="tabRegister">
+              Crear cuenta
+            </button>
+            <button type="button" class="register-auth-tabs__btn" data-reg-auth-tab="login" role="tab" aria-selected="false" data-reg-tx="tabLogin">
+              Iniciar sesi&oacute;n
+            </button>
+          </div>
+
+          <div id="registerNotice" class="register-notice" role="status" aria-live="polite" hidden></div>
+
+          <form id="registerLoginForm" class="register-form register-form--login" data-reg-auth-panel="login" hidden novalidate>
+            <h1 class="register-card__title" data-reg-tx="loginHeading">Iniciar sesi&oacute;n</h1>
+            <p class="register-card__lead" data-reg-tx="loginLead">
+              Accede con el correo y la contrase&ntilde;a de tu cuenta verificada.
+            </p>
+            <div id="registerLoginError" class="register-error" role="alert" aria-live="polite" hidden></div>
+            <div class="field-grid field-grid--essential register-form__fields">
+              <div class="field">
+                <label for="regLoginEmail">
+                  <span data-reg-part="emailLabel">Correo electr&oacute;nico</span>
+                </label>
+                <input id="regLoginEmail" name="email" type="email" autocomplete="username" required maxlength="120" />
+              </div>
+              <div class="field">
+                <label for="regLoginPassword">
+                  <span data-reg-part="pwLabel">Contrase&ntilde;a</span>
+                </label>
+                <input
+                  id="regLoginPassword"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                  minlength="8"
+                  maxlength="128"
+                />
+              </div>
+            </div>
+            <div class="register-card__actions register-card__actions--submit">
+              <button type="submit" class="button button--primary" data-reg-tx="loginSubmit">Entrar</button>
+              <a class="button button--ghost" href="index.html" data-reg-tx="linkHome">Inicio</a>
+            </div>
+          </form>
+
+        <form id="registerForm" class="register-form" data-reg-auth-panel="register" novalidate>
           <h1 class="register-card__title" data-reg-tx="heading">Crear cuenta</h1>
           <p class="register-card__lead" data-reg-tx="lead"></p>
 
@@ -161,6 +207,7 @@
             <a class="button button--ghost" href="index.html" data-reg-tx="linkHome">Inicio</a>
           </div>
         </form>
+        </div>
       </div>
     </main>
 

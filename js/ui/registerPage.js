@@ -3,7 +3,8 @@
  */
 
 import { FEATURES } from '../config/features.js';
-import { registerAccount, getCurrentUser, clearLocalUser } from '../services/accountAuth.js';
+import { registerAccount, loginAccount, getCurrentUser, clearLocalUser } from '../services/accountAuth.js';
+import { consumeSessionEndedReason } from '../services/authSessionClient.js';
 import { refreshCreditsAfterAuth, clearCreditsCache } from '../services/creditsApi.js';
 import { getRegisterNextPath } from '../services/proCheckoutFlow.js';
 
@@ -91,6 +92,14 @@ const TX = {
     verifyInvalid: 'El enlace de verificaci\u00f3n no es v\u00e1lido o ya se us\u00f3.',
     verifyExpired: 'El enlace ha caducado. Vuelva a registrarse.',
     verifyMissing: 'Falta el token de verificaci\u00f3n.',
+    tabRegister: 'Crear cuenta',
+    tabLogin: 'Iniciar sesi\u00f3n',
+    loginHeading: 'Iniciar sesi\u00f3n',
+    loginLead: 'Accede con el correo y la contrase\u00f1a de tu cuenta verificada.',
+    loginSubmit: 'Entrar',
+    sessionRevoked:
+      'Tu sesi\u00f3n se cerr\u00f3 porque iniciaste sesi\u00f3n en otro dispositivo. Vuelve a iniciar sesi\u00f3n.',
+    sessionExpired: 'Tu sesi\u00f3n ha expirado. Por favor, inicia sesi\u00f3n de nuevo.',
   },
   en: {
     docTitle: 'Register \u2014 TheMechAssist',
@@ -164,6 +173,14 @@ const TX = {
     verifyInvalid: 'This verification link is invalid or was already used.',
     verifyExpired: 'This link has expired. Please register again.',
     verifyMissing: 'Verification token is missing.',
+    tabRegister: 'Create account',
+    tabLogin: 'Sign in',
+    loginHeading: 'Sign in',
+    loginLead: 'Use your verified email and password.',
+    loginSubmit: 'Sign in',
+    sessionRevoked:
+      'Your session ended because you signed in on another device. Please sign in again.',
+    sessionExpired: 'Your session has expired. Please sign in again.',
   },
 };
 
@@ -195,6 +212,11 @@ function applyTx() {
   setTx('continueCheckout', t.continueCheckout);
   setTx('pendingTitle', t.pendingTitle);
   setTx('pendingLead', t.pendingLead);
+  setTx('tabRegister', t.tabRegister);
+  setTx('tabLogin', t.tabLogin);
+  setTx('loginHeading', t.loginHeading);
+  setTx('loginLead', t.loginLead);
+  setTx('loginSubmit', t.loginSubmit);
 
   document.querySelectorAll('[data-reg-part]').forEach((el) => {
     const key = el.getAttribute('data-reg-part');
@@ -251,37 +273,60 @@ function applyTx() {
   if (signedLead && user) signedLead.textContent = t.signedInLead(user.name);
 }
 
-function showError(msg) {
-  const el = document.getElementById('registerError');
+function showError(msg, targetId = 'registerError') {
+  const el = document.getElementById(targetId);
   if (!el) return;
   el.textContent = msg || '';
   el.hidden = !msg;
 }
 
+function showNotice(msg) {
+  const el = document.getElementById('registerNotice');
+  if (!el) return;
+  el.textContent = msg || '';
+  el.hidden = !msg;
+}
+
+/**
+ * @param {'register'|'login'} mode
+ */
+function setAuthMode(mode) {
+  const registerForm = document.getElementById('registerForm');
+  const loginForm = document.getElementById('registerLoginForm');
+  const isLogin = mode === 'login';
+  if (registerForm instanceof HTMLElement) registerForm.hidden = isLogin;
+  if (loginForm instanceof HTMLElement) loginForm.hidden = !isLogin;
+  document.querySelectorAll('[data-reg-auth-tab]').forEach((btn) => {
+    if (!(btn instanceof HTMLButtonElement)) return;
+    const on = btn.getAttribute('data-reg-auth-tab') === mode;
+    btn.classList.toggle('is-active', on);
+    btn.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+}
+
+function wireAuthTabs() {
+  document.querySelectorAll('[data-reg-auth-tab]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const mode = btn.getAttribute('data-reg-auth-tab');
+      if (mode === 'login' || mode === 'register') setAuthMode(mode);
+    });
+  });
+}
+
+function showAuthPanels() {
+  const wrap = document.getElementById('registerAuthPanels');
+  if (wrap instanceof HTMLElement) wrap.hidden = false;
+}
+
 export function mountRegisterPage() {
-  // Mostrar aviso si la sesión expiró
   try {
-    const expiredMsg = sessionStorage.getItem('mdr-session-expired-msg');
-    if (expiredMsg) {
-      sessionStorage.removeItem('mdr-session-expired-msg');
-      // Busca el contenedor de mensajes de error/aviso que ya existe en la página
-      // (el mismo que muestra errores de login). Si no existe, crea un banner.
-      const msgEl =
-        document.getElementById('registerError') ||
-        document.getElementById('registerMsg') ||
-        document.getElementById('loginMsg') ||
-        document.querySelector('.register-msg, .login-msg, [data-msg]');
-      if (msgEl) {
-        msgEl.textContent = expiredMsg;
-        msgEl.style.color = '#92400e';
-        msgEl.style.background = '#fef3c7';
-        msgEl.style.padding = '0.6rem 1rem';
-        msgEl.style.borderRadius = '6px';
-        msgEl.style.marginBottom = '1rem';
-        msgEl.hidden = false;
-      }
-    }
-  } catch (_) {}
+    document.documentElement.removeAttribute('data-guest-calc');
+    import('./calcInputLock.js').then((m) => {
+      m.unlockCalcInputs(document);
+    });
+  } catch (_) {
+    /* ignore */
+  }
 
   applyTx();
 
@@ -300,9 +345,19 @@ export function mountRegisterPage() {
   else if (verifyParam === 'expired') showError(t.verifyExpired);
   else if (verifyParam === 'missing') showError(t.verifyMissing);
 
+  const sessionEnded = consumeSessionEndedReason();
+  if (sessionEnded) {
+    showNotice(sessionEnded === 'revoked' ? t.sessionRevoked : t.sessionExpired);
+  }
+
+  const authParam = params.get('auth');
+  const preferLogin =
+    authParam === 'login' || params.get('session') === 'replaced' || params.get('session') === 'expired';
+
   const user = getCurrentUser();
 
   if (user) {
+    document.getElementById('registerAuthPanels')?.setAttribute('hidden', '');
     if (form) form.hidden = true;
     if (success) success.hidden = true;
     if (pending) pending.hidden = true;
@@ -315,6 +370,7 @@ export function mountRegisterPage() {
   }
 
   if (params.get('verified') === '1') {
+    document.getElementById('registerAuthPanels')?.setAttribute('hidden', '');
     if (form) form.hidden = true;
     if (pending) pending.hidden = true;
     if (signedIn) signedIn.hidden = true;
@@ -331,6 +387,30 @@ export function mountRegisterPage() {
   if (signedIn) signedIn.hidden = true;
   if (success) success.hidden = true;
   if (pending) pending.hidden = true;
+
+  showAuthPanels();
+  wireAuthTabs();
+  setAuthMode(preferLogin ? 'login' : 'register');
+
+  const loginForm = document.getElementById('registerLoginForm');
+  loginForm?.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    showError('', 'registerLoginError');
+    const email = document.getElementById('regLoginEmail')?.value ?? '';
+    const password = document.getElementById('regLoginPassword')?.value ?? '';
+    try {
+      await loginAccount({ email, password }, { lang });
+      await refreshCreditsAfterAuth();
+      const nextPath = getRegisterNextPath();
+      if (nextPath && nextPath !== 'register.html') {
+        window.location.href = nextPath;
+        return;
+      }
+      window.location.href = 'index.html';
+    } catch (e) {
+      showError(String(e?.message || e), 'registerLoginError');
+    }
+  });
 
   form?.addEventListener('submit', async (ev) => {
     ev.preventDefault();
@@ -355,6 +435,7 @@ export function mountRegisterPage() {
       const result = await registerAccount({ name, email, password }, { lang });
 
       if (result && result.pendingVerification) {
+        document.getElementById('registerAuthPanels')?.setAttribute('hidden', '');
         if (form) form.hidden = true;
         if (success) success.hidden = true;
         if (pending) pending.hidden = false;
@@ -368,6 +449,7 @@ export function mountRegisterPage() {
         window.location.href = FEATURES.publicFreeRelease ? 'transmission-lab.html' : nextPath;
         return;
       }
+      document.getElementById('registerAuthPanels')?.setAttribute('hidden', '');
       if (form) form.hidden = true;
       if (pending) pending.hidden = true;
       if (success) success.hidden = false;

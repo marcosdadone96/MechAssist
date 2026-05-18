@@ -54,9 +54,18 @@ function showGuestRegisterModal() {
 /**
  * Inicializa modo visitante en calculadoras y maquinas.
  */
+function isAuthAccountPage() {
+  const file = (location.pathname.split('/').pop() || '').toLowerCase();
+  if (file === 'register.html' || file === 'checkout.html') return true;
+  return Boolean(
+    document.querySelector('main.register-page, main.checkout-page, #registerForm, #registerLoginForm'),
+  );
+}
+
 export function initGuestCalcMode() {
   if (!isCreditsSystemEnabled()) return;
   if (getCurrentUser()?.email) return;
+  if (isAuthAccountPage()) return;
 
   const root =
     document.querySelector('main.lab-main') ||

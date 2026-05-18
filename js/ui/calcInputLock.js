@@ -3,7 +3,7 @@
  */
 
 export const CALC_LOCK_NAV_ALLOW =
-  '.site-nav, .hub-lang, .guest-calc-banner, .no-credits-lock-banner, #credits-balance-bar, .credits-modal-backdrop, [data-credits-allow], [data-no-credits-allow]';
+  '.site-nav, .hub-lang, .guest-calc-banner, .no-credits-lock-banner, #credits-balance-bar, .credits-modal-backdrop, [data-credits-allow], [data-no-credits-allow], .register-form, .register-panel, #registerForm, #registerLoginForm, .register-auth-tabs';
 
 /**
  * @param {ParentNode} panel
