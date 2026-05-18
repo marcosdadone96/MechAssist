@@ -94,6 +94,41 @@ function wearMultiplier(abrasive, corrosive) {
   return a * c;
 }
 
+/** Velocidades máximas CEMA orientativas por diámetro de tornillo (mm → rpm). */
+export const SCREW_MAX_RPM_CEMA = {
+  150: 170,
+  200: 150,
+  250: 120,
+  315: 100,
+  400: 80,
+  500: 65,
+  630: 50,
+};
+
+/**
+ * Interpola o usa el valor más cercano de la tabla CEMA para el diámetro dado (mm).
+ * @param {number} Dmm
+ */
+export function cemaMaxRpmForDiameter_mm(Dmm) {
+  const keys = Object.keys(SCREW_MAX_RPM_CEMA)
+    .map(Number)
+    .sort((a, b) => a - b);
+  const D = Number(Dmm);
+  if (!Number.isFinite(D) || D <= 0) return SCREW_MAX_RPM_CEMA[keys[0]] ?? 50;
+  if (D <= keys[0]) return SCREW_MAX_RPM_CEMA[keys[0]];
+  const last = keys[keys.length - 1];
+  if (D >= last) return SCREW_MAX_RPM_CEMA[last];
+  for (let i = 0; i < keys.length - 1; i++) {
+    const a = keys[i];
+    const b = keys[i + 1];
+    if (D >= a && D <= b) {
+      const t = (D - a) / (b - a);
+      return Math.round(SCREW_MAX_RPM_CEMA[a] + t * (SCREW_MAX_RPM_CEMA[b] - SCREW_MAX_RPM_CEMA[a]));
+    }
+  }
+  return SCREW_MAX_RPM_CEMA[last];
+}
+
 /**
  * RPM máximo orientativo (desgaste / fluidización) según Ø y abrasividad.
  * @param {number} D_m

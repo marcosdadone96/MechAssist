@@ -14,4 +14,9 @@ export const COMPRESSION_SPRING_EN = {
   'spring.mat.bronze': 'Phosphor bronze',
   'spring.summaryFull': 'Full results',
   'spring.copyResults': 'Copy results',
+  'spring.labelTier': 'Report detail level',
+  'spring.optBasic': 'Classroom (basic)',
+  'spring.optProject': 'Project (\u03c4 adm. + note + PDF)',
+  'spring.labelTauAdm': '\u03c4\u209b\u209c\u209a manual static (MPa)',
+  'spring.seoSummary': 'Extended context and usage notes',
 };

@@ -196,7 +196,7 @@
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
-            <label for="teKcw"><span data-te-for="lblKcw" data-i18n="teConv.lblKcw"></span> <span class="info-chip" data-te-chip="kcw">?</span></label>
+            <label for="teKcw"><span data-te-for="lblKcw" data-i18n="teConv.lblKcw">Fracci&oacute;n de Q en contrapeso &oacute;ptimo</span> <span class="info-chip" data-te-chip="kcw">?</span></label>
             <input id="teKcw" type="number" step="0.05" min="0.35" max="0.55" value="0.45" />
             <p class="field-context muted" id="teHintKcw">típ. 0,40–0,50 → <em>M</em><sub>cp</sub> ≈ <em>M</em><sub>c</sub> + <em>k</em>·<em>Q</em></p>
           </div>
@@ -217,7 +217,7 @@
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
-            <label for="teD"><span data-te-for="lblD" data-i18n="teConv.lblD"></span> <span class="info-chip" data-te-chip="d">?</span></label>
+            <label for="teD"><span data-te-for="lblD" data-i18n="teConv.lblD">&Oslash; primitivo polea tractora</span> <span class="info-chip" data-te-chip="d">?</span></label>
             <div class="flat-field__num">
               <input id="teD" type="number" step="0.05" min="0.2" value="0.55" />
               <span class="field-hint">m</span>
@@ -225,7 +225,7 @@
             <p class="field-context muted"><span data-te-rec="d"></span></p>
           </div>
           <div class="field">
-            <label for="teAlpha"><span data-te-for="lblAlpha" data-i18n="teConv.lblAlpha"></span> <span class="info-chip" data-te-chip="alpha">?</span></label>
+            <label for="teAlpha"><span data-te-for="lblAlpha" data-i18n="teConv.lblAlpha">&Aacute;ngulo de abrazamiento</span> <span class="info-chip" data-te-chip="alpha">?</span></label>
             <div class="flat-field__num">
               <input id="teAlpha" type="number" step="5" min="90" max="360" value="180" />
               <span class="field-hint">°</span>
@@ -233,7 +233,7 @@
             <p class="field-context muted"><span data-te-rec="alpha"></span></p>
           </div>
           <div class="field">
-            <label for="teMu"><span data-te-for="lblMu" data-i18n="teConv.lblMu"></span> <span class="info-chip" data-te-chip="mu">?</span></label>
+            <label for="teMu"><span data-te-for="lblMu" data-i18n="teConv.lblMu">Coef. fricci&oacute;n cable&ndash;canal &mu;</span> <span class="info-chip" data-te-chip="mu">?</span></label>
             <div class="flat-field__num">
               <input id="teMu" type="number" step="0.01" min="0.05" max="0.25" value="0.1" />
               <span class="field-hint"><span id="teHintMu"></span></span>
@@ -241,7 +241,7 @@
             <p class="field-context muted"><span data-te-rec="mu"></span></p>
           </div>
           <div class="field">
-            <label for="teMaxN"><span data-te-for="lblMaxN" data-i18n="teConv.lblMaxN"></span> <span class="info-chip" data-te-chip="maxN">?</span></label>
+            <label for="teMaxN"><span data-te-for="lblMaxN" data-i18n="teConv.lblMaxN">M&aacute;x. cables / tiras</span> <span class="info-chip" data-te-chip="maxN">?</span></label>
             <div class="flat-field__num">
               <input id="teMaxN" type="number" step="1" min="2" max="16" value="8" />
               <span class="field-hint"><span id="teHintMaxn">límite diseño</span></span>
@@ -350,7 +350,7 @@
             </p>
             <div class="verify-grid">
               <div class="field">
-                <label for="teVerifyBrand"><span data-te-for="lblVBrand" data-i18n="teConv.lblVBrand"></span> <span class="info-chip" data-te-chip="vBrand">?</span></label>
+                <label for="teVerifyBrand"><span data-te-for="lblVBrand" data-i18n="teConv.lblVBrand">Marca</span> <span class="info-chip" data-te-chip="vBrand">?</span></label>
                 <select id="teVerifyBrand" data-verify-brand>
                   <option value="sew">SEW-Eurodrive</option>
                   <option value="siemens">Siemens (Simogear)</option>
@@ -364,7 +364,7 @@
                 <input id="teVerifySearch" type="search" data-verify-search autocomplete="off" />
               </div>
               <div class="field" style="grid-column: 1 / -1">
-                <label for="teVerifyModel"><span data-te-for="lblVModel" data-i18n="teConv.lblVModel"></span> <span class="info-chip" data-te-chip="vModel">?</span></label>
+                <label for="teVerifyModel"><span data-te-for="lblVModel" data-i18n="teConv.lblVModel">Modelo del cat&aacute;logo ejemplo</span> <span class="info-chip" data-te-chip="vModel">?</span></label>
                 <select id="teVerifyModel" data-verify-model size="1"></select>
               </div>
             </div>
@@ -411,8 +411,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">※</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title">Hipótesis del modelo</span>
-                  <span class="motors-details__hint">Supuestos y límites del cálculo orientativo</span>
+                  <span class="motors-details__title" data-i18n="machineHub.assumptionsTitle">Hipótesis del modelo</span>
+                  <span class="motors-details__hint" data-i18n="machineHub.assumptionsHint">Supuestos y límites del cálculo</span>
                 </span>
               </span>
             </summary>

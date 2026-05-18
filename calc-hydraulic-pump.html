@@ -248,7 +248,7 @@
             Desplazamiento, caudal, potencia y pérdidas en tuberías (Darcy simplificado); modos diseño/diagnóstico y alertas orientativas (cavitación, NPSH en modo proyecto).
           </p>
           <details class="lab-calc-seo">
-            <summary>Contexto ampliado y notas de uso</summary>
+            <summary data-i18n="hpump.seoSummary">Contexto ampliado y notas de uso</summary>
             <p class="calc-seo-intro">
           Aquí se enlazan el desplazamiento y el régimen de la bomba con el caudal efectivo, la potencia absorbida y la línea de presión de trabajo, incorporando un balance simplificado de pérdidas en tuberías por fricción según Reynolds y Darcy-Weisbach con visualización del régimen laminar o turbulento. El marco sirve para dimensionar grupos oleohidráulicos móviles y estacionarios antes de confirmar curvas con el fabricante. Es útil para ingenieros de mantenimiento que sustituyen mangueras y racores y necesitan saber si suben las pérdidas locales por culpa del nuevo trazado. Considere validar la temperatura del aceite cuando el circuito se alarga en una prensa que trabaja en tres turnos.
             </p>
@@ -274,11 +274,23 @@
             <div class="hp-diagrams-row">
               <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
                 <p class="lab-diagram-wrap__title">① Bomba hidráulica — corte esquemático</p>
-                <svg id="hpDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema en corte según tipo de bomba"></svg>
+                <svg
+                  id="hpDiagram"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-label="Esquema en corte según tipo de bomba"
+                  data-i18n="hpump.diagAriaLabel"
+                  data-i18n-attr="aria-label"
+                ></svg>
               </div>
               <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
                 <p class="lab-diagram-wrap__title">② Conducciones — mapa de pérdida de carga</p>
-                <svg id="hpPipeDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema de conducción con gradiente de pérdida"></svg>
+                <svg
+                  id="hpPipeDiagram"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-label="Esquema de conducción con gradiente de pérdida"
+                  data-i18n="hpump.pipeDiagAriaLabel"
+                  data-i18n-attr="aria-label"
+                ></svg>
               </div>
             </div>
           </div>
@@ -286,11 +298,11 @@
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field lab-field--wide">
-                <label for="hpLabTier">Nivel de detalle memoria</label>
+                <label for="hpLabTier" data-i18n="hpump.labelTier">Nivel de detalle memoria</label>
                 <div class="hp-tier-row">
                   <select id="hpLabTier">
-                    <option value="basic" selected>Aula (básico)</option>
-                    <option value="project">Proyecto (NPSH + cota depósito)</option>
+                    <option value="basic" selected data-i18n="hpump.optBasic">Aula (básico)</option>
+                    <option value="project" data-i18n="hpump.optProject">Proyecto (NPSH + cota depósito)</option>
                   </select>
                   <span class="hp-tier-badge" id="hpProjectBadge" title="Incluye NPSHa indicativa, cota del depósito y trazabilidad ampliada en memoria/PDF">Pro · Avanzado</span>
                 </div>
@@ -300,27 +312,27 @@
               <div class="lab-field lab-field--wide" id="hpProjectPanel" hidden>
                 <div class="lab-grid lab-grid--2" style="gap:0.65rem">
                   <div class="lab-field">
-                    <label for="hpTankZ_m">Cota líquido sobre entrada bomba z (m)</label>
+                    <label for="hpTankZ_m" data-i18n="hpump.labelTankZ">Cota líquido sobre entrada bomba z (m)</label>
                     <input id="hpTankZ_m" type="number" step="any" value="0" />
                     <span class="hint">Positivo si el nivel está por encima</span>
                   </div>
                   <div class="lab-field">
-                    <label for="hpNPSHr_m">NPSHr bomba (m) — placa</label>
+                    <label for="hpNPSHr_m" data-i18n="hpump.labelNPSHr">NPSHr bomba (m) — placa</label>
                     <input id="hpNPSHr_m" type="number" min="0" step="any" value="0" />
                     <span class="hint">0 si no se conoce</span>
                   </div>
                   <div class="lab-field">
-                    <label for="hpOilTempC">Temperatura aceite (°C)</label>
+                    <label for="hpOilTempC" data-i18n="hpump.labelOilTemp">Temperatura aceite (°C)</label>
                     <input id="hpOilTempC" type="number" step="any" value="46" />
                     <span class="hint">Modo proyecto: rho y Pv(T) aproximados para NPSHa; no sustituyen ficha ISO VG del aceite.</span>
                   </div>
                 </div>
               </div>
               <div class="lab-field lab-field--wide">
-                <label for="hpMode">¿Qué quiere calcular?</label>
+                <label for="hpMode" data-i18n="hpump.labelMode">¿Qué quiere calcular?</label>
                 <select id="hpMode">
-                  <option value="design" selected>Diseñar nueva máquina</option>
-                  <option value="diagnostic">Diagnosticar máquina existente</option>
+                  <option value="design" selected data-i18n="hpump.optDesign">Diseñar nueva máquina</option>
+                  <option value="diagnostic" data-i18n="hpump.optDiagnostic">Diagnosticar máquina existente</option>
                 </select>
                 <span class="hint">Modo objetivo del cálculo</span>
                 <p class="lab-field-help">Diseño: objetivo de rendimiento y verificación integral. Diagnóstico: se calcula caudal real desde desplazamiento y RPM.</p>

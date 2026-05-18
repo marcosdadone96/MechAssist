@@ -216,7 +216,7 @@
             Fuerza útil por áreas y presión, consumo de aire libre por ciclo y pandeo del vástago — diseño o diagnóstico, con modo proyecto opcional.
           </p>
           <details class="lab-calc-seo">
-            <summary>Contexto ampliado y notas de uso</summary>
+            <summary data-i18n="pneuCyl.seoSummary">Contexto ampliado y notas de uso</summary>
             <p class="calc-seo-intro">
           La herramienta calcula la fuerza efectiva disponible a partir de la presión de red y las áreas útiles en cada sentido, estima el consumo libre de aire por ciclo y contrasta la estabilidad frente al pandeo del vástago cuando la guía es corta. Sirve para dimensionar compactadores neumáticos, puertas balanceadas y manipuladores ligeros antes de cerrar la válvula reguladora y el depósito buffer. Es habitual entre automatistas integradores de PLC que necesitan saber si la válvula puede mantener cadencias altas sin caída brusca de presión al final del trayecto.
             </p>
@@ -244,11 +244,11 @@
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field lab-field--wide">
-                <label for="pcCylinderType">Tipo de cilindro</label>
+                <label for="pcCylinderType" data-i18n="pneuCyl.labelCylType">Tipo de cilindro</label>
                 <select id="pcCylinderType">
-                  <option value="double" selected>Doble efecto (presión en ambos sentidos)</option>
-                  <option value="single_extend">Simple efecto — retorno por muelle (presión en avance)</option>
-                  <option value="single_retract">Simple efecto — avance por muelle (presión en retroceso)</option>
+                  <option value="double" selected data-i18n="pneuCyl.optDouble">Doble efecto (presión en ambos sentidos)</option>
+                  <option value="single_extend" data-i18n="pneuCyl.optSingleExtend">Simple efecto — retorno por muelle (presión en avance)</option>
+                  <option value="single_retract" data-i18n="pneuCyl.optSingleRetract">Simple efecto — avance por muelle (presión en retroceso)</option>
                 </select>
                 <span class="hint">Define áreas útiles y consumo de aire por ciclo</span>
                 <p class="lab-field-help">
@@ -256,10 +256,10 @@
                 </p>
               </div>
               <div class="lab-field lab-field--wide">
-                <label for="pcMode">¿Qué quieres calcular?</label>
+                <label for="pcMode" data-i18n="pneuCyl.labelMode">¿Qué quieres calcular?</label>
                 <select id="pcMode">
-                  <option value="design" selected>Diseñar nueva máquina</option>
-                  <option value="diagnostic">Diagnosticar máquina existente</option>
+                  <option value="design" selected data-i18n="pneuCyl.optDesign">Diseñar nueva máquina</option>
+                  <option value="diagnostic" data-i18n="pneuCyl.optDiagnostic">Diagnosticar máquina existente</option>
                 </select>
                 <span class="hint">Cambia entre diseño y diagnóstico</span>
                 <p class="lab-field-help">El diagnóstico calcula la fuerza real a partir del diámetro y la presión de la máquina instalada.</p>

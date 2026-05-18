@@ -11,6 +11,10 @@ export const MACHINE_HUB_UX_EN = {
   'machineHub.uxPresetsTitle': 'Typical cases (one click)',
   'machineHub.uxPresetsLead':
     'Fills coherent example values for a quick RFQ; you can fine-tune afterwards.',
+  'machineHub.assumptionsTitle': 'Model assumptions',
+  'machineHub.assumptionsHint': 'Calculation hypotheses and limits',
+  'pumpConv.introBody':
+    'Q\u2013H duty point, efficiency, fluid and drive. Results, diagram and gearmotor checker on the right.',
 
   'incConv.introSummary': 'Calculator description and scope',
   'incConv.scopeTitle': 'What this tool does',

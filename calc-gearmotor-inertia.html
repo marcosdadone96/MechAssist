@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Relación de inercias y par motor vs carga con catálogo demo. En evolución; resultados orientativos." />
+    <meta name="description" content="Calculadora de relación de inercias y par motor vs carga. Resultados orientativos para pre-dimensionado." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -13,7 +13,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/calc-gearmotor-inertia.html" id="mdr-og-url" />
     <meta property="og:title" content="Motor e inercia — Laboratorio — TheMechAssist" />
-    <meta property="og:description" content="Relación de inercias y par motor vs carga con catálogo demo. En evolución; resultados orientativos." />
+    <meta property="og:description" content="Calculadora de relación de inercias y par motor vs carga. Resultados orientativos para pre-dimensionado." />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Motor e inercia — Laboratorio — TheMechAssist" />
 
@@ -98,7 +98,7 @@
             Relación <strong>J<sub>ext</sub>/J<sub>mot</sub></strong> frente a un límite que usted define y par disponible vs par resistente en el punto de trabajo — modelo pedagógico con catálogo demo.
           </p>
           <details class="lab-calc-seo">
-            <summary>Contexto ampliado y notas de uso</summary>
+            <summary data-i18n="gm.seoSummary">Contexto ampliado y notas de uso</summary>
             <p class="calc-seo-intro">
           Este laboratorio combina la inercia reflejada de la carga con la del motorreductor para estimar si la relación J<sub>ext</sub>/J<sub>mot</sub> encaja en los límites típicos de arranque directo o variado y contrasta el par disponible frente al par resistente en el punto de trabajo usando una curva simplificada de par contra velocidad. El método es pedagógico y útil para seleccionar tamaños antes de abrir el software del fabricante. Es relevante para ingenieros de automatización que integran bombas, ventiladores o husillos con grandes masas acopladas. Por ejemplo, puede advertir si una bomba de gran volante exige variador de rampa más largo tras cambiar el diámetro de polea.
             </p>
@@ -141,13 +141,13 @@
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field">
-                <label for="gmJmotor">J motorreductor (kg·m²)</label>
+                <label for="gmJmotor" data-i18n="gm.labelJmotor">J motorreductor (kg·m²)</label>
                 <input id="gmJmotor" type="number" min="0.000001" step="any" value="0.0012" />
                 <span class="hint">Inercia del eje rápido del motorreductor</span>
                 <p class="lab-field-help">Dato clave para comparar contra la inercia reflejada de la carga. Use el valor del fabricante o de su hoja de cálculo.</p>
               </div>
               <div class="lab-field">
-                <label for="gmJratioMax">Límite admisible Jext/Jmot</label>
+                <label for="gmJratioMax" data-i18n="gm.labelJratioMax">Límite admisible Jext/Jmot</label>
                 <input id="gmJratioMax" type="number" min="1" step="0.5" value="10" />
                 <span class="hint">Relación máxima permitida</span>
                 <div class="gm-ref-chips" role="group" aria-label="Valores orientativos de relación de inercias">
@@ -158,7 +158,7 @@
                 <p class="lab-field-help">Criterio de diseño para arranque estable. Si no tiene dato del fabricante, use un valor conservador.</p>
               </div>
               <div class="lab-field">
-                <label for="gmTN">Par nominal Tn (N·m)</label>
+                <label for="gmTN" data-i18n="gm.labelTN">Par nominal Tn (N·m)</label>
                 <input id="gmTN" type="number" min="0.1" step="any" value="48" />
                 <span class="hint">Par continuo nominal</span>
                 <p class="lab-field-help">Par que el motorreductor puede entregar de forma continua cerca de su régimen nominal.</p>

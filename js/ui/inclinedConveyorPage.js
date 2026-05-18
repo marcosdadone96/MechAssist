@@ -35,6 +35,36 @@ import { INCLINED_PRESET_BY_ID } from '../modules/machineHubPresets.js';
 
 const INC_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...INCLINED_CONVEYOR_EN };
 
+/** Ángulos máximos típicos por material (orientativo, no normativa). */
+const MAX_ANGLE_BY_MATERIAL = {
+  grain: { max: 15, labelEs: 'Grano / cereal', labelEn: 'Grain / cereal' },
+  sand_dry: { max: 18, labelEs: 'Arena seca', labelEn: 'Dry sand' },
+  sand_wet: { max: 12, labelEs: 'Arena húmeda', labelEn: 'Wet sand' },
+  coal: { max: 18, labelEs: 'Carbón / coque', labelEn: 'Coal / coke' },
+  gravel: { max: 20, labelEs: 'Grava / árido', labelEn: 'Gravel / aggregate' },
+  default: { max: 18, labelEs: 'Material general', labelEn: 'General bulk' },
+};
+
+/**
+ * @param {number} angleDeg
+ * @param {string} materialKey
+ * @param {'es'|'en'} lang
+ * @returns {{ level: 'warn', text: string } | null}
+ */
+function buildMaterialAngleAlert(angleDeg, materialKey, lang) {
+  if (!Number.isFinite(angleDeg)) return null;
+  const row = MAX_ANGLE_BY_MATERIAL[materialKey] || MAX_ANGLE_BY_MATERIAL.default;
+  if (angleDeg <= row.max) return null;
+  const en = lang === 'en';
+  const matLabel = en ? row.labelEn : row.labelEs;
+  return {
+    level: /** @type {const} */ ('warn'),
+    text: en
+      ? `⚠ Angle (${formatNum(angleDeg, 1)}°) exceeds the typical limit for ${matLabel} (~${row.max}°). Verify with the belt supplier and material datasheet.`
+      : `⚠ Ángulo (${formatNum(angleDeg, 1)}°) supera el límite típico para ${matLabel} (~${row.max}°). Verifique con el fabricante de la banda y el datasheet del material.`,
+  };
+}
+
 const inputIds = [
   'incLength',
   'incHeight',
@@ -45,6 +75,7 @@ const inputIds = [
   'incLoadDistribution',
   'incBeltSlopePart',
   'incSpeed',
+  'incBulkMaterial',
   'incFriction',
   'incEfficiency',
   'incRollerD',
@@ -108,6 +139,7 @@ function readInputs() {
     loadDistribution: readNum('incLoadDistribution', 1),
     beltSlopeParticipation: readNum('incBeltSlopePart', 0.9),
     beltSpeed_m_s: readNum('incSpeed', 1),
+    bulkMaterial: readSelect('incBulkMaterial', 'default'),
     frictionCoeff: readNum('incFriction', 0.4),
     efficiency_pct: readNum('incEfficiency', 86),
     rollerDiameter_mm: readNum('incRollerD', 500),
@@ -619,14 +651,17 @@ function syncAnglePriorityUi() {
   hRange.classList.toggle('input-disabled-priority', hasAngle);
 }
 
-function syncAngleLimitWarning(angleDeg) {
+function syncAngleLimitWarning(angleDeg, materialKey = 'default') {
   const warn = document.getElementById('incAngleWarn');
   if (!warn) return;
   const en = getCurrentLang() === 'en';
+  const row = MAX_ANGLE_BY_MATERIAL[materialKey] || MAX_ANGLE_BY_MATERIAL.default;
+  const limit = row.max;
+  const matLabel = en ? row.labelEn : row.labelEs;
   warn.textContent = en
-    ? '⚠ θ > 18°: use special belts with cleats/anti-slip profiles.'
-    : '⚠ θ > 18°: usar banda con perfiles/nervios antideslizantes.';
-  warn.hidden = !(Number.isFinite(angleDeg) && angleDeg > 18);
+    ? `⚠ θ > ${limit}° (${matLabel}): use cleats / anti-slip profiles.`
+    : `⚠ θ > ${limit}° (${matLabel}): usar banda con perfiles/nervios antideslizantes.`;
+  warn.hidden = !(Number.isFinite(angleDeg) && angleDeg > limit);
 }
 
 function initInclinedReferenceFallback() {
@@ -696,8 +731,6 @@ function localizeInclinedStaticContent() {
   setText('[data-verify-run]', 'Check for this machine');
   setText('#section-motores .motors-details__title', 'Gearmotors (sample catalog)');
   setText('#section-motores .motors-details__hint', 'Recommendations, export, verification');
-  setText('#inclined-conveyor-assumptions .motors-details__title', 'Model assumptions');
-  setText('#inclined-conveyor-assumptions .motors-details__hint', 'Assumptions and limits');
   const pdfSection = document.querySelector('#premiumPdfExportMount')?.closest('section.panel');
   const pdfH2 = pdfSection?.querySelector('h2');
   if (pdfH2) {
@@ -816,7 +849,7 @@ function refreshCore() {
     const r = computeInclinedConveyor(raw);
     if (Number.isFinite(r.requiredMotorPower_kW)) incrementCalcCounter();
     syncAnglePriorityUi();
-    syncAngleLimitWarning(r.angle_deg);
+    syncAngleLimitWarning(r.angle_deg, raw.bulkMaterial);
     const d = r.detail || {};
     const liftForDiagram_m = raw.length_m * Math.sin(r.angle_rad);
 
@@ -849,7 +882,13 @@ function refreshCore() {
             },
           ]
         : [];
-      const all = [...inputAlerts, ...nanAlert, ...resultAlerts];
+      const materialAlert = buildMaterialAngleAlert(r.angle_deg, raw.bulkMaterial, lang);
+      const all = [
+        ...inputAlerts,
+        ...nanAlert,
+        ...resultAlerts,
+        ...(materialAlert ? [materialAlert] : []),
+      ];
       els.designAlerts.innerHTML = all
         .map((a) => `<p class="design-alert design-alert--${a.level}">${escHtml(a.text)}</p>`)
         .join('');

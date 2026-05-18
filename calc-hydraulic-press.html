@@ -227,10 +227,10 @@
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field lab-field--wide">
-                <label for="hppLabTier">Nivel de detalle memoria</label>
+                <label for="hppLabTier" data-i18n="hpress.labelTier">Nivel de detalle memoria</label>
                 <select id="hppLabTier">
-                  <option value="basic" selected>Aula (básico)</option>
-                  <option value="project">Proyecto (detallado + pandeo columnas)</option>
+                  <option value="basic" selected data-i18n="hpress.optBasic">Aula (básico)</option>
+                  <option value="project" data-i18n="hpress.optProject">Proyecto (detallado + pandeo columnas)</option>
                 </select>
                 <span class="hint">Fórmulas y campos extra</span>
                 <p class="lab-field-help">Proyecto activa pandeo Euler en columnas (longitud libre + K) y amplía la memoria de cálculo y el PDF.</p>
@@ -239,18 +239,18 @@
                 <p class="lab-field-help" style="margin:0 0 0.5rem;font-weight:700;color:#0f766e">Columnas — pandeo (Euler)</p>
                 <div class="lab-grid lab-grid--2" style="gap:0.65rem">
                   <div class="lab-field">
-                    <label for="hppColLengthMm">Longitud libre columna L (mm)</label>
+                    <label for="hppColLengthMm" data-i18n="hpress.labelColLength">Longitud libre columna L (mm)</label>
                     <input id="hppColLengthMm" type="number" min="200" step="any" value="2200" />
                     <span class="hint">Entre guías / longitud no arriostrada</span>
                   </div>
                   <div class="lab-field">
-                    <label for="hppColK">Coeficiente K (longitud efectiva)</label>
+                    <label for="hppColK" data-i18n="hpress.labelColK">Coeficiente K (longitud efectiva)</label>
                     <select id="hppColK">
-                      <option value="0.5">0,5 — empotrado-libre</option>
-                      <option value="0.7" selected>0,7 — recomendado conservador</option>
-                      <option value="1">1,0 — bi-articulado</option>
-                      <option value="1.4">1,4 — un extremo empotrado</option>
-                      <option value="2">2,0 — libre-libre guiado</option>
+                      <option value="0.5" data-i18n="hpress.optK05">0,5 — empotrado-libre</option>
+                      <option value="0.7" selected data-i18n="hpress.optK07">0,7 — recomendado conservador</option>
+                      <option value="1" data-i18n="hpress.optK10">1,0 — bi-articulado</option>
+                      <option value="1.4" data-i18n="hpress.optK14">1,4 — un extremo empotrado</option>
+                      <option value="2" data-i18n="hpress.optK20">2,0 — libre-libre guiado</option>
                     </select>
                     <p class="hpp-k-note">
                       Para prensas industriales con columnas guiadas en ambos extremos, usar <strong>K = 0,7</strong> (valor conservador recomendado).

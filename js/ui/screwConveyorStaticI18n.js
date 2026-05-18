@@ -474,10 +474,6 @@ function applyBlocks(lang) {
   const motHint = document.querySelector('#section-screw-motores .motors-details__hint');
   if (motTitle) motTitle.textContent = en ? 'Gearmotors (sample catalog)' : 'Motorreductores (cat\u00e1logo ejemplo)';
   if (motHint) motHint.textContent = en ? 'Recommendations and export' : 'Recomendaciones y exportaci\u00f3n';
-  const hypTitle = document.querySelector('#screw-conveyor-assumptions .motors-details__title');
-  const hypHint = document.querySelector('#screw-conveyor-assumptions .motors-details__hint');
-  if (hypTitle) hypTitle.textContent = en ? 'Model assumptions' : 'Hip\u00f3tesis del modelo';
-  if (hypHint) hypHint.textContent = en ? 'Assumptions and limits' : 'Supuestos y l\u00edmites';
   const pdfH2 = document.querySelector('#premiumPdfExportMount')?.closest('section.panel')?.querySelector('h2');
   if (pdfH2) pdfH2.innerHTML = en ? '<span class="panel-icon">PDF</span> Export report' : '<span class="panel-icon">PDF</span> Exportar informe';
 }

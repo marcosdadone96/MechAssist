@@ -1430,6 +1430,34 @@ a.hub-account__btn--link:hover {
   color: #475569;
 }
 
+.hub-pricing-card__credits-hint {
+  font-size: 0.75rem;
+  color: var(--muted, #64748b);
+  margin: 0.25rem 0 0;
+  text-align: center;
+}
+
+.hub-pricing__unlock-note {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted, #64748b);
+  margin: 1.25rem auto 0;
+  max-width: 36rem;
+  line-height: 1.5;
+}
+
+.hub-pricing__roi {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--muted, #64748b);
+  margin-top: 1rem;
+  font-style: italic;
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
 #hub-pricing,
 #hub-zones {
   scroll-margin-top: 4rem;

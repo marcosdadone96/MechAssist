@@ -38,4 +38,6 @@ export const SCREW_CONVEYOR_EN = {
   'scConv.accGeom': 'Geometry and kinematics',
   'scConv.accMat': 'Material and fill',
   'scConv.accFriction': 'Friction and service',
+  'scConv.coldStartNote':
+    'Note: cold-start power with a full screw may be 2\u20133\u00d7 steady-state power for cohesive or wet materials. Check available breakaway torque with the gearmotor supplier.',
 };

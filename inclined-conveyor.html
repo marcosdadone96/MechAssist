@@ -213,6 +213,18 @@
             <span class="flat-accordion__label" data-i18n="incConv.accFriction">Fricción y rendimiento</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
+            <div class="field">
+              <label for="incBulkMaterial" data-i18n="incConv.labelBulkMaterial">Material transportado</label>
+              <select id="incBulkMaterial" name="incBulkMaterial">
+                <option value="grain" data-i18n="incConv.matGrain">Grano / cereal</option>
+                <option value="sand_dry" data-i18n="incConv.matSandDry">Arena seca</option>
+                <option value="sand_wet" data-i18n="incConv.matSandWet">Arena húmeda</option>
+                <option value="coal" data-i18n="incConv.matCoal">Carbón / coque</option>
+                <option value="gravel" data-i18n="incConv.matGravel">Grava / árido</option>
+                <option value="default" selected data-i18n="incConv.matDefault">Material general</option>
+              </select>
+              <span class="field-hint">Límite orientativo de ángulo θ según tipo de granel</span>
+            </div>
             <div class="field flat-field--slider">
               <label for="incFriction">Coeficiente μ <span class="info-chip" title="Coeficiente efectivo de rozamiento global en la pendiente. Orientativo típico: 0,25–0,60 según estado." aria-label="Ayuda coeficiente de fricción.">?</span></label>
               <input type="range" id="incFrictionR" class="flat-slider" min="0.15" max="0.65" step="0.01" value="0.4" aria-label="μ" />
@@ -485,8 +497,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">※</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title" data-i18n="incConv.assumptionsTitle">Hipótesis del modelo</span>
-                  <span class="motors-details__hint" data-i18n="incConv.assumptionsHint">Supuestos y límites</span>
+                  <span class="motors-details__title" data-i18n="machineHub.assumptionsTitle">Hipótesis del modelo</span>
+                  <span class="motors-details__hint" data-i18n="machineHub.assumptionsHint">Supuestos y límites del cálculo</span>
                 </span>
               </span>
             </summary>

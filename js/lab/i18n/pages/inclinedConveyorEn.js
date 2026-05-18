@@ -21,6 +21,13 @@ export const INCLINED_CONVEYOR_EN = {
   'incConv.accNormSf': 'Standard and service factor',
   'incConv.accGeom': 'Geometry and kinematics',
   'incConv.accFriction': 'Friction and efficiency',
+  'incConv.labelBulkMaterial': 'Bulk material',
+  'incConv.matGrain': 'Grain / cereal',
+  'incConv.matSandDry': 'Dry sand',
+  'incConv.matSandWet': 'Wet sand',
+  'incConv.matCoal': 'Coal / coke',
+  'incConv.matGravel': 'Gravel / aggregate',
+  'incConv.matDefault': 'General bulk',
   'incConv.modelScopeHtml':
     '<strong>Model:</strong> inclined \u00b7 Coulomb \u00b7 weight on slope + friction \u00b7 no Euler. <a href="#inclined-conveyor-assumptions">Assumptions and exclusions</a>',
   'incConv.advSummary':

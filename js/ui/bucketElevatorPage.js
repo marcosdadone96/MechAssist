@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Página elevador de cangilones — asistente 3 pasos + diagrama + motorreductores.
  */
 
@@ -445,7 +445,7 @@ function computeAndRenderCore() {
             <div class="metric"><div class="label">${LBL.shaftPower} (reductor)</div><div class="value">${pw.shaft_kW.toFixed(3)} kW · ${pw.shaft_HP.toFixed(2)} HP</div></div>
             <div class="metric"><div class="label">Tensión trabajo / admisible</div><div class="value">${r.tension.working_N.toFixed(0)} / ${r.tension.admissible_N.toFixed(0)} N</div></div>
             <div class="metric"><div class="label">Uso tensión τ/τ<sub>adm</sub></div><div class="value">${(r.tension.ratio * 100).toFixed(1)} % · ${r.tension.ok ? 'OK' : 'revisar'}</div></div>
-            <div class="metric"><div class="label"><em>K</em> = v²/(gR) cabeza</div><div class="value">${r.centrifugal.K.toFixed(2)}</div></div>
+            <div class="metric"><div class="label">${en ? 'Centrifugal K = v\u00b2/(gR)' : 'K centr\u00edfugo = v\u00b2/(gR)'}</div><div class="value">${r.centrifugal.K.toFixed(2)}</div></div>
             <div class="metric"><div class="label">Paso cangilones (calc.)</div><div class="value">${r.pitch_mm.toFixed(0)} mm</div></div>
           </div>
         </div>

@@ -564,13 +564,6 @@ function localizeRollerStaticContent() {
   setText('#verifyPanel [data-verify-run]', 'Check for this machine');
   setText('#section-motores .motors-details__title', 'Gearmotors (sample catalog)');
   setText('#section-motores .motors-details__hint', 'Recommendations, export, verification');
-  const asm = document.querySelector('#assumptionsList')?.closest('.motors-details');
-  if (asm) {
-    const t = asm.querySelector('.motors-details__title');
-    const h = asm.querySelector('.motors-details__hint');
-    if (t) t.textContent = 'Model assumptions';
-    if (h) h.textContent = 'Assumptions and limits';
-  }
   const eng = document.querySelector('#engineeringReport')?.closest('.panel');
   if (eng) {
     const t = eng.querySelector('.motors-details__title');

@@ -259,10 +259,6 @@ function applyDataBeI18n(lang) {
     beEngLead: en
       ? 'Calculation detail for quick audit and traceability.'
       : 'Detalle de c\u00e1lculo para auditor\u00eda r\u00e1pida y trazabilidad de decisiones.',
-    beHypTitle: en ? 'Model assumptions' : 'Hip\u00f3tesis del modelo',
-    beHypHint: en
-      ? 'Assumptions and limits of this indicative calculation'
-      : 'Supuestos y l\u00edmites usados en el c\u00e1lculo orientativo',
     bePdfH2: en ? 'Export report' : 'Exportar informe',
     beSchematicH2: en ? 'Schematic' : 'Esquema',
     bePhotoAlt: en

@@ -65,6 +65,8 @@ const TX = {
     starterAnnual: 'Starter anual \u2014 79 \u20ac/a\u00f1o',
     starterAnnualNote: '(\u2248 6,58 \u20ac/mes de media)',
     unlimitedMonthly: 'Ilimitado \u2014 25 \u20ac/mes',
+    unlimitedAnnual: 'Ilimitado anual \u2014 199 \u20ac/a\u00f1o',
+    unlimitedAnnualNote: '(\u2248 16,58 \u20ac/mes \u00b7 2 meses gratis)',
     creditsNote: '',
     signedAs: (name, email) => `Sesion: ${name} (${email})`,
     stripeBtn: 'Pagar con tarjeta (Stripe)',
@@ -144,6 +146,8 @@ const TX = {
     starterAnnual: 'Starter annual \u2014 \u20ac79/year',
     starterAnnualNote: '(avg. \u2248 \u20ac6.58/month)',
     unlimitedMonthly: 'Unlimited \u2014 \u20ac25/month',
+    unlimitedAnnual: 'Unlimited annual \u2014 \u20ac199/year',
+    unlimitedAnnualNote: '(avg. \u2248 \u20ac16.58/mo \u00b7 2 months free)',
     creditsNote: '',
     signedAs: (name, email) => `Signed in: ${name} (${email})`,
     stripeBtn: 'Pay with card (Stripe)',
@@ -257,6 +261,7 @@ function applyTx(t) {
   set('coSubsLead', t.subsLead);
   set('coDemoNote', t.checkoutPayNote);
   set('coStarterAnnualNote', t.starterAnnualNote || '');
+  set('coUnlimitedAnnualNote', t.unlimitedAnnualNote || '');
   set('coUnlockPrice', t.unlockPrice || '');
   const choicesEl = document.getElementById('coChoices');
   if (choicesEl instanceof HTMLUListElement && Array.isArray(t.choices)) {
@@ -274,9 +279,11 @@ function applyTx(t) {
   const m = document.getElementById('coLemonMonthly');
   const ann = document.getElementById('coLemonAnnual');
   const unl = document.getElementById('coLemonUnlimited');
+  const unlAnn = document.getElementById('coLemonUnlimitedAnnual');
   if (m) m.textContent = t.starterMonthly || t.monthlyPlan;
   if (ann) ann.textContent = t.starterAnnual || t.annualPlan;
   if (unl) unl.textContent = t.unlimitedMonthly || 'Ilimitado';
+  if (unlAnn) unlAnn.textContent = t.unlimitedAnnual || '';
   set('coStarterHeading', t.starterHeading);
   set('coStarterPrice', t.starterPrice);
   set('coStarterHint', t.starterHint);
@@ -399,6 +406,7 @@ export async function mountCheckoutPage() {
   const lemonM = document.getElementById('coLemonMonthly');
   const lemonA = document.getElementById('coLemonAnnual');
   const lemonU = document.getElementById('coLemonUnlimited');
+  const lemonUAnn = document.getElementById('coLemonUnlimitedAnnual');
   if (lemonM instanceof HTMLAnchorElement && lemon.starterMonthly) lemonM.href = lemon.starterMonthly;
   if (lemonA instanceof HTMLAnchorElement && lemon.starterAnnual) lemonA.href = lemon.starterAnnual;
   const unlimitedBlock = document.getElementById('coUnlimitedBlock');
@@ -412,6 +420,15 @@ export async function mountCheckoutPage() {
     } else {
       lemonU.hidden = true;
       if (unlimitedPending instanceof HTMLElement) unlimitedPending.hidden = false;
+    }
+  }
+  if (lemonUAnn instanceof HTMLAnchorElement) {
+    const ua = String(lemon.unlimitedAnnual || '').trim();
+    if (ua) {
+      lemonUAnn.href = ua;
+      lemonUAnn.hidden = false;
+    } else {
+      lemonUAnn.hidden = true;
     }
   }
   if (unlimitedBlock instanceof HTMLElement && window.location.hash.toLowerCase() === '#unlimited') {
@@ -438,9 +455,11 @@ export async function mountCheckoutPage() {
     const lemonM = document.getElementById('coLemonMonthly');
     const lemonA = document.getElementById('coLemonAnnual');
     const lemonU = document.getElementById('coLemonUnlimited');
+    const lemonUAnn = document.getElementById('coLemonUnlimitedAnnual');
     if (lemonM instanceof HTMLElement) lemonM.hidden = true;
     if (lemonA instanceof HTMLElement) lemonA.hidden = true;
     if (lemonU instanceof HTMLElement) lemonU.hidden = true;
+    if (lemonUAnn instanceof HTMLElement) lemonUAnn.hidden = true;
     const manageWrap = document.getElementById('coManageSub');
     if (manageWrap instanceof HTMLElement) manageWrap.hidden = false;
     const manageTitleEl = document.getElementById('coManageTitle');
@@ -494,7 +513,7 @@ export async function mountCheckoutPage() {
     window.location.href = buildCalcUnlockCheckoutUrl(slug);
   });
 
-  ['coLemonMonthly', 'coLemonAnnual', 'coLemonUnlimited'].forEach((id) => {
+  ['coLemonMonthly', 'coLemonAnnual', 'coLemonUnlimited', 'coLemonUnlimitedAnnual'].forEach((id) => {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('click', (ev) => {

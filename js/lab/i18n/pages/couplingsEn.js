@@ -18,4 +18,7 @@ export const COUPLINGS_EN = {
   'coup.copyToast': 'Link copied!',
   'coup.summaryFull': 'Full results',
   'coup.copyResults': 'Copy results',
+  'coup.seoSummary': 'Extended context and usage notes',
+  'coup.calcSeoIntro':
+    'This module takes the design torque from power, speed and service factor and checks it against nominal torques of jaw-type or similar elastic coupling models from a demo catalogue. It screens sizes before requesting the official data sheet and checks maximum bore. Useful for maintenance engineers replacing couplings on pumps and fans, and for designers integrating standard motors. For example, it shows whether the same model can handle increased power after a fan upgrade.',
 };

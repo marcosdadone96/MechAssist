@@ -184,7 +184,7 @@
             Rigidez <strong>k</strong>, condici&oacute;n de servicio (<strong>s<sub>op</sub></strong> o <strong>F<sub>op</sub></strong>), tensi&oacute;n con <strong>K</strong> (Wahl), pandeo docente y bloqueo <strong>F<sub>n</sub></strong>; material y abacos simplificados.
           </p>
           <details class="lab-calc-seo">
-            <summary>Contexto ampliado y notas de uso</summary>
+            <summary data-i18n="spring.seoSummary">Contexto ampliado y notas de uso</summary>
             <p class="calc-seo-intro">
           Este módulo estima rigidez, deformación bajo carga y tensión cortante en alambre usando el factor de corrección de Wahl para espiras helicoidales en compresión alineado con la filosofía DIN 2089 en forma orientativa, incluyendo indicios de pandeo cuando la esbeltez es elevada. Sirve para resortes de válvulas, topes de seguridad y mecanismos de retorno antes de encargar material certificado. Es útil para ingenieros de producto y talleres que prototipan en serie corta. Por ejemplo, puede mostrar si conviene aumentar el índice de resorte C para bajar la tensión cuando la carrera libre es grande pero el hueco radial es pequeño.
             </p>
@@ -221,11 +221,11 @@
                       <path d="M9 4V2h6v2" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Nivel de detalle memoria</span>
+                  <span class="lab-field__label-text" data-i18n="spring.labelTier">Nivel de detalle memoria</span>
                 </label>
                 <select id="springLabTier">
-                  <option value="basic" selected>Aula (b&aacute;sico)</option>
-                  <option value="project">Proyecto (tau adm. + nota + PDF)</option>
+                  <option value="basic" selected data-i18n="spring.optBasic">Aula (b&aacute;sico)</option>
+                  <option value="project" data-i18n="spring.optProject">Proyecto (tau adm. + nota + PDF)</option>
                 </select>
                 <span class="hint">Igual que otras calculadoras del laboratorio</span>
                 <p class="lab-field-help">Proyecto: &tau;<sub>adm</sub> y &tau;<sub>W</sub> manuales, nota en informe y PDF.</p>
@@ -240,7 +240,7 @@
                           <path d="M6 18L18 6M8 6h4v4" />
                         </svg>
                       </span>
-                      <span class="lab-field__label-text">&tau;<sub>adm</sub> est&aacute;tica manual (MPa)</span>
+                      <span class="lab-field__label-text" data-i18n="spring.labelTauAdm">&tau;<sub>adm</sub> est&aacute;tica manual (MPa)</span>
                     </label>
                     <input id="springTauAdmMpa" type="number" min="0" step="any" value="" placeholder="Vac&iacute;o = cat&aacute;logo" />
                     <span class="hint">L&iacute;mite para &tau;<sub>m</sub> en Goodman</span>

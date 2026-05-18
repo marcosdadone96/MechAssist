@@ -51,4 +51,12 @@ export const PNEUMATIC_CYL_EN = {
     'Indicative sizing for preliminary design. Confirm with manufacturer catalogue and applicable standards (ISO\u00a04414).',
   'pneuCyl.relatedHintHtml':
     'Sizing a pneumatic system? <a href="fluids-hub.html">Explore all fluid calculators \u2192</a>',
+  'pneuCyl.labelCylType': 'Cylinder type',
+  'pneuCyl.optDouble': 'Double-acting (pressure in both directions)',
+  'pneuCyl.optSingleExtend': 'Single-acting \u2014 spring return (pressure on extend)',
+  'pneuCyl.optSingleRetract': 'Single-acting \u2014 spring advance (pressure on retract)',
+  'pneuCyl.labelMode': 'What do you want to calculate?',
+  'pneuCyl.optDesign': 'Design new installation',
+  'pneuCyl.optDiagnostic': 'Diagnose existing machine',
+  'pneuCyl.seoSummary': 'Extended context and usage notes',
 };

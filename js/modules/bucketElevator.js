@@ -246,8 +246,8 @@ export function computeBucketElevator(p, lang = 'es') {
   const widthOk = B >= minBeltCat - 1;
 
   const K_cent = centrifugalHeadParameter(v, D_head);
-  const K_warn = nature === 'fragile_abrasive' ? 1.15 : nature === 'normal' ? 1.85 : 2.4;
-  const K_danger = K_warn * 1.45;
+  const K_WARN = 0.7;
+  const K_DANGER = 1.0;
 
   const T_work = approximateWorkingTension_N(Q, H, v, 1.28);
   const T_adm = sigma * B * 0.85;
@@ -258,7 +258,6 @@ export function computeBucketElevator(p, lang = 'es') {
   const Q_check = 3.6 * (v / Math.max(0.05, pitch_m)) * rho * vol_m3 * phi;
 
   const speedOutOfRange = v < speedRec.vMin - 0.05 || v > speedRec.vMax + 0.15;
-  const spillRisk = v > speedRec.vMax + 0.25 || K_cent > K_danger;
 
   /** @type {Array<{ level: 'ok'|'warn'|'err', code: string, text: string }>} */
   const verdicts = [];
@@ -290,21 +289,21 @@ export function computeBucketElevator(p, lang = 'es') {
     });
   }
 
-  if (K_cent > K_danger || spillRisk) {
+  if (K_cent > 1.0) {
     verdicts.push({
       level: 'err',
       code: 'centrifugal',
       text: en
-        ? 'Spill / centrifugal discharge risk: belt speed high vs. head drum diameter. Reduce v or increase drum Ø; validate with CEMA/vendor data.'
-        : 'Riesgo de derrame / eyección en descarga: velocidad periférica alta respecto al tambor de cabeza. Reduzca v o aumente Ø de tambor; valide con catálogo CEMA/fabricante.',
+        ? `⚠ Critical centrifugal speed (K=${K_cent.toFixed(2)} ≥ 1). Material may be thrown off at the head. Reduce belt speed or use certified centrifugal discharge buckets and drums.`
+        : `⚠ Velocidad centrífuga crítica (K=${K_cent.toFixed(2)} ≥ 1). El material puede ser despedido en la cabeza. Reduzca la velocidad o use cangilones y poleas de descarga centrífuga certificada.`,
     });
-  } else if (K_cent > K_warn) {
+  } else if (K_cent > 0.7) {
     verdicts.push({
       level: 'warn',
       code: 'centrifugal_soft',
       text: en
-        ? 'Elevated discharge parameter (v²/gR): watch discharge quality and head housing wear.'
-        : 'Parámetro de eyección (v²/gR) elevado: vigilar calidad de descarga y abrasión en tapa.',
+        ? `⚠ Elevated centrifugal parameter (K=${K_cent.toFixed(2)}). Verify bucket type and material compatibility.`
+        : `⚠ Parámetro centrífugo elevado (K=${K_cent.toFixed(2)}). Verifique compatibilidad con el tipo de cangilón y el material.`,
     });
   }
 
@@ -348,12 +347,12 @@ export function computeBucketElevator(p, lang = 'es') {
     ? [
         `Recommended speed band for this material: ${speedRec.vMin.toFixed(1)}\u2013${speedRec.vMax.toFixed(1)} m/s (nominal ${speedRec.vNominal.toFixed(1)} m/s).`,
         `Estimated tension use: ${(tensionRatio * 100).toFixed(1)} % of allowable belt limit.`,
-        `Discharge parameter K = v\u00b2/(gR): ${K_cent.toFixed(2)} (indicative threshold ${K_warn.toFixed(2)}).`,
+        `Discharge parameter K = v\u00b2/(gR): ${K_cent.toFixed(2)} (attention from ${K_WARN}; critical \u2265 ${K_DANGER}).`,
       ]
     : [
         `Velocidad recomendada para este material: ${speedRec.vMin.toFixed(1)}-${speedRec.vMax.toFixed(1)} m/s (nominal ${speedRec.vNominal.toFixed(1)} m/s).`,
         `Uso de tension estimado: ${(tensionRatio * 100).toFixed(1)} % del limite admisible de banda.`,
-        `Parametro de eyeccion K = v^2/(gR): ${K_cent.toFixed(2)} (umbral orientativo ${K_warn.toFixed(2)}).`,
+        `Parametro de eyeccion K = v^2/(gR): ${K_cent.toFixed(2)} (atencion desde ${K_WARN}; critico \u2265 ${K_DANGER}).`,
       ];
 
   const steps = en
@@ -530,8 +529,8 @@ export function computeBucketElevator(p, lang = 'es') {
     },
     centrifugal: {
       K: K_cent,
-      K_warn,
-      K_danger,
+      K_warn: K_WARN,
+      K_danger: K_DANGER,
       drumDiameter_m: D_head,
     },
     assumptions,

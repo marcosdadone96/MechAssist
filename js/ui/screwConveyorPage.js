@@ -3,7 +3,12 @@
  */
 
 import { isPremiumEffective } from '../services/accessTier.js';
-import { computeScrewConveyor, diameterToMeters, pitchToMeters } from '../modules/screwConveyor.js';
+import {
+  cemaMaxRpmForDiameter_mm,
+  computeScrewConveyor,
+  diameterToMeters,
+  pitchToMeters,
+} from '../modules/screwConveyor.js';
 import { LOAD_DUTY_OPTIONS, LOAD_DUTY_OPTIONS_EN } from '../modules/serviceFactorByDuty.js';
 import {
   renderBrandRecommendationCards,
@@ -522,6 +527,10 @@ function refreshCore() {
         machineDiagram: 'Machine diagram',
         steepAngle:
           'Steep inclinations: the simplified model may under- or over-predict; consult the screw OEM.',
+        cemaRpmWarn: (rpm, maxRpm, dMm) =>
+          `⚠ Calculated speed (${formatNum(rpm, 1)} rpm) exceeds indicative CEMA maximum for Ø ${formatNum(dMm, 0)} mm (≈ ${formatNum(maxRpm, 0)} rpm). Reduce capacity or increase diameter.`,
+        coldStartNote:
+          'Note: cold-start power with a full screw may be 2–3× steady-state power for cohesive or wet materials. Check available breakaway torque with the gearmotor supplier.',
       }
     : {
         torqueEyebrowSuffix: 'eje tornillo',
@@ -551,6 +560,10 @@ function refreshCore() {
         machineDiagram: 'Diagrama de la máquina',
         steepAngle:
           'Inclinaciones altas: el modelo simplificado puede subestimar o sobreestimar; consulte al fabricante del tornillo.',
+        cemaRpmWarn: (rpm, maxRpm, dMm) =>
+          `⚠ Velocidad calculada (${formatNum(rpm, 1)} rpm) supera el máximo orientativo CEMA para Ø ${formatNum(dMm, 0)} mm (≈ ${formatNum(maxRpm, 0)} rpm). Reduzca la capacidad o aumente el diámetro.`,
+        coldStartNote:
+          'Nota: la potencia de arranque con tornillo lleno puede ser 2–3× la potencia de régimen en materiales cohesivos o húmedos. Consulte con el fabricante del motorreductor el par de arranque disponible.',
       };
   const els = getEls();
   try {
@@ -593,14 +606,11 @@ function refreshCore() {
         alerts.push({ level: /** @type {const} */ ('warn'), text: r.rpmRisk.label });
       }
       const Dmm = (r.detail?.D_m ?? diameterToMeters(raw.diamValue, raw.diamUnit)) * 1000;
-      const rpmLimitByDiam =
-        Dmm <= 150 ? 100 : Dmm <= 300 ? 100 - ((Dmm - 150) / 150) * 40 : Math.max(30, 60 * (300 / Dmm));
-      if (r.screwRpm > rpmLimitByDiam) {
+      const cemaMaxRpm = cemaMaxRpmForDiameter_mm(Dmm);
+      if (r.screwRpm > cemaMaxRpm) {
         alerts.push({
           level: /** @type {const} */ ('warn'),
-          text: en
-            ? `Calculated RPM (${formatNum(r.screwRpm, 1)}) is above indicative diameter limit (${formatNum(rpmLimitByDiam, 0)} rpm).`
-            : `RPM calculadas (${formatNum(r.screwRpm, 1)}) por encima del límite orientativo por diámetro (${formatNum(rpmLimitByDiam, 0)} rpm).`,
+          text: TX.cemaRpmWarn(r.screwRpm, cemaMaxRpm, Dmm),
         });
       }
       els.designAlerts.innerHTML = alerts

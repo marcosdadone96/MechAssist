@@ -57,8 +57,8 @@
             Par de diseño con <strong>P</strong>, <strong>n</strong> y <strong>K</strong>; contrástelo con <strong>T<sub>nom</sub></strong> de modelos demo (Lovejoy / KTR / Flender) antes de pedir ficha oficial.
           </p>
           <details class="lab-calc-seo">
-            <summary>Contexto ampliado y notas de uso</summary>
-            <p class="calc-seo-intro">
+            <summary data-i18n="coup.seoSummary">Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro" data-i18n="coup.calcSeoIntro">
           Este módulo parte del par de diseño que resulta de potencia y régimen con factor de servicio y lo contrasta con torques nominales de modelos elásticos tipo mandíbula o similar tomados de un catálogo demostrativo. Sirve para cribar tallas antes de solicitar la hoja técnica oficial del fabricante y revisar huecos máximos de montaje. Es útil para ingenieros de mantención que sustituyen acoplamientos en bombas y ventiladores y para proyectistas que integran motores normalizados. Por ejemplo, puede mostrar si el mismo modelo admite el incremento de potencia tras cambiar el ventilador por uno de mayor diámetro.
             </p>
           </details>
@@ -89,23 +89,23 @@
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field">
-                <label for="cpPower">Potencia (kW)</label>
+                <label for="cpPower" data-i18n="coup.labelPower">Potencia (kW)</label>
                 <input id="cpPower" type="number" min="0" step="any" value="7.5" />
               </div>
               <div class="lab-field">
-                <label for="cpRpm">Velocidad (rpm)</label>
+                <label for="cpRpm" data-i18n="coup.labelRpm">Velocidad (rpm)</label>
                 <input id="cpRpm" type="number" min="1" step="any" value="1455" />
               </div>
               <div class="lab-field">
-                <label for="cpK">Factor de servicio K</label>
+                <label for="cpK" data-i18n="coup.labelK">Factor de servicio K</label>
                 <input id="cpK" type="number" min="1" step="0.05" value="1.5" />
               </div>
               <div class="lab-field">
-                <label for="cpBrand">Fabricante / familia</label>
+                <label for="cpBrand" data-i18n="coup.labelBrand">Fabricante / familia</label>
                 <select id="cpBrand"></select>
               </div>
               <div class="lab-field lab-field--wide">
-                <label for="cpSeries">Modelo (serie)</label>
+                <label for="cpSeries" data-i18n="coup.labelSeries">Modelo (serie)</label>
                 <select id="cpSeries"></select>
                 <p id="cpSeriesPreview" class="lab-small-print" aria-live="polite"></p>
               </div>

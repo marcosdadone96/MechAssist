@@ -415,6 +415,10 @@
   letter-spacing: -0.015em;
 }
 
+.hub-pricing-card__annual--unlimited {
+  color: #0d9488;
+}
+
 .hub-pricing-card__eq {
   margin: 0;
   font-size: 0.78rem;

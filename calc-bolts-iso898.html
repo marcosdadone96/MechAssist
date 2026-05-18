@@ -54,7 +54,7 @@
             Par de apriete y precarga orientativos para grados 8.8 / 10.9 / 12.9; compruebe la unión frente a la <strong>tracción de cálculo</strong> (modelo simplificado).
           </p>
           <details class="lab-calc-seo">
-            <summary>Contexto ampliado y notas de uso</summary>
+            <summary data-i18n="bolt.seoSummary">Contexto ampliado y notas de uso</summary>
             <p class="calc-seo-intro">
           Aquí obtiene el par de apriete orientativo y la precarga asociada para tornillos de clase 8.8, 10.9 o 12.9 según el planteamiento sintético de ISO 898-1 aplicado a uniones sometidas a tracción de cálculo. Sirve para preparar instrucciones de montaje y contrastar si la unión puede mantener la carga externa sin fluencia del material bajo cabeza. Es útil para ingenieros de instalación y mantenimiento que trabajan con llaves dinamométricas en campo. Un ejemplo es verificar el apriete de bridas en una bomba tras una intervención nocturna para minimizar fugas sin sobrecargar el material.
             </p>
@@ -86,10 +86,10 @@
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field lab-field--wide">
-                <label for="blCalcMode">Modo de trabajo</label>
+                <label for="blCalcMode" data-i18n="bolt.labelMode">Modo de trabajo</label>
                 <select id="blCalcMode">
-                  <option value="design">Diseño — fuerza de cálculo → propuesta M y grado mínimos</option>
-                  <option value="diagnostic" selected>Diagnóstico — tornillo instalado → comprobación frente a F</option>
+                  <option value="design" data-i18n="bolt.optDesign">Diseño — fuerza de cálculo → propuesta M y grado mínimos</option>
+                  <option value="diagnostic" selected data-i18n="bolt.optDiagnostic">Diagnóstico — tornillo instalado → comprobación frente a F</option>
                 </select>
                 <p class="lab-field-help" id="blCalcModeHelp">
                   <strong>Diseño:</strong> indique la tracción que debe soportar la unión; el asistente propone la combinación métrica/grado más pequeña que cumple (catálogo interno).
@@ -97,15 +97,15 @@
                 </p>
               </div>
               <div class="lab-field" id="blFieldD">
-                <label for="blD">Diámetro</label>
+                <label for="blD" data-i18n="bolt.labelD">Diámetro</label>
                 <select id="blD"></select>
               </div>
               <div class="lab-field" id="blFieldGrade">
-                <label for="blGrade">Grado</label>
+                <label for="blGrade" data-i18n="bolt.labelGrade">Grado</label>
                 <select id="blGrade"></select>
               </div>
               <div class="lab-field">
-                <label for="blMu">Coeficiente de rozamiento μ</label>
+                <label for="blMu" data-i18n="bolt.labelMu">Coeficiente de rozamiento μ</label>
                 <select id="blMu">
                   <option value="0.18">Seco (μ = 0.18)</option>
                   <option value="0.12" selected>Ligeramente lubricado (μ = 0.12)</option>

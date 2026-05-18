@@ -85,17 +85,23 @@
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
               <p class="lab-diagram-wrap__title">Vista esquemática · torsión (y flexión en avanzado)</p>
-              <svg id="shDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de eje sometido a par"></svg>
+              <svg
+                id="shDiagram"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-label="Diagrama de eje sometido a par"
+                data-i18n="shaft.diagAriaLabel"
+                data-i18n-attr="aria-label"
+              ></svg>
               <p class="lab-diagram-caption">Vista lateral con <strong>T</strong> en extremos y arcos de par <strong>debajo</strong> del eje; a la derecha, sección circular <strong>Ø d</strong>. Con flexión, <strong>M</strong> se indica arriba del tramo central.</p>
             </div>
           </div>
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field lab-field--wide">
-                <label for="shCalcMode">Modo de trabajo</label>
+                <label for="shCalcMode" data-i18n="shaft.labelMode">Modo de trabajo</label>
                 <select id="shCalcMode">
-                  <option value="design" selected>Diseño — carga y material → diámetro mínimo</option>
-                  <option value="diagnostic">Diagnóstico — diámetro instalado → tensión y aptitud</option>
+                  <option value="design" selected data-i18n="shaft.optDesign">Diseño — carga y material → diámetro mínimo</option>
+                  <option value="diagnostic" data-i18n="shaft.optDiagnostic">Diagnóstico — diámetro instalado → tensión y aptitud</option>
                 </select>
                 <p class="lab-field-help" id="shCalcModeHelp">
                   En <strong>diseño</strong> se obtiene el diámetro mínimo y se compara con un diámetro comercial. En <strong>diagnóstico</strong> se fija el diámetro real del eje y se comprueba si soporta el par (y flexión si aplica).

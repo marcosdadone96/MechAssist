@@ -43,4 +43,14 @@ export const HYDRAULIC_PRESS_EN = {
   'hpress.alertHighPressure':
     'Pressure exceeds 350 bar \u2014 verify component ratings and seals.',
   'hpress.alertSmallBore': 'Bore below 40 mm \u2014 check catalogue availability.',
+  'hpress.labelTier': 'Report detail level',
+  'hpress.optBasic': 'Classroom (basic)',
+  'hpress.optProject': 'Project (detailed + column buckling)',
+  'hpress.labelColLength': 'Free column length L (mm)',
+  'hpress.labelColK': 'Effective length factor K',
+  'hpress.optK05': '0.5 \u2014 fixed-free',
+  'hpress.optK07': '0.7 \u2014 conservative recommended',
+  'hpress.optK10': '1.0 \u2014 pin-pin',
+  'hpress.optK14': '1.4 \u2014 one end fixed',
+  'hpress.optK20': '2.0 \u2014 guided free-free',
 };
