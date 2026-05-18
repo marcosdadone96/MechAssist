@@ -1,7 +1,7 @@
 /**
  * UI: barra de creditos, modales de paywall.
  */
-import { calcSlugFromPath, isCreditsSystemEnabled } from '../config/credits.js';
+import { calcSlugFromPath, creditsAmountFromBalance, isCreditsSystemEnabled } from '../config/credits.js';
 import { fetchCreditsBalance, getCachedCreditsState, isCalcSlugUnlocked } from '../services/creditsApi.js';
 import { buildCalcUnlockCheckoutUrl } from '../services/calcUnlockCheckout.js';
 import { getCurrentUser } from '../services/localAuth.js';
@@ -64,18 +64,7 @@ export function showNoCreditsModal() {
   });
 }
 
-function poolLabel(pool, en) {
-  if (en) {
-    if (pool === 'machines') return 'Machines';
-    if (pool === 'fluids') return 'Hydraulics';
-    return 'Lab';
-  }
-  if (pool === 'machines') return 'M\u00e1quinas';
-  if (pool === 'fluids') return 'Hidr\u00e1ulica';
-  return 'Laboratorio';
-}
-
-function renderBarContent(bar, state, pool) {
+function renderBarContent(bar, state) {
   const en = langEn();
   const b = state?.balance;
   if (!b) {
@@ -99,18 +88,19 @@ function renderBarContent(bar, state, pool) {
     bar.hidden = false;
     return;
   }
-  const val = b[pool] ?? 0;
+  const val = creditsAmountFromBalance(b);
   bar.className = 'credits-bar';
   const sessionWord = en ? 'session' : 'sesi\u00f3n';
   const creditsWord = en ? 'credits' : 'cr\u00e9ditos';
-  bar.innerHTML = `<span class="credits-bar__pool">${poolLabel(pool, en)}</span> <strong>${val}</strong> ${creditsWord} <span class="credits-bar__hint">(${b.costs?.calcSession ?? 10}/${sessionWord})</span>`;
+  const poolLabel = en ? 'Credits' : 'Cr\u00e9ditos';
+  bar.innerHTML = `<span class="credits-bar__pool">${poolLabel}</span> <strong>${val}</strong> ${creditsWord} <span class="credits-bar__hint">(${b.costs?.calcSession ?? 10}/${sessionWord})</span>`;
   bar.hidden = false;
 }
 
 /**
- * @param {'lab'|'machines'|'fluids'} [pool]
+ * @param {'lab'|'machines'|'fluids'} [_pool] ignorado (saldo único)
  */
-export async function mountCreditsBar(pool = 'lab') {
+export async function mountCreditsBar(_pool = 'lab') {
   if (!isCreditsSystemEnabled()) return;
   const user = getCurrentUser();
   if (!user?.email) return;
@@ -133,15 +123,15 @@ export async function mountCreditsBar(pool = 'lab') {
 
   const cached = getCachedCreditsState();
   if (cached?.balance) {
-    renderBarContent(bar, cached, pool);
+    renderBarContent(bar, cached);
   }
 
   const slug = calcSlugFromPath();
   const data = await fetchCreditsBalance(slug && slug !== 'unknown' ? slug : '').catch(() => null);
-  if (data?.ok) renderBarContent(bar, data, pool);
+  if (data?.ok) renderBarContent(bar, data);
 }
 
-export async function refreshCreditsUi(pool) {
+export async function refreshCreditsUi(_pool) {
   if (!isCreditsSystemEnabled()) return;
-  await mountCreditsBar(pool);
+  await mountCreditsBar(_pool);
 }

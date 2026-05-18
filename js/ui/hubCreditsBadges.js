@@ -2,7 +2,7 @@
  * Badges en tarjetas de hub: ocultar GRATIS sin cr\u00e9ditos y mostrar desbloqueo 1 \u20ac.
  */
 import { FEATURES } from '../config/features.js';
-import { creditPoolFromPath, isCreditsSystemEnabled } from '../config/credits.js';
+import { creditsAmountFromBalance, isCreditsSystemEnabled } from '../config/credits.js';
 import { getCachedCreditsState, fetchCreditsBalance, isCalcSlugUnlocked } from '../services/creditsApi.js';
 import { buildCalcUnlockCheckoutUrl } from '../services/calcUnlockCheckout.js';
 import { getCurrentUser } from '../services/localAuth.js';
@@ -11,17 +11,6 @@ const CREDITS_CHANGED = 'mdr-credits-changed';
 
 function langEn() {
   return document.documentElement.lang?.toLowerCase().startsWith('en');
-}
-
-/**
- * @param {HTMLElement} root
- * @returns {'lab'|'machines'|'fluids'}
- */
-function poolFromHubRoot(root) {
-  const id = root.getAttribute('data-lab-hub-id');
-  if (id === 'machines') return 'machines';
-  if (id === 'fluids') return 'fluids';
-  return 'lab';
 }
 
 /**
@@ -46,10 +35,7 @@ function calcSlugFromCard(card) {
 }
 
 
-/**
- * @param {'lab'|'machines'|'fluids'} pool
- */
-function hubCreditsState(pool) {
+function hubCreditsState() {
   if (!isCreditsSystemEnabled()) {
     return { active: false, isGuest: !getCurrentUser()?.email, showUnlock: false, unlimited: false };
   }
@@ -62,7 +48,7 @@ function hubCreditsState(pool) {
   if (c?.unlimited) {
     return { active: true, isGuest: false, showUnlock: false, unlimited: true };
   }
-  const bal = c?.balance?.[pool] ?? 0;
+  const bal = creditsAmountFromBalance(c?.balance);
   const cost = c?.balance?.costs?.calcSession ?? 10;
   const showUnlock = bal < cost;
   return { active: true, isGuest: false, showUnlock, unlimited: false };
@@ -124,8 +110,7 @@ export function applyHubCalcCreditBadges(root = document) {
   const hubRoot = root instanceof HTMLElement && root.id === 'lab-hub-root' ? root : root.querySelector?.('#lab-hub-root');
   if (!(hubRoot instanceof HTMLElement)) return;
 
-  const pool = poolFromHubRoot(hubRoot);
-  const state = hubCreditsState(pool);
+  const state = hubCreditsState();
 
   hubRoot.querySelectorAll('a.lab-card--hub[href]').forEach((card) => {
     applyBadgeToCard(card, state);

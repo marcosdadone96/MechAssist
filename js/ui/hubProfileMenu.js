@@ -4,7 +4,7 @@
 import { getCurrentUser, clearLocalUser } from '../services/accountAuth.js';
 import { clearProEntitlementClient } from '../services/proEntitlement.js';
 import { FEATURES } from '../config/features.js';
-import { isCreditsSystemEnabled } from '../config/credits.js';
+import { creditsAmountFromBalance, isCreditsSystemEnabled } from '../config/credits.js';
 import { getCachedCreditsState, fetchCreditsBalance } from '../services/creditsApi.js';
 
 function lang() {
@@ -19,13 +19,6 @@ function t(key, fallback) {
   return fallback;
 }
 
-function poolLabel(pool) {
-  const en = lang() === 'en';
-  if (pool === 'machines') return en ? 'Machines' : 'M\u00e1quinas';
-  if (pool === 'fluids') return en ? 'Hydraulics' : 'Hidr\u00e1ulica';
-  return en ? 'Lab' : 'Laboratorio';
-}
-
 function userInitials(name) {
   const parts = String(name || '?')
     .trim()
@@ -37,7 +30,7 @@ function userInitials(name) {
 
 /**
  * @param {HTMLElement} host
- * @param {{ unlimited?: boolean, balance?: { lab?: number, machines?: number, fluids?: number, costs?: { calcSession?: number } } }} state
+ * @param {{ unlimited?: boolean, balance?: { credits?: number, costs?: { calcSession?: number } } }} state
  */
 function renderCreditsInMenu(host, state) {
   if (!host) return;
@@ -54,13 +47,8 @@ function renderCreditsInMenu(host, state) {
     return;
   }
   const cost = b.costs?.calcSession ?? 10;
-  const rows = ['lab', 'machines', 'fluids']
-    .map(
-      (pool) =>
-        `<li class="hub-user-menu__credits-row"><span>${poolLabel(pool)}</span><strong>${b[pool] ?? 0}</strong></li>`,
-    )
-    .join('');
-  host.innerHTML = `<p class="hub-user-menu__credits-title">${en ? 'Credits' : 'Cr\u00e9ditos'}</p><ul class="hub-user-menu__credits-list">${rows}</ul><p class="hub-user-menu__credits-hint">${en ? `${cost} credits per calc session` : `${cost} cr\u00e9ditos por sesi\u00f3n de c\u00e1lculo`}</p>`;
+  const total = creditsAmountFromBalance(b);
+  host.innerHTML = `<p class="hub-user-menu__credits-title">${en ? 'Credits' : 'Cr\u00e9ditos'}</p><p class="hub-user-menu__credits-line"><strong>${total}</strong> ${en ? 'available across lab, machines and hydraulics' : 'disponibles en laboratorio, m\u00e1quinas e hidr\u00e1ulica'}</p><p class="hub-user-menu__credits-hint">${en ? `${cost} credits per calc session` : `${cost} cr\u00e9ditos por sesi\u00f3n de c\u00e1lculo`}</p>`;
 }
 
 async function refreshMenuCredits(host) {
@@ -129,7 +117,7 @@ export function mountProfileMenu(slot) {
   });
 
   panel.querySelector('.hub-user-menu__logout')?.addEventListener('click', async () => {
-    clearLocalUser();
+    await clearLocalUser();
     clearProEntitlementClient();
     try {
       const { clearCreditsCache } = await import('../services/creditsApi.js');

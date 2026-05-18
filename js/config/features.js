@@ -192,11 +192,11 @@ export const FEATURES = Object.freeze({
    * Keep all false until rollout. Each machine can enable Pro gates independently.
    */
   /**
-   * Créditos por hub (lab / machines / fluids). Desactivado si publicFreeRelease es true.
+   * Créditos (saldo único compartido). Desactivado si publicFreeRelease es true.
    */
   credits: Object.freeze({
     enabled: true,
-    welcomePerPool: 100,
+    welcomeTotal: 1000,
     costCalcSession: 10,
     costPdf: 10,
     starterPdfLimitPerMonth: 30,

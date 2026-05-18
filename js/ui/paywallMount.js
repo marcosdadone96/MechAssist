@@ -305,8 +305,7 @@ export function mountTierStatusBar() {
     if (getCurrentUser()) {
       ev.preventDefault();
       if (window.confirm(TX.logoutAsk)) {
-        clearLocalUser();
-        window.location.reload();
+        void clearLocalUser().then(() => window.location.reload());
       }
     }
   });

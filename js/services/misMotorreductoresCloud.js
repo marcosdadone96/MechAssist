@@ -7,27 +7,10 @@
  */
 
 import { supabase } from '../../scripts/supabaseClient.mjs';
+import { handleAuthSessionEnded } from './authSessionClient.js';
 
 function _handleExpiredSession() {
-  try {
-    localStorage.removeItem('mdr-local-user-v1');
-    localStorage.removeItem('mdr-user-sync-meta-v1');
-    const lang =
-      typeof document !== 'undefined'
-        ? String(document.documentElement.lang || 'es').toLowerCase()
-        : 'es';
-    const msg = lang.startsWith('en')
-      ? 'Your session has expired. Please sign in again.'
-      : 'Tu sesión ha expirado. Por favor, inicia sesión de nuevo.';
-    try {
-      sessionStorage.setItem('mdr-session-expired-msg', msg);
-    } catch (_) {}
-    if (typeof window !== 'undefined' && window.location) {
-      window.location.href = '/register.html?session=expired';
-    }
-  } catch (_) {
-    /* ignorar */
-  }
+  handleAuthSessionEnded('expired');
 }
 
 /**

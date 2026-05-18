@@ -307,8 +307,8 @@ export function mountRegisterPage() {
     if (success) success.hidden = true;
     if (pending) pending.hidden = true;
     if (signedIn) signedIn.hidden = false;
-    document.getElementById('btnLogoutSignedIn')?.addEventListener('click', () => {
-      clearLocalUser();
+    document.getElementById('btnLogoutSignedIn')?.addEventListener('click', async () => {
+      await clearLocalUser();
       window.location.reload();
     });
     return;

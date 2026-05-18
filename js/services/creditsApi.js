@@ -1,8 +1,9 @@
 /**
- * API de crùditos (Netlify Functions).
+ * API de cr?ditos (Netlify Functions).
  */
 import { getCurrentUser } from './localAuth.js';
 import { isCreditsSystemEnabled } from '../config/credits.js';
+import { handleAuthHttpResponse } from './authSessionClient.js';
 
 const LS_BALANCE = 'mdr-credits-balance-v1';
 const LS_BALANCE_AT = 'mdr-credits-balance-at-v1';
@@ -29,7 +30,7 @@ function authHeaders() {
   return h;
 }
 
-/** @typedef {{ lab: number, machines: number, fluids: number, subscription: string|null, subscriptionEndsAt: string|null, pdfCountMonth: number, costs: { calcSession: number, pdf: number }, limits: { starterPdfPerMonth: number } }} CreditsBalance */
+/** @typedef {{ credits: number, subscription: string|null, subscriptionEndsAt: string|null, pdfCountMonth: number, costs: { calcSession: number, pdf: number }, limits: { starterPdfPerMonth: number } }} CreditsBalance */
 
 /**
  * @returns {Promise<{ ok: boolean, balance?: CreditsBalance, unlimited?: boolean, starter?: boolean, calcUnlocked?: boolean }>}
@@ -45,6 +46,7 @@ export async function fetchCreditsBalance(calcSlug = '') {
     headers: authHeaders(),
   });
   const data = await res.json().catch(() => ({}));
+  if (handleAuthHttpResponse(res, data)) return { ok: false, error: 'session_revoked' };
   if (!res.ok || !data.ok) return { ok: false, error: data.error || 'balance' };
 
   if (calcSlug) data.calcSlug = calcSlug;
@@ -92,6 +94,7 @@ export async function consumeCredits(req) {
     body: JSON.stringify(req),
   });
   const data = await res.json().catch(() => ({}));
+  if (handleAuthHttpResponse(res, data)) return { ok: false, error: 'session_revoked' };
   if (data.balance) {
     try {
       localStorage.setItem(
@@ -140,7 +143,7 @@ export function clearCreditsCache() {
   }
 }
 
-/** Tras login/registro: precarga saldo para la barra y sesiones de cùlculo. */
+/** Tras login/registro: precarga saldo para la barra y sesiones de c?lculo. */
 export async function refreshCreditsAfterAuth() {
   if (!isCreditsSystemEnabled()) return;
   const u = getCurrentUser();

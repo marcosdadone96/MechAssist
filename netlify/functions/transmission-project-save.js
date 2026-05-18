@@ -12,7 +12,8 @@
 
 const { createClient } = require('@supabase/supabase-js');
 const { normalizeEmail } = require('./lib/proEntitlementLogic.js');
-const { verifyJwt } = require('./lib/proJwt.js');
+const { getProStore } = require('./lib/blobStore.js');
+const { verifyAuthSession } = require('./lib/authSession.js');
 
 function corsHeaders(event) {
   const allowed = [
@@ -102,15 +103,17 @@ exports.handler = async (event) => {
   }
 
   const token = getAuthBearer(event);
-  const payload = verifyJwt(token, secret);
-  if (!payload || payload.typ !== 'mdr-auth' || typeof payload.sub !== 'string') {
-    return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'unauthorized' }) };
+  const store = getProStore(event);
+  const auth = await verifyAuthSession(token, secret, store);
+  if (!auth.ok) {
+    return {
+      statusCode: 401,
+      headers: cors,
+      body: JSON.stringify({ error: auth.error || 'unauthorized' }),
+    };
   }
 
-  const ownerEmail = normalizeEmail(payload.sub);
-  if (!ownerEmail) {
-    return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'unauthorized' }) };
-  }
+  const ownerEmail = auth.email;
 
   let raw = event.body;
   if (event.isBase64Encoded && typeof raw === 'string') {

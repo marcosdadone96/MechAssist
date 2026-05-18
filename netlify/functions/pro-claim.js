@@ -11,7 +11,8 @@ const {
   emailBlobKey,
   subscriptionRecordActive,
 } = require('./lib/proEntitlementLogic.js');
-const { signJwt, verifyJwt } = require('./lib/proJwt.js');
+const { signJwt } = require('./lib/proJwt.js');
+const { verifyAuthSession } = require('./lib/authSession.js');
 
 function corsHeaders(event) {
   const allowed = [
@@ -63,10 +64,16 @@ exports.handler = async (event) => {
   }
 
   const sessionTok = getAuthBearer(event);
-  const sessionPayload = verifyJwt(sessionTok, authSecret);
-  if (!sessionPayload || sessionPayload.typ !== 'mdr-auth' || typeof sessionPayload.sub !== 'string') {
-    return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'unauthorized' }) };
+  const store = getProStore(event);
+  const auth = await verifyAuthSession(sessionTok, authSecret, store);
+  if (!auth.ok) {
+    return {
+      statusCode: 401,
+      headers: cors,
+      body: JSON.stringify({ error: auth.error || 'unauthorized' }),
+    };
   }
+  const sessionPayload = auth.payload;
 
   let raw = event.body;
   if (event.isBase64Encoded && typeof raw === 'string') {
@@ -89,7 +96,6 @@ exports.handler = async (event) => {
     return { statusCode: 403, headers: cors, body: JSON.stringify({ error: 'email_mismatch' }) };
   }
 
-  const store = getProStore(event);
   const key = emailBlobKey(email);
   const rec = await store.get(key, { type: 'json' });
   if (!subscriptionRecordActive(rec)) {

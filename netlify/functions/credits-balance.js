@@ -2,7 +2,7 @@
  * GET  saldo de crditos y suscripcin del usuario autenticado.
  */
 const { getProStore } = require('./lib/blobStore.js');
-const { verifyJwt } = require('./lib/proJwt.js');
+const { verifyAuthSession } = require('./lib/authSession.js');
 const {
   ensureWelcomeCredits,
   loadRecord,
@@ -51,13 +51,17 @@ exports.handler = async (event) => {
   }
 
   const sessionTok = getAuthBearer(event);
-  const sessionPayload = verifyJwt(sessionTok, authSecret);
-  if (!sessionPayload || sessionPayload.typ !== 'mdr-auth' || typeof sessionPayload.sub !== 'string') {
-    return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'unauthorized' }) };
+  const store = getProStore(event);
+  const auth = await verifyAuthSession(sessionTok, authSecret, store);
+  if (!auth.ok) {
+    return {
+      statusCode: 401,
+      headers: cors,
+      body: JSON.stringify({ error: auth.error || 'unauthorized' }),
+    };
   }
 
-  const email = String(sessionPayload.sub).trim().toLowerCase();
-  const store = getProStore(event);
+  const email = auth.email;
 
   await ensureWelcomeCredits(store, email);
   const { rec } = await loadRecord(store, email);

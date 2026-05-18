@@ -7,7 +7,7 @@
 
 const { getProStore } = require('./lib/blobStore.js');
 const { normalizeEmail, emailBlobKey } = require('./lib/proEntitlementLogic.js');
-const { verifyJwt } = require('./lib/proJwt.js');
+const { verifyAuthSession } = require('./lib/authSession.js');
 
 const MAX_BODY_BYTES = 1_500_000;
 const MAX_GEARMOTORS = 200;
@@ -164,17 +164,17 @@ exports.handler = async (event) => {
   }
 
   const token = getAuthBearer(event);
-  const payload = verifyJwt(token, secret);
-  if (!payload || payload.typ !== 'mdr-auth' || typeof payload.sub !== 'string') {
-    return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'unauthorized' }) };
-  }
-
-  const email = normalizeEmail(payload.sub);
-  if (!email) {
-    return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'unauthorized' }) };
-  }
-
   const store = getProStore(event);
+  const auth = await verifyAuthSession(token, secret, store);
+  if (!auth.ok) {
+    return {
+      statusCode: 401,
+      headers: cors,
+      body: JSON.stringify({ error: auth.error || 'unauthorized' }),
+    };
+  }
+
+  const email = auth.email;
   const key = userdataBlobKey(email);
 
   if (event.httpMethod === 'GET') {

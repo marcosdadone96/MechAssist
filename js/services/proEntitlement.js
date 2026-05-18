@@ -5,6 +5,7 @@
 
 import { FEATURES } from '../config/features.js';
 import { getCurrentUser } from './localAuth.js';
+import { handleAuthHttpResponse } from './authSessionClient.js';
 
 const LS_JWT = 'mdr-pro-jwt-v1';
 /** Unix ms hasta el cual la cache de tier es valida (renovar con pro-verify). */
@@ -80,6 +81,9 @@ export async function claimProToken(email) {
     body: JSON.stringify({ email: String(email || '').trim() }),
   });
   const data = await res.json().catch(() => ({}));
+  if (handleAuthHttpResponse(res, data)) {
+    return { ok: false, status: 401 };
+  }
   if (!res.ok || !data.token) {
     return { ok: false, status: res.status };
   }

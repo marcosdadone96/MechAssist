@@ -1,8 +1,8 @@
 /**
- * POST — consume créditos (sesión de cálculo, PDF, etc.) con idempotencia.
+ * POST  consume crditos (sesin de clculo, PDF, etc.) con idempotencia.
  */
 const { getProStore } = require('./lib/blobStore.js');
-const { verifyJwt } = require('./lib/proJwt.js');
+const { verifyAuthSession } = require('./lib/authSession.js');
 const { consumeCredits, ensureWelcomeCredits } = require('./lib/creditsLogic.js');
 
 function corsHeaders(event) {
@@ -44,9 +44,14 @@ exports.handler = async (event) => {
   }
 
   const sessionTok = getAuthBearer(event);
-  const sessionPayload = verifyJwt(sessionTok, authSecret);
-  if (!sessionPayload || sessionPayload.typ !== 'mdr-auth' || typeof sessionPayload.sub !== 'string') {
-    return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'unauthorized' }) };
+  const store = getProStore(event);
+  const auth = await verifyAuthSession(sessionTok, authSecret, store);
+  if (!auth.ok) {
+    return {
+      statusCode: 401,
+      headers: cors,
+      body: JSON.stringify({ error: auth.error || 'unauthorized' }),
+    };
   }
 
   let raw = event.body;
@@ -66,8 +71,7 @@ exports.handler = async (event) => {
   const idempotencyKey = String(body.idempotencyKey || '').trim();
   const calcSlug = String(body.calcSlug || '').trim();
 
-  const email = String(sessionPayload.sub).trim().toLowerCase();
-  const store = getProStore(event);
+  const email = auth.email;
 
   await ensureWelcomeCredits(store, email);
   const result = await consumeCredits(store, email, {

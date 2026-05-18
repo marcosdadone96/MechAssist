@@ -17,7 +17,7 @@ const crypto = require('crypto');
 const { getProStore } = require('./lib/blobStore.js');
 const { normalizeEmail } = require('./lib/proEntitlementLogic.js');
 const { verifiedUserKey } = require('./lib/authBlobKeys.js');
-const { verifyJwt } = require('./lib/proJwt.js');
+const { verifyAuthSession } = require('./lib/authSession.js');
 
 function corsHeaders(event) {
   const allowed = ['https://www.themechassist.com', 'https://themechassist.com'];
@@ -136,15 +136,17 @@ exports.handler = async (event) => {
   }
 
   const token = getBearer(event);
-  const payload = verifyJwt(token, secret);
-  if (!payload || payload.typ !== 'mdr-auth') {
-    return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'unauthorized' }) };
+  const store = getProStore(event);
+  const auth = await verifyAuthSession(token, secret, store);
+  if (!auth.ok) {
+    return {
+      statusCode: 401,
+      headers: cors,
+      body: JSON.stringify({ error: auth.error || 'unauthorized' }),
+    };
   }
 
-  const email = normalizeEmail(payload.sub);
-  if (!email) {
-    return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'unauthorized' }) };
-  }
+  const email = auth.email;
 
   const url = normalizeSupabaseUrl(
     process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -154,7 +156,6 @@ exports.handler = async (event) => {
     return { statusCode: 500, headers: cors, body: JSON.stringify({ error: 'misconfigured_supabase' }) };
   }
 
-  const store = getProStore(event);
   let user;
   try {
     user = await store.get(verifiedUserKey(email), { type: 'json' });
@@ -168,6 +169,15 @@ exports.handler = async (event) => {
   const admin = createClient(url, serviceKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
+
+  try {
+    const uid = await findAuthUserIdByEmail(admin, email);
+    if (uid) {
+      await admin.auth.admin.signOut(uid, 'global');
+    }
+  } catch (e) {
+    console.warn('[supabase-session-mint] global signOut', e?.message || e);
+  }
 
   let shadowPw = user.supabaseShadowPassword ? String(user.supabaseShadowPassword) : '';
 

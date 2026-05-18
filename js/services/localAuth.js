@@ -155,7 +155,24 @@ export function persistServerSession({ name, email, authToken }) {
   return user;
 }
 
-export function clearLocalUser() {
+async function revokeServerSession() {
+  if (!FEATURES.useServerAuth) return;
+  const u = getCurrentUser();
+  const tok = u?.serverAuth && u?.authToken ? String(u.authToken).trim() : '';
+  if (!tok || typeof fetch === 'undefined' || typeof window === 'undefined') return;
+  try {
+    await fetch(`${window.location.origin}/.netlify/functions/auth-logout`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${tok}` },
+    });
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+/** Cierra sesión local y, con cuenta servidor, invalida JWT en todos los dispositivos. */
+export async function clearLocalUser() {
+  await revokeServerSession();
   try {
     import('../../scripts/supabaseClient.mjs')
       .then(({ supabase }) => supabase.auth.signOut())

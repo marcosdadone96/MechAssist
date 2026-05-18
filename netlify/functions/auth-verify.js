@@ -62,6 +62,7 @@ exports.handler = async (event) => {
     email,
     passwordHash: pending.passwordHash,
     verifiedAt: new Date().toISOString(),
+    sessionVersion: 0,
   });
   try {
     await ensureWelcomeCredits(store, email, { grantWelcome: true });

@@ -3,7 +3,7 @@
  */
 import {
   calcSlugFromPath,
-  creditPoolFromPath,
+  creditsAmountFromBalance,
   getCreditCosts,
   isCreditsSystemEnabled,
 } from '../config/credits.js';
@@ -32,8 +32,7 @@ export function shouldLockCalcInputsForCredits() {
   const calcSlug = calcSlugFromPath();
   if (isCalcSlugUnlocked(calcSlug, state)) return false;
 
-  const pool = creditPoolFromPath();
-  const bal = Number(state.balance[pool]) || 0;
+  const bal = creditsAmountFromBalance(state.balance);
   const cost =
     Number(state.balance?.costs?.calcSession) > 0
       ? Number(state.balance.costs.calcSession)
@@ -51,7 +50,6 @@ export async function ensureCalcSessionCharged() {
   const user = getCurrentUser();
   if (!user?.email || !user?.serverAuth) return { allowed: true };
 
-  const pool = creditPoolFromPath();
   const calcSlug = calcSlugFromPath();
   const costs = getCreditCosts();
   const sessionMs = Number(FEATURES.credits?.calcSessionMs) || 12 * 60 * 1000;
@@ -59,7 +57,7 @@ export async function ensureCalcSessionCharged() {
   const cached = getCachedCreditsState();
   if (cached?.unlimited || isCalcSlugUnlocked(calcSlug, cached)) return { allowed: true };
 
-  const sessionKey = `${SS_PREFIX}${pool}:${calcSlug}`;
+  const sessionKey = `${SS_PREFIX}${calcSlug}`;
 
   if (shouldLockCalcInputsForCredits()) {
     try {
@@ -84,7 +82,6 @@ export async function ensureCalcSessionCharged() {
   const idempotencyKey = `calc:${calcSlug}:${session?.sessionId || now}`;
 
   const result = await consumeCredits({
-    pool,
     amount: costs.calcSession,
     reason: 'calc_session',
     idempotencyKey,
@@ -129,7 +126,6 @@ export async function ensurePdfExportCharged() {
   const user = getCurrentUser();
   if (!user?.email || !user?.serverAuth) return { allowed: false, reason: 'guest' };
 
-  const pool = creditPoolFromPath();
   const calcSlug = calcSlugFromPath();
   const costs = getCreditCosts();
 
@@ -142,7 +138,6 @@ export async function ensurePdfExportCharged() {
   const idempotencyKey = `pdf:${calcSlug}:${Date.now()}`;
 
   const result = await consumeCredits({
-    pool,
     amount: costs.pdf,
     reason: 'pdf',
     idempotencyKey,

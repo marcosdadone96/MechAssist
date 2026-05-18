@@ -7,31 +7,7 @@ import { FEATURES } from '../config/features.js';
 import { getCurrentUser } from './localAuth.js';
 import { replaceLabHubPinsRoot, readLabHubPinsRoot } from './labHubFavoritesStore.js';
 import { syncSupabaseSessionFromNetlifyJwt } from './supabaseSessionSync.js';
-
-function _handleExpiredSession() {
-  try {
-    // Limpiar sesión local
-    localStorage.removeItem('mdr-local-user-v1');
-    localStorage.removeItem('mdr-user-sync-meta-v1');
-    // Redirigir con mensaje
-    const lang =
-      typeof document !== 'undefined'
-        ? String(document.documentElement.lang || 'es').toLowerCase()
-        : 'es';
-    const msg = lang.startsWith('en')
-      ? 'Your session has expired. Please sign in again.'
-      : 'Tu sesión ha expirado. Por favor, inicia sesión de nuevo.';
-    // Mostrar aviso si hay toast disponible; si no, usar sessionStorage
-    try {
-      sessionStorage.setItem('mdr-session-expired-msg', msg);
-    } catch (_) {}
-    if (typeof window !== 'undefined' && window.location) {
-      window.location.href = '/register.html?session=expired';
-    }
-  } catch (_) {
-    /* ignorar si no hay window */
-  }
-}
+import { handleAuthHttpResponse } from './authSessionClient.js';
 
 /** Mantener alineado con clearLocalUser si cambia. */
 export const USER_SYNC_META_KEY = 'mdr-user-sync-meta-v1';
@@ -196,16 +172,13 @@ async function pushUserData() {
   } catch (_) {
     return;
   }
-  if (res.status === 401) {
-    _handleExpiredSession();
-    return;
-  }
   let data = {};
   try {
     data = await res.json();
   } catch (_) {
     /* ignore */
   }
+  if (handleAuthHttpResponse(res, data)) return;
   if (!res.ok || !data.updatedAt) return;
   const m = readMeta();
   m.lastSyncFromServerAt = data.updatedAt;
@@ -240,12 +213,9 @@ export function initUserCloudSync() {
       const res = await fetch(`${fnBase()}/user-data`, {
         headers: { Authorization: `Bearer ${getBearer()}` },
       });
-      if (res.status === 401) {
-        _handleExpiredSession();
-        return;
-      }
+      doc = await res.json().catch(() => null);
+      if (handleAuthHttpResponse(res, doc)) return;
       if (!res.ok) return;
-      doc = await res.json();
     } catch (_) {
       return;
     }

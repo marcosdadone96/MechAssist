@@ -285,10 +285,10 @@ const dict = {
       'Cuatro caminos independientes: registro con cr\u00e9ditos, Starter (9 \u20ac/mes), Ilimitado (25 \u20ac/mes) o desbloqueo puntual de una calculadora (1 \u20ac/mes).',
     'pricing.free.name': 'Registro',
     'pricing.free.price': '0 \u20ac',
-    'pricing.free.hint': '100 cr\u00e9ditos de bienvenida por \u00e1rea',
+    'pricing.free.hint': '1000 cr\u00e9ditos de bienvenida para todo el cat\u00e1logo',
     'pricing.free.tagline': 'Pruebe calculadoras con sus datos tras crear cuenta.',
     'pricing.free.b1': 'Presets demo sin registro (solo lectura en campos propios)',
-    'pricing.free.b2': 'Laboratorio, m\u00e1quinas e hidr\u00e1ulica con saldo independiente',
+    'pricing.free.b2': 'Un solo saldo en laboratorio, m\u00e1quinas e hidr\u00e1ulica',
     'pricing.free.b3': 'Un cargo por sesi\u00f3n de c\u00e1lculo, no por cada rec\u00e1lculo autom\u00e1tico',
     'pricing.free.b4': 'PDF y guardado en nube con cr\u00e9ditos o plan de pago',
     'pricing.free.cta': 'Crear cuenta gratis',
@@ -300,7 +300,7 @@ const dict = {
     'pricing.starter.tagline':
       'Para quien dimensiona 1\u20135 instalaciones al mes y necesita el informe firmado.',
     'pricing.starter.creditsHint':
-      '100 cr\u00e9ditos/mes \u00b7 cada c\u00e1lculo consume 10 \u00b7 PDF consume 10 adicionales',
+      '1000 cr\u00e9ditos \u00b7 10 por sesi\u00f3n de c\u00e1lculo \u00b7 PDF 10 adicionales',
     'pricing.starter.b1': 'Elevador, tornillo, cangilones, bomba e hidr\u00e1ulica',
     'pricing.starter.b2': 'Informe PDF de cada c\u00e1lculo (hasta 30/mes)',
     'pricing.starter.b3': 'Comprobador de motorreductor con 5 marcas',
@@ -646,10 +646,10 @@ const dict = {
       'Four independent paths: sign up with welcome credits, Starter (\u20ac9/mo), Unlimited (\u20ac25/mo), or unlock one calculator (\u20ac1/mo).',
     'pricing.free.name': 'Sign up',
     'pricing.free.price': '0 \u20ac',
-    'pricing.free.hint': '100 welcome credits per area',
+    'pricing.free.hint': '1000 welcome credits for the full catalog',
     'pricing.free.tagline': 'Run calculators with your own inputs after creating an account.',
     'pricing.free.b1': 'Guest demos with presets (custom fields are read-only)',
-    'pricing.free.b2': 'Separate balances for lab, machines and hydraulics',
+    'pricing.free.b2': 'One balance across lab, machines and hydraulics',
     'pricing.free.b3': 'One charge per calc session, not per auto-recalc',
     'pricing.free.b4': 'PDF and cloud save via credits or a paid plan',
     'pricing.free.cta': 'Create free account',
@@ -661,7 +661,7 @@ const dict = {
     'pricing.starter.tagline':
       'For engineers sizing 1\u20135 installations per month who need a signed report.',
     'pricing.starter.creditsHint':
-      '100 credits/month \u00b7 each session costs 10 \u00b7 PDF costs 10 extra',
+      '1000 credits \u00b7 10 per calc session \u00b7 PDF costs 10 extra',
     'pricing.starter.b1': 'Elevator, screw, buckets, pump and hydraulics',
     'pricing.starter.b2': 'PDF report per calculation (up to 30/month)',
     'pricing.starter.b3': 'Gearmotor checker with 5 demo brands',

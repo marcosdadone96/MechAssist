@@ -1,14 +1,22 @@
 /**
- * Ledger de crditos por usuario (Netlify Blobs, store mechassist-pro).
+ * Ledger de créditos por usuario (Netlify Blobs, store mechassist-pro).
+ * Saldo único compartido (lab, máquinas e hidráulica).
  */
 const crypto = require('crypto');
 const { normalizeEmail, emailBlobKey } = require('./proEntitlementLogic.js');
 
-const WELCOME_PER_POOL = Number(process.env.CREDITS_WELCOME_PER_POOL) || 100;
+const WELCOME_TOTAL =
+  Number(process.env.CREDITS_WELCOME_TOTAL) ||
+  (Number(process.env.CREDITS_WELCOME_PER_POOL) > 0
+    ? Number(process.env.CREDITS_WELCOME_PER_POOL) * 3
+    : 1000);
 const COST_CALC = Number(process.env.CREDITS_COST_CALC) || 10;
 const COST_PDF = Number(process.env.CREDITS_COST_PDF) || 10;
 const STARTER_PDF_LIMIT = Number(process.env.CREDITS_STARTER_PDF_LIMIT) || 30;
 const UNLOCK_DAYS = Number(process.env.CREDITS_CALC_UNLOCK_DAYS) || 31;
+
+/** @deprecated alias */
+const WELCOME_PER_POOL = WELCOME_TOTAL;
 
 function creditsKey(email) {
   return `credits:${emailBlobKey(normalizeEmail(email))}`;
@@ -19,12 +27,25 @@ function monthKey() {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
 }
 
+/**
+ * Migra registros antiguos (lab + machines + fluids) al saldo único.
+ * @param {Record<string, unknown>} r
+ */
+function resolveCreditsAmount(r) {
+  if (r && typeof r.credits === 'number' && Number.isFinite(r.credits)) {
+    return clampInt(r.credits, 0, 1_000_000);
+  }
+  const legacy =
+    clampInt(r?.lab, 0, 1_000_000) +
+    clampInt(r?.machines, 0, 1_000_000) +
+    clampInt(r?.fluids, 0, 1_000_000);
+  return legacy;
+}
+
 /** @returns {import('./creditsLogic.js').CreditsRecord} */
 function defaultRecord() {
   return {
-    lab: WELCOME_PER_POOL,
-    machines: WELCOME_PER_POOL,
-    fluids: WELCOME_PER_POOL,
+    credits: WELCOME_TOTAL,
     welcomeGranted: true,
     subscription: null,
     subscriptionEndsAt: null,
@@ -43,11 +64,11 @@ function normalizeRecord(raw) {
   const base = defaultRecord();
   if (!raw || typeof raw !== 'object') return base;
   const r = /** @type {Record<string, unknown>} */ (raw);
+  const migrated = resolveCreditsAmount(r);
+  const welcomeGranted = Boolean(r.welcomeGranted);
   return {
-    lab: clampInt(r.lab, 0, 1_000_000),
-    machines: clampInt(r.machines, 0, 1_000_000),
-    fluids: clampInt(r.fluids, 0, 1_000_000),
-    welcomeGranted: Boolean(r.welcomeGranted),
+    credits: welcomeGranted || migrated > 0 ? migrated : 0,
+    welcomeGranted,
     subscription:
       r.subscription === 'starter' || r.subscription === 'unlimited' ? r.subscription : null,
     subscriptionEndsAt: r.subscriptionEndsAt ? String(r.subscriptionEndsAt) : null,
@@ -85,7 +106,6 @@ function calcUnlockActive(rec, calcSlug) {
 }
 
 /**
- * Slugs con desbloqueo activo ? fecha ISO de caducidad.
  * @param {import('./creditsLogic.js').CreditsRecord} rec
  * @returns {Record<string, string>}
  */
@@ -150,10 +170,9 @@ async function saveRecord(store, key, rec) {
  * @param {import('./creditsLogic.js').CreditsRecord} rec
  */
 function publicBalance(rec) {
+  const credits = rec.credits;
   return {
-    lab: rec.lab,
-    machines: rec.machines,
-    fluids: rec.fluids,
+    credits,
     subscription: rec.subscription,
     subscriptionEndsAt: rec.subscriptionEndsAt,
     pdfCountMonth: rec.pdfCountMonth,
@@ -174,9 +193,7 @@ async function ensureWelcomeCredits(store, email, opts = {}) {
     return { rec, created: false };
   }
   if (!rec.welcomeGranted || opts.grantWelcome) {
-    rec.lab = WELCOME_PER_POOL;
-    rec.machines = WELCOME_PER_POOL;
-    rec.fluids = WELCOME_PER_POOL;
+    rec.credits = WELCOME_TOTAL;
     rec.welcomeGranted = true;
     await saveRecord(store, key, rec);
     return { rec, created: true };
@@ -187,10 +204,10 @@ async function ensureWelcomeCredits(store, email, opts = {}) {
 
 /**
  * @param {import('./creditsLogic.js').CreditsRecord} rec
- * @param {string} pool
+ * @param {string} _pool
  * @param {string} [calcSlug]
  */
-function hasUnlimitedAccess(rec, pool, calcSlug) {
+function hasUnlimitedAccess(rec, _pool, calcSlug) {
   if (subscriptionActive(rec) && rec.subscription === 'unlimited') return true;
   if (calcSlug && calcUnlockActive(rec, calcSlug)) return true;
   return false;
@@ -200,7 +217,7 @@ function hasUnlimitedAccess(rec, pool, calcSlug) {
  * @param {import('@netlify/blobs').Store} store
  * @param {string} email
  * @param {{
- *   pool: string,
+ *   pool?: string,
  *   amount: number,
  *   reason: string,
  *   idempotencyKey: string,
@@ -208,9 +225,6 @@ function hasUnlimitedAccess(rec, pool, calcSlug) {
  * }} req
  */
 async function consumeCredits(store, email, req) {
-  const pool = /** @type {'lab'|'machines'|'fluids'} */ (
-    req.pool === 'machines' || req.pool === 'fluids' ? req.pool : 'lab'
-  );
   const amount = clampInt(req.amount, 1, 1000);
   const idem = String(req.idempotencyKey || '').trim().slice(0, 120);
   const calcSlug = String(req.calcSlug || '').trim().slice(0, 80);
@@ -226,7 +240,7 @@ async function consumeCredits(store, email, req) {
     return { ok: true, duplicate: true, balance: publicBalance(rec), charged: 0 };
   }
 
-  if (hasUnlimitedAccess(rec, pool, calcSlug)) {
+  if (hasUnlimitedAccess(rec, req.pool, calcSlug)) {
     rec.idempotency[idem] = Date.now();
     await saveRecord(store, key, rec);
     return { ok: true, unlimited: true, balance: publicBalance(rec), charged: 0 };
@@ -235,21 +249,17 @@ async function consumeCredits(store, email, req) {
   if (reason === 'pdf') {
     if (rec.subscription === 'starter' && subscriptionActive(rec)) {
       resetPdfMonthIfNeeded(rec);
-      if (rec.pdfCountMonth >= STARTER_PDF_LIMIT) {
-        const poolBal = rec[pool];
-        if (poolBal < amount) {
-          return { ok: false, error: 'insufficient_credits', balance: publicBalance(rec) };
-        }
+      if (rec.pdfCountMonth >= STARTER_PDF_LIMIT && rec.credits < amount) {
+        return { ok: false, error: 'insufficient_credits', balance: publicBalance(rec) };
       }
     }
   }
 
-  const bal = rec[pool];
-  if (bal < amount) {
+  if (rec.credits < amount) {
     return { ok: false, error: 'insufficient_credits', balance: publicBalance(rec) };
   }
 
-  rec[pool] = bal - amount;
+  rec.credits -= amount;
   rec.idempotency[idem] = Date.now();
 
   if (reason === 'pdf') {
@@ -316,7 +326,6 @@ async function applyCalcUnlock(store, email, calcSlug) {
 }
 
 /**
- * Extrae slug de calculadora desde custom_data Lemon (JSON string u objeto).
  * @param {unknown} customData
  */
 function calcSlugFromCustomData(customData) {
@@ -339,6 +348,7 @@ module.exports = {
   creditsKey,
   COST_CALC,
   COST_PDF,
+  WELCOME_TOTAL,
   WELCOME_PER_POOL,
   defaultRecord,
   normalizeRecord,
