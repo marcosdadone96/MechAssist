@@ -8,6 +8,7 @@ const {
   subscriptionRecordActive,
   tierFromVariant,
   tierFromSubscriptionAttrs,
+  proRecToTierAttrs,
 } = require('./lib/proEntitlementLogic.js');
 const {
   loadRecord,
@@ -86,11 +87,7 @@ exports.handler = async (event) => {
   }
 
   const tier =
-    tierFromVariant(proRec.variantId) ||
-    tierFromSubscriptionAttrs({
-      variant_id: proRec.variantId,
-      product_name: proRec.productName,
-    });
+    tierFromVariant(proRec.variantId) || tierFromSubscriptionAttrs(proRecToTierAttrs(proRec));
   if (tier !== 'starter' && tier !== 'unlimited') {
     return {
       statusCode: 403,

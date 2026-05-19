@@ -18,14 +18,19 @@ const {
   isCalcUnlockVariant,
   subscriptionRecordActive,
   tierFromSubscriptionAttrs,
+  tierFromOrderAttrs,
   subscriptionAttrsAllowed,
 } = require('./lib/proEntitlementLogic.js');
 const {
   tierFromVariant,
+  creditsKey,
+  loadRecord,
+  saveRecord,
   applySubscription,
   revokeSubscription,
   applyCalcUnlock,
   extractCalcSlugFromOrder,
+  calcSlugFromCustomData,
 } = require('./lib/creditsLogic.js');
 
 function getHeader(headers, name) {
@@ -110,7 +115,9 @@ function buildRecord(eventName, attrs, kind) {
   return {
     email,
     variantId: variantId != null ? String(variantId) : null,
+    productId: attrs.product_id != null ? String(attrs.product_id) : null,
     productName: attrs.product_name != null ? String(attrs.product_name) : null,
+    variantName: attrs.variant_name != null ? String(attrs.variant_name) : null,
     active,
     status: attrs.status != null ? String(attrs.status) : '',
     endsAt,
@@ -129,7 +136,9 @@ function toStored(rec) {
     active: rec.active,
     status: rec.status,
     variantId: rec.variantId,
+    productId: rec.productId || null,
     productName: rec.productName || null,
+    variantName: rec.variantName || null,
     endsAt: rec.endsAt,
     renewsAt: rec.renewsAt,
     updatedAt: rec.updatedAt,
@@ -212,16 +221,41 @@ exports.handler = async (event) => {
   const key = emailBlobKey(rec.email);
 
   if (eventName === 'order_refunded') {
-    await store.setJSON(key, {
-      active: false,
-      status: 'refunded',
-      variantId: rec.variantId,
-      endsAt: null,
-      renewsAt: null,
-      updatedAt: new Date().toISOString(),
-      source: 'order',
-      lastEvent: eventName,
-    });
+    const refundSlug = extractCalcSlugFromOrder(attrs, payload.meta);
+    const unlockRefund = isCalcUnlockVariant(rec.variantId) || Boolean(refundSlug);
+    let prevRefund = null;
+    try {
+      prevRefund = await store.get(key, { type: 'json' });
+    } catch (_) {
+      prevRefund = null;
+    }
+    if (prevRefund?.source === 'subscription' && subscriptionRecordActive(prevRefund)) {
+      await store.setJSON(key, {
+        ...prevRefund,
+        lastOrderStatus: 'refunded',
+        lastOrderEvent: eventName,
+        updatedAt: new Date().toISOString(),
+      });
+    } else {
+      await store.setJSON(key, {
+        active: false,
+        status: 'refunded',
+        variantId: rec.variantId,
+        endsAt: null,
+        renewsAt: null,
+        updatedAt: new Date().toISOString(),
+        source: 'order',
+        lastEvent: eventName,
+      });
+    }
+    if (unlockRefund && refundSlug) {
+      const { rec: credRec } = await loadRecord(store, rec.email);
+      if (credRec.calcUnlocks?.[refundSlug]) {
+        delete credRec.calcUnlocks[refundSlug];
+        await saveRecord(store, creditsKey(rec.email), credRec);
+        console.log(`ls-webhook: calc_unlock_revoked email=${rec.email} slug=${refundSlug}`);
+      }
+    }
     console.log(`ls-webhook: refunded email=${rec.email}`);
     return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ received: true }) };
   }
@@ -240,12 +274,39 @@ exports.handler = async (event) => {
     order_id: attrs.order_id ?? null,
   });
 
-  const stored = toStored(rec);
+  let stored = toStored(rec);
+  let prevPro = null;
+  try {
+    prevPro = await store.get(key, { type: 'json' });
+  } catch (_) {
+    prevPro = null;
+  }
+  if (
+    kind === 'order' &&
+    prevPro?.source === 'subscription' &&
+    subscriptionRecordActive(prevPro)
+  ) {
+    stored = {
+      ...prevPro,
+      lastOrderVariantId: rec.variantId,
+      lastOrderEvent: eventName,
+      lastOrderStatus: rec.status,
+      updatedAt: new Date().toISOString(),
+    };
+  }
   await store.setJSON(key, stored);
 
-  const creditTier = tierFromVariant(rec.variantId) || tierFromSubscriptionAttrs(attrs);
+  let creditTier = tierFromVariant(rec.variantId);
+  if (!creditTier) {
+    creditTier =
+      kind === 'order'
+        ? tierFromOrderAttrs(attrs, rec.variantId)
+        : tierFromSubscriptionAttrs(attrs);
+  }
   const orderPaid = kind === 'order' && String(attrs.status || '').toLowerCase() === 'paid';
-  const calcSlug = extractCalcSlugFromOrder(attrs, payload.meta);
+  const calcSlug =
+    extractCalcSlugFromOrder(attrs, payload.meta) ||
+    calcSlugFromCustomData(attrs?.custom_data);
   const isUnlockProduct =
     creditTier === 'calc_unlock' || (kind === 'order' && isCalcUnlockVariant(rec.variantId));
 
@@ -282,6 +343,7 @@ exports.handler = async (event) => {
     if (!stored.active) {
       await store.setJSON(key, { ...stored, active: true, status: stored.status || attrs.status });
     }
+    console.log(`ls-webhook: unlimited_applied email=${rec.email} variant=${rec.variantId}`);
   } else if (creditTier === 'starter' && grantSubscription) {
     await applySubscription(store, rec.email, {
       tier: 'starter',

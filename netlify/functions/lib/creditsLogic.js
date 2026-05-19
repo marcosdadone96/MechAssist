@@ -10,6 +10,7 @@ const {
   tierFromVariant,
   tierFromSubscriptionAttrs,
   subscriptionRecordActive: proSubscriptionRecordActive,
+  proRecToTierAttrs,
 } = require('./proEntitlementLogic.js');
 const { isAllowedCalcUnlockSlug } = require('./calcUnlockCatalog.js');
 
@@ -290,6 +291,10 @@ async function applySubscription(store, email, sub) {
     rec.subscription === 'starter' && subscriptionActive(rec);
   rec.subscription = sub.tier;
   rec.subscriptionEndsAt = sub.endsAt || null;
+  if (sub.tier === 'unlimited' && subscriptionActive(rec)) {
+    await saveRecord(store, key, rec);
+    return rec;
+  }
   const isActiveStarter =
     sub.tier === 'starter' && subscriptionActive(rec);
   if (isActiveStarter && (!wasActiveStarter || rec.credits < COST_CALC)) {
@@ -331,11 +336,7 @@ async function syncSubscriptionFromProRecord(store, email, proRec) {
     return { ok: false, error: 'no_active_subscription' };
   }
   const tier =
-    tierFromVariant(proRec.variantId) ||
-    tierFromSubscriptionAttrs({
-      variant_id: proRec.variantId,
-      product_name: proRec.productName,
-    });
+    tierFromVariant(proRec.variantId) || tierFromSubscriptionAttrs(proRecToTierAttrs(proRec));
   if (tier !== 'starter' && tier !== 'unlimited') {
     return { ok: false, error: 'not_subscription_tier' };
   }

@@ -8,6 +8,8 @@ const {
   subscriptionRecordActive,
   tierFromVariant,
   tierFromSubscriptionAttrs,
+  proRecToTierAttrs,
+  isCalcUnlockVariant,
 } = require('./lib/proEntitlementLogic.js');
 const {
   loadRecord,
@@ -75,12 +77,9 @@ exports.handler = async (event) => {
   const { rec } = await loadRecord(store, email);
   const proActive = subscriptionRecordActive(proRec);
   const tier = proRec
-    ? tierFromVariant(proRec.variantId) ||
-      tierFromSubscriptionAttrs({
-        variant_id: proRec.variantId,
-        product_name: proRec.productName,
-      })
+    ? tierFromVariant(proRec.variantId) || tierFromSubscriptionAttrs(proRecToTierAttrs(proRec))
     : null;
+  const unlockVariant = proRec?.variantId != null && isCalcUnlockVariant(proRec.variantId);
   const creditsSubActive = subscriptionActive(rec);
 
   let hint = 'ok';
@@ -92,6 +91,8 @@ exports.handler = async (event) => {
     hint = 'subscription_not_synced_to_credits';
   } else if (tier === 'starter' && rec.credits < 10) {
     hint = 'starter_low_credits';
+  } else if (unlockVariant && Object.keys(rec.calcUnlocks || {}).length === 0) {
+    hint = 'unlock_not_synced_to_credits';
   }
 
   return {
@@ -103,7 +104,7 @@ exports.handler = async (event) => {
       hint,
       message:
         hint === 'lemon_webhook_never_received'
-          ? `No hay datos Lemon para ${email}. øMismo correo que en el pago?`
+          ? `No hay datos Lemon para ${email}. ùMismo correo que en el pago?`
           : undefined,
       lemon: proRec
         ? {

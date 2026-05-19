@@ -31,6 +31,12 @@ const DEFAULT_UNLIMITED_VARIANT_IDS = [
   '85d69c29-1149-46cf-b335-5c288a685143',
 ];
 
+/** IDs numericos Lemon (API) — Starter 9 EUR en tienda test/live (themechassist Pro). */
+const DEFAULT_STARTER_NUMERIC_VARIANT_IDS = ['1623283'];
+
+/** Producto Lemon compartido por variantes 9 EUR y 25 EUR (mismo nombre en checkout). */
+const LEMON_PRODUCT_THEMECHASSIST_PRO_NUMERIC = '1034986';
+
 /** @returns {Set<string>} */
 function parseAllowedVariantsFromEnv() {
   const raw = process.env.LEMON_PRO_VARIANT_IDS || '';
@@ -54,6 +60,7 @@ function parseStarterVariantsFromEnv() {
     .filter(Boolean)
     .forEach((id) => set.add(id));
   DEFAULT_STARTER_VARIANT_IDS.forEach((id) => set.add(id));
+  DEFAULT_STARTER_NUMERIC_VARIANT_IDS.forEach((id) => set.add(id));
   return set;
 }
 
@@ -84,7 +91,21 @@ function tierFromVariant(variantId) {
 }
 
 /**
+ * @param {Record<string, unknown>} attrs
+ * @returns {boolean}
+ */
+function isSharedThemechassistProProduct(attrs) {
+  const pid = attrs?.product_id != null ? String(attrs.product_id).trim() : '';
+  const product = String(attrs?.product_name || '').toLowerCase();
+  return (
+    pid === LEMON_PRODUCT_THEMECHASSIST_PRO_NUMERIC ||
+    (product.includes('themechassist') && product.includes('pro'))
+  );
+}
+
+/**
  * Lemon webhooks usan variant_id numérico (API); checkout usa UUID. Respaldo por nombre.
+ * No usar "themechassist Pro" a secas como Starter: el producto 25 EUR comparte ese nombre.
  * @param {Record<string, unknown>} attrs
  */
 function tierFromSubscriptionAttrs(attrs) {
@@ -94,26 +115,72 @@ function tierFromSubscriptionAttrs(attrs) {
 
   const product = String(attrs?.product_name || '').toLowerCase();
   const variant = String(attrs?.variant_name || '').toLowerCase();
-  if (!product && !variant) return null;
 
   if (
     product.includes('ilimitado') ||
     product.includes('unlimited') ||
     variant.includes('ilimitado') ||
-    variant.includes('unlimited')
+    variant.includes('unlimited') ||
+    variant.includes('25')
   ) {
     return 'unlimited';
   }
-  if (
-    product.includes('themechassist') &&
-    (product.includes('pro') || product.includes('starter'))
-  ) {
+
+  if (product.includes('starter') || variant.includes('starter') || variant.includes('9')) {
     return 'starter';
   }
-  if (product.includes('starter') || variant.includes('starter')) {
-    return 'starter';
+
+  if (isSharedThemechassistProProduct(attrs)) {
+    if (parseStarterVariantsFromEnv().has(vid)) return 'starter';
+    if (parseUnlimitedVariantsFromEnv().has(vid)) return 'unlimited';
+    if (vid && /^\d+$/.test(vid)) {
+      return 'unlimited';
+    }
   }
+
   return null;
+}
+
+/**
+ * Pedidos one-time (desbloqueo 1 EUR). No aplica la heuristica themechassist Pro → Ilimitado.
+ * @param {Record<string, unknown>} attrs
+ * @param {string | null | undefined} [variantId]
+ * @returns {'starter'|'unlimited'|'calc_unlock'|null}
+ */
+function tierFromOrderAttrs(attrs, variantId) {
+  const vid = variantId != null ? String(variantId).trim() : '';
+  const fromVariant = tierFromVariant(vid);
+  if (fromVariant) return fromVariant;
+
+  if (isCalcUnlockVariant(vid)) return 'calc_unlock';
+
+  const product = String(attrs?.product_name || '').toLowerCase();
+  const variant = String(attrs?.variant_name || '').toLowerCase();
+  if (
+    product.includes('desbloqueo') ||
+    product.includes('unlock') ||
+    product.includes('calculadora') ||
+    variant.includes('desbloqueo') ||
+    variant.includes('unlock')
+  ) {
+    return 'calc_unlock';
+  }
+
+  return null;
+}
+
+/**
+ * @param {Record<string, unknown> | null | undefined} proRec
+ * @returns {Record<string, unknown>}
+ */
+function proRecToTierAttrs(proRec) {
+  if (!proRec || typeof proRec !== 'object') return {};
+  return {
+    variant_id: proRec.variantId,
+    product_id: proRec.productId,
+    product_name: proRec.productName,
+    variant_name: proRec.variantName,
+  };
 }
 
 /**
@@ -172,14 +239,17 @@ function isVariantAllowed(variantId) {
  */
 function subscriptionRecordActive(rec) {
   if (!rec) return false;
+  if (rec.source === 'order') return false;
   const st = String(rec.status || '').toLowerCase();
   if (st === 'expired' || st === 'unpaid' || st === 'paused' || st === 'refunded') return false;
   const ends = rec.endsAt ? Date.parse(String(rec.endsAt)) : NaN;
   if (Number.isFinite(ends) && Date.now() > ends) return false;
+  const tier =
+    tierFromVariant(rec.variantId) || tierFromSubscriptionAttrs(proRecToTierAttrs(rec));
+  if (tier === 'calc_unlock') return false;
   if (rec.active === false) {
     const tier =
-      tierFromVariant(rec.variantId) ||
-      (rec.productName ? tierFromSubscriptionAttrs({ product_name: rec.productName }) : null);
+      tierFromVariant(rec.variantId) || tierFromSubscriptionAttrs(proRecToTierAttrs(rec));
     if (tier === 'starter' || tier === 'unlimited') {
       return st === 'active' || st === 'on_trial' || st === 'past_due' || st === 'cancelled';
     }
@@ -196,6 +266,8 @@ module.exports = {
   isCalcUnlockVariant,
   tierFromVariant,
   tierFromSubscriptionAttrs,
+  tierFromOrderAttrs,
+  proRecToTierAttrs,
   subscriptionAttrsAllowed,
   subscriptionRecordActive,
   DEFAULT_STARTER_VARIANT_IDS,

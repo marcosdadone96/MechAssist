@@ -1,41 +1,44 @@
-# Variables Netlify ó sistema de crÈditos
+# Variables Netlify ù sistema de crùditos
 
 Tras activar `publicFreeRelease: false` y `credits.enabled: true` en `js/config/features.js`:
 
-## CrÈditos
+## Crùditos
 
-| Variable | Ejemplo | DescripciÛn |
+| Variable | Ejemplo | Descripciùn |
 |----------|---------|-------------|
-| `CREDITS_WELCOME_PER_POOL` | `100` | CrÈditos iniciales por hub al verificar email |
-| `CREDITS_COST_CALC` | `10` | Coste por sesiÛn de c·lculo (12 min por defecto en cliente) |
-| `CREDITS_COST_PDF` | `10` | Coste por exportaciÛn PDF |
-| `CREDITS_STARTER_PDF_LIMIT` | `30` | PDF/mes incluidos en plan Starter antes de gastar crÈditos |
-| `CREDITS_CALC_UNLOCK_DAYS` | `30` | DÌas de acceso ilimitado a una calculadora (compra 1 Ä) |
+| `CREDITS_WELCOME_PER_POOL` | `100` | Crùditos iniciales por hub al verificar email |
+| `CREDITS_COST_CALC` | `10` | Coste por sesiùn de cùlculo (12 min por defecto en cliente) |
+| `CREDITS_COST_PDF` | `10` | Coste por exportaciùn PDF |
+| `CREDITS_STARTER_PDF_LIMIT` | `30` | PDF/mes incluidos en plan Starter antes de gastar crùditos |
+| `CREDITS_CALC_UNLOCK_DAYS` | `30` | Dùas de acceso ilimitado a una calculadora (compra 1 ù) |
 
-## Lemon ó variantes (UUID)
+## Lemon ù variantes (UUID)
 
-| Variable | DescripciÛn |
+| Variable | Descripciùn |
 |----------|-------------|
-| `LEMON_VARIANT_STARTER_IDS` | Plan ~9 Ä/mes (`acd30d30-72e7-4434-827e-e51487e492ca` mensual, `bfd83e87-Ö` anual). **Incluidos por defecto en cÛdigo** si la env falta. |
-| `LEMON_VARIANT_UNLIMITED_IDS` | Plan ~25 Ä/mes ilimitado |
-| `LEMON_VARIANT_CALC_UNLOCK_IDS` | Compra desbloqueo calculadora (~1 Ä) |
-| `LEMON_PRO_VARIANT_IDS` | Legacy; si Starter vacÌo, se usa como fallback Starter |
+| `LEMON_VARIANT_STARTER_IDS` | Plan ~9 ù/mes (`acd30d30-72e7-4434-827e-e51487e492ca` mensual, `bfd83e87-ù` anual). **Incluidos por defecto en cùdigo** si la env falta. |
+| `LEMON_VARIANT_UNLIMITED_IDS` | Plan ~25 ù/mes ilimitado (UUID + ID numùrico Lemon si difiere del Starter) |
+| (cùdigo) | Starter numùrico `1623283`, producto compartido `1034986` ù el 25 ù usa otra variante del mismo producto "themechassist Pro" |
+| `LEMON_VARIANT_CALC_UNLOCK_IDS` | Compra desbloqueo calculadora (~1 ù) |
+| `LEMON_PRO_VARIANT_IDS` | Legacy; si Starter vacùo, se usa como fallback Starter |
 
-En checkout Lemon, aÒadir campo personalizado `calc_slug` (ej. `calc-gears.html`) en productos de desbloqueo.
+En checkout Lemon, aùadir campo personalizado `calc_slug` (ej. `calc-gears.html`) en productos de desbloqueo.
 
 ## Modelo de negocio (independiente)
 
 | Producto | Precio | Efecto |
 |----------|--------|--------|
-| **Starter** | 9 Ä/mes (79 Ä/aÒo) | SuscripciÛn: crÈditos + hasta 30 PDF/mes |
-| **Ilimitado** | 25 Ä/mes | SuscripciÛn: sin gastar crÈditos en todo el sitio |
-| **Desbloqueo** | 1 Ä/mes por calculadora | **Sin suscripciÛn**: uso ilimitado solo en esa URL durante ~30 dÌas |
+| **Starter** | 9 ù/mes (79 ù/aùo) | Suscripciùn: crùditos + hasta 30 PDF/mes |
+| **Ilimitado** | 25 ù/mes | Suscripciùn: sin gastar crùditos en todo el sitio |
+| **Desbloqueo** | 1 ù/mes por calculadora | **Sin suscripciùn**: uso ilimitado solo en esa URL durante ~30 dùas |
 
-El desbloqueo puntual usa `LEMON_VARIANT_CALC_UNLOCK_IDS` (distinto de Starter/Ilimitado). El webhook `order_created` llama a `applyCalcUnlock` con el `calc_slug` del pedido.
+El desbloqueo puntual usa `LEMON_VARIANT_CALC_UNLOCK_IDS` (distinto de Starter/Ilimitado). El webhook `order_created` (o suscripciÛn del producto 1 Ä) llama a `applyCalcUnlock` con el `calc_slug` del pedido.
+
+**Importante (1 Ä):** el pedido no usa la regla ´themechassist Pro ? Starter/Ilimitadoª. Debe existir el campo Lemon `calc_slug` (p. ej. `calc-gears.html`). Si Lemon envÌa un `variant_id` numÈrico distinto del UUID, aÒ·dalo a `LEMON_VARIANT_CALC_UNLOCK_IDS`. Tras pagar, ´Actualizar estado de cuentaª ejecuta `credits-reconcile-unlock`.
 
 En cliente: `FEATURES.lemonCheckout.calcUnlock` (URL base Lemon) y `buildCalcUnlockCheckoutUrl(slug)` en `js/services/calcUnlockCheckout.js`.
 
-## Lemon ó modo test vs live
+## Lemon ù modo test vs live
 
 | Modo Lemon | Webhook | Pago de prueba |
 |------------|---------|----------------|
@@ -46,15 +49,15 @@ URL del webhook (test y live): `https://www.themechassist.com/.netlify/functions
 
 El email de la cuenta en la web debe ser **el mismo** que en el checkout Lemon.
 
-Tras pagar en test: men˙ perfil ? **Actualizar estado de cuenta**, o recargar la p·gina (el saldo sincroniza la suscripciÛn Starter si Lemon ya notificÛ al servidor).
+Tras pagar en test: menù perfil ? **Actualizar estado de cuenta**, o recargar la pùgina (el saldo sincroniza la suscripciùn Starter si Lemon ya notificù al servidor).
 
-## Caducidad de suscripciÛn
+## Caducidad de suscripciùn
 
-Cuando Lemon envÌa `subscription_expired` o `status: expired`, el webhook y `credits-balance` llaman a `revokeSubscription`: se quita Starter/Ilimitado del ledger, el saldo pasa a **0** y las m·quinas quedan en solo lectura (como sin crÈditos). Los desbloqueos puntuales de 1 Ä por calculadora **no** se revocan hasta que venza su plazo (~30 dÌas).
+Cuando Lemon envùa `subscription_expired` o `status: expired`, el webhook y `credits-balance` llaman a `revokeSubscription`: se quita Starter/Ilimitado del ledger, el saldo pasa a **0** y las mùquinas quedan en solo lectura (como sin crùditos). Los desbloqueos puntuales de 1 ù por calculadora **no** se revocan hasta que venza su plazo (~30 dùas).
 
 ## Funciones
 
-- `credits-balance` (GET, Bearer sesiÛn) ó sincroniza Starter/Ilimitado desde el blob Pro si existe
-- `credits-consume` (POST, Bearer sesiÛn)
-- `credits-reconcile-subscription` (POST) ó forzar sync tras pago
-- Los crÈditos se guardan en Blobs (`credits:e:Ö`) en el store `mechassist-pro`.
+- `credits-balance` (GET, Bearer sesiùn) ù sincroniza Starter/Ilimitado desde el blob Pro si existe
+- `credits-consume` (POST, Bearer sesiùn)
+- `credits-reconcile-subscription` (POST) ù forzar sync tras pago
+- Los crùditos se guardan en Blobs (`credits:e:ù`) en el store `mechassist-pro`.
