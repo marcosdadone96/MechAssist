@@ -12,6 +12,7 @@ const {
   subscriptionActive,
   activeCalcUnlocks,
   syncSubscriptionFromProRecord,
+  revokeSubscription,
 } = require('./lib/creditsLogic.js');
 
 function corsHeaders(event) {
@@ -73,6 +74,11 @@ exports.handler = async (event) => {
   }
   if (subscriptionRecordActive(proRec)) {
     await syncSubscriptionFromProRecord(store, email, proRec).catch(() => {});
+  } else {
+    const { rec: pre } = await loadRecord(store, email);
+    if (pre.subscription) {
+      await revokeSubscription(store, email).catch(() => {});
+    }
   }
 
   await ensureWelcomeCredits(store, email);

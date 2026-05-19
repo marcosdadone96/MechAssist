@@ -301,6 +301,26 @@ async function applySubscription(store, email, sub) {
 }
 
 /**
+ * Quita Starter/Ilimitado del ledger cuando Lemon marca la suscripcion como inactiva.
+ * Los desbloqueos 1 EUR por calculadora (calcUnlocks) no se tocan.
+ * @param {import('@netlify/blobs').Store} store
+ * @param {string} email
+ */
+async function revokeSubscription(store, email) {
+  const { key, rec } = await loadRecord(store, email);
+  const hadSub = rec.subscription === 'starter' || rec.subscription === 'unlimited';
+  if (!hadSub) return { rec, revoked: false };
+
+  rec.subscription = null;
+  rec.subscriptionEndsAt = null;
+  rec.credits = 0;
+  resetPdfMonthIfNeeded(rec);
+  rec.pdfCountMonth = 0;
+  await saveRecord(store, key, rec);
+  return { rec, revoked: true };
+}
+
+/**
  * Sincroniza suscripciùn Lemon ? ledger de crùditos (tras pago o webhook tardùo).
  * @param {import('@netlify/blobs').Store} store
  * @param {string} email
@@ -438,6 +458,7 @@ module.exports = {
   calcUnlockActive,
   tierFromVariant,
   applySubscription,
+  revokeSubscription,
   syncSubscriptionFromProRecord,
   applyCalcUnlock,
   calcSlugFromCustomData,

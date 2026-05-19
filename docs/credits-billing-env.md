@@ -48,6 +48,10 @@ El email de la cuenta en la web debe ser **el mismo** que en el checkout Lemon.
 
 Tras pagar en test: menú perfil ? **Actualizar estado de cuenta**, o recargar la página (el saldo sincroniza la suscripción Starter si Lemon ya notificó al servidor).
 
+## Caducidad de suscripción
+
+Cuando Lemon envía `subscription_expired` o `status: expired`, el webhook y `credits-balance` llaman a `revokeSubscription`: se quita Starter/Ilimitado del ledger, el saldo pasa a **0** y las máquinas quedan en solo lectura (como sin créditos). Los desbloqueos puntuales de 1 € por calculadora **no** se revocan hasta que venza su plazo (~30 días).
+
 ## Funciones
 
 - `credits-balance` (GET, Bearer sesión) — sincroniza Starter/Ilimitado desde el blob Pro si existe

@@ -23,6 +23,7 @@ const {
 const {
   tierFromVariant,
   applySubscription,
+  revokeSubscription,
   applyCalcUnlock,
   extractCalcSlugFromOrder,
 } = require('./lib/creditsLogic.js');
@@ -256,7 +257,24 @@ exports.handler = async (event) => {
     st === 'past_due' ||
     st === 'cancelled';
 
-  if (creditTier === 'unlimited' && grantSubscription) {
+  const isSubscriptionTier = creditTier === 'starter' || creditTier === 'unlimited';
+  const subscriptionEnded =
+    kind === 'subscription' &&
+    isSubscriptionTier &&
+    (eventName === 'subscription_expired' ||
+      st === 'expired' ||
+      st === 'unpaid' ||
+      st === 'paused' ||
+      !stored.active);
+
+  if (subscriptionEnded && !grantSubscription) {
+    const { revoked } = await revokeSubscription(store, rec.email);
+    if (revoked) {
+      console.log(
+        `ls-webhook: subscription_revoked email=${rec.email} tier=${creditTier} status=${st} event=${eventName}`,
+      );
+    }
+  } else if (creditTier === 'unlimited' && grantSubscription) {
     await applySubscription(store, rec.email, {
       tier: 'unlimited',
       endsAt: rec.endsAt,
@@ -273,10 +291,6 @@ exports.handler = async (event) => {
       await store.setJSON(key, { ...stored, active: true, status: stored.status || attrs.status });
     }
     console.log(`ls-webhook: starter_applied email=${rec.email} credits_granted=1`);
-  } else if (creditTier === 'starter' && !grantSubscription) {
-    console.warn(
-      `ls-webhook: starter_skipped email=${rec.email} status=${stored.status} variant=${rec.variantId} product=${attrs.product_name || '-'}`,
-    );
   } else if (orderPaid && isUnlockProduct && calcSlug) {
     const applied = await applyCalcUnlock(store, rec.email, calcSlug);
     if (applied) {
