@@ -25,12 +25,12 @@
   </head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
@@ -69,12 +69,12 @@
             </div>
           </details>
         </header>
-        <nav class="lab-next-steps" aria-label="Siguiente paso habitual">
-          <h3 class="lab-next-steps__title">Siguiente paso habitual</h3>
+        <nav class="lab-next-steps" data-i18n="keys.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="keys.nextStepsTitle">Siguiente paso habitual</h3>
           <ul class="lab-next-steps__list">
-            <li><a href="calc-shaft.html">Eje · torsión</a> — diámetro mínimo del vastago.</li>
-            <li><a href="calc-iso-fit.html">Ajustes ISO 286</a> — tolerancias cubo–eje.</li>
-            <li><a href="calc-bearings.html">Rodamientos</a> — cargas en apoyos cercanos.</li>
+            <li data-i18n="keys.nextLi1Html" data-i18n-html><a href="calc-shaft.html">Eje · torsión</a> — diámetro mínimo del vastago.</li>
+            <li data-i18n="keys.nextLi2Html" data-i18n-html><a href="calc-iso-fit.html">Ajustes ISO 286</a> — tolerancias cubo–eje.</li>
+            <li data-i18n="keys.nextLi3Html" data-i18n-html><a href="calc-bearings.html">Rodamientos</a> — cargas en apoyos cercanos.</li>
           </ul>
         </nav>
         <div class="lab-presets-row">
@@ -85,8 +85,8 @@
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
               <p class="lab-diagram-wrap__title" data-i18n="keys.diagTitle">Corte del eje · ranura t₁ · chaveta b × h · longitud L</p>
-              <svg id="kyDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama chaveta y eje"></svg>
-              <p class="lab-diagram-caption">
+              <svg id="kyDiagram" xmlns="http://www.w3.org/2000/svg" data-i18n="keys.diagAriaLabel" data-i18n-attr="aria-label" aria-label="Diagrama chaveta y eje"></svg>
+              <p class="lab-diagram-caption" data-i18n="keys.diagCaptionHtml" data-i18n-html>
                 Tres vistas separadas: <strong>corte</strong> (ranura y chaveta), <strong>planta</strong> del eje y <strong>lateral</strong> con cota L. El ancho del lateral está acotado solo para lectura; la cota L es la real.
               </p>
             </div>

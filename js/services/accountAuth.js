@@ -132,4 +132,119 @@ export async function loginAccount(fields, opts = {}) {
   return getCurrentUser();
 }
 
+/**
+ * @param {string} code
+ * @param {'es'|'en'} lang
+ */
+function mapPasswordResetError(code, lang) {
+  const es = {
+    email: 'Email inv\u00e1lido.',
+    incomplete: 'Introduzca el correo.',
+    rate_limited: 'Demasiados intentos. Espere unos minutos e int\u00e9ntelo de nuevo.',
+    mail_failed: 'No se pudo enviar el correo de restablecimiento.',
+    misconfigured_resend: 'Cuenta: falta configuraci\u00f3n en el servidor (RESEND_API_KEY).',
+    misconfigured_from: 'Cuenta: falta remitente en el servidor (AUTH_MAIL_FROM).',
+    json: 'Error en la petici\u00f3n.',
+    default: 'No se pudo enviar el correo.',
+  };
+  const en = {
+    email: 'Invalid email.',
+    incomplete: 'Please enter your email',
+    rate_limited: 'Too many attempts. Please wait a few minutes and try again.',
+    mail_failed: 'Could not send the reset email.',
+    misconfigured_resend: 'Server misconfiguration (RESEND_API_KEY).',
+    misconfigured_from: 'Server misconfiguration (AUTH_MAIL_FROM).',
+    json: 'Invalid request.',
+    default: 'Could not send the reset email.',
+  };
+  const t = lang === 'en' ? en : es;
+  return t[code] || t.default;
+}
+
+/**
+ * @param {string} code
+ * @param {'es'|'en'} lang
+ */
+function mapPasswordCompleteError(code, lang) {
+  const es = {
+    incomplete: 'Introduzca la nueva contrase\u00f1a.',
+    password_short: 'La contrase\u00f1a debe tener al menos 8 caracteres.',
+    invalid_token: 'El enlace no es v\u00e1lido o ya se us\u00f3.',
+    expired_token: 'El enlace ha caducado. Solicite uno nuevo.',
+    rate_limited: 'Demasiados intentos. Espere unos minutos.',
+    json: 'Petici\u00f3n inv\u00e1lida.',
+    default: 'No se pudo actualizar la contrase\u00f1a.',
+  };
+  const en = {
+    incomplete: 'Enter your new password.',
+    password_short: 'Password must be at least 8 characters.',
+    invalid_token: 'This link is invalid or was already used.',
+    expired_token: 'This link has expired. Please request a new one.',
+    rate_limited: 'Too many attempts. Please wait a few minutes.',
+    json: 'Invalid request.',
+    default: 'Could not update your password.',
+  };
+  const t = lang === 'en' ? en : es;
+  return t[code] || t.default;
+}
+
+/**
+ * @param {{ email: string }} fields
+ * @param {{ lang?: 'es'|'en' }} [opts]
+ */
+export async function requestPasswordReset(fields, opts = {}) {
+  if (!FEATURES.useServerAuth) {
+    const lang = opts.lang === 'en' ? 'en' : 'es';
+    throw new Error(
+      lang === 'en'
+        ? 'Password reset is not available in local demo mode.'
+        : 'El restablecimiento no est\u00e1 disponible en el modo demo local.',
+    );
+  }
+  const lang = opts.lang === 'en' ? 'en' : 'es';
+  const email = String(fields.email || '').trim();
+  if (!email) {
+    throw new Error(mapPasswordResetError('incomplete', lang));
+  }
+  const res = await fetch(`${fnBase()}/auth-password-request`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, lang }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(mapPasswordResetError(data.error || 'default', lang));
+  }
+  return { ok: true, ...data };
+}
+
+/**
+ * @param {{ token: string, password: string }} fields
+ * @param {{ lang?: 'es'|'en' }} [opts]
+ */
+export async function completePasswordReset(fields, opts = {}) {
+  if (!FEATURES.useServerAuth) {
+    const lang = opts.lang === 'en' ? 'en' : 'es';
+    throw new Error(
+      lang === 'en'
+        ? 'Password reset is not available in local demo mode.'
+        : 'El restablecimiento no est\u00e1 disponible en el modo demo local.',
+    );
+  }
+  const lang = opts.lang === 'en' ? 'en' : 'es';
+  const res = await fetch(`${fnBase()}/auth-password-reset`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      token: fields.token,
+      password: fields.password,
+    }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(mapPasswordCompleteError(data.error || 'default', lang));
+  }
+  return { ok: true, ...data };
+}
+
 export { getCurrentUser, clearLocalUser } from './localAuth.js';

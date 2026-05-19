@@ -13,7 +13,7 @@ const WELCOME_TOTAL =
 const COST_CALC = Number(process.env.CREDITS_COST_CALC) || 10;
 const COST_PDF = Number(process.env.CREDITS_COST_PDF) || 10;
 const STARTER_PDF_LIMIT = Number(process.env.CREDITS_STARTER_PDF_LIMIT) || 30;
-const UNLOCK_DAYS = Number(process.env.CREDITS_CALC_UNLOCK_DAYS) || 31;
+const UNLOCK_DAYS = Number(process.env.CREDITS_CALC_UNLOCK_DAYS) || 30;
 
 /** @deprecated alias */
 const WELCOME_PER_POOL = WELCOME_TOTAL;

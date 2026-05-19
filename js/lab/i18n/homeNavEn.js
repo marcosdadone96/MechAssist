@@ -2,9 +2,10 @@
  * Shared EN strings for site chrome (nav, aria). Merged by applyModuleI18n on lab/machine pages.
  */
 export const HOME_NAV_EN = {
+  'nav.brandHome': 'Home \u2014 TheMechAssist',
   'aria.siteNav': 'Main navigation',
   'aria.langSelector': 'Language selector',
-  'nav.hubLab': 'Lab',
+  'nav.hubLab': 'Transmission lab',
   'nav.hubMachines': 'Machines',
   'nav.hubFluids': 'Hydraulics',
   'nav.myGearmotors': 'My gearmotors',

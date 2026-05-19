@@ -7,10 +7,13 @@ import { applyMachinePresetLabels } from '../lab/i18n/machineHubPresetLabels.js'
 
 /** @type {Record<string, { es: string; en: string }>} */
 const DUTY_ROWS = {
-  uniform: { es: 'Uniforme', en: 'Uniform' },
-  moderate: { es: 'Moderada', en: 'Moderate' },
-  heavy: { es: 'Pesada', en: 'Heavy' },
-  custom: { es: 'Personalizada', en: 'Custom' },
+  uniform: { es: 'Carga uniforme \u2014 SF \u2248 1,15', en: 'Uniform load \u2014 SF \u2248 1.15' },
+  moderate: { es: 'Choque moderado \u2014 SF \u2248 1,35', en: 'Moderate shock \u2014 SF \u2248 1.35' },
+  heavy: { es: 'Choque pesado \u2014 SF \u2248 1,75', en: 'Heavy shock \u2014 SF \u2248 1.75' },
+  custom: {
+    es: 'Personalizado (editar \u00abFactor de servicio\u00bb arriba)',
+    en: 'Custom (edit Service factor above)',
+  },
 };
 
 /** @param {'es'|'en'} lang */
@@ -20,8 +23,16 @@ function applySelects(lang) {
   if (std) {
     const iso = std.querySelector('option[value="ISO5048"]');
     const cema = std.querySelector('option[value="CEMA"]');
-    if (iso) iso.textContent = en ? 'ISO 5048' : 'ISO 5048';
-    if (cema) cema.textContent = en ? 'CEMA' : 'CEMA';
+    if (iso) {
+      iso.textContent = en
+        ? 'ISO 5048 / DIN 22101 \u2014 analytic approach (default)'
+        : 'ISO 5048 / DIN 22101 \u2014 enfoque anal\u00edtico (predeterminado)';
+    }
+    if (cema) {
+      cema.textContent = en
+        ? 'CEMA \u2014 +6 % margin over steady traction'
+        : 'CEMA \u2014 margen +6 % sobre tracci\u00f3n de r\u00e9gimen';
+    }
   }
   const duty = document.getElementById('loadDuty');
   if (duty) {

@@ -519,6 +519,25 @@ details > summary {
   display: none;
 }
 
+.lab-field-help--gear-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.gear-calc-mode-help__line {
+  margin: 0;
+  font-size: inherit;
+  line-height: 1.45;
+  color: var(--muted, #64748b);
+}
+
+.gear-calc-mode-help__line--active {
+  color: var(--text, #1e293b);
+  padding-left: 0.5rem;
+  border-left: 3px solid var(--accent, #2563eb);
+}
+
 .lab-field-help {
   display: none;
 }
@@ -4159,6 +4178,23 @@ a.lab-badge--unlock-mini:hover {
     color: #f1f5f9;
   }
 
+  .lab-safety-notice {
+    color: #fde68a;
+    background: rgba(120, 53, 15, 0.38);
+    border-color: rgba(251, 191, 36, 0.4);
+    border-left-color: #fbbf24;
+  }
+
+  .lab-safety-notice strong {
+    color: #fef3c7;
+  }
+
+  .lab-calc-hero-lead,
+  .form-lead.lab-calc-hero-lead,
+  .flat-sidebar__lead.lab-calc-hero-lead {
+    color: #e2e8f0;
+  }
+
   .lab-body--hub .lab-card--hub--minimal p {
     color: #94a3b8;
   }
@@ -4764,6 +4800,87 @@ a.lab-badge--unlock-mini:hover {
 
 .lab-fluid-formulas__list li {
   margin-bottom: 0.35rem;
+}
+
+/* Potencia opcional · asesor IA (correas) */
+.lab-advisor-power-block {
+  grid-column: 1 / -1;
+}
+
+.lab-advisor-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.lab-advisor-cta__lead {
+  margin: 0;
+  flex: 1 1 12rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #475569;
+}
+
+.lab-advisor-cta__btn {
+  flex: 0 0 auto;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.lab-advisor-field-details {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.lab-advisor-field-details > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text);
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.lab-advisor-field-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.lab-advisor-field-details[open] > summary {
+  border-bottom: 1px solid var(--border);
+}
+
+.lab-advisor-field-details__body {
+  padding: 0.65rem 0.75rem 0.5rem;
+}
+
+.lab-advisor-inactive {
+  margin-bottom: 0.65rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+}
+
+.lab-advisor-inactive__lead {
+  margin: 0 0 0.35rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #78350f;
+}
+
+.lab-advisor-inactive__hint {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
 }
 
 .premium-pdf-mount {
@@ -5477,6 +5594,17 @@ a.lab-card--hub:focus-visible {
   outline-offset: 3px;
 }
 
+.lab-hub-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.1rem 0 0.5rem;
+}
+
+.lab-hub-badges .lab-badge {
+  margin-bottom: 0;
+}
+
 .lab-card--hub .lab-badge {
   margin-top: 0.1rem;
 }
@@ -5723,6 +5851,24 @@ a.lab-card--hub:focus-visible {
   font-size: 0.98rem;
   line-height: 1.55;
   color: var(--text, #0f172a);
+}
+
+.lab-safety-notice {
+  margin: 0 0 1rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #78350f;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 4px solid #f59e0b;
+  border-radius: 6px;
+  max-width: 52rem;
+}
+
+.lab-safety-notice strong {
+  font-weight: 700;
+  color: #92400e;
 }
 
 .lab-calc-seo {

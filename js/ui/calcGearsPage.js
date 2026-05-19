@@ -188,7 +188,12 @@ function syncGearCalcModeUi() {
   const help = document.getElementById('gCalcModeHelp');
   if (!(help instanceof HTMLElement)) return;
   const t = gearsRuntimeStrings(getLabLang());
-  help.innerHTML = design ? t.calcModeHelpDesignHtml : t.calcModeHelpDiagnosticHtml;
+  help.innerHTML = t.calcModeHelpBothHtml;
+  help.querySelectorAll('[data-gear-mode]').forEach((el) => {
+    if (!(el instanceof HTMLElement)) return;
+    const on = el.getAttribute('data-gear-mode') === (design ? 'design' : 'diagnostic');
+    el.classList.toggle('gear-calc-mode-help__line--active', on);
+  });
 }
 
 function applyGearsHelpI18n() {

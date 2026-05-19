@@ -38,13 +38,13 @@
       })();
     </script>
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
@@ -80,6 +80,21 @@
           </details>
         </header>
 
+        <nav class="lab-next-steps" data-i18n="machineHub.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="machineHub.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="machineHub.nextStepsIncLi1Html" data-i18n-html>
+              <a href="calc-bearings.html">Rodamientos · L10</a> — vida en apoyos del tambor motriz.
+            </li>
+            <li data-i18n="machineHub.nextStepsIncLi2Html" data-i18n-html>
+              <a href="calc-shaft.html">Eje · torsión</a> — dimensionar eje del tambor con el par calculado.
+            </li>
+            <li data-i18n="machineHub.nextStepsIncLi3Html" data-i18n-html>
+              <a href="my-gearmotors.html">Mis motorreductores</a> — verificar par y potencia con catálogo.
+            </li>
+          </ul>
+        </nav>
+
         <details class="help-details flat-help">
           <summary data-i18n="incConv.helpSummary">Guía rápida de cada magnitud</summary>
           <div class="help-details__body" data-i18n="incConv.helpBodyHtml" data-i18n-html>
@@ -103,7 +118,7 @@
             Rellena parámetros coherentes por sector; puede ajustar después.
           </p>
           <div class="flat-ux-preset-row" role="group" aria-label="Presets cinta inclinada">
-            <button type="button" class="btn-flat-preset" data-inc-preset="quarry_short" title="Cantera, L~35 m, carga variada">
+            <button type="button" class="btn-flat-preset" data-inc-preset="quarry_short" data-i18n-attrs="title=incConv.presetQuarryTooltip" title="Cantera, L~35 m, carga variada">
               <span class="btn-flat-preset__name">Cantera · corta</span>
             </button>
             <button type="button" class="btn-flat-preset" data-inc-preset="sand_wet" title="Arena húmeda, mayor μ y resistencia adicional">
@@ -122,25 +137,31 @@
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field">
-              <label for="incDesignStandard">Norma de referencia <span class="info-chip" title="Define el marco de cálculo declarado en informe. CEMA añade margen sobre la tracción de régimen." aria-label="Ayuda norma de referencia.">?</span></label>
+              <label for="incDesignStandard" data-i18n="incConv.labelDesignStandardHtml" data-i18n-html
+                >Norma de referencia <span class="info-chip" title="Define el marco de cálculo declarado en informe. CEMA añade margen sobre la tracción de régimen." aria-label="Ayuda norma de referencia.">?</span></label
+              >
               <select id="incDesignStandard" name="incDesignStandard">
-                <option value="ISO5048" selected>ISO 5048 / DIN 22101 — enfoque analítico</option>
-                <option value="CEMA">CEMA — margen +6 % sobre tracción de régimen</option>
+                <option value="ISO5048" selected data-i18n="incConv.optIso5048">ISO 5048 / DIN 22101 — enfoque analítico</option>
+                <option value="CEMA" data-i18n="incConv.optCema">CEMA — margen +6 % sobre tracción de régimen</option>
               </select>
               <span class="field-hint">Marco declarado en informes.</span>
             </div>
             <div class="field">
-              <label for="incLoadDuty">Tipo de carga (fija el SF) <span class="info-chip" title="Selecciona severidad de servicio y factor de servicio recomendado. Use Personalizado si necesita otro SF." aria-label="Ayuda tipo de carga.">?</span></label>
+              <label for="incLoadDuty" data-i18n="incConv.labelLoadDutyHtml" data-i18n-html
+                >Tipo de carga (fija el SF) <span class="info-chip" data-i18n-attrs="title=incConv.tipLoadDuty" title="Selecciona severidad de servicio y factor de servicio recomendado. Use Personalizado si necesita otro SF." aria-label="Ayuda tipo de carga.">?</span></label
+              >
               <select id="incLoadDuty" name="incLoadDuty">
-                <option value="uniform">Carga uniforme — SF ≈ 1,15</option>
-                <option value="moderate" selected>Choque moderado — SF ≈ 1,35</option>
-                <option value="heavy">Choque pesado — SF ≈ 1,75</option>
-                <option value="custom">Personalizado</option>
+                <option value="uniform" data-i18n="incConv.optUniform">Carga uniforme — SF ≈ 1,15</option>
+                <option value="moderate" selected data-i18n="incConv.optModerate">Choque moderado — SF ≈ 1,35</option>
+                <option value="heavy" data-i18n="incConv.optHeavy">Choque pesado — SF ≈ 1,75</option>
+                <option value="custom" data-i18n="incConv.optCustom">Personalizado (editar «Factor de servicio» arriba)</option>
               </select>
               <p class="field-hint field-hint--dynamic" id="incLoadDutyHint"></p>
             </div>
             <div class="field">
-              <label for="incServiceFactor">Factor de servicio (número) <span class="info-chip" title="Multiplicador de diseño sobre régimen/arranque. Mayor SF = más margen y mayor par requerido." aria-label="Ayuda factor de servicio.">?</span></label>
+              <label for="incServiceFactor" data-i18n="incConv.labelServiceFactorHtml" data-i18n-html
+                >Factor de servicio (número) <span class="info-chip" title="Multiplicador de diseño sobre régimen/arranque. Mayor SF = más margen y mayor par requerido." aria-label="Ayuda factor de servicio.">?</span></label
+              >
               <input id="incServiceFactor" type="number" step="0.05" min="1" max="4" value="1.35" readonly class="input-synced" />
               <span class="field-hint">Sincronizado con tipo de carga salvo «Personalizado».</span>
             </div>
@@ -154,7 +175,9 @@
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
-              <label for="incLength">Longitud L (pendiente) <span class="info-chip" title="Longitud útil de transporte medida sobre la pendiente de la cinta." aria-label="Ayuda longitud de cinta.">?</span></label>
+              <label for="incLength" data-i18n="incConv.labelLengthHtml" data-i18n-html
+                >Longitud L (pendiente) <span class="info-chip" title="Longitud útil de transporte medida sobre la pendiente de la cinta." aria-label="Ayuda longitud de cinta.">?</span></label
+              >
               <input type="range" id="incLengthR" class="flat-slider" min="2" max="120" step="0.1" value="24" aria-label="L" />
               <div class="flat-field__num">
                 <input id="incLength" type="number" step="0.1" min="0.1" value="24" placeholder="ej. 14–80 m" />
@@ -163,7 +186,7 @@
               <p class="field-context muted">Típ. 12–80 m (áridos / alimentación)</p>
             </div>
             <div class="field flat-field--slider">
-              <label for="incHeight">Desnivel H <span class="info-chip" title="Altura vertical entre carga y descarga. Si θ está vacío, se calcula con arcsin(H/L)." aria-label="Ayuda desnivel.">?</span></label>
+              <label for="incHeight" data-i18n="incConv.labelHeightHtml" data-i18n-html>Desnivel H <span class="info-chip" title="Altura vertical entre carga y descarga. Si θ está vacío, se calcula con arcsin(H/L)." aria-label="Ayuda desnivel.">?</span></label>
               <input type="range" id="incHeightR" class="flat-slider" min="0" max="40" step="0.05" value="4.5" aria-label="H" />
               <div class="flat-field__num">
                 <input id="incHeight" type="number" step="0.01" min="0" value="4.5" placeholder="ej. 2–12 m" />
@@ -172,13 +195,31 @@
               <p class="field-context muted">Típ. 2–15 m (cantera / reciclaje). Si θ está vacío → arcsin(H/L)</p>
             </div>
             <div class="field">
-              <label for="incAngle">Ángulo θ (opcional) <span class="info-chip" title="Si lo rellena, el cálculo usa este ángulo en lugar de derivarlo desde H y L." aria-label="Ayuda ángulo.">?</span></label>
+              <label for="incAngle" data-i18n="incConv.labelAngleHtml" data-i18n-html
+                >Ángulo θ (opcional) <span class="info-chip" title="Si lo rellena, el cálculo usa este ángulo en lugar de derivarlo desde H y L." aria-label="Ayuda ángulo.">?</span></label
+              >
               <input id="incAngle" type="number" step="0.1" min="0" max="89" value="" placeholder="vacío = arcsin(H/L)" />
               <span class="field-hint">° — si se rellena, sustituye a H</span>
               <span class="field-hint inc-angle-warning" id="incAngleWarn" hidden>⚠ θ &gt; 18°: usar banda con perfiles/nervios antideslizantes.</span>
             </div>
+            <div class="field" id="incBulkMaterialFieldGeom">
+              <label for="incBulkMaterial" data-i18n="incConv.labelMaterialHtml" data-i18n-html
+                >Tipo de material (para aviso de ángulo)
+                <span class="info-chip" title="Solo afecta al aviso orientativo de ángulo máximo. No entra en el cálculo de potencia." aria-label="Ayuda material.">?</span></label>
+              <select id="incBulkMaterial" name="incBulkMaterial">
+                <option value="default" selected data-i18n="incConv.matDefault">Material general</option>
+                <option value="grain" data-i18n="incConv.matGrain">Grano / cereal</option>
+                <option value="sand_dry" data-i18n="incConv.matSandDry">Arena seca</option>
+                <option value="sand_wet" data-i18n="incConv.matSandWet">Arena húmeda</option>
+                <option value="coal" data-i18n="incConv.matCoal">Carbón / coque</option>
+                <option value="gravel" data-i18n="incConv.matGravel">Grava / árido</option>
+                <option value="soil" data-i18n="incConv.matSoil">Tierra / suelo</option>
+              </select>
+              <p class="field-context muted" data-i18n="incConv.hintMaterial">Solo influye en el aviso de ángulo máximo orientativo; no modifica el cálculo de potencia.</p>
+            </div>
+
             <div class="field flat-field--slider">
-              <label for="incLoadMass">Masa m <span class="info-chip" title="Masa total de material transportado en el tramo considerado por el modelo." aria-label="Ayuda masa de carga.">?</span></label>
+              <label for="incLoadMass" data-i18n="incConv.labelLoadMassHtml" data-i18n-html>Masa m <span class="info-chip" data-i18n-attrs="title=incConv.tipLoadMass" title="Masa total de material transportado en el tramo considerado por el modelo." aria-label="Ayuda masa de carga.">?</span></label>
               <input type="range" id="incLoadMassR" class="flat-slider" min="10" max="8000" step="1" value="900" aria-label="m" />
               <div class="flat-field__num">
                 <input id="incLoadMass" type="number" step="1" min="0.1" value="900" placeholder="ej. 400–5200 kg" />
@@ -187,7 +228,9 @@
               <p class="field-context muted">Masa en el tramo modelado; reparto uniforme como en cinta plana</p>
             </div>
             <div class="field flat-field--slider">
-              <label for="incSpeed">Velocidad v <span class="info-chip" title="Velocidad lineal de la banda. Afecta rpm de tambor y potencia de motor." aria-label="Ayuda velocidad de banda.">?</span></label>
+              <label for="incSpeed" data-i18n="incConv.labelSpeedHtml" data-i18n-html
+                >Velocidad v <span class="info-chip" data-i18n-attrs="title=incConv.tipSpeed" title="Velocidad lineal de la banda. Afecta rpm de tambor y potencia de motor." aria-label="Ayuda velocidad de banda.">?</span></label
+              >
               <input type="range" id="incSpeedR" class="flat-slider" min="0.05" max="5" step="0.01" value="1" aria-label="v" />
               <div class="flat-field__num">
                 <input id="incSpeed" type="number" step="0.01" min="0" value="1.0" placeholder="ej. 0,8–2 m/s" />
@@ -213,18 +256,6 @@
             <span class="flat-accordion__label" data-i18n="incConv.accFriction">Fricción y rendimiento</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
-            <div class="field">
-              <label for="incBulkMaterial" data-i18n="incConv.labelBulkMaterial">Material transportado</label>
-              <select id="incBulkMaterial" name="incBulkMaterial">
-                <option value="grain" data-i18n="incConv.matGrain">Grano / cereal</option>
-                <option value="sand_dry" data-i18n="incConv.matSandDry">Arena seca</option>
-                <option value="sand_wet" data-i18n="incConv.matSandWet">Arena húmeda</option>
-                <option value="coal" data-i18n="incConv.matCoal">Carbón / coque</option>
-                <option value="gravel" data-i18n="incConv.matGravel">Grava / árido</option>
-                <option value="default" selected data-i18n="incConv.matDefault">Material general</option>
-              </select>
-              <span class="field-hint">Límite orientativo de ángulo θ según tipo de granel</span>
-            </div>
             <div class="field flat-field--slider">
               <label for="incFriction">Coeficiente μ <span class="info-chip" title="Coeficiente efectivo de rozamiento global en la pendiente. Orientativo típico: 0,25–0,60 según estado." aria-label="Ayuda coeficiente de fricción.">?</span></label>
               <input type="range" id="incFrictionR" class="flat-slider" min="0.15" max="0.65" step="0.01" value="0.4" aria-label="μ" />
@@ -293,12 +324,12 @@
             <p class="adv-details__note">Masa de banda <strong>0</strong> la excluye del modelo.</p>
             <div class="field-grid">
               <div class="field">
-                <label for="incBeltWidth">Ancho de banda B <span class="info-chip" title="Ancho nominal de cinta. Ayuda a contextualizar caudal y familia de banda." aria-label="Ayuda ancho de banda.">?</span></label>
+                <label for="incBeltWidth" data-i18n="incConv.labelBeltWidthHtml" data-i18n-html>Ancho de banda B <span class="info-chip" data-i18n-attrs="title=incConv.tipBeltWidth" title="Ancho nominal de cinta. Ayuda a contextualizar caudal y familia de banda." aria-label="Ayuda ancho de banda.">?</span></label>
                 <input id="incBeltWidth" type="number" step="0.01" min="0.1" value="0.8" placeholder="ej. 0,65–1,0 m" />
                 <span class="field-hint">m</span>
               </div>
               <div class="field">
-                <label for="incBeltMass">Masa de banda m_b <span class="info-chip" title="Masa propia de la banda usada en el término gravitatorio/rozamiento del modelo extendido." aria-label="Ayuda masa de banda.">?</span></label>
+                <label for="incBeltMass" data-i18n="incConv.labelBeltMassHtml" data-i18n-html>Masa de banda m_b <span class="info-chip" title="Masa propia de la banda usada en el término gravitatorio/rozamiento del modelo extendido." aria-label="Ayuda masa de banda.">?</span></label>
                 <input id="incBeltMass" type="number" step="1" min="0" value="0" placeholder="ej. 45–320 kg" />
                 <span class="field-hint">kg</span>
               </div>
@@ -308,22 +339,22 @@
                 <span class="field-hint">1 = toda la masa activa</span>
               </div>
               <div class="field">
-                <label for="incBeltSlopePart">Banda en pendiente f_p <span class="info-chip" title="Fracción de masa de banda ubicada en el tramo inclinado que contribuye al esfuerzo." aria-label="Ayuda banda en pendiente.">?</span></label>
+                <label for="incBeltSlopePart" data-i18n="incConv.labelBeltSlopePartHtml" data-i18n-html>Banda en pendiente f_p <span class="info-chip" title="Fracción de masa de banda ubicada en el tramo inclinado que contribuye al esfuerzo." aria-label="Ayuda banda en pendiente.">?</span></label>
                 <input id="incBeltSlopePart" type="number" step="0.05" min="0.3" max="1" value="0.9" />
                 <span class="field-hint">fracción de m_b en subida</span>
               </div>
               <div class="field">
-                <label for="incAdditionalResistance">Resistencia adicional <span class="info-chip" title="Pérdidas extra no modeladas (rascadores, sellos, puntos duros, etc.) en Newton." aria-label="Ayuda resistencia adicional.">?</span></label>
+                <label for="incAdditionalResistance" data-i18n="incConv.labelAddResistanceHtml" data-i18n-html>Resistencia adicional <span class="info-chip" title="Pérdidas extra no modeladas (rascadores, sellos, puntos duros, etc.) en Newton." aria-label="Ayuda resistencia adicional.">?</span></label>
                 <input id="incAdditionalResistance" type="number" step="1" min="0" value="0" placeholder="ej. 0–2500 N" />
                 <span class="field-hint">N</span>
               </div>
               <div class="field">
-                <label for="incAccelTime">Tiempo aceleración <span class="info-chip" title="Tiempo de rampa hasta velocidad nominal. Menor tiempo implica mayor pico de arranque." aria-label="Ayuda tiempo de aceleración.">?</span></label>
+                <label for="incAccelTime">Tiempo aceleración <span class="info-chip" data-i18n-attrs="title=incConv.tipAccelTime" title="Tiempo de rampa hasta velocidad nominal. Menor tiempo implica mayor pico de arranque." aria-label="Ayuda tiempo de aceleración.">?</span></label>
                 <input id="incAccelTime" type="number" step="0.1" min="0.05" value="3" />
                 <span class="field-hint">s</span>
               </div>
               <div class="field">
-                <label for="incInertiaFactor">Factor inercia k_in <span class="info-chip" title="Multiplicador por inercias rotativas de tambor/acoplamiento en fase de arranque." aria-label="Ayuda factor de inercia.">?</span></label>
+                <label for="incInertiaFactor" data-i18n="incConv.labelInertiaFactorHtml" data-i18n-html>Factor inercia k_in <span class="info-chip" data-i18n-attrs="title=incConv.tipInertiaFactor" title="Multiplicador por inercias rotativas de tambor/acoplamiento en fase de arranque." aria-label="Ayuda factor de inercia.">?</span></label>
                 <input id="incInertiaFactor" type="number" step="0.05" min="1" max="2" value="1.2" />
                 <span class="field-hint">tambores / acoplamiento</span>
               </div>
@@ -402,10 +433,11 @@
           <div id="incQualityChecklist" class="design-alerts" aria-live="polite" style="margin-top: 0.9rem"></div>
         </section>
 
-        <section class="flat-visual flat-visual--integrated" aria-label="Esquema y referencia">
+        <section class="flat-visual flat-visual--integrated" data-i18n="incConv.visualSectionAria" data-i18n-attr="aria-label" aria-label="Esquema y referencia">
           <div class="flat-visual__workbench">
             <div class="diagram-duo__schematic flat-visual__diagram-col">
-              <svg id="diagramInclined" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema cinta inclinada"></svg>
+              <p class="lab-diagram-caption muted" data-i18n="incConv.diagramNote" style="margin:0 0 0.5rem;font-size:0.8rem"></p>
+              <svg id="diagramInclined" xmlns="http://www.w3.org/2000/svg" data-i18n="incConv.diagramSvgAria" data-i18n-attr="aria-label" aria-label="Esquema cinta inclinada"></svg>
             </div>
             <figure class="flat-visual__photo-block">
               <div class="flat-visual__photo-frame">
@@ -431,6 +463,7 @@
         <section class="panel flat-panel--verify">
           <div class="verify-panel" id="incVerifyPanel">
             <h2 data-i18n="incConv.verifyH2Html" data-i18n-html><span class="panel-icon">✓</span> Comprobar un motorreductor que ya tengo</h2>
+            <p class="muted verify-panel__catalog-lead" style="margin: -0.5rem 0 0.75rem; font-size: 0.84rem" data-i18n="machineHub.verifyCatalogLead">Selecciona un motorreductor de catálogo para comparar su potencia y par con los resultados calculados. No modifica los datos del formulario. Los datos son orientativos según especificaciones publicadas por el fabricante.</p>
             <p class="muted panel-lead" data-i18n="incConv.verifyLeadHtml" data-i18n-html>Comparación con el punto de diseño calculado para <strong>esta</strong> inclinación (misma lógica que cinta plana).</p>
             <div class="verify-grid">
               <div class="field">
@@ -448,7 +481,7 @@
                 <input id="incVerifySearch" type="search" data-verify-search autocomplete="off" />
               </div>
               <div class="field" style="grid-column: 1 / -1">
-                <label for="incVerifyModel">Modelo del catálogo ejemplo <span class="info-chip" title="Se compara contra el punto calculado: potencia, par y rpm." aria-label="Ayuda modelo de catálogo.">?</span></label>
+                <label for="incVerifyModel">Modelo del catálogo ejemplo <span class="info-chip" data-i18n-attrs="title=incConv.tipVerifyModel" title="Se compara contra el punto calculado: potencia, par y rpm." aria-label="Ayuda modelo de catálogo.">?</span></label>
                 <select id="incVerifyModel" data-verify-model></select>
               </div>
             </div>

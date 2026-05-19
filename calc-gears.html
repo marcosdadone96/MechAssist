@@ -44,12 +44,12 @@
   </head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
@@ -132,9 +132,10 @@
                     Diagnóstico — engranaje instalado → comprobar con par/potencia
                   </option>
                 </select>
-                <p class="lab-field-help" id="gCalcModeHelp" data-i18n="gear.designHintHtml" data-i18n-html>
-                  En <strong>diseño</strong> utilice el par o potencia en piñón junto con el chequeo AGMA simplificado para iterar <strong>m</strong> y <strong>b</strong> hasta un uso del material aceptable. En <strong>diagnóstico</strong> fije <strong>z₁, z₂, m, b</strong> reales y compruebe con la carga de servicio.
-                </p>
+                <div class="lab-field-help lab-field-help--gear-modes" id="gCalcModeHelp">
+                  <p class="gear-calc-mode-help__line gear-calc-mode-help__line--active" data-gear-mode="diagnostic"><strong>Diagnóstico:</strong> introduces la geometría real instalada (z₁, z₂, m<sub>n</sub>, b, β) y la carga de servicio → compruebas si está correctamente dimensionada (márgenes SF/SH del modelo).</p>
+                  <p class="gear-calc-mode-help__line" data-gear-mode="design"><strong>Diseño:</strong> introduces z₁, z₂ y módulo (y par o potencia en piñón) → obtienes distancia entre centros y geometría; itera <strong>m</strong> y <strong>b</strong> hasta un uso del material aceptable.</p>
+                </div>
               </div>
               <div class="lab-field">
                 <label for="gZ1" class="lab-field__label-row">

@@ -5,7 +5,7 @@
 
 const STORAGE_KEY = 'mdt_lab_units_v1';
 
-/** @typedef {{ length: 'mm'|'m'|'cm', rotation: 'rpm'|'rad_s', linear: 'm_s'|'mm_s'|'km_h', life?: 'hours'|'Mrev'|'rev' }} LabUnitPrefs */
+/** @typedef {{ length: 'mm'|'m'|'cm'|'in', rotation: 'rpm'|'rad_s', linear: 'm_s'|'mm_s'|'km_h', life?: 'hours'|'Mrev'|'rev' }} LabUnitPrefs */
 
 const DEFAULTS = /** @type {LabUnitPrefs} */ ({
   length: 'mm',
@@ -42,12 +42,13 @@ export function saveLabUnitPrefs(p) {
 
 /**
  * @param {number | null | undefined} mm
- * @param {'mm'|'m'|'cm'} pref
+ * @param {'mm'|'m'|'cm'|'in'} pref
  */
 export function formatLength(mm, pref) {
   if (mm == null || !Number.isFinite(mm)) return '—';
   if (pref === 'm') return `${(mm / 1000).toFixed(2)} m`;
   if (pref === 'cm') return `${(mm / 10).toFixed(2)} cm`;
+  if (pref === 'in') return `${(mm / 25.4).toFixed(2)} in`;
   return `${mm.toFixed(2)} mm`;
 }
 

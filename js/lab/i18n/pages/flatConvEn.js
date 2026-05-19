@@ -261,6 +261,10 @@ export const FLAT_CONVEYOR_EN = {
     'Service class (AGMA/ISO oriented). Sets the numeric factor above except Custom, where you edit the number directly.',
   'flatConv.tipBeltWidth':
     'Geometric reference for reports or PDF. The \u03bc coefficient in this calculator does not depend on width B.',
+  'flatConv.tipLoadMass':
+    'Nominal load mass on length L; the model assumes uniform distribution over that span.',
+  'flatConv.tipLoadDist':
+    'Share of mass m that creates normal on rollers (0.05\u20131). 1\u00a0=\u00a0all load on rollers; lower if some weight goes to structure, hopper, etc.',
   'flatConv.tipBeltMass':
     'Total belt mass. Adds friction from belt weight (carrying + return strands) and enters the accelerated mass at start-up. 0\u00a0= ignored entirely.',
   'flatConv.tipBeltFraction':

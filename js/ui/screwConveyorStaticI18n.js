@@ -455,12 +455,6 @@ function applyBlocks(lang) {
       ? '<span class="panel-icon">\u2713</span> Check a gearmotor'
       : '<span class="panel-icon">\u2713</span> Comprobar motorreductor';
   }
-  const vlead = document.querySelector('#screwVerifyPanel .panel-lead');
-  if (vlead) {
-    vlead.textContent = en
-      ? 'Same logic as the flat belt tool: compare against the calculated screw duty point.'
-      : 'Misma l\u00f3gica que cinta plana: compare con el punto calculado del tornillo.';
-  }
   const vrun = document.querySelector('#screwVerifyPanel [data-verify-run]');
   if (vrun) vrun.textContent = en ? 'Check for this screw' : 'Comprobar para este tornillo';
   const eng = document.querySelector('#screwEngineeringReport')?.closest('.panel');

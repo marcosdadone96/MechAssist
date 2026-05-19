@@ -7,10 +7,7 @@ const ES = {
   helpSummary: 'Metodolog\u00eda y l\u00edmites del modelo',
   helpBody:
     'Geometr\u00eda exterior est\u00e1ndar: primitivos con <strong>m\u209c = m\u2099/cos \u03b2</strong>, <strong>a = (d\u2081+d\u2082)/2</strong>, cabeza/pie desde <strong>m\u2099</strong> (ha = m\u2099, hf \u2248 1,25m\u2099). \u03b1\u2099 es el \u00e1ngulo de presi\u00f3n normal; en helicoidales se muestra tambi\u00e9n \u03b1\u209c. La comprobaci\u00f3n de resistencia sigue un <strong>modelo simplificado inspirado en AGMA 2001</strong> (Lewis con dientes virtuales z/cos\u00b3\u03b2 + contacto aproximado con alivio orientativo por h\u00e9lice) \u2014 no sustituye el m\u00e9todo completo ni datos certificados del material.',
-  calcModeHelpDesignHtml:
-    'En <strong>dise\u00f1o</strong> utilice el par o potencia en pi\u00f1\u00f3n junto con el chequeo AGMA simplificado para iterar <strong>m</strong> y <strong>b</strong> hasta un uso del material aceptable.',
-  calcModeHelpDiagnosticHtml:
-    'En <strong>diagn\u00f3stico</strong> fije <strong>z\u2081, z\u2082, m\u2099, b, \u03b2</strong> reales del tren instalado y compruebe con la carga de servicio (par o potencia).',
+  calcModeHelpBothHtml: `<p class="gear-calc-mode-help__line" data-gear-mode="design"><strong>Dise\u00f1o:</strong> introduces z\u2081, z\u2082 y m\u00f3dulo (y par o potencia en pi\u00f1\u00f3n) \u2192 obtienes distancia entre centros y geometr\u00eda; itera <strong>m</strong> y <strong>b</strong> hasta un uso del material aceptable.</p><p class="gear-calc-mode-help__line" data-gear-mode="diagnostic"><strong>Diagn\u00f3stico:</strong> introduces la geometr\u00eda real instalada (z\u2081, z\u2082, m\u2099, b, \u03b2) y la carga de servicio \u2192 compruebas si est\u00e1 correctamente dimensionada (m\u00e1rgenes SF/SH del modelo).</p>`,
   heroOmega: '\u03c9\u2082 - velocidad angular - rueda 2 (conducida)',
   heroOmegaHintOk: 'Salida en el primitivo; \u03c9\u2082/\u03c9\u2081 = z\u2081/z\u2082.',
   heroOmegaHintNeed: 'Indique giro de entrada > 0 para obtener la salida.',
@@ -97,10 +94,7 @@ const EN = {
   helpSummary: 'Methodology and model limits',
   helpBody:
     'Standard external geometry: pitch diameters use <strong>m\u209c = m\u2099/cos \u03b2</strong>, <strong>a = (d\u2081+d\u2082)/2</strong>, addendum/dedendum from <strong>m\u2099</strong> (ha = m\u2099, hf \u2248 1.25m\u2099). \u03b1\u2099 is the normal pressure angle; helical pairs also show \u03b1\u209c. Strength checking follows a <strong>simplified model inspired by AGMA 2001</strong> (Lewis with virtual teeth z/cos\u00b3\u03b2 + approximate contact with a simple helical relief) \u2014 it does not replace the full method or certified material data.',
-  calcModeHelpDesignHtml:
-    'In <strong>design</strong> mode use pinion torque or power with the simplified AGMA check to iterate <strong>m</strong> and <strong>b</strong> until material usage is acceptable.',
-  calcModeHelpDiagnosticHtml:
-    'In <strong>diagnostic</strong> mode set the installed train <strong>z\u2081, z\u2082, m\u2099, b, \u03b2</strong> and check against service load (torque or power).',
+  calcModeHelpBothHtml: `<p class="gear-calc-mode-help__line" data-gear-mode="design"><strong>Design:</strong> enter z\u2081, z\u2082 and module (plus pinion torque or power) \u2192 centre distance and geometry; iterate <strong>m</strong> and <strong>b</strong> for acceptable material usage.</p><p class="gear-calc-mode-help__line" data-gear-mode="diagnostic"><strong>Diagnostic:</strong> enter the installed geometry (z\u2081, z\u2082, m\u2099, b, \u03b2) and service load \u2192 check whether the pair is adequately sized (model SF/SH margins).</p>`,
   heroOmega: '\u03c9\u2082 - angular speed - wheel 2 (driven)',
   heroOmegaHintOk: 'Output at pitch; \u03c9\u2082/\u03c9\u2081 = z\u2081/z\u2082.',
   heroOmegaHintNeed: 'Enter input speed > 0 to get output.',

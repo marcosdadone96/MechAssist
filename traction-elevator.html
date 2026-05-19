@@ -38,13 +38,13 @@
       })();
     </script>
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
@@ -63,6 +63,17 @@
     <main class="app-main">
       <section class="panel">
         <h2><span class="panel-icon">⇅</span> Ascensor de tracción (montacargas / personas)</h2>
+        <p class="machine-calc-notice" role="note" data-i18n="machineHub.indicativeNotice" data-i18n-html>
+          <strong>Resultados orientativos.</strong> No sustituyen al cálculo conforme a normativa (EN&nbsp;81, ISO&nbsp;4413, etc.) ni a la firma de un ingeniero responsable.
+        </p>
+        <p class="form-lead lab-calc-hero-lead" data-i18n="teConv.heroLeadHtml" data-i18n-html>
+          Modelo orientativo de <strong>cables y contrapeso</strong>: relación de tensiones vs <strong>Euler-Eytelwein</strong>, masa de contrapeso (cabina + 40–50% carga útil),
+          elección de <strong>Ø y número de cables</strong> con factor de seguridad (10 carga / 12 personas), y <strong>par de frenado</strong> en polea.
+          El <strong>esquema del hueco</strong> está a la derecha, como en cinta plana y elevador de cangilones. No sustituye EN 81 ni memoria de instalación.
+        </p>
+        <div class="lab-safety-notice" role="note" aria-label="Aviso de seguridad" data-i18n="teConv.safetyNoticeHtml" data-i18n-html>
+          <strong>&#9888; Cálculo orientativo</strong> — No sustituye al diseño conforme a normativa (EN&nbsp;81-1 / EN&nbsp;81-20) ni a la firma de un técnico competente. Validar siempre con el fabricante y el instalador habilitado.
+        </div>
         <details class="flat-sidebar-intro">
           <summary class="flat-sidebar-intro__summary" data-i18n="teConv.introSummary">
             Descripción y alcance de la calculadora
@@ -71,16 +82,24 @@
             <p class="calc-seo-intro">
               La hoja de cálculo integra masas de cabina, carga útil y contrapeso con el reparto de tensiones en plano inclinado de la vía de cable, aplicando el límite de adherencia tipo Euler–Eytelwein y estimando el par en la polea motriz, siempre con carácter formativo y sin reemplazar la memoria exigible según el reglamento de ascensores de cada país. Interesa a ingenieros de instalaciones y docentes que comparan el efecto de duplicar cables o modificar el coeficiente de fricción en la garganta. Visualice ajustar el contrapeso cuando pasa de mercancías a un servicio con más paradas cortas.
             </p>
-            <p class="form-lead">
-              Modelo orientativo de <strong>cables y contrapeso</strong>: relación de tensiones vs <strong>Euler-Eytelwein</strong>, masa de contrapeso (cabina + 40–50% carga útil),
-              elección de <strong>Ø y número de cables</strong> con factor de seguridad (10 carga / 12 personas), y <strong>par de frenado</strong> en polea.
-              El <strong>esquema del hueco</strong> está a la derecha, como en cinta plana y elevador de cangilones. No sustituye EN 81 ni memoria de instalación.
-            </p>
           </div>
         </details>
+
+        <nav class="lab-next-steps" data-i18n="machineHub.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="machineHub.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="machineHub.nextStepsTeLi1Html" data-i18n-html>
+              <a href="calc-bearings.html">Rodamientos · L10</a> — vida en apoyos de la polea tractora.
+            </li>
+            <li data-i18n="machineHub.nextStepsTeLi2Html" data-i18n-html>
+              <a href="calc-shaft.html">Eje · torsión</a> — eje de la polea con el par calculado.
+            </li>
+          </ul>
+        </nav>
+
         <details class="help-details flat-help">
-          <summary>Guía rápida de cada magnitud</summary>
-          <div class="help-details__body">
+          <summary data-i18n="teConv.helpSummary">Guía rápida de cada magnitud</summary>
+          <div class="help-details__body" data-i18n="teConv.helpBodyHtml" data-i18n-html>
             <p class="help-details__lead muted">
               Junto a cada etiqueta hay un <span class="info-chip info-chip--static" aria-hidden="true">?</span>: en escritorio use hover; en móvil, pulse para abrir la ayuda.
             </p>
@@ -99,10 +118,22 @@
             Rellena un punto de trabajo típico de montacargas; puede ajustar después.
           </p>
           <div class="flat-ux-preset-row" role="group" aria-label="Presets tracción">
-            <button type="button" class="btn-flat-preset" data-te-preset="freight_warehouse" title="Q 2000 kg, 1:1, v 1 m/s">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-te-preset="freight_warehouse"
+              data-i18n-attrs="title=teConv.presetFreightTooltip"
+              title="Montacargas Q 2000 kg, cabina 1200 kg, 1:1, v 1 m/s, H 12 m."
+            >
               <span class="btn-flat-preset__name">Montacargas · almacén</span>
             </button>
-            <button type="button" class="btn-flat-preset" data-te-preset="goods_slow" title="Mayor carga, 2:1, más lento">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-te-preset="goods_slow"
+              data-i18n-attrs="title=teConv.presetGoodsTooltip"
+              title="Mercancías Q 3200 kg, 2:1, v 0,63 m/s, H 8,5 m."
+            >
               <span class="btn-flat-preset__name">Mercancías · 2:1</span>
             </button>
           </div>
@@ -149,8 +180,8 @@
           <div class="field">
             <label for="teDuty"><span data-te-for="lblDuty" data-i18n="teConv.lblDuty">Tipo de servicio</span> <span class="info-chip" data-te-chip="duty">?</span></label>
             <select id="teDuty">
-              <option value="freight" selected>Montacargas / carga (SF ≈ 10)</option>
-              <option value="persons">Personas (SF ≈ 12)</option>
+              <option value="freight" selected data-i18n="teConv.optFreight">Montacargas / carga (SF ≈ 10)</option>
+              <option value="persons" data-i18n="teConv.optPersons">Personas (SF ≈ 12)</option>
             </select>
           </div>
           <div class="field">
@@ -164,11 +195,11 @@
             <div id="teReevingVisual" class="reeving-visual" role="group" aria-label="Selector visual de eslingado">
               <button type="button" class="reeving-visual__opt reeving-visual__opt--active" data-reeving="1_1">
                 <strong>1:1</strong>
-                <span class="reeving-visual__mini">Polea fija · la cabina se mueve a la misma velocidad del cable.</span>
+                <span class="reeving-visual__mini" data-i18n="teConv.reeving11Desc">Polea fija · la cabina se mueve a la misma velocidad del cable.</span>
               </button>
               <button type="button" class="reeving-visual__opt" data-reeving="2_1">
                 <strong>2:1</strong>
-                <span class="reeving-visual__mini">Polea móvil en cabina · mayor ventaja mecánica, más rpm de polea.</span>
+                <span class="reeving-visual__mini" data-i18n="teConv.reeving21Desc">Polea móvil en cabina · mayor ventaja mecánica, más rpm de polea.</span>
               </button>
             </div>
           </div>
@@ -196,9 +227,9 @@
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field">
-            <label for="teKcw"><span data-te-for="lblKcw" data-i18n="teConv.lblKcw">Fracci&oacute;n de Q en contrapeso &oacute;ptimo</span> <span class="info-chip" data-te-chip="kcw">?</span></label>
-            <input id="teKcw" type="number" step="0.05" min="0.35" max="0.55" value="0.45" />
-            <p class="field-context muted" id="teHintKcw">típ. 0,40–0,50 → <em>M</em><sub>cp</sub> ≈ <em>M</em><sub>c</sub> + <em>k</em>·<em>Q</em></p>
+            <label for="teKcw"><span data-te-for="lblKcw" data-i18n="teConv.lblKcw">Fracci&oacute;n de Q compensada (k)</span> <span class="info-chip" data-te-chip="kcw">?</span></label>
+            <input id="teKcw" type="number" step="0.05" min="0.40" max="0.55" value="0.45" placeholder="0,45" />
+            <p class="field-context muted" id="teHintKcw" data-i18n="teConv.hintKcw">Fracci&oacute;n de la carga &uacute;til Q que el contrapeso equilibra. Rango t&iacute;pico: 0,40&ndash;0,50 (norm. EN 81: &ge; 0,40). Con 0,45 y Q=2000&nbsp;kg, el contrapeso es M<sub>c</sub> + 0,45&middot;Q.</p>
           </div>
           <div class="field" id="teMcpManualRow">
             <label for="teMcpManual"><span data-te-for="lblMcpManual" data-i18n="teConv.lblMcpManual">Contrapeso sugerido (editable)</span> <span class="info-chip" data-te-chip="mcpManual">?</span></label>
@@ -252,6 +283,8 @@
         </details>
 
         <div id="mountingConfigHost" class="mounting-config-host" style="margin-top: 1rem"></div>
+
+        <div id="teDesignAlerts" class="design-alerts" aria-live="polite"></div>
 
         <button type="button" class="btn-calc" id="btnTeCalc">Ver motorreductores sugeridos</button>
         <p class="calc-hint flat-calc-hint">
@@ -323,7 +356,7 @@
           </p>
           <div class="machine-visual-duo">
             <div class="be-diag-wrap">
-              <svg id="teDiagram" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama ascensor tracción"></svg>
+              <svg id="teDiagram" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama ascensor tracción" data-i18n="teConv.diagramSvgAria" data-i18n-attr="aria-label" aria-label="Esquema ascensor de traccion"></svg>
             </div>
             <figure class="machine-real-photo">
               <img
@@ -345,9 +378,7 @@
         <section class="panel">
           <div class="verify-panel" id="teVerifyPanel">
             <h2><span class="panel-icon">✓</span> Comprobar un motorreductor que ya tengo</h2>
-            <p class="muted te-verify-lead" style="margin: -0.5rem 0 1rem; font-size: 0.84rem">
-              Compare potencia de motor, par de salida y rpm con el punto de <strong>polea tractora</strong> calculado arriba.
-            </p>
+            <p class="muted verify-panel__catalog-lead" style="margin: -0.5rem 0 1rem; font-size: 0.84rem" data-i18n="machineHub.verifyCatalogLead">Selecciona un motorreductor de catálogo para comparar su potencia y par con los resultados calculados. No modifica los datos del formulario. Los datos son orientativos según especificaciones publicadas por el fabricante.</p>
             <div class="verify-grid">
               <div class="field">
                 <label for="teVerifyBrand"><span data-te-for="lblVBrand" data-i18n="teConv.lblVBrand">Marca</span> <span class="info-chip" data-te-chip="vBrand">?</span></label>
@@ -379,8 +410,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">◎</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title">Motorreductores (catálogo ejemplo · SEW, Siemens, Nord…)</span>
-                  <span class="motors-details__hint">Plegado por defecto — pulse para ver tarjetas por marca y comprobador</span>
+                  <span class="motors-details__title" data-i18n="teConv.motorsTitle">Motorreductores (catálogo ejemplo · SEW, Siemens, Nord…)</span>
+                  <span class="motors-details__hint" data-i18n="teConv.motorsHint">Plegado por defecto — pulse para ver tarjetas por marca y comprobador</span>
                 </span>
               </span>
             </summary>
@@ -395,8 +426,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">⌗</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title">Desglose de ingeniería</span>
-                  <span class="motors-details__hint">Plegado por defecto — relación, estrategias y pasos del modelo</span>
+                  <span class="motors-details__title" data-i18n="teConv.engTitle">Desglose de ingeniería</span>
+                  <span class="motors-details__hint" data-i18n="teConv.engHint">Plegado por defecto — relación, estrategias y pasos del modelo</span>
                 </span>
               </span>
             </summary>

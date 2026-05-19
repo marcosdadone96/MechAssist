@@ -53,16 +53,6 @@
         gap: 0.5rem;
         margin-bottom: 0.5rem;
       }
-      .spring-pro__badge {
-        font-size: 0.58rem;
-        font-weight: 800;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: #fff;
-        background: #0f766e;
-        padding: 0.2rem 0.45rem;
-        border-radius: 6px;
-      }
       .spring-pro__btn {
         font-family: inherit;
         font-size: 0.78rem;
@@ -113,16 +103,6 @@
         max-height: 320px;
         width: 100%;
       }
-      .spring-pro__btn::after {
-        content: ' PRO';
-        margin-left: 0.35rem;
-        padding: 0.08rem 0.32rem;
-        border-radius: 999px;
-        background: #78350f;
-        color: #fff;
-        font-size: 0.58rem;
-        letter-spacing: 0.06em;
-      }
       .spring-collapsible {
         overflow: hidden;
         max-height: 0;
@@ -154,12 +134,12 @@
   </head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
@@ -185,28 +165,32 @@
           </p>
           <details class="lab-calc-seo">
             <summary data-i18n="spring.seoSummary">Contexto ampliado y notas de uso</summary>
-            <p class="calc-seo-intro">
+            <p class="calc-seo-intro" data-i18n="spring.calcSeoIntro">
           Este módulo estima rigidez, deformación bajo carga y tensión cortante en alambre usando el factor de corrección de Wahl para espiras helicoidales en compresión alineado con la filosofía DIN 2089 en forma orientativa, incluyendo indicios de pandeo cuando la esbeltez es elevada. Sirve para resortes de válvulas, topes de seguridad y mecanismos de retorno antes de encargar material certificado. Es útil para ingenieros de producto y talleres que prototipan en serie corta. Por ejemplo, puede mostrar si conviene aumentar el índice de resorte C para bajar la tensión cuando la carrera libre es grande pero el hueco radial es pequeño.
             </p>
           </details>
           <details class="lab-calc-help">
             <summary class="lab-calc-help__summary" data-i18n="spring.helpSummary">Metodología y límites del modelo</summary>
             <div class="lab-calc-help__body">
-              <p class="lab-lead lab-lead--in-help">
+              <p class="lab-lead lab-lead--in-help" data-i18n="spring.methodLeadHtml" data-i18n-html>
                 Rigidez <strong>k</strong>, condici&oacute;n de <strong>servicio</strong> (<strong>s<sub>op</sub></strong> o <strong>F<sub>op</sub></strong>), tensi&oacute;n con <strong>K</strong> (Wahl), comprobaci&oacute;n de <strong>pandeo</strong> (esbeltez docente), bloqueo <strong>F<sub>n</sub></strong> y datos opcionales de <strong>fatiga</strong>.
                 Valores de material y abacos simplificados; valide siempre con <strong>DIN/EN</strong>, dibujo y fabricante.
               </p>
             </div>
           </details>
         </header>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label" data-i18n="spring.presetsLabel">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="springPresetsBar"></div>
+        </div>
 
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-              <p class="lab-diagram-wrap__title">Vista esquem&aacute;tica &middot; se actualiza al cambiar los datos</p>
-              <svg id="springDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Muelle helicoidal de compresi&oacute;n"></svg>
-              <p class="lab-diagram-caption">
-                Proyecci&oacute;n lateral de la h&eacute;lice; cotas <strong>d</strong>, <strong>D<sub>m</sub></strong>, <strong>L<sub>0</sub></strong>. La simulaci&oacute;n Pro acorta la longitud libre manteniendo <strong>n</strong> espiras activas.
+              <p class="lab-diagram-wrap__title" data-i18n="spring.diagTitle">Vista esquem&aacute;tica &middot; se actualiza al cambiar los datos</p>
+              <svg id="springDiagram" xmlns="http://www.w3.org/2000/svg" data-i18n="spring.diagAriaLabel" data-i18n-attr="aria-label" aria-label="Muelle helicoidal de compresi&oacute;n"></svg>
+              <p class="lab-diagram-caption" data-i18n="spring.diagCaptionHtml" data-i18n-html>
+                Proyecci&oacute;n lateral de la h&eacute;lice; cotas <strong>d</strong>, <strong>D<sub>m</sub></strong>, <strong>L<sub>0</sub></strong>. La simulaci&oacute;n de compresi&oacute;n acorta la longitud libre manteniendo <strong>n</strong> espiras activas.
               </p>
             </div>
           </div>
@@ -227,8 +211,10 @@
                   <option value="basic" selected data-i18n="spring.optBasic">Aula (b&aacute;sico)</option>
                   <option value="project" data-i18n="spring.optProject">Proyecto (tau adm. + nota + PDF)</option>
                 </select>
-                <span class="hint">Igual que otras calculadoras del laboratorio</span>
-                <p class="lab-field-help">Proyecto: &tau;<sub>adm</sub> y &tau;<sub>W</sub> manuales, nota en informe y PDF.</p>
+                <span class="hint" data-i18n="spring.hintTier">Igual que otras calculadoras del laboratorio</span>
+                <p class="lab-field-help" data-i18n="spring.helpTier" data-i18n-html>
+                  Modo Aula: c&aacute;lculo b&aacute;sico gratuito. Modo Proyecto: &tau;<sub>adm</sub> manual, Goodman docente y exportar PDF (requiere plan Pro).
+                </p>
               </div>
 
               <div class="lab-field lab-field--wide" id="springProjectPanel" hidden>
@@ -271,7 +257,7 @@
                 </div>
               </div>
               <div class="spring-reset-row lab-field lab-field--wide">
-                <button type="button" id="springResetDefaults" class="lab-btn spring-reset-btn">Restablecer valores por defecto</button>
+                <button type="button" id="springResetDefaults" class="lab-btn spring-reset-btn" data-i18n="spring.resetDefaults">Restablecer valores por defecto</button>
               </div>
 
               <div class="lab-field lab-field--wide">
@@ -282,19 +268,19 @@
                       <path d="M5 12c1.5-2 3-3 5-3M3 8c2-2 4-3 7-3" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Material del hilo</span>
+                  <span class="lab-field__label-text" data-i18n="spring.labelMaterial">Material del hilo</span>
                 </label>
                 <select id="springMaterial">
-                  <option value="f1430" selected>Acero de muelles (F-1430 / 50CrV4 t&iacute;p.)</option>
-                  <option value="aisi302">Inoxidable AISI 302</option>
-                  <option value="piano">Cuerda de piano</option>
-                  <option value="bronce">Bronce fosforoso</option>
+                  <option value="f1430" selected data-i18n="spring.mat.f1430">Acero de muelles (F-1430 / 50CrV4 t&iacute;p.)</option>
+                  <option value="aisi302" data-i18n="spring.mat.aisi302">Inoxidable AISI 302</option>
+                  <option value="piano" data-i18n="spring.mat.piano">Cuerda de piano</option>
+                  <option value="bronce" data-i18n="spring.mat.bronze">Bronce fosforoso</option>
                 </select>
-                <p class="lab-field-help">
+                <p class="lab-field-help" data-i18n="spring.helpMaterial" data-i18n-html>
                   <strong>G</strong> (N/mm<sup>2</sup>) y <strong>&tau;<sub>adm</sub></strong> son <em>orientativos</em> para comparar &oacute;rdenes de magnitud; en proyecto puede fijar &tau;<sub>adm</sub> manual y &tau;<sub>W</sub> (fatiga).
                 </p>
                 <details class="lab-results-details lab-results-details--chevron-end spring-g-table">
-                  <summary>Tabla orientativa de m&oacute;dulo de rigidez G</summary>
+                  <summary data-i18n="spring.gTableSummary">Tabla orientativa de m&oacute;dulo de rigidez G</summary>
                   <div class="lab-table-wrap">
                     <table class="lab-table">
                       <thead>
@@ -319,10 +305,10 @@
                       <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Di&aacute;metro hilo d (mm)</span>
+                  <span class="lab-field__label-text" data-i18n="spring.labelDWire">Di&aacute;metro hilo d (mm)</span>
                 </label>
                 <input id="springDWire" type="number" min="0.2" step="any" value="4" />
-                <p class="lab-field-help">Alambre redondo; con <strong>D<sub>m</sub></strong> define el &iacute;ndice <strong>C = D<sub>m</sub>/d</strong> y el factor de Wahl.</p>
+                <p class="lab-field-help" data-i18n="spring.helpDWire" data-i18n-html>Alambre redondo; con <strong>D<sub>m</sub></strong> define el &iacute;ndice <strong>C = D<sub>m</sub>/d</strong> y el factor de Wahl.</p>
               </div>
 
               <div class="lab-field lab-field--wide">
@@ -465,22 +451,22 @@
               data-lab-convert-title="Conversor (muelle de compresion)"
               data-lab-convert-tip="Longitudes y carreras; fuerzas (N, kN); rigidez k (N/mm); tension MPa o presion bar (MPa = N/mm2)."
             >
-              <span class="lab-units-bar__title">Unidades en resultados</span>
+              <span class="lab-units-bar__title" data-i18n="spring.unitsBarTitle">Unidades en resultados</span>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Longitudes / carreras</span>
+                <span class="lab-units-bar__lbl" data-i18n="spring.lblLength">Longitudes / carreras</span>
                 <select id="labUnitLength" class="lab-units-bar__select">
-                  <option value="mm">mm (taller)</option>
-                  <option value="cm">cm</option>
-                  <option value="m">m (SI)</option>
+                  <option value="mm" data-i18n="spring.optMm">mm (taller)</option>
+                  <option value="cm" data-i18n="spring.optCm">cm</option>
+                  <option value="m" data-i18n="spring.optM">m (SI)</option>
                 </select>
               </label>
-              <p class="lab-units-bar__note">Fuerzas en N; tensiones en MPa. (Giro y velocidad no aplican a este muelle.)</p>
+              <p class="lab-units-bar__note" data-i18n="spring.unitsNote">Fuerzas en N; tensiones en MPa. (Giro y velocidad no aplican a este muelle.)</p>
             </div>
 
             <div id="springHero"></div>
 
             <details class="lab-results-details lab-results-details--chevron-end">
-              <summary>Resultados por elemento</summary>
+              <summary data-i18n="spring.summaryPerElement">Resultados por elemento</summary>
               <div id="springElementResults" class="lab-element-columns"></div>
             </details>
 
@@ -494,7 +480,7 @@
                     d="M32 8l2.2 4.4 4.9-1.3 1.3 4.9 4.4 2.2-2.2 4.4 1.3 4.9-4.9 1.3-2.2 4.4-4.4-2.2-4.9 1.3-1.3-4.9-4.4-2.2 2.2-4.4-1.3-4.9 4.9-1.3 4.4-2.2zm0 10a14 14 0 100 28 14 14 0 000-28z"
                   />
                 </svg>
-                <span class="lab-results-computing__label">Recalculando</span>
+                <span class="lab-results-computing__label" data-i18n="spring.computing">Recalculando</span>
               </div>
               <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked">
                 <summary data-i18n="spring.summaryFull">Resultado completo</summary>
@@ -513,8 +499,7 @@
 
             <div class="spring-pro" id="springProBox">
               <div class="spring-pro__head">
-                <span class="spring-pro__badge">MechSupport Pro</span>
-                <button type="button" class="spring-pro__btn" id="springSimToggle" aria-expanded="false">Simular compresi&oacute;n</button>
+                <button type="button" class="spring-pro__btn" id="springSimToggle" aria-expanded="false" data-i18n="spring.simToggle">Simular compresi&oacute;n</button>
               </div>
               <div class="spring-pro__body" id="springSimBody" hidden>
                 <div class="spring-pro__slider-row">
@@ -526,10 +511,14 @@
             </div>
 
             <details class="lab-fluid-formulas" id="springFormulasBlock">
-              <summary>Memoria de c&aacute;lculo (Wahl, k, tau)</summary>
+              <summary data-i18n="spring.formulasSummary">Memoria de c&aacute;lculo (Wahl, k, tau)</summary>
               <div class="lab-fluid-formulas__body" id="springFormulaBody"></div>
             </details>
 
+            <div class="lab-results-share lab-results-share--footer" id="springShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="springCopyLinkBtn" data-i18n="spring.copyLink">Copiar enlace</button>
+              <div class="lab-copy-toast" id="springCopyToast" role="status" data-i18n="spring.copyToast">¡Enlace copiado!</div>
+            </div>
             <div id="labFluidPdfMountSpring" class="premium-pdf-mount"></div>
           </div>
         </div>

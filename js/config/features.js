@@ -203,7 +203,7 @@ export const FEATURES = Object.freeze({
     /** Duración de sesión de cálculo facturada (ms) — un cargo por ventana. */
     calcSessionMs: 12 * 60 * 1000,
     /** Días de uso ilimitado en una calculadora tras compra puntual (1 €). */
-    calcUnlockDays: 31,
+    calcUnlockDays: 30,
     /** Guardar motorreductores en nube sin suscripción Pro (cuenta verificada). */
     allowRegisteredGearmotorSave: true,
   }),

@@ -19,7 +19,7 @@ if (!base) {
   console.warn('[sitemap] publicSiteBaseUrl vacio: usando marcador REPLACE-WITH-YOUR-DOMAIN');
 }
 
-const exclude = new Set(['register.html', 'checkout.html', 'calc-gearmotor-inertia.html']);
+const exclude = new Set(['register.html', 'checkout.html']);
 const files = fs
   .readdirSync(root)
   .filter((f) => f.endsWith('.html') && !exclude.has(f))

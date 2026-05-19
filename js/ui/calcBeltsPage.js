@@ -34,7 +34,7 @@ import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
 import { metricsFromBeltType } from '../services/iaAdvisor.js';
 import { bindCommerceFilteredSelect } from './commerceSelectBind.js';
-import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
+import { bootSmartDashboardIfEnabled, isSmartLabDashboardActive } from './smartDashboardBoot.js';
 import { LAB_AFFILIATE } from '../config/labAffiliate.js';
 import { getLabLang } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
@@ -138,8 +138,37 @@ const BELT_PRESETS = [
 
 mountTierStatusBar();
 bootSmartDashboardIfEnabled('Correas · laboratorio');
+wireAdvisorPowerField();
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
+
+function wireAdvisorPowerField() {
+  const active = isSmartLabDashboardActive();
+  const cta = document.getElementById('bPowerAdvisorCta');
+  const inactive = document.getElementById('bPowerAdvisorInactive');
+  const details = document.getElementById('bPowerAdvisorDetails');
+  const openBtn = document.getElementById('bPowerAdvisorOpenBtn');
+  const summary = details?.querySelector('summary');
+
+  if (cta instanceof HTMLElement) cta.hidden = active;
+  if (inactive instanceof HTMLElement) inactive.hidden = active;
+  if (details instanceof HTMLDetailsElement) {
+    details.classList.toggle('lab-advisor-field-details--panel-on', active);
+  }
+  if (summary) {
+    summary.setAttribute('data-i18n', active ? 'belt.advisorPowerSummary' : 'belt.advisorPowerSummaryOff');
+    summary.textContent = active
+      ? bx('Asesor IA · comparación de pérdidas (opcional)', 'AI advisor · loss comparison (optional)')
+      : bx('Asesor IA (inactivo) · potencia opcional', 'AI advisor (off) · optional power');
+  }
+
+  openBtn?.addEventListener('click', () => {
+    if (details instanceof HTMLDetailsElement) {
+      details.open = true;
+      document.getElementById('bPowerKw')?.focus();
+    }
+  });
+}
 
 function read(id, fallback) {
   const el = document.getElementById(id);
@@ -243,6 +272,22 @@ function syncBeltFormUi() {
       }, 240);
     }
   });
+
+  const slipEl = document.getElementById('bSlip');
+  if (slipEl instanceof HTMLInputElement) {
+    if (t === 'synchronous') {
+      if (!slipEl.disabled) slipEl.dataset.prevSlip = slipEl.value;
+      slipEl.value = '0';
+      slipEl.disabled = true;
+      slipEl.setAttribute('aria-readonly', 'true');
+    } else {
+      slipEl.disabled = false;
+      slipEl.removeAttribute('aria-readonly');
+      const prev = slipEl.dataset.prevSlip;
+      if (prev != null && prev !== '' && prev !== '0') slipEl.value = prev;
+      else if (slipEl.value === '0') slipEl.value = '2';
+    }
+  }
 }
 
 function buildParams() {
@@ -363,9 +408,8 @@ function refreshCore() {
     if (bt === 'synchronous' && r.Z1 != null && r.Z2 != null) {
       p1Rows.unshift([bx('Dientes (Z₁)', 'Teeth (Z\u2081)'), String(r.Z1)]);
       p2Rows.unshift([bx('Dientes (Z₂)', 'Teeth (Z\u2082)'), String(r.Z2)]);
-    } else {
-      p2Rows.push([bx('Deslizamiento (s)', 'Slip (s)'), `${r.slip_pct.toFixed(2)} %`]);
     }
+    p2Rows.push([bx('Deslizamiento (s)', 'Slip (s)'), `${r.slip_pct.toFixed(2)} %`]);
     elementBox.innerHTML = [
       elementCardHtml(bx('Polea 1 · Motriz', 'Pulley 1 · Driving'), p1Rows),
       elementCardHtml(bx('Polea 2 · Conducida', 'Pulley 2 · Driven'), p2Rows),
@@ -469,6 +513,14 @@ function refreshCore() {
       );
     } else {
       cells.push(
+        metricHtml(
+          bx('Deslizamiento s (síncrona)', 'Slip s (synchronous)'),
+          `${r.slip_pct.toFixed(2)} %`,
+          bx(
+            'Sin deslizamiento cinemático en el modelo ideal; el valor del formulario no aplica.',
+            'No kinematic slip in the ideal model; the form field value is ignored.',
+          ),
+        ),
         metricHtml(
           bx('ω₂ — polea 2 (síncrona)', '\u03c9\u2082 — pulley 2 (synchronous)'),
           r.n2_rpm != null ? formatRotation(r.n2_rpm, u.rotation) : '—',
@@ -626,6 +678,12 @@ function refreshCore() {
         </p>
         <p class="calc-substitution__step">
           ${bx('Velocidad lineal:', 'Linear speed:')} <code>v = \u03c9\u2081 \u00b7 (D\u2081/2000) = ${r.beltSpeed_m_s.toFixed(2)} m/s</code> \u2192 <strong>${vDisp}</strong>
+        </p>
+        <p class="calc-substitution__step">
+          ${bx('Deslizamiento (síncrona):', 'Slip (synchronous):')} <code>s = ${r.slip_pct.toFixed(2)} %</code> \u2192 ${bx(
+            'sin modelo de deslizamiento cinemático',
+            'no kinematic slip model',
+          )}
         </p>
         <p class="calc-substitution__step">
           ${bx('Salida (sin deslizamiento):', 'Output (no slip):')} <code>n\u2082 = n\u2081 \u00b7 D\u2081/D\u2082 = ${r.n1_rpm.toFixed(2)} \u00d7 ${D1.toFixed(2)} / ${D2.toFixed(2)} = ${n2 != null ? n2.toFixed(2) : '\u2014'} RPM</code>

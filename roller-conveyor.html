@@ -38,13 +38,13 @@
       })();
     </script>
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
@@ -80,6 +80,21 @@
           </details>
         </header>
 
+        <nav class="lab-next-steps" data-i18n="machineHub.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="machineHub.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="machineHub.nextStepsRollerLi1Html" data-i18n-html>
+              <a href="calc-bearings.html">Rodamientos · L10</a> — vida en rodillos y apoyos del motor.
+            </li>
+            <li data-i18n="machineHub.nextStepsRollerLi2Html" data-i18n-html>
+              <a href="calc-shaft.html">Eje · torsión</a> — dimensionar eje del rodillo motor.
+            </li>
+            <li data-i18n="machineHub.nextStepsRollerLi3Html" data-i18n-html>
+              <a href="my-gearmotors.html">Mis motorreductores</a> — verificar motorrodillo o moto-reductor.
+            </li>
+          </ul>
+        </nav>
+
         <details class="help-details flat-help">
           <summary data-i18n="rollerConv.helpSummary">Gu&iacute;a r&aacute;pida de cada magnitud</summary>
           <div class="help-details__body" data-i18n="rollerConv.helpBodyHtml" data-i18n-html>
@@ -104,13 +119,31 @@
             Rellena parámetros coherentes por sector; puede ajustar después.
           </p>
           <div class="flat-ux-preset-row" role="group" aria-label="Presets rodillos">
-            <button type="button" class="btn-flat-preset" data-roller-preset="ecommerce_line" title="Línea corta, cajas ligeras, Crr bajo">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-roller-preset="ecommerce_line"
+              data-i18n-attrs="title=rollerConv.presetEcommerceTooltip"
+              title="Línea corta, cajas ligeras, Crr bajo"
+            >
               <span class="btn-flat-preset__name">E-commerce · ligera</span>
             </button>
-            <button type="button" class="btn-flat-preset" data-roller-preset="pallet_distribution" title="Paleta EUR, recorrido medio">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-roller-preset="pallet_distribution"
+              data-i18n-attrs="title=rollerConv.presetPalletTooltip"
+              title="Paleta EUR, recorrido medio"
+            >
               <span class="btn-flat-preset__name">Distribución · paleta</span>
             </button>
-            <button type="button" class="btn-flat-preset" data-roller-preset="heavy_pallet" title="Carga pesada, Crr más alto">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-roller-preset="heavy_pallet"
+              data-i18n-attrs="title=rollerConv.presetHeavyTooltip"
+              title="Carga pesada, Crr más alto"
+            >
               <span class="btn-flat-preset__name">Paleta · pesada</span>
             </button>
           </div>
@@ -123,8 +156,8 @@
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field">
-              <label for="designStandard"
-                >Norma
+              <label for="designStandard" data-i18n="rollerConv.labelStandardHtml" data-i18n-html
+                >Norma de referencia
                 <span
                   class="info-chip"
                   title="Marco declarado en informes. ISO 5048: modelo anal&iacute;tico simplificado aqu&iacute; (no memoria DIN 22101 completa). CEMA: +6 % solo sobre la tracci&oacute;n de r&eacute;gimen; no sustituye el manual CEMA completo."
@@ -133,16 +166,16 @@
                 ></label
               >
               <select id="designStandard">
-                <option value="ISO5048">ISO 5048</option>
-                <option value="CEMA">CEMA</option>
+                <option value="ISO5048" selected data-i18n="rollerConv.optIso5048">ISO 5048 / DIN 22101 — enfoque anal&iacute;tico (predeterminado)</option>
+                <option value="CEMA" data-i18n="rollerConv.optCema">CEMA — margen +6 % sobre tracci&oacute;n de r&eacute;gimen</option>
               </select>
-              <p class="field-hint muted" style="margin: 0.35rem 0 0; font-size: 0.85rem">
+              <p class="field-hint muted" style="margin: 0.35rem 0 0; font-size: 0.85rem" data-i18n="rollerConv.cemaHint">
                 CEMA aplica &times;1,06 solo sobre la fuerza de r&eacute;gimen (tracci&oacute;n horizontal modelada).
               </p>
             </div>
             <div class="field">
-              <label for="loadDuty"
-                >Tipo de carga
+              <label for="loadDuty" data-i18n="rollerConv.labelLoadDutyHtml" data-i18n-html
+                >Tipo de carga (fija el SF)
                 <span
                   class="info-chip"
                   title="Clase de servicio orientativa. Fija el factor num&eacute;rico salvo &laquo;Personalizada&raquo;, donde puede editarlo abajo."
@@ -151,16 +184,16 @@
                 ></label
               >
               <select id="loadDuty">
-                <option value="uniform">Uniforme</option>
-                <option value="moderate" selected>Moderada</option>
-                <option value="heavy">Pesada</option>
-                <option value="custom">Personalizada</option>
+                <option value="uniform" data-i18n="rollerConv.optDutyUniform">Carga uniforme — SF &asymp; 1,15</option>
+                <option value="moderate" selected data-i18n="rollerConv.optDutyModerate">Choque moderado — SF &asymp; 1,35</option>
+                <option value="heavy" data-i18n="rollerConv.optDutyHeavy">Choque pesado — SF &asymp; 1,75</option>
+                <option value="custom" data-i18n="rollerConv.optDutyCustom">Personalizado (editar &laquo;Factor de servicio&raquo; arriba)</option>
               </select>
               <span id="loadDutyHint" class="field-hint"></span>
             </div>
             <div class="field">
-              <label for="serviceFactor"
-                >Factor de servicio
+              <label for="serviceFactor" data-i18n="rollerConv.labelSfHtml" data-i18n-html
+                >Factor de servicio (n&uacute;mero)
                 <span
                   class="info-chip"
                   title="Sincronizado con Tipo de carga (solo lectura salvo modo Personalizado)."
@@ -443,6 +476,8 @@
           <a href="#roller-conveyor-assumptions">Hip&oacute;tesis y exclusiones</a>
         </p>
 
+        <div id="designAlerts" class="design-alerts" aria-live="polite"></div>
+
         <details class="adv-details">
           <summary data-i18n="rollerConv.advSummary" data-i18n-html>Resistencias y arranque <span class="field-badge field-badge--optional">Avanzado</span></summary>
           <div class="adv-details__body">
@@ -555,7 +590,7 @@
         <section class="flat-visual flat-visual--integrated" aria-label="Esquema y referencia fotogr&aacute;fica">
           <div class="flat-visual__workbench">
             <div class="diagram-duo__schematic flat-visual__diagram-col">
-              <svg id="diagramRoller" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama transportador de rodillos"></svg>
+              <svg id="diagramRoller" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama transportador de rodillos" data-i18n="rollerConv.diagramSvgAria" data-i18n-attr="aria-label" aria-label="Esquema transportador de rodillos"></svg>
               <p class="diagram-schematic-note muted" data-i18n="rollerConv.diagramNoteHtml" data-i18n-html>
                 <strong>Lectura r&aacute;pida:</strong> arriba del todo, texto <strong>r&eacute;gimen</strong> (sin SF) frente a <strong>dise&ntilde;o</strong> (&times; SF y &eta;). <strong>L</strong> es la longitud &uacute;til y <strong>D</strong> el di&aacute;metro del rodillo motriz (sus datos del formulario); el dibujo es cualitativo. Las cajas del esquema repiten n&uacute;meros de r&eacute;gimen y de dimensionamiento al motor, alineados con <strong>Resultados finales</strong>.
               </p>
@@ -575,6 +610,7 @@
         <section class="panel flat-panel--verify">
           <div class="verify-panel" id="verifyPanel">
             <h2 data-i18n="rollerConv.verifyH2Html" data-i18n-html><span class="panel-icon">&#10003;</span> Comprobar un motorreductor que ya tengo</h2>
+            <p class="muted verify-panel__catalog-lead" style="margin: -0.5rem 0 0.75rem; font-size: 0.84rem" data-i18n="machineHub.verifyCatalogLead">Selecciona un motorreductor de catálogo para comparar su potencia y par con los resultados calculados. No modifica los datos del formulario. Los datos son orientativos según especificaciones publicadas por el fabricante.</p>
             <p class="muted panel-lead" data-i18n="rollerConv.verifyLeadHtml" data-i18n-html>
               <strong>Dos formas:</strong> (1) Marca y modelo del <strong>cat&aacute;logo de ejemplo</strong> abajo y bot&oacute;n &laquo;Comprobar para esta m&aacute;quina&raquo;. (2) Si su equipo no est&aacute; en la lista, abra el desplegable
               <em>O bien: introducir mi motorreductor a mano</em> (justo debajo), rellene datos de placa/ficha y pulse &laquo;Comprobar con estos datos&raquo;. En ambos casos se contrastan potencia de motor, par nominal de salida y rpm de salida con el punto calculado.
@@ -619,8 +655,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">&#8983;</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title">Desglose de ingenier&iacute;a</span>
-                  <span class="motors-details__hint">Plegado por defecto &mdash; pulse para ver c&aacute;lculos intermedios y razonamiento</span>
+                  <span class="motors-details__title" data-i18n="rollerConv.engTitle">Desglose de ingenier&iacute;a</span>
+                  <span class="motors-details__hint" data-i18n="rollerConv.engHint">Plegado por defecto &mdash; pulse para ver c&aacute;lculos intermedios y razonamiento</span>
                 </span>
               </span>
             </summary>
@@ -639,8 +675,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">&#9678;</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title">Motorreductores (SEW-Eurodrive, Siemens Simogear, Nord, Bonfiglioli, Motovario)</span>
-                  <span class="motors-details__hint">Plegado por defecto &mdash; pulse para ver recomendaciones, exportaci&oacute;n y comprobador</span>
+                  <span class="motors-details__title" data-i18n="rollerConv.motorsTitle">Motorreductores (SEW-Eurodrive, Siemens Simogear, Nord, Bonfiglioli, Motovario)</span>
+                  <span class="motors-details__hint" data-i18n="rollerConv.motorsHint">Plegado por defecto &mdash; pulse para ver recomendaciones, exportaci&oacute;n y comprobador</span>
                 </span>
               </span>
             </summary>

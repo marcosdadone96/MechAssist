@@ -23,4 +23,12 @@ export const KEYS_DIN_EN = {
   'keys.copyToast': 'Link copied!',
   'keys.summaryFull': 'Full results',
   'keys.copyResults': 'Copy results',
+  'keys.diagAriaLabel': 'Parallel key and shaft groove schematic',
+  'keys.diagCaptionHtml':
+    'Three separate views: <strong>section</strong> (groove and key), shaft <strong>plan</strong> and <strong>side</strong> view with length L. Side width is qualitative; L is the actual dimension.',
+  'keys.nextStepsAria': 'Typical next step',
+  'keys.nextStepsTitle': 'Typical next step',
+  'keys.nextLi1Html': '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 minimum journal diameter.',
+  'keys.nextLi2Html': '<a href="calc-iso-fit.html">ISO 286 fits</a> \u2014 hub\u2013shaft tolerances.',
+  'keys.nextLi3Html': '<a href="calc-bearings.html">Bearings</a> \u2014 loads at nearby supports.',
 };

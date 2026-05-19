@@ -98,6 +98,52 @@
       .hpp-mini-table tr:last-child td {
         border-bottom: 0;
       }
+      .hc-verdict-summary {
+        display: grid;
+        gap: 0.5rem;
+        margin: 0.75rem 0 0.35rem;
+        padding: 0.65rem 0.75rem;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        background: linear-gradient(165deg, #ffffff 0%, #f8fafc 100%);
+      }
+      .hc-verdict-summary__title {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.15rem;
+      }
+      .hc-vs-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        font-size: 0.82rem;
+        line-height: 1.35;
+      }
+      .hc-vs-ico {
+        flex-shrink: 0;
+        font-weight: 800;
+        font-size: 1rem;
+        line-height: 1.2;
+      }
+      .hc-vs-item--ok .hc-vs-ico {
+        color: #059669;
+      }
+      .hc-vs-item--bad .hc-vs-ico {
+        color: #dc2626;
+      }
+      .hc-vs-label {
+        font-weight: 800;
+        color: #0f172a;
+      }
+      .hc-vs-sub {
+        font-size: 0.76rem;
+        color: #64748b;
+        font-weight: 600;
+        margin-top: 0.12rem;
+      }
       .hpp-k-note {
         margin-top: 0.4rem;
         padding: 0.45rem 0.55rem;
@@ -162,17 +208,40 @@
         font-weight: 600;
         color: #334155;
       }
+      @media (max-width: 479px) {
+        .lab-calc-layout--hc.lab-calc-layout--with-diag {
+          grid-template-columns: minmax(0, 1fr) !important;
+          grid-template-areas:
+            'diagram'
+            'inputs'
+            'out' !important;
+        }
+        .lab-calc-layout--hc .lab-calc-layout__diagram {
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+        }
+        .lab-calc-layout--hc #hpPressDiagram {
+          width: 100%;
+          max-width: 100%;
+          height: auto;
+          display: block;
+        }
+        .lab-calc-layout--hc .lab-diagram-wrap {
+          max-width: 100%;
+        }
+      }
     </style>
   </head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
@@ -207,7 +276,7 @@
           <details class="lab-calc-help">
             <summary class="lab-calc-help__summary" data-i18n="hpress.helpSummary">Metodología y límites del modelo</summary>
             <div class="lab-calc-help__body">
-              <p class="lab-lead lab-lead--in-help">
+              <p class="lab-lead lab-lead--in-help" data-i18n="hpress.helpLeadHtml" data-i18n-html>
                 Calcula el diámetro de pistón, caudal de bomba, potencia motriz y chequeo básico de columnas para una prensa de 2 o 4 columnas con criterio de productividad.
                 Pandeo Euler y ciclos son <strong>simplificados</strong>; no modela flexión del bastidor ni excentricidad de carga en el plato. No sustituye cálculo estructural ni norma de prensas certificadas.
               </p>
@@ -215,7 +284,25 @@
           </details>
         </header>
 
-        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
+        <nav class="lab-next-steps" data-i18n="fluids.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="fluids.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="fluids.nextStepsHppLi1Html" data-i18n-html>
+              <a href="calc-hydraulic-cylinder.html">Cilindro hidráulico</a> — dimensionar el actuador del émbolo.
+            </li>
+            <li data-i18n="fluids.nextStepsHppLi2Html" data-i18n-html>
+              <a href="calc-hydraulic-pump.html">Bomba hidráulica</a> — verificar caudal para el ciclo.
+            </li>
+            <li data-i18n="fluids.nextStepsHppLi3Html" data-i18n-html>
+              <a href="fluids-hub.html">Hub de fluidos</a> — todas las herramientas oleo/neumáticas.
+            </li>
+          </ul>
+        </nav>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label" data-i18n="hpress.presetsLabel">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="hppPresetsBar"></div>
+        </div>
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
               <p class="lab-diagram-wrap__title" id="hppDiagramTitle" data-i18n="hpress.diagTitle">Prensa hidráulica de 4 columnas (esquema funcional)</p>
@@ -252,7 +339,7 @@
                       <option value="1.4" data-i18n="hpress.optK14">1,4 — un extremo empotrado</option>
                       <option value="2" data-i18n="hpress.optK20">2,0 — libre-libre guiado</option>
                     </select>
-                    <p class="hpp-k-note">
+                    <p class="hpp-k-note" data-i18n="hpress.kNoteHtml" data-i18n-html>
                       Para prensas industriales con columnas guiadas en ambos extremos, usar <strong>K = 0,7</strong> (valor conservador recomendado).
                       <strong>K = 0,5</strong> solo si el empotramiento está garantizado constructivamente.
                     </p>
@@ -369,6 +456,7 @@
             </details>
             <div id="hppResults" class="lab-results"></div>
             <div id="hppAdvisor" class="lab-alerts"></div>
+            <div id="hppVerdictSummary" class="hc-verdict-summary" aria-live="polite"></div>
             <p id="hppVerdict" class="lab-verdict lab-verdict--ok" data-i18n="hpress.verdictOk">SISTEMA APTO</p>
             <div id="labFluidPdfMount" class="premium-pdf-mount"></div>
           </div>

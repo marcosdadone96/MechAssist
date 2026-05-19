@@ -25,12 +25,12 @@
   </head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
@@ -69,6 +69,20 @@
             </div>
           </details>
         </header>
+        <nav class="lab-next-steps" data-i18n="chains.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="chains.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="chains.nextLi1Html" data-i18n-html>
+              <a href="calc-gears.html">Engranajes cilíndricos</a> — comparar relación y distancia entre ejes.
+            </li>
+            <li data-i18n="chains.nextLi2Html" data-i18n-html>
+              <a href="calc-belts.html">Correas</a> — mayor velocidad, deslizamiento elástico.
+            </li>
+            <li data-i18n="chains.nextLi3Html" data-i18n-html>
+              <a href="calc-bearings.html">Rodamientos · L10</a> — apoyos del eje de piñón.
+            </li>
+          </ul>
+        </nav>
         <div class="lab-presets-row">
           <span class="lab-presets-row__label" data-i18n="chains.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="cPresetsBar"></div>

@@ -38,11 +38,14 @@
     </script>
 
     <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
-            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+      <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -62,11 +65,11 @@
         <p class="register-card__eyebrow">TheMechAssist</p>
 
         <div id="registerSignedIn" class="register-panel" hidden>
-          <h1 class="register-card__title" data-reg-tx="signedInTitle">Sesion activa</h1>
+          <h1 class="register-card__title" data-reg-tx="signedInTitle">Sesi&oacute;n activa</h1>
           <p class="register-card__lead" data-reg-tx="signedInLead"></p>
           <div class="register-card__actions">
             <button type="button" class="button button--primary" id="btnLogoutSignedIn" data-reg-tx="logout">
-              Cerrar sesion
+              Cerrar sesi&oacute;n
             </button>
             <a class="button button--accent" id="registerToCheckout" href="checkout.html" hidden data-reg-tx="continueCheckout"
               >Continuar al pago</a
@@ -129,11 +132,78 @@
                   minlength="8"
                   maxlength="128"
                 />
+                <p class="register-forgot-row">
+                  <button type="button" class="register-forgot-link" id="regForgotPasswordBtn" data-reg-tx="forgotLink">
+                    &iquest;Olvidaste tu contrase&ntilde;a?
+                  </button>
+                </p>
               </div>
             </div>
             <div class="register-card__actions register-card__actions--submit">
               <button type="submit" class="button button--primary" data-reg-tx="loginSubmit">Entrar</button>
               <a class="button button--ghost" href="index.html" data-reg-tx="linkHome">Inicio</a>
+            </div>
+          </form>
+
+          <form id="registerForgotForm" class="register-form register-form--forgot" hidden novalidate>
+            <h1 class="register-card__title" data-reg-tx="forgotHeading">Recuperar contrase&ntilde;a</h1>
+            <p class="register-card__lead" data-reg-tx="forgotLead">
+              Introduce tu correo y te enviaremos un enlace para elegir una contrase&ntilde;a nueva.
+            </p>
+            <div id="registerForgotError" class="register-error" role="alert" aria-live="polite" hidden></div>
+            <div class="field-grid field-grid--essential register-form__fields">
+              <div class="field">
+                <label for="regForgotEmail">
+                  <span data-reg-part="emailLabel">Correo electr&oacute;nico</span>
+                </label>
+                <input id="regForgotEmail" name="email" type="email" autocomplete="username" required maxlength="120" />
+              </div>
+            </div>
+            <div class="register-card__actions register-card__actions--submit">
+              <button type="submit" class="button button--primary" data-reg-tx="forgotSubmit">Enviar enlace</button>
+              <button type="button" class="button button--ghost" id="regForgotBackBtn" data-reg-tx="forgotBack">Volver al inicio de sesi&oacute;n</button>
+            </div>
+          </form>
+
+          <form id="registerResetForm" class="register-form register-form--reset" hidden novalidate>
+            <h1 class="register-card__title" data-reg-tx="resetHeading">Nueva contrase&ntilde;a</h1>
+            <p class="register-card__lead" data-reg-tx="resetLead">
+              Elige una contrase&ntilde;a nueva para tu cuenta (m&iacute;nimo 8 caracteres).
+            </p>
+            <div id="registerResetError" class="register-error" role="alert" aria-live="polite" hidden></div>
+            <div class="field-grid field-grid--essential register-form__fields">
+              <div class="field">
+                <label for="regResetPassword">
+                  <span data-reg-tx="resetPwLabel">Contrase&ntilde;a nueva</span>
+                </label>
+                <input
+                  id="regResetPassword"
+                  name="password"
+                  type="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="8"
+                  maxlength="128"
+                />
+              </div>
+              <div class="field">
+                <label for="regResetPassword2">
+                  <span data-reg-tx="resetPw2Label">Confirmar contrase&ntilde;a</span>
+                </label>
+                <input
+                  id="regResetPassword2"
+                  name="password2"
+                  type="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="8"
+                  maxlength="128"
+                />
+              </div>
+            </div>
+            <div class="register-card__actions register-card__actions--submit">
+              <button type="submit" class="button button--primary" data-reg-tx="resetSubmit">Guardar contrase&ntilde;a</button>
+              <a class="button button--ghost" href="register.html?auth=login" data-reg-tx="resetBackLogin">Ir a iniciar sesi&oacute;n</a>
             </div>
           </form>
 
@@ -147,21 +217,39 @@
             <div class="field">
               <label for="regName">
                 <span data-reg-part="nameLabel">Nombre</span>
-                <span class="info-chip" data-reg-tip="nameChip" title="" aria-label="">?</span>
+                <span
+                  class="info-chip"
+                  data-reg-tip="nameChip"
+                  title="Tu nombre completo; se mostrar&#225; en el panel de cuenta."
+                  aria-label="Ayuda: nombre"
+                  >?</span
+                >
               </label>
               <input id="regName" name="name" type="text" autocomplete="name" required maxlength="120" />
             </div>
             <div class="field">
               <label for="regEmail">
                 <span data-reg-part="emailLabel">Email</span>
-                <span class="info-chip" data-reg-tip="emailChip" title="" aria-label="">?</span>
+                <span
+                  class="info-chip"
+                  data-reg-tip="emailChip"
+                  title="Correo para la cuenta y el enlace de verificaci&#243;n."
+                  aria-label="Ayuda: correo electr&#243;nico"
+                  >?</span
+                >
               </label>
               <input id="regEmail" name="email" type="email" autocomplete="email" required maxlength="120" />
             </div>
             <div class="field">
               <label for="regPassword">
-                <span data-reg-part="pwLabel">Password</span>
-                <span class="info-chip" data-reg-tip="pwChip" title="" aria-label="">?</span>
+                <span data-reg-part="pwLabel">Contrase&ntilde;a nueva</span>
+                <span
+                  class="info-chip"
+                  data-reg-tip="pwChip"
+                  title="M&#237;nimo 8 caracteres."
+                  aria-label="Ayuda: contrase&#241;a"
+                  >?</span
+                >
               </label>
               <input
                 id="regPassword"
@@ -171,12 +259,36 @@
                 required
                 minlength="8"
                 maxlength="128"
+                aria-describedby="regPasswordRequirements regPasswordStrengthLabel"
               />
+              <p class="register-pw-hint" id="regPasswordRequirements" data-reg-tx="pwRequirements">
+                M&#237;nimo 8 caracteres. Recomendamos mezclar letras, n&#250;meros y s&#237;mbolos.
+              </p>
+              <div class="register-pw-strength" id="regPasswordStrength" hidden>
+                <div
+                  class="register-pw-strength__track"
+                  id="regPasswordStrengthMeter"
+                  role="meter"
+                  aria-valuemin="0"
+                  aria-valuemax="3"
+                  aria-valuenow="0"
+                  aria-label="Fortaleza de la contrase&#241;a"
+                >
+                  <span class="register-pw-strength__fill" id="regPasswordStrengthFill"></span>
+                </div>
+                <p class="register-pw-strength__label" id="regPasswordStrengthLabel" aria-live="polite"></p>
+              </div>
             </div>
             <div class="field">
               <label for="regPassword2">
-                <span data-reg-part="pw2Label">Confirmar</span>
-                <span class="info-chip" data-reg-tip="pw2Chip" title="" aria-label="">?</span>
+                <span data-reg-part="pw2Label">Confirmar contrase&ntilde;a</span>
+                <span
+                  class="info-chip"
+                  data-reg-tip="pw2Chip"
+                  title="Debe coincidir con la contrase&#241;a anterior."
+                  aria-label="Ayuda: confirmar contrase&#241;a"
+                  >?</span
+                >
               </label>
               <input
                 id="regPassword2"

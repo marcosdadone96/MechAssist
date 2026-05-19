@@ -42,7 +42,8 @@ const MAX_ANGLE_BY_MATERIAL = {
   sand_wet: { max: 12, labelEs: 'Arena húmeda', labelEn: 'Wet sand' },
   coal: { max: 18, labelEs: 'Carbón / coque', labelEn: 'Coal / coke' },
   gravel: { max: 20, labelEs: 'Grava / árido', labelEn: 'Gravel / aggregate' },
-  default: { max: 18, labelEs: 'Material general', labelEn: 'General bulk' },
+  soil: { max: 15, labelEs: 'Tierra / suelo', labelEn: 'Soil / earth' },
+  default: { max: 18, labelEs: 'Material general', labelEn: 'General material' },
 };
 
 /**
@@ -60,8 +61,8 @@ function buildMaterialAngleAlert(angleDeg, materialKey, lang) {
   return {
     level: /** @type {const} */ ('warn'),
     text: en
-      ? `⚠ Angle (${formatNum(angleDeg, 1)}°) exceeds the typical limit for ${matLabel} (~${row.max}°). Verify with the belt supplier and material datasheet.`
-      : `⚠ Ángulo (${formatNum(angleDeg, 1)}°) supera el límite típico para ${matLabel} (~${row.max}°). Verifique con el fabricante de la banda y el datasheet del material.`,
+      ? `⚠ Angle (${formatNum(angleDeg, 1)}°) exceeds the typical limit for ${matLabel} (~${row.max}°). Verify with the belt manufacturer and material datasheet before proceeding.`
+      : `⚠ Ángulo (${formatNum(angleDeg, 1)}°) supera el límite típico para ${matLabel} (~${row.max}°). Verifique con el fabricante de la banda y el datasheet del material antes de proceder.`,
   };
 }
 
@@ -75,7 +76,6 @@ const inputIds = [
   'incLoadDistribution',
   'incBeltSlopePart',
   'incSpeed',
-  'incBulkMaterial',
   'incFriction',
   'incEfficiency',
   'incRollerD',
@@ -85,7 +85,7 @@ const inputIds = [
   'incServiceFactor',
 ];
 
-const selectIds = ['incDesignStandard', 'incLoadDuty'];
+const selectIds = ['incDesignStandard', 'incLoadDuty', 'incBulkMaterial'];
 const PHYSICAL_LIMITS = Object.freeze({
   incLength: { min: 0.5, max: 300 },
   incHeight: { min: 0, max: 300 },
@@ -1072,7 +1072,7 @@ selectIds.forEach((id) => {
   const el = document.getElementById(id);
   if (el instanceof HTMLSelectElement) {
     el.addEventListener('change', () => {
-      syncIncLoadDutyUi();
+      if (id === 'incLoadDuty') syncIncLoadDutyUi();
       refresh();
     });
   }

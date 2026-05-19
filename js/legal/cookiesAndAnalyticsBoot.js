@@ -127,6 +127,12 @@
 
   refreshCanonicalAndOg();
 
+  try {
+    if (new URLSearchParams(location.search).has('promo')) return;
+  } catch (_) {
+    /* ignore */
+  }
+
   var consent = getConsent();
   if (consent === 'analytics') {
     loadGtag();

@@ -2,6 +2,8 @@
 export const COUPLINGS_EN = {
   'coup.docTitle': 'Coupling selector \u2014 TheMechAssist',
   'coup.h2': 'Industrial couplings \u00b7 catalogue selection',
+  'coup.dataNoteHtml':
+    '<strong>Sample data:</strong> Lovejoy / KTR / Flender style models with indicative T<sub>nom</sub>. For orders, use the official manufacturer datasheet.',
   'coup.heroLead':
     'Design torque from <strong>P</strong>, <strong>n</strong> and <strong>K</strong>; compare with demo model <strong>T<sub>nom</sub></strong> (Lovejoy / KTR / Flender) before ordering official data.',
   'coup.helpSummary': 'Methodology and limits',
@@ -20,5 +22,33 @@ export const COUPLINGS_EN = {
   'coup.copyResults': 'Copy results',
   'coup.seoSummary': 'Extended context and usage notes',
   'coup.calcSeoIntro':
-    'This module takes the design torque from power, speed and service factor and checks it against nominal torques of jaw-type or similar elastic coupling models from a demo catalogue. It screens sizes before requesting the official data sheet and checks maximum bore. Useful for maintenance engineers replacing couplings on pumps and fans, and for designers integrating standard motors. For example, it shows whether the same model can handle increased power after a fan upgrade.',
+    'This module takes the design torque from power, speed and service factor and checks it against nominal torques of jaw-type or similar elastic coupling models from a demo catalogue. It screens sizes before requesting the official data sheet and checks maximum bore. Useful for maintenance engineers replacing couplings on pumps and fans, and for designers integrating standard motors. For example, it can show whether the same model can handle increased power after a fan upgrade.',
+  'coup.kTableSummary': 'Recommended K\u2090 table (application factor)',
+  'coup.thLoadType': 'Load type',
+  'coup.thStartCond': 'Starting condition',
+  'coup.thKaRec': 'Recommended K\u2090',
+  'coup.thApply': 'Apply',
+  'coup.row1Load': 'Uniform (fan, centrifugal pump)',
+  'coup.row1Start': 'Soft (VFD / ramp)',
+  'coup.row1Btn': 'Use 1.25',
+  'coup.row2Load': 'Uniform to moderate (light belt, gentle mixer)',
+  'coup.row2Start': 'Standard direct',
+  'coup.row2Btn': 'Use 1.50',
+  'coup.row3Load': 'Moderate (conveyor with variable load)',
+  'coup.row3Start': 'Frequent starts',
+  'coup.row3Btn': 'Use 1.75',
+  'coup.row4Load': 'Medium shock (light crushing, dense agitator)',
+  'coup.row4Start': 'Direct or occasional reversal',
+  'coup.row4Btn': 'Use 2.00',
+  'coup.row5Load': 'High shock (crushing, severe peaks)',
+  'coup.row5Start': 'Hard start / frequent reversal',
+  'coup.row5Btn': 'Use 2.75',
+  'coup.kaFootnote':
+    'Indicative values for pre-selection. If in doubt, use the most conservative value and confirm with the manufacturer catalogue.',
+  'coup.diagTitle': 'Assembly \u00b7 flanges, elastic element and torque path',
+  'coup.diagAriaLabel': 'Flexible coupling diagram',
+  'coup.diagCaptionHtml':
+    'Educational <strong>jaw-type</strong> schematic: torque <strong>T</strong> is transmitted through the elastomer; in the catalogue always compare <strong>T<sub>design</sub> \u2264 T<sub>nom</sub></strong>.',
+  'coup.footnoteMisalign':
+    'Indicative allowable misalignment: jaw couplings often allow angular \u2264 1\u00b0 and radial \u2264 0.1\u20130.3 mm. For larger misalignment, consider disc or universal joint couplings.',
 };

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkout Pro — TheMechAssist</title>
-    <meta name="description" content="Contratar o simular pago del plan Pro TheMechAssist (no indexado)." />
+    <meta name="description" content="Elige tu plan Pro TheMechAssist. Acceso inmediato a todas las calculadoras avanzadas." />
     <meta name="robots" content="noindex" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
@@ -15,9 +15,10 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/checkout.html" id="mdr-og-url" />
     <meta property="og:title" content="Checkout Pro — TheMechAssist" />
-    <meta property="og:description" content="Contratar o simular pago del plan Pro TheMechAssist (no indexado)." />
+    <meta property="og:description" content="Elige tu plan Pro TheMechAssist. Acceso inmediato a todas las calculadoras avanzadas." />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Checkout Pro — TheMechAssist" />
+    <meta name="twitter:description" content="Elige tu plan Pro TheMechAssist. Acceso inmediato a todas las calculadoras avanzadas." />
     <link rel="stylesheet" href="css/app.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
@@ -36,11 +37,14 @@
     </script>
 
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
-            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+      <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
       <div class="site-nav__end">
@@ -93,8 +97,26 @@
               <header class="checkout-plan-card__head">
                 <h3 class="checkout-plan-card__name" id="coStarterHeading">Starter</h3>
                 <p class="checkout-plan-card__price" id="coStarterPrice">9 &#8364;/mes</p>
+                <p class="checkout-plan-card__renewal-note" data-i18n="pricing.renewalNoteHtml" data-i18n-html>
+                  Se renueva automáticamente. Cancela en cualquier momento desde
+                  <a href="https://mechassist.lemonsqueezy.com/billing" target="_blank" rel="noopener">tu portal de cliente</a>.
+                </p>
               </header>
               <p class="checkout-plan-card__hint muted" id="coStarterHint"></p>
+              <p class="checkout-plan-card__credits-hint muted" id="coStarterCreditsHint" data-credits-pricing-hint hidden></p>
+              <details class="checkout-plan-card__credits-details" id="coStarterCreditsDetails" hidden>
+                <summary id="coStarterCreditsSummary" data-credits-pricing-summary data-i18n="pricing.starter.creditsDetailsSummary">¿Cómo funcionan los créditos?</summary>
+                <div class="checkout-plan-card__credits-explainer" id="coStarterCreditsExplainer" data-credits-pricing-explainer>
+                  <ul class="hub-pricing-card__credits-list">
+                    <li>1000 créditos se recargan el 1º de cada mes</li>
+                    <li>Cada sesión de 12 min consume 10 créditos</li>
+                    <li>Exportar PDF consume 10 créditos adicionales</li>
+                    <li>Máximo 30 PDFs al mes (incluidos en el saldo)</li>
+                    <li>Con créditos agotados: cálculo disponible, PDF no</li>
+                    <li>El plan Ilimitado no consume créditos</li>
+                  </ul>
+                </div>
+              </details>
               <ul class="checkout-plan-card__list" id="coStarterBullets"></ul>
               <p class="checkout-plan-card__annual-line">
                 <a
@@ -105,6 +127,13 @@
                   >Starter anual &#8212; 79 &#8364;/a&#241;o</a
                 ><span class="checkout-plan-card__annual-note" id="coStarterAnnualNote"></span>
               </p>
+              <p
+                class="checkout-plan-card__sub-renewal"
+                data-sub-renewal="starter"
+                data-sub-billing="annual"
+                id="coStarterRenewalAnnual"
+                hidden
+              ></p>
               <footer class="checkout-plan-card__foot">
                 <button type="button" class="button button--accent button--block" id="coPayStripe" hidden>
                   Pagar con tarjeta (Stripe)
@@ -116,6 +145,13 @@
                   data-lemon-squeezy
                   >Starter &#8212; 9 &#8364;/mes</a
                 >
+                <p
+                  class="checkout-plan-card__sub-renewal"
+                  data-sub-renewal="starter"
+                  data-sub-billing="monthly"
+                  id="coStarterRenewalMonthly"
+                  hidden
+                ></p>
               </footer>
             </article>
 
@@ -127,28 +163,37 @@
               <header class="checkout-plan-card__head">
                 <h3 class="checkout-plan-card__name" id="coUnlimitedHeading">Ilimitado</h3>
                 <p class="checkout-plan-card__price" id="coUnlimitedPrice">25 &#8364;/mes</p>
+                <p class="checkout-plan-card__renewal-note" data-i18n="pricing.renewalNoteHtml" data-i18n-html>
+                  Se renueva automáticamente. Cancela en cualquier momento desde
+                  <a href="https://mechassist.lemonsqueezy.com/billing" target="_blank" rel="noopener">tu portal de cliente</a>.
+                </p>
               </header>
               <p class="checkout-plan-card__hint muted" id="coUnlimitedHint"></p>
               <ul class="checkout-plan-card__list" id="coUnlimitedBullets"></ul>
               <p class="checkout-plan-card__annual-line">
                 <a
                   id="coLemonUnlimitedAnnual"
-                  href=""
+                  href="https://mechassist.lemonsqueezy.com/checkout/buy/85d69c29-1149-46cf-b335-5c288a685143"
                   class="checkout-plan-card__annual-link"
                   data-lemon-squeezy
-                  hidden
                   >Ilimitado anual &#8212; 199 &#8364;/a&#241;o</a
                 ><span class="checkout-plan-card__annual-note" id="coUnlimitedAnnualNote"></span>
               </p>
               <footer class="checkout-plan-card__foot">
                 <a
                   id="coLemonUnlimited"
-                  href=""
+                  href="https://mechassist.lemonsqueezy.com/checkout/buy/a8ac7a03-694b-43be-89cf-75804a221e30"
                   class="button button--accent button--block checkout-plan-card__cta checkout-plan-card__cta--unlimited"
                   data-lemon-squeezy
-                  hidden
                   >Ilimitado &#8212; 25 &#8364;/mes</a
                 >
+                <p
+                  class="checkout-plan-card__sub-renewal"
+                  data-sub-renewal="unlimited"
+                  data-sub-billing="monthly"
+                  id="coUnlimitedRenewalMonthly"
+                  hidden
+                ></p>
                 <p class="checkout-plan-card__pending muted" id="coUnlimitedPending" hidden></p>
               </footer>
             </article>
@@ -165,9 +210,16 @@
             <div class="checkout-unlock-row">
               <div class="checkout-unlock-row__field">
                 <label class="checkout-unlock-row__label" for="coUnlockCalc">Elija la calculadora</label>
-                <select id="coUnlockCalc" class="checkout-unlock-row__select"></select>
+                <select id="coUnlockCalc" class="checkout-unlock-row__select" disabled aria-busy="true">
+                  <option value="">Cargando…</option>
+                </select>
               </div>
-              <button type="button" class="button button--accent button--block checkout-unlock-row__btn" id="coUnlockCalcBtn">
+              <button
+                type="button"
+                class="button button--accent button--block checkout-unlock-row__btn"
+                id="coUnlockCalcBtn"
+                disabled
+              >
                 Desbloquear por 1 &#8364;
               </button>
             </div>

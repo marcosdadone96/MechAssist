@@ -1,8 +1,7 @@
 User-agent: *
 Allow: /
 
-# Paginas con noindex en HTML: register.html, checkout.html, calc-gearmotor-inertia.html (beta).
-# calc-gearmotor-inertia.html no se incluye en sitemap.xml (ver scripts/generate-sitemap.mjs).
+# Paginas con noindex en HTML: register.html, checkout.html.
 #
 # Sitemap (URL absoluta obligatoria):
 #   1) Rellene publicSiteBaseUrl en js/config/features.js (sin barra final).

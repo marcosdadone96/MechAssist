@@ -17,7 +17,7 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Motor e inercia — Laboratorio — TheMechAssist" />
 
-    <meta name="robots" content="noindex" />
+    <meta name="robots" content="index,follow" />
     <title data-i18n="gm.docTitle">Motor e inercia — Laboratorio — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
@@ -66,12 +66,12 @@
   </head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
@@ -91,7 +91,7 @@
       <section class="lab-panel lab-panel--accent">
         <header class="lab-calc-page-head">
           <h2 data-i18n="gm.h2">Inercia de carga vs motorreductor · datos introducidos por usuario</h2>
-          <p class="lab-data-note">
+          <p class="lab-data-note" data-i18n="gm.dataNoteHtml" data-i18n-html>
             <strong>Catálogo demo:</strong> curvas y datos de motorreductor son orientativos; no sustituyen software ni hojas del fabricante.
           </p>
           <p class="lab-calc-hero-lead" data-i18n="gm.heroLead" data-i18n-html>
@@ -99,14 +99,14 @@
           </p>
           <details class="lab-calc-seo">
             <summary data-i18n="gm.seoSummary">Contexto ampliado y notas de uso</summary>
-            <p class="calc-seo-intro">
+            <p class="calc-seo-intro" data-i18n="gm.seoIntro">
           Este laboratorio combina la inercia reflejada de la carga con la del motorreductor para estimar si la relación J<sub>ext</sub>/J<sub>mot</sub> encaja en los límites típicos de arranque directo o variado y contrasta el par disponible frente al par resistente en el punto de trabajo usando una curva simplificada de par contra velocidad. El método es pedagógico y útil para seleccionar tamaños antes de abrir el software del fabricante. Es relevante para ingenieros de automatización que integran bombas, ventiladores o husillos con grandes masas acopladas. Por ejemplo, puede advertir si una bomba de gran volante exige variador de rampa más largo tras cambiar el diámetro de polea.
             </p>
           </details>
           <details class="lab-calc-help">
             <summary class="lab-calc-help__summary" data-i18n="gm.helpSummary">Metodología y límites del modelo</summary>
             <div class="lab-calc-help__body">
-              <p class="lab-lead lab-lead--in-help">
+              <p class="lab-lead lab-lead--in-help" data-i18n="gm.helpBodyHtml" data-i18n-html>
                 Introduzca los parámetros de su <strong>motorreductor</strong> y de la carga. Se valida la relación
                 <strong>J<sub>ext</sub>/J<sub>mot</sub></strong> frente al límite definido por usted y el
                 <strong>par disponible</strong> frente al par resistente en el punto de operación.
@@ -116,23 +116,34 @@
             </div>
           </details>
         </header>
+        <nav class="lab-next-steps" data-i18n="gm.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="gm.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="gm.nextLi1Html" data-i18n-html><a href="my-gearmotors.html">Mis motorreductores</a> — seleccionar modelo con par y J del catálogo.</li>
+            <li data-i18n="gm.nextLi2Html" data-i18n-html><a href="calc-couplings.html">Acoplamientos</a> — seleccionar acoplamiento con el par de diseño.</li>
+          </ul>
+        </nav>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label" data-i18n="gm.presetsLabel">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="gmPresetsBar"></div>
+        </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated" style="margin-bottom: 0.85rem">
-              <p class="lab-diagram-wrap__title">Línea cinemática · J<sub>mot</sub> y J<sub>ext</sub> en el eje</p>
-              <svg id="gmLineDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Cadena motor acople carga"></svg>
-              <p class="lab-diagram-caption">Referencia para el criterio <strong>J<sub>ext</sub>/J<sub>mot</sub></strong>; el límite numérico depende del motor seleccionado.</p>
+              <p class="lab-diagram-wrap__title" data-i18n="gm.diagLineTitle">Línea cinemática · J<sub>mot</sub> y J<sub>ext</sub> en el eje</p>
+              <svg id="gmLineDiagram" xmlns="http://www.w3.org/2000/svg" data-i18n="gm.diagLineAria" data-i18n-attr="aria-label" aria-label="Cadena motor acople carga"></svg>
+              <p class="lab-diagram-caption" data-i18n="gm.diagLineCaption">Referencia para el criterio <strong>J<sub>ext</sub>/J<sub>mot</sub></strong>; el límite numérico depende del motor seleccionado.</p>
             </div>
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-              <p class="lab-diagram-wrap__title">Curva de par estimada del motorreductor vs par resistente</p>
+              <p class="lab-diagram-wrap__title" data-i18n="gm.diagChartTitle">Curva de par estimada del motorreductor vs par resistente</p>
               <div class="lab-chart-wrap" style="margin: 0; border: none; padding: 0.25rem 0 0">
-                <svg id="gmChart" xmlns="http://www.w3.org/2000/svg" aria-label="Par motor vs par resistente"></svg>
+                <svg id="gmChart" xmlns="http://www.w3.org/2000/svg" data-i18n="gm.diagChartAria" data-i18n-attr="aria-label" aria-label="Par motor vs par resistente"></svg>
               </div>
-              <p class="lab-diagram-caption">
+              <p class="lab-diagram-caption" data-i18n="gm.diagChartCaptionHtml" data-i18n-html>
                 Línea <strong>verde</strong>: par disponible <strong>T<sub>m</sub>(n)</strong> del modelo; punto <strong>ámbar</strong>: su par de carga; línea vertical: régimen
                 de operación.
               </p>
-              <p class="lab-diagram-caption gm-chart-legend">
+              <p class="lab-diagram-caption gm-chart-legend" data-i18n="gm.diagChartLegendHtml" data-i18n-html>
                 Leyenda: línea <strong>verde</strong> = par disponible <strong>T<sub>m</sub>(n)</strong>; punto <strong>ámbar</strong> = par de carga;
                 <strong>área sombreada</strong> en el punto de operación = margen de arranque.
               </p>
@@ -143,67 +154,67 @@
               <div class="lab-field">
                 <label for="gmJmotor" data-i18n="gm.labelJmotor">J motorreductor (kg·m²)</label>
                 <input id="gmJmotor" type="number" min="0.000001" step="any" value="0.0012" />
-                <span class="hint">Inercia del eje rápido del motorreductor</span>
-                <p class="lab-field-help">Dato clave para comparar contra la inercia reflejada de la carga. Use el valor del fabricante o de su hoja de cálculo.</p>
+                <span class="hint" data-i18n="gm.hintJmotor">Inercia del eje rápido del motorreductor</span>
+                <p class="lab-field-help" data-i18n="gm.helpJmotor">Dato clave para comparar contra la inercia reflejada de la carga. Use el valor del fabricante o de su hoja de cálculo.</p>
               </div>
               <div class="lab-field">
                 <label for="gmJratioMax" data-i18n="gm.labelJratioMax">Límite admisible Jext/Jmot</label>
                 <input id="gmJratioMax" type="number" min="1" step="0.5" value="10" />
-                <span class="hint">Relación máxima permitida</span>
-                <div class="gm-ref-chips" role="group" aria-label="Valores orientativos de relación de inercias">
-                  <button type="button" class="gm-ref-chip" data-gm-ratio="1">Servomotor: ≤ 1</button>
-                  <button type="button" class="gm-ref-chip" data-gm-ratio="3">Motor asíncrono variador: ≤ 3</button>
-                  <button type="button" class="gm-ref-chip" data-gm-ratio="5">Motor asíncrono arranque directo: ≤ 5</button>
+                <span class="hint" data-i18n="gm.hintJratioMax">Relación máxima permitida</span>
+                <div class="gm-ref-chips" role="group" data-i18n="gm.ratioChipsAria" data-i18n-attr="aria-label" aria-label="Valores orientativos de relación de inercias">
+                  <button type="button" class="gm-ref-chip" data-gm-ratio="1" data-i18n="gm.chipServo">Servomotor: ≤ 1</button>
+                  <button type="button" class="gm-ref-chip" data-gm-ratio="3" data-i18n="gm.chipVfd">Motor asíncrono variador: ≤ 3</button>
+                  <button type="button" class="gm-ref-chip" data-gm-ratio="5" data-i18n="gm.chipDirect">Motor asíncrono arranque directo: ≤ 5</button>
                 </div>
-                <p class="lab-field-help">Criterio de diseño para arranque estable. Si no tiene dato del fabricante, use un valor conservador.</p>
+                <p class="lab-field-help" data-i18n="gm.helpJratioMax">Criterio de diseño para arranque estable. Si no tiene dato del fabricante, use un valor conservador.</p>
               </div>
               <div class="lab-field">
                 <label for="gmTN" data-i18n="gm.labelTN">Par nominal Tn (N·m)</label>
                 <input id="gmTN" type="number" min="0.1" step="any" value="48" />
-                <span class="hint">Par continuo nominal</span>
-                <p class="lab-field-help">Par que el motorreductor puede entregar de forma continua cerca de su régimen nominal.</p>
+                <span class="hint" data-i18n="gm.hintTN">Par continuo nominal</span>
+                <p class="lab-field-help" data-i18n="gm.helpTN">Par que el motorreductor puede entregar de forma continua cerca de su régimen nominal.</p>
               </div>
               <div class="lab-field">
-                <label for="gmNsync">Velocidad síncrona base (rpm)</label>
+                <label for="gmNsync" data-i18n="gm.labelNsync">Velocidad síncrona base (rpm)</label>
                 <input id="gmNsync" type="number" min="100" step="1" value="1500" />
-                <span class="hint">Referencia para la curva T(n)</span>
-                <p class="lab-field-help">Velocidad base para escalar la curva de par estimada. Normalmente 1500 rpm o 3000 rpm según polos.</p>
+                <span class="hint" data-i18n="gm.hintNsync">Referencia para la curva T(n)</span>
+                <p class="lab-field-help" data-i18n="gm.helpNsync">Velocidad base para escalar la curva de par estimada. Normalmente 1500 rpm o 3000 rpm según polos.</p>
               </div>
               <div class="lab-field lab-field--wide">
-                <label for="gmTpeak">Factor de pico de par (Tpico/Tn)</label>
+                <label for="gmTpeak" data-i18n="gm.labelTpeak">Factor de pico de par (Tpico/Tn)</label>
                 <input id="gmTpeak" type="number" min="1" max="4" step="0.05" value="2.2" />
-                <span class="hint">Pico de arranque relativo al nominal</span>
-                <p class="lab-field-help">Define cuánta sobrecarga transitoria tiene el motorreductor al arrancar. Un valor mayor implica más capacidad inicial.</p>
+                <span class="hint" data-i18n="gm.hintTpeak">Pico de arranque relativo al nominal</span>
+                <p class="lab-field-help" data-i18n="gm.helpTpeak">Define cuánta sobrecarga transitoria tiene el motorreductor al arrancar. Un valor mayor implica más capacidad inicial.</p>
               </div>
               <div class="lab-field">
-                <label for="gmJload">J carga (kg·m²) · opcional</label>
+                <label for="gmJload" data-i18n="gm.labelJload">J carga (kg·m²) · opcional</label>
                 <input id="gmJload" type="number" min="0" step="any" />
-                <span class="hint">Inercia en el eje lento o de carga</span>
-                <p class="lab-field-help">Si indica relación de reducción, se calculará automáticamente la inercia reflejada al eje rápido.</p>
+                <span class="hint" data-i18n="gm.hintJload">Inercia en el eje lento o de carga</span>
+                <p class="lab-field-help" data-i18n="gm.helpJload">Si indica relación de reducción, se calculará automáticamente la inercia reflejada al eje rápido.</p>
               </div>
               <div class="lab-field">
-                <label for="gmIratio">Relación de reducción i · opcional</label>
+                <label for="gmIratio" data-i18n="gm.labelIratio">Relación de reducción i · opcional</label>
                 <input id="gmIratio" type="number" min="0.01" step="any" />
-                <span class="hint">i = n motor / n carga</span>
-                <p class="lab-field-help">Para cálculo rápido: J_reflejada = J_carga / i².</p>
+                <span class="hint" data-i18n="gm.hintIratio">i = n motor / n carga</span>
+                <p class="lab-field-help" data-i18n="gm.helpIratio">Para cálculo rápido: J_reflejada = J_carga / i².</p>
               </div>
               <div class="lab-field">
-                <label for="gmJext">J carga reflejada (kg·m²)</label>
+                <label for="gmJext" data-i18n="gm.labelJext">J carga reflejada (kg·m²)</label>
                 <input id="gmJext" type="number" min="0" step="any" value="0.008" />
-                <span class="hint">Inercia equivalente vista por el motor</span>
-                <p class="lab-field-help">Puede introducirla manualmente o dejar que se complete desde J_carga e i. Incluye inercia de transmisión y elementos acoplados.</p>
+                <span class="hint" data-i18n="gm.hintJext">Inercia equivalente vista por el motor</span>
+                <p class="lab-field-help" data-i18n="gm.helpJext">Puede introducirla manualmente o dejar que se complete desde J_carga e i. Incluye inercia de transmisión y elementos acoplados.</p>
               </div>
               <div class="lab-field">
-                <label for="gmN">Velocidad operación (rpm)</label>
+                <label for="gmN" data-i18n="gm.labelN">Velocidad operación (rpm)</label>
                 <input id="gmN" type="number" min="1" step="1" value="1455" />
-                <span class="hint">Punto real de trabajo</span>
-                <p class="lab-field-help">Velocidad donde compara par disponible y par resistente. Use la velocidad objetivo durante operación normal.</p>
+                <span class="hint" data-i18n="gm.hintN">Punto real de trabajo</span>
+                <p class="lab-field-help" data-i18n="gm.helpN">Velocidad donde compara par disponible y par resistente. Use la velocidad objetivo durante operación normal.</p>
               </div>
               <div class="lab-field lab-field--wide">
-                <label for="gmTload">Par resistente de carga (N·m)</label>
+                <label for="gmTload" data-i18n="gm.labelTload">Par resistente de carga (N·m)</label>
                 <input id="gmTload" type="number" min="0" step="any" value="12" />
-                <span class="hint">Par exigido por la máquina</span>
-                <p class="lab-field-help">Par que necesita la carga en el punto de operación. Si hay picos, use el valor más severo para una validación conservadora.</p>
+                <span class="hint" data-i18n="gm.hintTload">Par exigido por la máquina</span>
+                <p class="lab-field-help" data-i18n="gm.helpTload">Par que necesita la carga en el punto de operación. Si hay picos, use el valor más severo para una validación conservadora.</p>
               </div>
             </div>
           </div>
@@ -221,12 +232,16 @@
                 </button>
               </div>
             </div>
-            <p class="lab-small-print">
+            <div class="lab-results-share lab-results-share--footer" id="gmShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="gmCopyLinkBtn" data-i18n="gm.copyLink">Copiar enlace</button>
+              <div class="lab-copy-toast" id="gmCopyToast" role="status" data-i18n="gm.copyToast">¡Enlace copiado!</div>
+            </div>
+            <p class="lab-small-print" data-i18n="gm.footnote1">
               La relación Jext/Jmot es una guía de selección rápida. Para accionamientos con variador de frecuencia el límite puede
               relajarse; para arranque directo en red debe ser conservador. Consultar siempre las especificaciones del fabricante
               del motor.
             </p>
-            <p class="lab-small-print">
+            <p class="lab-small-print" data-i18n="gm.footnote2">
               Hipótesis del gráfico: la curva T(n) es una aproximación lineal simplificada y no refleja el comportamiento real de
               motores de inducción con variador ni servo drives.
             </p>

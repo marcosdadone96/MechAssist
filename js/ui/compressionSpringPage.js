@@ -18,6 +18,8 @@ import {
   runCalcWithIndustrialFeedback,
   uxCopy,
   wireLabCopyResultsButton,
+  wireLabCopyLink,
+  mountLabPresetsBar,
   isEnglishUi,
 } from './labCalcUx.js';
 import { setLabPurchaseSuggestions } from './labPurchaseSuggestions.js';
@@ -27,6 +29,13 @@ import { LAB_LANG_EVENT } from '../lab/i18n/labLang.js';
 
 /** @type {object | null} */
 let springPdfSnapshot = null;
+
+/** @param {'simToggle'|'simClose'} key */
+function springSimLabel(key) {
+  const k = `spring.${key}`;
+  if (isEnglishUi() && COMPRESSION_SPRING_EN[k]) return COMPRESSION_SPRING_EN[k];
+  return key === 'simClose' ? 'Cerrar simulaci\u00f3n' : 'Simular compresi\u00f3n';
+}
 
 const MATERIALS = {
   f1430: {
@@ -983,7 +992,7 @@ document.getElementById('springSimToggle')?.addEventListener('click', () => {
   const btn = document.getElementById('springSimToggle');
   if (body instanceof HTMLElement) body.hidden = !simOpen;
   if (btn instanceof HTMLButtonElement) {
-    btn.textContent = simOpen ? uxCopy('Cerrar simulacion', 'Close simulation') : uxCopy('Simular compresion', 'Simulate compression');
+    btn.textContent = simOpen ? springSimLabel('simClose') : springSimLabel('simToggle');
     btn.setAttribute('aria-expanded', simOpen ? 'true' : 'false');
   }
   if (simOpen) updateSimDisplay();
@@ -999,7 +1008,7 @@ document.getElementById('springResetDefaults')?.addEventListener('click', () => 
   const btn = document.getElementById('springSimToggle');
   if (body instanceof HTMLElement) body.hidden = true;
   if (btn instanceof HTMLButtonElement) {
-    btn.textContent = uxCopy('Simular compresion', 'Simulate compression');
+    btn.textContent = springSimLabel('simToggle');
     btn.setAttribute('aria-expanded', 'false');
   }
   const sl = document.getElementById('springSimSlider');
@@ -1014,6 +1023,62 @@ runCalcWithIndustrialFeedback(resultsWrap, computeCore);
 wireLabCopyResultsButton('springCopyResults', {
   moduleTitle: uxCopy('Muelle helicoidal de compresi\u00f3n', 'Helical compression spring'),
 });
+wireLabCopyLink('springCopyLinkBtn', 'springCopyToast');
+
+const SPRING_PRESETS = [
+  {
+    label: 'V\u00e1lvula \u00b7 d 4 mm',
+    labelKey: 'spring.preset1',
+    values: {
+      springMaterial: 'f1430',
+      springDWire: '4',
+      springDiaMode: 'dm',
+      springDiaValue: '28',
+      springNActive: '8',
+      springL0: '65',
+      springEnds: 'ground',
+      springWorkDefine: 'deflection',
+      springSWork: '12',
+      springFWork: '',
+      springFMin: '0',
+    },
+  },
+  {
+    label: 'Tope \u00b7 m\u00e1s r\u00edgido',
+    labelKey: 'spring.preset2',
+    values: {
+      springMaterial: 'f1430',
+      springDWire: '5',
+      springDiaMode: 'dm',
+      springDiaValue: '32',
+      springNActive: '7',
+      springL0: '50',
+      springEnds: 'ground',
+      springWorkDefine: 'force',
+      springSWork: '',
+      springFWork: '180',
+      springFMin: '0',
+    },
+  },
+  {
+    label: 'Carrera larga \u00b7 pandeo',
+    labelKey: 'spring.preset3',
+    values: {
+      springMaterial: 'f1430',
+      springDWire: '3.5',
+      springDiaMode: 'dm',
+      springDiaValue: '24',
+      springNActive: '10',
+      springL0: '90',
+      springEnds: 'ground',
+      springWorkDefine: 'deflection',
+      springSWork: '18',
+      springFWork: '',
+      springFMin: '0',
+    },
+  },
+];
+mountLabPresetsBar('springPresetsBar', SPRING_PRESETS, debounced);
 
 mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountSpring'), {
   getPayload: () => springPdfSnapshot,

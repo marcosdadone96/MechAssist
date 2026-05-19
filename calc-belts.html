@@ -30,12 +30,12 @@
   </head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
@@ -77,6 +77,20 @@
             </div>
           </details>
         </header>
+        <nav class="lab-next-steps" data-i18n="belt.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="belt.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="belt.nextLi1Html" data-i18n-html>
+              <a href="calc-gears.html">Engranajes cilíndricos</a> — transmisión alternativa con relación definida.
+            </li>
+            <li data-i18n="belt.nextLi2Html" data-i18n-html>
+              <a href="calc-chains.html">Cadenas de rodillos</a> — alto par, relación fija.
+            </li>
+            <li data-i18n="belt.nextLi3Html" data-i18n-html>
+              <a href="calc-shaft.html">Eje · torsión</a> — dimensionar el eje de la polea motriz.
+            </li>
+          </ul>
+        </nav>
         <div class="lab-presets-row">
           <span class="lab-presets-row__label" data-i18n="belt.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="bPresetsBar"></div>
@@ -271,19 +285,42 @@
                 <p class="lab-field-help" data-i18n="belt.helpN1Html" data-i18n-html>Velocidad angular de la polea 1: <strong>ω₁ = 2π n₁ / 60</strong> rad/s.</p>
               </div>
 
-              <div class="lab-field">
+              <div class="lab-advisor-power-block" id="bPowerAdvisorBlock">
+                <div id="bPowerAdvisorCta" class="lab-advisor-cta">
+                  <p class="lab-advisor-cta__lead" data-i18n="belt.advisorCtaLead">
+                    Potencia transmitida: solo alimenta el <strong>asesor IA</strong> (no cambia n₁, n₂ ni la velocidad lineal).
+                  </p>
+                  <button type="button" class="button button--ghost lab-advisor-cta__btn" id="bPowerAdvisorOpenBtn" data-i18n="belt.advisorCtaBtn">
+                    Ver campo opcional
+                  </button>
+                </div>
+                <details class="lab-advisor-field-details" id="bPowerAdvisorDetails">
+                  <summary data-i18n="belt.advisorPowerSummary">Asesor IA · comparación de pérdidas (opcional)</summary>
+                  <div class="lab-advisor-field-details__body">
+                    <div id="bPowerAdvisorInactive" class="lab-advisor-inactive" role="status">
+                      <p class="lab-advisor-inactive__lead" data-i18n="belt.advisorInactiveLead">
+                        El panel lateral «Asesor IA» no está activo en esta página. Puede dejar la potencia vacía: la cinemática mostrada no cambia.
+                      </p>
+                      <p class="lab-advisor-inactive__hint muted" data-i18n="belt.advisorInactiveHint">
+                        Cuando el asesor esté disponible, este valor permitirá comparar pérdidas orientativas (kW) entre familias de correa.
+                      </p>
+                    </div>
+                    <div class="lab-field">
                 <label for="bPowerKw" class="lab-field__label-row">
                   <span class="lab-field-ico" data-i18n="belt.icoPower" data-i18n-attr="title" title="Potencia (asesor)">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text" data-i18n="belt.labelPower">Potencia transmitida (kW) — opcional</span>
+                  <span class="lab-field__label-text" data-i18n="belt.labelPower">Potencia transmitida (kW)</span>
                 </label>
                 <input id="bPowerKw" type="number" min="0" step="any" placeholder="p. ej. 5,5" data-i18n="belt.placeholderPower" data-i18n-attr="placeholder" />
                 <p class="lab-field-help" data-i18n="belt.helpPowerHtml" data-i18n-html>
-                  Solo para el <strong>asesor IA</strong>: comparación indicativa de pérdidas entre tipos de correa. No modifica la cinemática mostrada.
+                  No modifica la cinemática. Con el <strong>panel Asesor IA</strong> activo, compara pérdidas indicativas entre tipos de correa.
                 </p>
+                    </div>
+                  </div>
+                </details>
               </div>
 
               <div class="lab-field lab-field--wide" data-belt-show="v_trapezoidal,flat,poly_v">

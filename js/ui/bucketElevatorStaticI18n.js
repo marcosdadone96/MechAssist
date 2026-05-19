@@ -1,5 +1,12 @@
 /**
  * Static copy for bucket-elevator.html (ES/EN). Uses \\u escapes for Spanish (ASCII-safe).
+ *
+ * i18n architecture (dual system, migration in progress):
+ * - `[data-be-i18n]` + this module: machine-specific labels, help, accordions, chips.
+ * - `[data-i18n]` + `js/lab/i18n/pages/bucketElevatorEn.js` (`beConv.*`): shared nav, presets
+ *   panel, SEO intro — applied via `watchLangAndApply` in `bucketElevatorPage.js`.
+ * EN keys from `getBucketElevatorBeStrings('en')` are merged into that global dict so both
+ * systems stay in sync when switching language. Prefer `data-i18n` for new strings on this page.
  */
 
 import { getCurrentLang, setCurrentLang } from '../config/locales.js';
@@ -58,6 +65,10 @@ const CHIPS = {
     es: 'Velocidad lineal de banda (m/s). Referencia: 1.0\u20131.8 fr\u00e1gil/abrasivo, 1.5\u20132.4 est\u00e1ndar, 2.2\u20133.6 fluido/ligero.',
     en: 'Belt line speed (m/s). Reference: 1.0\u20131.8 fragile/abrasive, 1.5\u20132.4 standard, 2.2\u20133.6 fluid/light.',
   },
+  pitch: {
+    es: 'Distancia entre ejes de cangilones consecutivos (mm). El modelo calcula un paso m\u00ednimo orientativo seg\u00fan Q, velocidad de banda y volumen del cangil\u00f3n; puede ajustar manualmente dentro del rango admisible.',
+    en: 'Centre distance between consecutive buckets (mm). The model computes an indicative minimum pitch from Q, belt speed and bucket volume; you may override within the allowable range.',
+  },
   width: {
     es: 'Ancho nominal de banda (mm). Debe ser igual o superior al m\u00ednimo recomendado por cangil\u00f3n y tensi\u00f3n de trabajo.',
     en: 'Nominal belt width (mm). Must meet bucket minimum and working tension needs.',
@@ -79,16 +90,16 @@ const CHIPS = {
     en: 'Drive train efficiency (gearbox, couplings). Often 0.92\u20130.98; 0.95\u20130.96 is a reasonable base.',
   },
   vbrand: {
-    es: 'Fabricante del cat\u00e1logo demo para comprobaci\u00f3n r\u00e1pida.',
-    en: 'Demo catalog manufacturer for quick checks.',
+    es: 'Marca del cat\u00e1logo de ejemplo (SEW, Nord\u2026). No cambia los datos del elevador; sirve para filtrar modelos antes de comparar.',
+    en: 'Sample catalog brand (SEW, Nord\u2026). Does not change elevator inputs; filters models before comparison.',
   },
   vsearch: {
     es: 'Busca por c\u00f3digo o fragmento de nombre para reducir la lista de modelos.',
     en: 'Filter by code or name fragment to shorten the model list.',
   },
   vmodel: {
-    es: 'Se compara contra potencia, par y rpm requeridos en el tambor de cabeza.',
-    en: 'Compared to required power, torque and rpm at the head drum.',
+    es: 'Modelo del cat\u00e1logo demo. Al pulsar Comprobar se contrasta potencia, par y rpm con el tambor de cabeza calculado (no modifica el formulario).',
+    en: 'Demo catalog model. Check compares power, torque and rpm with the calculated head drum duty (does not change the form).',
   },
 };
 
@@ -121,6 +132,7 @@ function applyChips(lang) {
         diagGrow: en ? 'diagram scale' : 'escala del diagrama',
         bucket: en ? 'bucket type' : 'tipo de cangil\u00f3n',
         vbelt: en ? 'belt speed' : 'velocidad de banda',
+        pitch: en ? 'bucket pitch' : 'paso entre cangilones',
         width: en ? 'belt width' : 'ancho de banda',
         sigma: en ? 'belt strength' : 'resistencia de banda',
         eta: en ? 'lift efficiency' : 'rendimiento de elevaci\u00f3n',
@@ -160,10 +172,36 @@ function applyNav(lang) {
   if (nav) nav.setAttribute('aria-label', en ? 'Main navigation' : 'Navegaci\u00f3n principal');
 }
 
-/** @param {'es'|'en'} lang */
-function applyDataBeI18n(lang) {
+/** @type {Record<string, { es: string; en: string }>} */
+const INPUT_PLACEHOLDERS = {
+  beH: { es: 'ej. 25\u201345 m', en: 'e.g. 25\u201345 m' },
+  beQ: { es: 'ej. 45\u2013150 t/h', en: 'e.g. 45\u2013150 t/h' },
+  beRho: { es: 'ej. 780\u20131450 kg/m\u00b3', en: 'e.g. 780\u20131450 kg/m\u00b3' },
+  beVbelt: { es: 'ej. 1,2\u20132,0 m/s grano', en: 'e.g. 1.2\u20132.0 m/s grain' },
+  bePitchManual: { es: 'ej. 300\u2013500 mm', en: 'e.g. 300\u2013500 mm' },
+};
+
+/**
+ * @param {'es'|'en'} lang
+ * @returns {Record<string, string>}
+ */
+export function getBucketElevatorBeStrings(lang) {
   const en = lang === 'en';
-  const dict = {
+  const dict = buildBeI18nDict(en);
+  /** @type {Record<string, string>} */
+  const out = {};
+  for (const [k, v] of Object.entries(dict)) {
+    out[k] = v;
+  }
+  return out;
+}
+
+/**
+ * @param {boolean} en
+ * @returns {Record<string, string>}
+ */
+function buildBeI18nDict(en) {
+  return {
     beMainH2: en
       ? 'Bucket elevator \u2014 indicative design (CEMA practice)'
       : 'Elevador de cangilones \u2014 dise\u00f1o orientativo (CEMA)',
@@ -171,6 +209,12 @@ function applyDataBeI18n(lang) {
       ? 'Three-step assistant: material & geometry \u2192 bucket & belt \u2192 power, tensions and verdicts. Like belt and screw tools: <strong>gearmotor recommendations</strong> plus a verifier if you already own a unit. Formulas follow common practice (capacity, <em>P</em> \u2248 <em>Q\u00b7H/(367\u00b7\u03b7)</em>, boot drag). Validate with <strong>CEMA</strong> and your vendor.'
       : 'Asistente en <strong>tres pasos</strong>: material y geometr\u00eda \u2192 selecci\u00f3n de cangil\u00f3n y banda \u2192 potencia, tensiones y veredictos. Al final, igual que en cintas y tornillo: <strong>recomendaciones de motorreductor</strong> y comprobador si ya tiene un modelo. Las f\u00f3rmulas siguen la pr\u00e1ctica habitual (capacidad, <em>P</em> \u2248 <em>Q\u00b7H/(367\u00b7\u03b7)</em>, arrastre en bota). Valide con <strong>CEMA</strong> y fabricante.',
     beHelpSum: en ? 'Quick guide to each quantity' : 'Gu\u00eda r\u00e1pida de cada magnitud',
+    beHelpChipLead: en
+      ? 'Each label has a <span class="info-chip info-chip--static" aria-hidden="true">?</span> chip: hover on desktop, tap on mobile.'
+      : 'Junto a cada etiqueta hay un <span class="info-chip info-chip--static" aria-hidden="true">?</span>: en escritorio, pase el cursor; en m\u00f3vil, pulse para ver la ayuda.',
+    beI18nNote: en
+      ? 'Field labels on this page use the machine copy set (<code>data-be-i18n</code>, synced with the global EN pack). Navigation and preset blocks use <code>data-i18n</code> (<code>beConv.*</code> keys).'
+      : 'Las etiquetas de esta m\u00e1quina usan el bloque propio (<code>data-be-i18n</code>, sincronizado al pasar a EN). La navegaci\u00f3n y los presets usan <code>data-i18n</code> (claves <code>beConv.*</code>).',
     beHelp1: en
       ? '<strong>Step 1:</strong> material, capacity and base geometry (H, C, drums).'
       : '<strong>Paso 1:</strong> material, capacidad y geometr\u00eda base (H, C, tambores).',
@@ -226,7 +270,10 @@ function applyDataBeI18n(lang) {
       ? 'Bucket type / volume (demo catalog)'
       : 'Tipo / volumen de cangil\u00f3n (cat\u00e1logo demo)',
     beLblVbelt: en ? 'Belt speed <em>v</em>' : 'Velocidad de banda <em>v</em>',
-    beLblPitch: en ? 'Bucket pitch' : 'Paso entre cangilones',
+    beLblPitch: en ? 'Bucket pitch (mm)' : 'Paso entre cangilones (mm)',
+    beFldCtxPitch: en
+      ? 'Indicative <strong>120\u2013600 mm</strong>; minimum pitch from Q, <em>v</em> and bucket volume. Override if catalogue spacing differs.'
+      : 'Orientativo <strong>120\u2013600 mm</strong>; paso m\u00ednimo seg\u00fan Q, <em>v</em> y volumen de cangil\u00f3n. Ajuste si el cat\u00e1logo exige otro paso.',
     beLblDischarge: en ? 'Discharge type' : 'Tipo de descarga',
     beDischargeHint: en
       ? 'Centrifugal: free-flowing materials and higher speed. Gravity: fragile/abrasive materials and lower speed. Mixed: intermediate.'
@@ -239,9 +286,6 @@ function applyDataBeI18n(lang) {
     beLblEtaTrans: en ? '\u03b7 gearbox / transmission' : '\u03b7 reductor / transmisi\u00f3n',
     beBtnMotors: en ? 'Open gearmotor recommendations' : 'Abrir recomendaciones de motorreductores',
     beVerifyH2: en ? 'Check gearmotor' : 'Comprobar motorreductor',
-    beVerifyLead: en
-      ? 'Compare motor power, output torque and rpm with the <strong>head drum</strong> for this elevator (step 3).'
-      : 'Compare potencia de motor, par de salida y rpm con el <strong>tambor de cabeza</strong> de este elevador (punto calculado en el paso 3).',
     beLblVbrand: en ? 'Brand' : 'Marca',
     beLblVsearch: en ? 'Filter model (text)' : 'Filtrar modelo (texto)',
     beLblVmodel: en ? 'Demo catalog model' : 'Modelo del cat\u00e1logo ejemplo',
@@ -268,6 +312,12 @@ function applyDataBeI18n(lang) {
       ? 'Real-world bucket elevator reference. <a href="https://commons.wikimedia.org/wiki/File:Grain_elevator.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.'
       : 'Referencia real de elevador de cangilones. <a href="https://commons.wikimedia.org/wiki/File:Grain_elevator.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.',
   };
+}
+
+/** @param {'es'|'en'} lang */
+function applyDataBeI18n(lang) {
+  const en = lang === 'en';
+  const dict = buildBeI18nDict(en);
   document.querySelectorAll('[data-be-i18n]').forEach((el) => {
     const k = el.getAttribute('data-be-i18n');
     if (!k || !dict[k]) return;
@@ -302,6 +352,7 @@ export function applyBucketElevatorStaticI18n(lang = getCurrentLang()) {
 
   applyNav(lang);
   applyDataBeI18n(lang);
+  applyInputPlaceholders(lang);
   applyChips(lang);
   applySelectOptions(lang);
   if (en) applyMachinePresetLabels('en');

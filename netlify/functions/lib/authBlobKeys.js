@@ -18,4 +18,19 @@ function verifiedUserKey(email) {
   return `auth:u:${emailBlobKey(n)}`;
 }
 
-module.exports = { pendingTokenKey, pendingIndexKey, verifiedUserKey };
+function resetTokenKey(token) {
+  return `auth:rst:${String(token || '').trim()}`;
+}
+
+function resetIndexKey(email) {
+  const n = normalizeEmail(email);
+  return `auth:idx:rst:${emailBlobKey(n)}`;
+}
+
+module.exports = {
+  pendingTokenKey,
+  pendingIndexKey,
+  verifiedUserKey,
+  resetTokenKey,
+  resetIndexKey,
+};

@@ -423,6 +423,13 @@ a.site-nav__btn {
   text-underline-offset: 3px;
 }
 
+.hub-lang__btn.is-active,
+.site-nav__lang-btn.is-active {
+  color: var(--color-accent, #2563eb);
+  font-weight: 700;
+  border-bottom: 2px solid currentColor;
+}
+
 .site-nav__lang-sep {
   color: #cbd5e1;
   font-size: 0.65rem;

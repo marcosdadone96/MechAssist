@@ -200,17 +200,29 @@ export function computeTractionElevator(p) {
     });
   }
 
-  if (mu < 0.08 || mu > 0.15) {
+  if (mu < 0.08 || mu > 0.25) {
     verdicts.push({
       level: 'warn',
       code: 'mu_range',
       text: en
         ? `\u03bc=${mu.toFixed(
             2,
-          )} outside the typical indicative range (0.08\u20130.15). Validate groove, finish and real traction conditions.`
+          )} outside the usual U-groove (0.09\u20130.13) and V-groove (0.20\u20130.25) bands. Check sheave catalog and groove type.`
         : `\u03bc=${mu.toFixed(
             2,
-          )} fuera del rango orientativo habitual (0.08\u20130.15). Valide canal, acabado y condiciones reales de tracci\u00f3n.`,
+          )} fuera de las bandas habituales: ranura U (0,09\u20130,13) y ranura V (0,20\u20130,25). Revise cat\u00e1logo de polea y tipo de canal.`,
+    });
+  } else if (mu > 0.13 && mu < 0.2) {
+    verdicts.push({
+      level: 'warn',
+      code: 'mu_groove_band',
+      text: en
+        ? `\u03bc=${mu.toFixed(
+            2,
+          )} sits between typical U-groove (0.09\u20130.13) and V-groove (0.20\u20130.25) values. Confirm groove profile with the sheave manufacturer.`
+        : `\u03bc=${mu.toFixed(
+            2,
+          )} queda entre valores t\u00edpicos de ranura U (0,09\u20130,13) y V (0,20\u20130,25). Confirme el perfil de canal con el fabricante de la polea.`,
     });
   }
 

@@ -38,13 +38,13 @@
       })();
     </script>
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
@@ -65,6 +65,9 @@
         <header class="flat-sidebar__head">
           <p class="flat-sidebar__eyebrow">TheMechAssist</p>
           <h2 class="flat-sidebar__title" data-i18n="cPump.h2">Bomba centrífuga</h2>
+          <p class="machine-calc-notice" role="note" data-i18n="machineHub.indicativeNotice" data-i18n-html>
+            <strong>Resultados orientativos.</strong> No sustituyen al cálculo conforme a normativa (EN&nbsp;81, ISO&nbsp;4413, etc.) ni a la firma de un ingeniero responsable.
+          </p>
           <details class="flat-sidebar-intro">
             <summary class="flat-sidebar-intro__summary" data-i18n="pumpConv.introSummary">
               Descripción y alcance de la calculadora
@@ -80,19 +83,52 @@
           </details>
         </header>
 
+        <nav class="lab-next-steps" data-i18n="machineHub.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="machineHub.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="machineHub.nextStepsPumpLi1Html" data-i18n-html>
+              <a href="calc-bearings.html">Rodamientos · L10</a> — vida en apoyos del eje de la bomba.
+            </li>
+            <li data-i18n="machineHub.nextStepsPumpLi2Html" data-i18n-html>
+              <a href="calc-shaft.html">Eje · torsión</a> — dimensionar eje con el par de la bomba.
+            </li>
+            <li data-i18n="machineHub.nextStepsPumpLi3Html" data-i18n-html>
+              <a href="calc-hydraulic-pump.html">Bomba hidráulica</a> — si necesita calcular también la bomba del circuito.
+            </li>
+          </ul>
+        </nav>
+
         <section class="flat-ux-panel" aria-labelledby="pumpUxPresetsTitle">
           <h3 id="pumpUxPresetsTitle" class="flat-ux-panel__title" data-i18n="machineHub.uxPresetsTitle">Casos reales (un clic)</h3>
           <p class="flat-ux-panel__lead muted" data-i18n="machineHub.uxPresetsLead">
             Rellena un punto de trabajo típico; puede ajustar después.
           </p>
           <div class="flat-ux-preset-row" role="group" aria-label="Presets bomba">
-            <button type="button" class="btn-flat-preset" data-pump-preset="chilled_water" title="ACS / agua glicolada ligera">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-pump-preset="chilled_water"
+              data-i18n-attrs="title=cPump.presetChilledTooltip"
+              title="Agua, Q 120 m³/h, H 32 m, η 76 %."
+            >
               <span class="btn-flat-preset__name">ACS · agua</span>
             </button>
-            <button type="button" class="btn-flat-preset" data-pump-preset="process_transfer" title="Transferencia industrial, fluido más denso">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-pump-preset="process_transfer"
+              data-i18n-attrs="title=cPump.presetProcessTooltip"
+              title="Salmuera, Q 65 m³/h, H 48 m, η 72 %."
+            >
               <span class="btn-flat-preset__name">Proceso · salmuera</span>
             </button>
-            <button type="button" class="btn-flat-preset" data-pump-preset="viscous_duty" title="Aceite caliente, Q menor, η más baja">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-pump-preset="viscous_duty"
+              data-i18n-attrs="title=cPump.presetViscousTooltip"
+              title="Aceite caliente, Q 28 m³/h, H 22 m, η 62 %."
+            >
               <span class="btn-flat-preset__name">Aceite · viscoso</span>
             </button>
           </div>
@@ -348,7 +384,7 @@
         <section class="flat-visual flat-visual--integrated" aria-label="Esquema de bomba centrífuga">
           <div class="flat-visual__workbench">
             <div class="diagram-duo__schematic flat-visual__diagram-col">
-              <svg id="diagramPump" xmlns="http://www.w3.org/2000/svg"></svg>
+              <svg id="diagramPump" xmlns="http://www.w3.org/2000/svg" data-i18n="cPump.diagramSvgAria" data-i18n-attr="aria-label" aria-label="Esquema bomba centrifuga"></svg>
             </div>
             <figure class="flat-visual__photo-block">
               <div class="flat-visual__photo-frame">
@@ -372,6 +408,7 @@
         <section class="panel">
           <div class="verify-panel" id="pumpVerifyPanel">
             <h2 data-i18n="cPump.verifyH2Html" data-i18n-html><span class="panel-icon">✓</span> Comprobar un motorreductor que ya tengo</h2>
+            <p class="muted verify-panel__catalog-lead" style="margin: -0.5rem 0 0.75rem; font-size: 0.84rem" data-i18n="machineHub.verifyCatalogLead">Selecciona un motorreductor de catálogo para comparar su potencia y par con los resultados calculados. No modifica los datos del formulario. Los datos son orientativos según especificaciones publicadas por el fabricante.</p>
             <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.84rem" data-i18n="cPump.verifyLead">
               Misma verificación que en cintas: potencia, par de salida y velocidad vs. punto de la bomba.
             </p>

@@ -280,6 +280,21 @@ export const CAR_LIFT_PRESET_BY_ID = Object.freeze({
       clSF: 1.35,
     },
   },
+  showroom_standard: {
+    values: {
+      clThreadPreset: 'tr40x7',
+      clMotorPos: 'top',
+      clCapacity: 3500,
+      clH: 1.85,
+      clT: 58,
+      clPitch: 7,
+      clD: 40,
+      clNutL: 95,
+      clMu: 0.115,
+      clPallow: 11,
+      clSF: 1.3,
+    },
+  },
 });
 
 export const TRACTION_PRESET_BY_ID = Object.freeze({
@@ -352,6 +367,25 @@ export const BUCKET_PRESET_BY_ID = Object.freeze({
       beEta: 0.72,
       beKboot: 0.24,
       beEtaTrans: 0.95,
+    },
+  },
+  cement_clinker: {
+    values: {
+      beBucket: 'b6',
+      beRho: 1280,
+      beFluidity: 'average',
+      beNature: 'abrasive',
+      beQ: 85,
+      beH: 38,
+      beDhead: 0.88,
+      beDboot: 0.65,
+      beVbelt: 1.7,
+      beDischargeType: 'centrifugal',
+      beWidth: 630,
+      beSigma: 400,
+      beEta: 0.76,
+      beKboot: 0.2,
+      beEtaTrans: 0.96,
     },
   },
 });

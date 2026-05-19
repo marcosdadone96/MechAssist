@@ -3,14 +3,10 @@
  */
 
 import { getCurrentLang, setCurrentLang } from '../config/locales.js';
+import { chipHelpAriaLabel } from './infoChipPopover.js';
 import { refreshMountingConfigSection } from './mountingConfigSection.js';
 
 export const TRACTION_LANG_EVENT = 'mdr-home-lang-changed';
-
-/** @param {'es'|'en'} lang */
-function chipAria(prefix, lang) {
-  return `${lang === 'en' ? 'Help:' : 'Ayuda'} ${prefix}.`;
-}
 
 /** @type {Record<string, { es: { title: string; aria: string }; en: { title: string; aria: string } }>} */
 const CHIPS = {
@@ -77,12 +73,14 @@ const CHIPS = {
   },
   kcw: {
     es: {
-      title: 'Rango t\u00edpico 0,40\u20130,50 para Mcp\u2248Mc+k\u00b7Q.',
-      aria: 'fracci\u00f3n de contrapeso',
+      title:
+        'Fracci\u00f3n de la carga \u00fatil Q que el contrapeso equilibra (no es el peso total del contrapeso). Rango t\u00edpico 0,40\u20130,50; EN 81: \u2265 0,40. F\u00f3rmula orientativa: Mcp \u2248 Mc + k\u00b7Q. Con k=0,45 y Q=2000 kg, se suma 900 kg a Mc.',
+      aria: 'fracci\u00f3n de Q compensada por contrapeso',
     },
     en: {
-      title: 'Fraction of Q in the optimal counterweight: typically 0.40\u20130.50.',
-      aria: 'counterweight fraction',
+      title:
+        'Fraction of useful load Q balanced by the counterweight (not total counterweight mass). Typical 0.40\u20130.50; EN 81: \u2265 0.40. Indicative: Mcp \u2248 Mc + k\u00b7Q. With k=0.45 and Q=2000 kg, add 900 kg to Mc.',
+      aria: 'counterweight Q fraction k',
     },
   },
   mcpManual: {
@@ -117,11 +115,13 @@ const CHIPS = {
   },
   mu: {
     es: {
-      title: 'Coeficiente efectivo de tracci\u00f3n. Orientativo 0,08\u20130,15 seg\u00fan canal/estado.',
+      title:
+        'Coeficiente efectivo de fricci\u00f3n cable\u2013canal (polea tractora). \u03bc \u2248 0,09\u20130,13 para ranura semicircular (U); \u03bc \u2248 0,20\u20130,25 para ranura tallada (V). Consulte el cat\u00e1logo de la polea tractora.',
       aria: 'coeficiente de fricci\u00f3n cable canal',
     },
     en: {
-      title: 'Rope\u2013groove friction \u03bc. Grooved sheave: 0.08\u20130.12; undercut: 0.12\u20130.16.',
+      title:
+        'Effective rope\u2013groove friction \u03bc on the traction sheave. \u2248 0.09\u20130.13 for semicircular (U) groove; \u2248 0.20\u20130.25 for undercut (V) groove. Check the traction sheave manufacturer catalog.',
       aria: 'rope-groove friction coefficient',
     },
   },
@@ -137,11 +137,11 @@ const CHIPS = {
   },
   vBrand: {
     es: {
-      title: 'Fabricante del cat\u00e1logo demo para comprobaci\u00f3n r\u00e1pida.',
+      title: 'Marca del cat\u00e1logo de ejemplo. No cambia los datos del ascensor; filtra modelos antes de comparar.',
       aria: 'marca comprobador',
     },
     en: {
-      title: 'Demo catalog make for quick verification.',
+      title: 'Sample catalog brand. Does not change elevator inputs; filters models before comparison.',
       aria: 'verifier brand',
     },
   },
@@ -157,27 +157,15 @@ const CHIPS = {
   },
   vModel: {
     es: {
-      title: 'Se compara contra potencia, par y rpm de polea calculados.',
+      title: 'Modelo del cat\u00e1logo demo. Comprobar contrasta potencia, par y rpm con la polea calculada (no modifica el formulario).',
       aria: 'modelo cat\u00e1logo',
     },
     en: {
-      title: 'Compared to calculated motor power, torque and sheave rpm.',
+      title: 'Demo catalog model. Check compares power, torque and rpm with the calculated sheave duty (does not change the form).',
       aria: 'catalog model',
     },
   },
 };
-
-/** @param {'es'|'en'} lang */
-function applyChips(lang) {
-  const en = lang === 'en';
-  document.querySelectorAll('[data-te-chip]').forEach((el) => {
-    const k = el.getAttribute('data-te-chip');
-    if (!k || !CHIPS[k]) return;
-    const t = CHIPS[k][en ? 'en' : 'es'];
-    el.setAttribute('title', t.title);
-    el.setAttribute('aria-label', chipAria(t.aria, lang));
-  });
-}
 
 const TE_REC = {
   q: { es: '630\u20133200 kg montacargas habituales', en: '630\u20133200 kg typical freight' },
@@ -186,7 +174,10 @@ const TE_REC = {
   v: { es: '0,63\u20131,6 m/s (normativa local)', en: '0.63\u20131.6 m/s (check local code)' },
   d: { es: '\u00d8 0,40\u20131,20 m seg\u00fan carga', en: '\u00d8 0.40\u20131.20 m by duty' },
   alpha: { es: '150\u2013190\u00b0 abrazamiento \u00fanicom', en: '150\u2013190\u00b0 single-wrap typical' },
-  mu: { es: '\u03bc 0,08\u20130,14 cable/seco', en: '\u03bc 0.08\u20130.14 dry rope/groove' },
+  mu: {
+    es: '\u03bc \u2248 0,09\u20130,13 (U) \u00b7 0,20\u20130,25 (V); cat\u00e1logo polea',
+    en: '\u03bc \u2248 0.09\u20130.13 (U) \u00b7 0.20\u20130.25 (V); sheave catalog',
+  },
   maxN: { es: '3\u20138 cabos frecuentes', en: '3\u20138 ropes common' },
 };
 
@@ -217,7 +208,7 @@ const LBL = {
   lblV: { es: 'Velocidad nominal', en: 'Rated speed' },
   lblDuty: { es: 'Tipo de servicio', en: 'Service type' },
   lblReeving: { es: 'Relaci\u00f3n de eslingado', en: 'Roping ratio' },
-  lblKcw: { es: 'Fracci\u00f3n de Q en contrapeso \u00f3ptimo', en: 'Q fraction in optimal counterweight' },
+  lblKcw: { es: 'Fracci\u00f3n de Q compensada (k)', en: 'Useful load fraction balanced (k)' },
   lblCwManual: { es: 'Fijar contrapeso manualmente (kg)', en: 'Fix counterweight manually (kg)' },
   lblMcpManual: { es: 'Contrapeso sugerido (editable)', en: 'Suggested counterweight (editable)' },
   lblD: { es: '\u00d8 primitivo polea tractora', en: 'Traction sheave pitch \u00d8' },
@@ -228,6 +219,39 @@ const LBL = {
   lblVSearch: { es: 'Filtrar modelo (texto)', en: 'Filter model (text)' },
   lblVModel: { es: 'Modelo del cat\u00e1logo ejemplo', en: 'Sample catalog model' },
 };
+
+/** Maps data-te-chip keys to LBL keys for accessible names. */
+const CHIP_LABEL_KEY = {
+  q: 'lblQ',
+  mc: 'lblMc',
+  h: 'lblH',
+  v: 'lblV',
+  duty: 'lblDuty',
+  reeving: 'lblReeving',
+  kcw: 'lblKcw',
+  mcpManual: 'lblMcpManual',
+  d: 'lblD',
+  alpha: 'lblAlpha',
+  mu: 'lblMu',
+  maxN: 'lblMaxN',
+  vBrand: 'lblVBrand',
+  vSearch: 'lblVSearch',
+  vModel: 'lblVModel',
+};
+
+/** @param {'es'|'en'} lang */
+function applyChips(lang) {
+  const tKey = lang === 'en' ? 'en' : 'es';
+  document.querySelectorAll('[data-te-chip]').forEach((el) => {
+    const k = el.getAttribute('data-te-chip');
+    if (!k || !CHIPS[k]) return;
+    const hints = CHIPS[k][tKey];
+    el.setAttribute('title', hints.title);
+    const lk = CHIP_LABEL_KEY[k];
+    const fieldName = lk && LBL[lk] ? LBL[lk][tKey] : hints.aria;
+    el.setAttribute('aria-label', chipHelpAriaLabel(fieldName, lang));
+  });
+}
 
 /** @param {'es'|'en'} lang */
 function applyLabels(lang) {
@@ -244,14 +268,8 @@ function applySelectsAndHints(lang) {
   const duty = document.getElementById('teDuty');
   if (duty) {
     const o = /** @type {HTMLSelectElement} */ (duty).options;
-    if (o[0]) o[0].textContent = en ? 'Freight / load (SF \u2248 10)' : 'Montacargas / carga (SF \u2248 10)';
-    if (o[1]) o[1].textContent = en ? 'Passenger (SF \u2248 12)' : 'Personas (SF \u2248 12)';
-  }
-  const hintKcw = document.getElementById('teHintKcw');
-  if (hintKcw) {
-    hintKcw.textContent = en
-      ? 'typ. 0.40\u20130.50 \u2192 Mcp \u2248 Mc + k\u00b7Q'
-      : 't\u00edp. 0,40\u20130,50 \u2192 Mcp \u2248 Mc + k\u00b7Q';
+    if (o[0]) o[0].textContent = en ? 'Goods lift / freight (SF \u2248 10)' : 'Montacargas / carga (SF \u2248 10)';
+    if (o[1]) o[1].textContent = en ? 'Passenger lift (SF \u2248 12)' : 'Personas (SF \u2248 12)';
   }
   const hintMu = document.getElementById('teHintMu');
   if (hintMu) hintMu.textContent = en ? 'indicative' : 'orientativo';
@@ -277,7 +295,7 @@ function applyBlocks(lang) {
       : 'Modelo orientativo de <strong>cables y contrapeso</strong>: relaci\u00f3n de tensiones vs <strong>Euler-Eytelwein</strong>, masa de contrapeso (cabina + 40\u201350% carga \u00fatil), elecci\u00f3n de <strong>\u00d8 y n\u00famero de cables</strong> con factor de seguridad (10 carga / 12 personas), y <strong>par de frenado</strong> en polea. El <strong>esquema del hueco</strong> est\u00e1 a la derecha, como en cinta plana y elevador de cangilones. No sustituye EN 81 ni memoria de instalaci\u00f3n.';
   }
   const helpSum = document.querySelector('.help-details.flat-help > summary');
-  if (helpSum) helpSum.textContent = en ? 'Quick guide to each quantity' : 'Gu\u00eda r\u00e1pida de cada magnitud';
+  if (helpSum) helpSum.textContent = en ? 'Quick guide to each parameter' : 'Gu\u00eda r\u00e1pida de cada magnitud';
   const helpBody = document.querySelector('.help-details.flat-help .help-details__body');
   if (helpBody) {
     helpBody.innerHTML = en
@@ -343,12 +361,6 @@ function applyBlocks(lang) {
     vh2.innerHTML = en
       ? '<span class="panel-icon">\u2713</span> Check a gearmotor I already have'
       : '<span class="panel-icon">\u2713</span> Comprobar un motorreductor que ya tengo';
-  }
-  const vlead = document.querySelector('.te-verify-lead');
-  if (vlead) {
-    vlead.textContent = en
-      ? 'Compare motor power, output torque and rpm with the calculated traction sheave duty above.'
-      : 'Compare potencia de motor, par de salida y rpm con el punto de polea tractora calculado arriba.';
   }
   const vrun = document.querySelector('#teVerifyPanel [data-verify-run]');
   if (vrun) vrun.textContent = en ? 'Check for this elevator' : 'Comprobar para este ascensor';

@@ -2,6 +2,7 @@
  * Modo visitante (opcion B): presets demo; valores propios -> registro.
  */
 import { isCreditsSystemEnabled } from '../config/credits.js';
+import { isPromoEmbed } from '../util/promoMode.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { showCreditsModal } from './creditsUi.js';
 import { findCalcInputsRoot, lockCalcInputs } from './calcInputLock.js';
@@ -63,6 +64,7 @@ function isAuthAccountPage() {
 }
 
 export function initGuestCalcMode() {
+  if (isPromoEmbed()) return;
   if (!isCreditsSystemEnabled()) return;
   if (getCurrentUser()?.email) return;
   if (isAuthAccountPage()) return;

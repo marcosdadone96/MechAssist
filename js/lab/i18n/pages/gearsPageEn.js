@@ -10,7 +10,7 @@ export const GEARS_PAGE_EN = {
   'gear.methodBodyHtml':
     'Standard external geometry: <strong>a = m(z\u2081+z\u2082)/2</strong>, ha = m, hf = 1.25m. Kinematics on the <strong>pitch line</strong>. Strength checking follows a <strong>simplified AGMA 2001\u2013inspired model</strong> (Lewis + approximate contact) \u2014 not a full certified method or material data.',
   'gear.designHintHtml':
-    'In <strong>design</strong> mode use pinion torque or power with the simplified AGMA check to iterate <strong>m</strong> and <strong>b</strong> to acceptable material usage. In <strong>diagnostic</strong> mode set real <strong>z\u2081, z\u2082, m, b</strong> and verify with service load.',
+    '<span class="gear-calc-mode-help__line" data-gear-mode="design"><strong>Design:</strong> enter z\u2081, z\u2082 and module (plus pinion torque or power) \u2192 centre distance and geometry; iterate <strong>m</strong> and <strong>b</strong> for acceptable material usage.</span> <span class="gear-calc-mode-help__line" data-gear-mode="diagnostic"><strong>Diagnostic:</strong> enter the installed geometry (z\u2081, z\u2082, m\u2099, b, \u03b2) and service load \u2192 check whether the pair is adequately sized (model SF/SH margins).</span>',
   'gear.relatedHintHtml':
     'Sizing a full transmission? <a href="machines-hub.html">Calculate the driven machine too \u2192</a>',
   'gear.seoSummary': 'Expanded context and usage notes',

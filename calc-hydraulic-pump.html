@@ -115,6 +115,52 @@
         align-items: center;
         margin-top: 0.35rem;
       }
+      .hc-verdict-summary {
+        display: grid;
+        gap: 0.5rem;
+        margin: 0.75rem 0 0.35rem;
+        padding: 0.65rem 0.75rem;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        background: linear-gradient(165deg, #ffffff 0%, #f8fafc 100%);
+      }
+      .hc-verdict-summary__title {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.15rem;
+      }
+      .hc-vs-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        font-size: 0.82rem;
+        line-height: 1.35;
+      }
+      .hc-vs-ico {
+        flex-shrink: 0;
+        font-weight: 800;
+        font-size: 1rem;
+        line-height: 1.2;
+      }
+      .hc-vs-item--ok .hc-vs-ico {
+        color: #059669;
+      }
+      .hc-vs-item--bad .hc-vs-ico {
+        color: #dc2626;
+      }
+      .hc-vs-label {
+        font-weight: 800;
+        color: #0f172a;
+      }
+      .hc-vs-sub {
+        font-size: 0.76rem;
+        color: #64748b;
+        font-weight: 600;
+        margin-top: 0.12rem;
+      }
       .hp-tier-row {
         display: flex;
         flex-wrap: wrap;
@@ -212,17 +258,41 @@
       .hp-vg-table tr:last-child td {
         border-bottom: 0;
       }
+      @media (max-width: 479px) {
+        .lab-calc-layout--hc.lab-calc-layout--with-diag {
+          grid-template-columns: minmax(0, 1fr) !important;
+          grid-template-areas:
+            'diagram'
+            'inputs'
+            'out' !important;
+        }
+        .lab-calc-layout--hc .lab-calc-layout__diagram {
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+        }
+        .lab-calc-layout--hc #hpDiagram,
+        .lab-calc-layout--hc #hpPipeDiagram {
+          width: 100%;
+          max-width: 100%;
+          height: auto;
+          display: block;
+        }
+        .lab-calc-layout--hc .lab-diagram-wrap {
+          max-width: 100%;
+        }
+      }
     </style>
   </head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
@@ -249,16 +319,16 @@
           </p>
           <details class="lab-calc-seo">
             <summary data-i18n="hpump.seoSummary">Contexto ampliado y notas de uso</summary>
-            <p class="calc-seo-intro">
+            <p class="calc-seo-intro" data-i18n="hpump.seoIntroHtml" data-i18n-html>
           Aquí se enlazan el desplazamiento y el régimen de la bomba con el caudal efectivo, la potencia absorbida y la línea de presión de trabajo, incorporando un balance simplificado de pérdidas en tuberías por fricción según Reynolds y Darcy-Weisbach con visualización del régimen laminar o turbulento. El marco sirve para dimensionar grupos oleohidráulicos móviles y estacionarios antes de confirmar curvas con el fabricante. Es útil para ingenieros de mantenimiento que sustituyen mangueras y racores y necesitan saber si suben las pérdidas locales por culpa del nuevo trazado. Considere validar la temperatura del aceite cuando el circuito se alarga en una prensa que trabaja en tres turnos.
             </p>
           </details>
           <details class="lab-calc-help">
             <summary class="lab-calc-help__summary" data-i18n="hpump.helpSummary">Metodología y límites del modelo</summary>
             <div class="lab-calc-help__body">
-              <p class="lab-lead lab-lead--in-help" id="hpMethodologyLead">
+              <p class="lab-lead lab-lead--in-help" id="hpMethodologyLead" data-i18n="hpump.methodologyLeadHtml" data-i18n-html>
                 Módulo avanzado para análisis de bomba y líneas oleohidráulicas, con <strong>reglas y alertas</strong> de cavitación, pérdida de carga y veredicto orientativo de seguridad y eficiencia.
-                Darcy–Weisbach y Reynolds simplificados; en <strong>modo proyecto</strong> rho y Pv del aceite siguen una tendencia aproximada con la temperatura introducida (no son datos de ficha). NPSHa y curvas son <strong>orientativos</strong> — confirme con ficha de bomba y aceite.
+                Darcy–Weisbach y Reynolds simplificados. Fluido estándar: aceite mineral ISO VG 32–68; la viscosidad ν del tramo se introduce manualmente (tabla VG). En <strong>modo proyecto</strong>, ρ y Pv de ese aceite siguen una tendencia orientativa con la temperatura (no sustituyen ficha). Para otros fluidos, elija «Otro» e introduzca ρ y ν. NPSHa y curvas son <strong>orientativos</strong>.
               </p>
             </div>
           </details>
@@ -269,11 +339,29 @@
             <strong>desplazamiento (cm³/rev)</strong> aparece en la placa o ficha de la bomba. Si no lo tiene, puede estimarse con <strong>D = (Q×1000)/n</strong>.
           </div>
         </div>
-        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
+        <nav class="lab-next-steps" data-i18n="fluids.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="fluids.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="fluids.nextStepsHpLi1Html" data-i18n-html>
+              <a href="calc-hydraulic-cylinder.html">Cilindro hidráulico</a> — fuerza, caudal y pandeo del actuador.
+            </li>
+            <li data-i18n="fluids.nextStepsHpLi2Html" data-i18n-html>
+              <a href="calc-hydraulic-press.html">Prensa hidráulica</a> — tonelaje y productividad.
+            </li>
+            <li data-i18n="fluids.nextStepsHpLi3Html" data-i18n-html>
+              <a href="calc-pneumatic-cylinder.html">Cilindro neumático</a> — consumo de aire en ejes periféricos.
+            </li>
+          </ul>
+        </nav>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label" data-i18n="hpump.presetsLabel">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="hpPresetsBar"></div>
+        </div>
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="hp-diagrams-row">
               <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-                <p class="lab-diagram-wrap__title">① Bomba hidráulica — corte esquemático</p>
+                <p class="lab-diagram-wrap__title" data-i18n="hpump.diagPumpTitle">① Bomba hidráulica — corte esquemático</p>
                 <svg
                   id="hpDiagram"
                   xmlns="http://www.w3.org/2000/svg"
@@ -283,7 +371,7 @@
                 ></svg>
               </div>
               <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-                <p class="lab-diagram-wrap__title">② Conducciones — mapa de pérdida de carga</p>
+                <p class="lab-diagram-wrap__title" data-i18n="hpump.diagPipeTitle">② Conducciones — mapa de pérdida de carga</p>
                 <svg
                   id="hpPipeDiagram"
                   xmlns="http://www.w3.org/2000/svg"
@@ -324,7 +412,8 @@
                   <div class="lab-field">
                     <label for="hpOilTempC" data-i18n="hpump.labelOilTemp">Temperatura aceite (°C)</label>
                     <input id="hpOilTempC" type="number" step="any" value="46" />
-                    <span class="hint">Modo proyecto: rho y Pv(T) aproximados para NPSHa; no sustituyen ficha ISO VG del aceite.</span>
+                    <span class="hint">Solo fluido estándar en modo proyecto</span>
+                    <p class="lab-field-help" data-i18n="hpump.helpOilTemp">Con aceite mineral ISO VG, modo proyecto aplica ρ(T) y Pv(T) orientativos para NPSHa. No corrige ν del tramo automáticamente.</p>
                   </div>
                 </div>
               </div>
@@ -340,22 +429,22 @@
 
               <div class="hp-block hp-block--pump">
                 <div class="hp-block__head">
-                  <h3 class="hp-block__title">① Bomba hidráulica</h3>
-                  <p class="hp-block__sub">Presión de trabajo, RPM, desplazamiento, tipo de bomba y diámetro de succión a la bomba.</p>
+                  <h3 class="hp-block__title" data-i18n="hpump.blockPumpTitle">① Bomba hidráulica</h3>
+                  <p class="hp-block__sub" data-i18n="hpump.blockPumpSub">Presión de trabajo, RPM, desplazamiento, tipo de bomba y diámetro de succión a la bomba.</p>
                 </div>
                 <div class="lab-grid lab-grid--2">
                   <div class="lab-field">
-                    <label for="hpType">Tipo de bomba</label>
+                    <label for="hpType" data-i18n="hpump.labelPumpType">Tipo de bomba</label>
                     <select id="hpType">
-                      <option value="gear">Engranajes</option>
-                      <option value="vane">Paletas</option>
-                      <option value="piston">Pistones</option>
+                      <option value="gear" data-i18n="hpump.optPumpGear">Engranajes</option>
+                      <option value="vane" data-i18n="hpump.optPumpVane">Paletas</option>
+                      <option value="piston" data-i18n="hpump.optPumpPiston">Pistones</option>
                     </select>
                     <span class="hint">Define rendimiento y límite de presión</span>
                     <p class="lab-field-help">Cada tecnología tiene eficiencia volumétrica y mecánica y rango de presión distintos para la evaluación de seguridad.</p>
                   </div>
                   <div class="lab-field">
-                    <label for="hpPressureUnit">Unidad de presión</label>
+                    <label for="hpPressureUnit" data-i18n="hpump.labelPressureUnit">Unidad de presión</label>
                     <select id="hpPressureUnit">
                       <option value="bar">bar</option>
                       <option value="psi">PSI</option>
@@ -430,14 +519,27 @@
                 </div>
                 <div class="lab-grid lab-grid--2">
                   <div class="lab-field">
-                    <label for="pipeLineType">Tipo de línea</label>
+                    <label for="pipeLineType" data-i18n="hpump.labelLineType">Tipo de línea</label>
                     <select id="pipeLineType">
-                      <option value="suction">Succión</option>
-                      <option value="pressure">Presión</option>
-                      <option value="return">Retorno</option>
+                      <option value="suction" data-i18n="hpump.optLineSuction">Succión</option>
+                      <option value="pressure" data-i18n="hpump.optLinePressure">Presión</option>
+                      <option value="return" data-i18n="hpump.optLineReturn">Retorno</option>
                     </select>
-                    <span class="hint">Cambia rango recomendado de velocidad</span>
-                    <p class="lab-field-help">Rangos usados: succión 0,5–1,2 m/s, presión 3–7 m/s, retorno 2–4 m/s.</p>
+                    <span class="hint" data-i18n="hpump.hintLineType">Cambia rango recomendado de velocidad y umbrales de alerta</span>
+                    <p class="lab-field-help" data-i18n="hpump.helpLineType">Seleccione el tramo que dimensiona. Umbrales de alerta: succión ≤ 1 m/s (cavitación), presión ≤ 4 m/s (ISO 4413), retorno 2–4 m/s.</p>
+                  </div>
+                  <div class="lab-field lab-field--wide">
+                    <label for="hpFluidType" data-i18n="hpump.labelFluidType">Tipo de fluido</label>
+                    <select id="hpFluidType">
+                      <option value="mineral_vg" selected data-i18n="hpump.optFluidMineral">Aceite mineral ISO VG 32–68 (HLP/HM)</option>
+                      <option value="custom" data-i18n="hpump.optFluidCustom">Otro (agua-glicol, biológico, emulsión…)</option>
+                    </select>
+                    <p class="lab-field-help" data-i18n="hpump.helpFluidType">Estándar: aceite hidráulico mineral ISO VG 32–68 (p. ej. HLP 46). Para otros fluidos elija «Otro» e introduzca ρ y ν manualmente.</p>
+                  </div>
+                  <div class="lab-field" id="hpFluidRhoRow" hidden>
+                    <label for="hpFluidRho" data-i18n="hpump.labelDensity">Densidad ρ (kg/m³)</label>
+                    <input id="hpFluidRho" type="number" min="500" max="1400" step="any" value="860" />
+                    <p class="lab-field-help" data-i18n="hpump.helpDensity">Densidad del fluido a temperatura de servicio (ficha o medición). Se usa en pérdidas de carga y NPSHa.</p>
                   </div>
                   <div class="lab-field" id="pipeFlowField">
                     <label for="pipeFlowLmin">Caudal (L/min)</label>
@@ -449,7 +551,8 @@
                     <label for="pipeViscCst">Viscosidad cinemática (cSt)</label>
                     <input id="pipeViscCst" type="number" min="1" step="any" value="46" />
                     <span class="hint">Afecta Reynolds y fricción</span>
-                    <p class="lab-field-help">Se convierte a m²/s para calcular Reynolds y el factor de fricción en Darcy-Weisbach.</p>
+                    <p class="lab-field-help" data-i18n="hpump.helpViscosity">Introduzca ν (cSt) a la temperatura de servicio (ficha o tabla VG). El modelo no ajusta ν con T automáticamente.</p>
+                    <p class="lab-field-help muted hp-fluid-model-note" data-i18n="hpump.fluidModelFootnote">Modelo de viscosidad orientado a aceite mineral ISO VG 32–68. Para agua-glicol, biológicos, emulsiones u otros fluidos, seleccione «Otro» e introduzca densidad ρ y viscosidad ν manualmente.</p>
                     <table class="hp-vg-table" aria-label="Orientación ISO VG a 40 °C">
                       <thead>
                         <tr>
@@ -499,16 +602,16 @@
                       <option value="6">6"</option>
                     </select>
                     <span class="hint">Variable clave de optimización</span>
-                    <p class="lab-field-help">Use nomenclatura hidráulica en pulgadas nominales; con el conmutador mm se muestran equivalentes comunes.</p>
+                    <p class="lab-field-help" data-i18n="hpump.helpPipeDiam">Diámetro interior del tramo indicado en «Tipo de línea». Orientación ISO 4413: presión ≤ 4 m/s; succión ≤ 1 m/s (cavitación); retorno 2–4 m/s. Las alertas aplican el umbral del tipo elegido.</p>
                   </div>
                   <div class="lab-field">
-                    <label for="pipeElbows">Número de codos</label>
+                    <label for="pipeElbows" data-i18n="hpump.labelElbows">Número de codos</label>
                     <input id="pipeElbows" type="number" min="0" step="1" value="4" />
                     <span class="hint">Pérdidas menores por cambios de dirección</span>
                     <p class="lab-field-help">Cada codo añade pérdidas singulares al balance de energía, aumentando la caída de presión total.</p>
                   </div>
                   <div class="lab-field">
-                    <label for="pipeValves">Número de válvulas</label>
+                    <label for="pipeValves" data-i18n="hpump.labelValves">Número de válvulas</label>
                     <input id="pipeValves" type="number" min="0" step="1" value="2" />
                     <span class="hint">Pérdidas menores localizadas</span>
                     <p class="lab-field-help">Se suman como coeficientes K para calcular pérdida localizada adicional en la línea.</p>
@@ -528,7 +631,8 @@
             </details>
             <div id="hpResults" class="lab-results"></div>
             <div id="hpAdvisor" class="lab-alerts"></div>
-            <p id="hpVerdict" class="lab-verdict lab-verdict--ok">SISTEMA APTO</p>
+            <div id="hpVerdictSummary" class="hc-verdict-summary" aria-live="polite"></div>
+            <p id="hpVerdict" class="lab-verdict lab-verdict--ok" data-i18n="hpump.verdictOk">SISTEMA APTO</p>
             <div id="labFluidPdfMountHp" class="premium-pdf-mount"></div>
           </div>
         </div>

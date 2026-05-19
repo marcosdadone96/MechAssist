@@ -3,9 +3,12 @@
  * valid UTF-8 even if the server omits charset on *.js (avoids mojibake).
  */
 import { HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
-import { LAB_LANG_EVENT } from '../lab/i18n/labLang.js';
+import { LAB_LANG_EVENT, syncLangToggleButtons } from '../lab/i18n/labLang.js';
 import { applyMachinePresetLabels } from '../lab/i18n/machineHubPresetLabels.js';
 import { updateCounterUI } from '../services/calcCounter.js';
+import { isCreditsSystemEnabled } from '../config/credits.js';
+import { getCreditsPricingExplainerHtml, getCreditsPricingHint } from './creditsPricingCopy.js';
+import { applySubscriptionRenewalNotes } from './subscriptionPreContractNote.js';
 
 const LS_LANG = 'mdr-home-lang';
 
@@ -21,9 +24,9 @@ const dict = {
       'Herramientas t\u00e9cnicas confiables basadas en normas, la mayor\u00eda gratuitas.',
     'hero.mockupTitle': 'Calculadora de correas',
     'hero.mockup.url': 'www.themechassist.com/calc-belts.html',
-    'hero.mockup.live': 'En vivo',
+    'hero.mockup.live': 'Vista previa',
     'hero.mockup.pill': 'ISO / AGMA orientativo',
-    'hero.mockup.hint': 'Actualizado al cambiar entradas',
+    'hero.mockup.hint': 'Valores de ejemplo \u00b7 no interactivo',
     'hero.mockup.power': 'Potencia',
     'hero.mockup.rpm': 'RPM motriz',
     'hero.mockup.ratio': 'Relaci\u00f3n',
@@ -105,8 +108,9 @@ const dict = {
     'featured.iso.desc': 'Elige ajuste correcto en minutos y evita retrabajos por holguras o interferencias mal definidas.',
     'hero.tier':
       'Gratis: calculadoras b\u00e1sicas de transmisi\u00f3n, ISO, torniller\u00eda, lienzo multieje y la mayor\u00eda de m\u00e1quinas fluidos. Pro: PDF/Excel, proyectos guardados, historial sin l\u00edmites diarios y calculadoras premium se\u00f1aladas con badge.',
+    'nav.brandHome': 'Inicio \u2014 TheMechAssist',
     'nav.plans': 'Planes',
-    'nav.hubLab': 'Laboratorio',
+    'nav.hubLab': 'Laboratorio de transmisi\u00f3n',
     'nav.hubMachines': 'M\u00e1quinas',
     'nav.hubFluids': 'Hidr\u00e1ulica',
     'nav.myGearmotors': 'Mis motorreductores',
@@ -117,7 +121,7 @@ const dict = {
     'zone.machines.peek': 'Cinta plana \u00b7 Rodillos \u00b7 bombas y elevaci\u00f3n',
     'zone.lab.peek': 'Engranajes \u00b7 Correas \u00b7 Rodamientos \u00b7 ISO',
     'zone.fluids.peek': 'Bombas \u00b7 Cilindros \u00b7 Prensa \u00b7 Neum\u00e1tica',
-    'zone.lab': 'Laboratorio',
+    'zone.lab': 'Laboratorio de transmisi\u00f3n',
     'zone.labIntro':
       'Engranajes, correas, rodamientos y tolerancias: el n\u00facleo de transmisi\u00f3n con criterio de norma y salida lista para informe.',
     'zone.fluids': 'Hidr\u00e1ulica y neum\u00e1tica',
@@ -163,22 +167,22 @@ const dict = {
     'hub.fluids.sectionSoon': 'Pr\u00f3ximamente',
     'hub.fluids.pump.title': 'Bomba hidr\u00e1ulica',
     'hub.fluids.pump.desc':
-      'Caudal, presi\u00f3n y potencia para orientar el grupo hidr\u00e1ulico.',
+      'Caudal, presi\u00f3n y potencia para orientar el grupo hidr\u00e1ulico. M\u00f3dulos avanzados requieren plan Pro.',
     'hub.fluids.pneuCyl.title': 'Cilindro neum\u00e1tico',
     'hub.fluids.pneuCyl.desc':
-      'Fuerza, consumo y tiempos de carrera con aire comprimido.',
+      'Fuerza, consumo y tiempos de carrera con aire comprimido. M\u00f3dulos avanzados requieren plan Pro.',
     'hub.fluids.hydCyl.title': 'Cilindro hidr\u00e1ulico',
     'hub.fluids.hydCyl.desc':
-      'Fuerza, velocidad y caudal en actuaci\u00f3n oleohidr\u00e1ulica.',
+      'Fuerza, velocidad y caudal en actuaci\u00f3n oleohidr\u00e1ulica. M\u00f3dulos avanzados requieren plan Pro.',
     'hub.fluids.hydPress.title': 'Prensa hidr\u00e1ulica',
     'hub.fluids.hydPress.desc':
-      'Fuerza de prensado y par\u00e1metros de circuito orientativos.',
+      'Fuerza de prensado y par\u00e1metros de circuito orientativos. M\u00f3dulos avanzados requieren plan Pro.',
     'hub.fluids.soonCompressor.title': 'Compresor neum\u00e1tico',
     'hub.fluids.soonCompressor.desc': 'M\u00f3dulo en preparaci\u00f3n.',
     'hub.fluids.soonValves.title': 'V\u00e1lvulas y distribuci\u00f3n',
     'hub.fluids.soonValves.desc': 'M\u00f3dulo en preparaci\u00f3n.',
-    'hub.lab.eyebrow': 'Laboratorio',
-    'hub.lab.title': 'Laboratorio de elementos de m\u00e1quina',
+    'hub.lab.eyebrow': 'Laboratorio de transmisi\u00f3n',
+    'hub.lab.title': 'Laboratorio de transmisi\u00f3n',
     'hub.lab.startHint':
       '\u00bfNo sabes por d\u00f3nde empezar? Si tienes un motor y una carga, empieza por Engranajes o Correas.',
     'hub.lab.leadHtml':
@@ -223,13 +227,13 @@ const dict = {
       'Cat\u00e1logo demo de motorreductores, relaci\u00f3n J<sub>ext</sub>/J<sub>mot</sub> y gr\u00e1fico par motor vs carga.',
     'hub.lab.spring.title': 'Muelle helicoidal compresi\u00f3n \u00b7 DIN 2089',
     'hub.lab.spring.desc':
-      'k, F\u2099, \u03c4 con factor de Wahl; esquema SVG din\u00e1mico, gr\u00e1fico F\u2013s y simulaci\u00f3n Pro por deslizador.',
+      'k, F\u2099, \u03c4 con factor de Wahl; esquema SVG din\u00e1mico, gr\u00e1fico F\u2013s y simulaci\u00f3n Pro por deslizador. M\u00f3dulos avanzados requieren plan Pro.',
     'hub.lab.canvas.title': 'Lienzo t\u00e9cnico multieje',
     'hub.lab.canvas.desc':
       'Construye transmisiones multieje con arrastre directo de elementos, propagaci\u00f3n autom\u00e1tica de n/T y veredictos en vivo mientras editas.',
     'hub.machines.centrif.title': 'Bomba centr\u00edfuga',
     'hub.machines.centrif.desc':
-      'Curva, potencia y par\u00e1metros de operaci\u00f3n para orientar selecci\u00f3n y revisi\u00f3n.',
+      'Curva, potencia y par\u00e1metros de operaci\u00f3n para orientar selecci\u00f3n y revisi\u00f3n. M\u00f3dulos avanzados requieren plan Pro.',
     'hub.machines.flatConv.title': 'Cinta transportadora plana',
     'hub.machines.flatConv.desc':
       'Tensi\u00f3n, potencia y geometr\u00eda de transporte horizontal u orientativo.',
@@ -241,16 +245,16 @@ const dict = {
       'Componente en pendiente: potencia, tensiones y factores de uso.',
     'hub.machines.bucket.title': 'Elevador de cangilones',
     'hub.machines.bucket.desc':
-      'Altura, caudal s\u00f3lido y potencia para elevaci\u00f3n vertical de material.',
+      'Altura, caudal s\u00f3lido y potencia para elevaci\u00f3n vertical de material. M\u00f3dulos avanzados requieren plan Pro.',
     'hub.machines.screw.title': 'Tornillo sin fin',
     'hub.machines.screw.desc':
-      'Llenado, velocidad y potencia para transporte helicoidal de s\u00f3lidos.',
+      'Llenado, velocidad y potencia para transporte helicoidal de s\u00f3lidos. M\u00f3dulos avanzados requieren plan Pro.',
     'hub.machines.traction.title': 'Ascensor de tracci\u00f3n',
     'hub.machines.traction.desc':
-      'Cinem\u00e1tica, contrapeso y par\u00e1metros de cuadro para ascensores.',
+      'Cinem\u00e1tica, contrapeso y par\u00e1metros de cuadro para ascensores. M\u00f3dulos avanzados requieren plan Pro.',
     'hub.machines.carLift.title': 'Elevador de veh\u00edculos',
     'hub.machines.carLift.desc':
-      'Mecanismo y cargas para plataformas de elevaci\u00f3n tipo tornillo.',
+      'Mecanismo y cargas para plataformas de elevaci\u00f3n tipo tornillo. M\u00f3dulos avanzados requieren plan Pro.',
     'hub.machines.soonExtruder.title': 'Extrusor',
     'hub.machines.soonExtruder.desc': 'M\u00f3dulo en preparaci\u00f3n.',
     'hub.machines.soonFan.title': 'Ventilador industrial',
@@ -275,7 +279,7 @@ const dict = {
     'aria.transmissionCalcs': 'Calculadoras de transmisi\u00f3n',
     'aria.fluidCalcs': 'Calculadoras de hidr\u00e1ulica y neum\u00e1tica',
     'aria.machinesHub': 'Abrir listado de m\u00e1quinas y transporte',
-    'aria.labHub': 'Abrir laboratorio de transmisi\u00f3n y calculadoras',
+    'aria.labHub': 'Abrir laboratorio de transmisi\u00f3n',
     'aria.fluidsHub': 'Abrir listado de hidr\u00e1ulica y neum\u00e1tica',
     footnote: '',
     badgePro: 'PRO',
@@ -287,11 +291,13 @@ const dict = {
     'pricing.free.price': '0 \u20ac',
     'pricing.free.hint': '1000 cr\u00e9ditos de bienvenida para todo el cat\u00e1logo',
     'pricing.free.tagline': 'Pruebe calculadoras con sus datos tras crear cuenta.',
-    'pricing.free.b1': 'Presets demo sin registro (solo lectura en campos propios)',
-    'pricing.free.b2': 'Un solo saldo en laboratorio, m\u00e1quinas e hidr\u00e1ulica',
+    'pricing.free.b1': 'Laboratorio de transmisi\u00f3n (engranajes, correas, rodamientos, ISO y torniller\u00eda)',
+    'pricing.free.b2': 'Un solo saldo en laboratorio de transmisi\u00f3n, m\u00e1quinas e hidr\u00e1ulica',
     'pricing.free.b3': 'Un cargo por sesi\u00f3n de c\u00e1lculo, no por cada rec\u00e1lculo autom\u00e1tico',
     'pricing.free.b4': 'PDF y guardado en nube con cr\u00e9ditos o plan de pago',
-    'pricing.free.cta': 'Crear cuenta gratis',
+    'pricing.free.clarification':
+      'Incluye tambi\u00e9n todo el Laboratorio de transmisi\u00f3n (engranajes, rodamientos, ajustes ISO, muelles y m\u00e1s).',
+    'pricing.free.cta': 'Empezar gratis',
     'pricing.starter.ribbon': 'Starter',
     'pricing.starter.name': 'Starter',
     'pricing.starter.priceBig': '9 \u20ac',
@@ -300,14 +306,17 @@ const dict = {
     'pricing.starter.tagline':
       'Para quien dimensiona 1\u20135 instalaciones al mes y necesita el informe firmado.',
     'pricing.starter.creditsHint':
-      '1000 cr\u00e9ditos \u00b7 10 por sesi\u00f3n de c\u00e1lculo \u00b7 PDF 10 adicionales',
+      '1000 cr\u00e9ditos \u00b7 10 por sesi\u00f3n (12 min) \u00b7 PDF 10 c/u',
+    'pricing.starter.creditsDetailsSummary': '\u00bfC\u00f3mo funcionan los cr\u00e9ditos?',
     'pricing.starter.b1': 'Elevador, tornillo, cangilones, bomba e hidr\u00e1ulica',
     'pricing.starter.b2': 'Informe PDF de cada c\u00e1lculo (hasta 30/mes)',
     'pricing.starter.b3': 'Comprobador de motorreductor con 5 marcas',
-    'pricing.starter.b4': 'Desbloqueo puntual incluido (1 \u20ac/calculadora/31 d\u00edas)',
+    'pricing.starter.b4': 'Desbloqueo puntual disponible: 1 \u20ac/calculadora/30 d\u00edas',
     'pricing.starter.cta': 'Starter 9 \u20ac/mes',
+    'pricing.renewalNoteHtml':
+      'Se renueva autom\u00e1ticamente. Cancela en cualquier momento desde <a href="https://mechassist.lemonsqueezy.com/billing" target="_blank" rel="noopener">tu portal de cliente</a>.',
     'pricing.unlockNote':
-      'Desbloqueo puntual 1 \u20ac: acceso a una calculadora durante 31 d\u00edas. Sin suscripci\u00f3n, sin registro obligatorio.',
+      'Desbloqueo puntual 1 \u20ac: acceso a una calculadora durante 30 d\u00edas. Sin suscripci\u00f3n. Cuenta gratuita necesaria para recibir tu acceso.',
     'pricing.roi':
       'Si TheMechAssist te ahorra 1 hora al mes, ya se ha pagado. Un ingeniero de planta factura o vale entre 25 y 50 \u20ac/hora.',
     'pricing.unlimited.ribbon': 'Ilimitado',
@@ -315,11 +324,12 @@ const dict = {
     'pricing.unlimited.priceBig': '25 \u20ac',
     'pricing.unlimited.perMonth': '/mes',
     'pricing.unlimited.annualLine': 'o 199 \u20ac/a\u00f1o \u00b7 \u2248 16,58 \u20ac/mes de media',
-    'pricing.unlimited.tagline': 'Todo el cat\u00e1logo sin gastar cr\u00e9ditos.',
+    'pricing.unlimited.tagline':
+      'Para oficinas t\u00e9cnicas que dimensionan a diario sin interrupciones.',
     'pricing.unlimited.b1': 'Sin consumir cr\u00e9ditos en ninguna calculadora',
     'pricing.unlimited.b2': 'PDF y sesiones sin l\u00edmite por saldo',
-    'pricing.unlimited.b3': 'Para uso intensivo en oficina t\u00e9cnica',
-    'pricing.unlimited.b4': 'IVA seg\u00fan pa\u00eds en checkout Lemon',
+    'pricing.unlimited.b3': 'Soporte por email con respuesta prioritaria',
+    'pricing.unlimited.b4': 'Historial de proyectos guardados sin l\u00edmite',
     'pricing.unlimited.useCase': 'Si dimensiona a diario y no quiere vigilar el saldo de cr\u00e9ditos.',
     'pricing.unlimited.cta': 'Ilimitado 25 \u20ac/mes',
     'pricing.unlock.name': 'Una calculadora',
@@ -332,7 +342,7 @@ const dict = {
     'pricing.unlock.b4': 'Ideal si solo usa un m\u00f3dulo Pro de forma intensiva',
     'pricing.unlock.cta': 'Elegir calculadora',
     'pricing.footnote':
-      'Precios orientativos en euros; IVA o impuestos aplicables seg\u00fan pa\u00eds. Importe final en checkout.',
+      'Precios orientativos en euros. El importe final en checkout Lemon Squeezy puede incluir IVA u otros impuestos seg\u00fan su pa\u00eds (aplica a todos los planes).',
     'auth.login': 'Iniciar sesi\u00f3n',
     'auth.register': 'Registrarse',
     'auth.logout': 'Cerrar sesi\u00f3n',
@@ -394,9 +404,9 @@ const dict = {
       'Reliable, standards-grounded technical tools \u2014 most of them free.',
     'hero.mockupTitle': 'Belt calculator',
     'hero.mockup.url': 'www.themechassist.com/calc-belts.html',
-    'hero.mockup.live': 'Live',
+    'hero.mockup.live': 'Preview',
     'hero.mockup.pill': 'ISO / AGMA (indicative)',
-    'hero.mockup.hint': 'Updates as inputs change',
+    'hero.mockup.hint': 'Sample values \u00b7 not interactive',
     'hero.mockup.power': 'Power',
     'hero.mockup.rpm': 'Driver RPM',
     'hero.mockup.ratio': 'Ratio',
@@ -478,8 +488,9 @@ const dict = {
     'featured.iso.desc': 'Select the right fit in minutes and avoid rework from poor tolerance choices.',
     'hero.tier':
       'Free: basic transmission, ISO fits, bolting, multi-shaft canvas and most machine/fluid models. Pro: PDF/Excel, saved projects, unlimited daily use where included, and premium calculators marked with a badge.',
+    'nav.brandHome': 'Home \u2014 TheMechAssist',
     'nav.plans': 'Plans',
-    'nav.hubLab': 'Lab',
+    'nav.hubLab': 'Transmission lab',
     'nav.hubMachines': 'Machines',
     'nav.hubFluids': 'Hydraulics',
     'nav.myGearmotors': 'My gearmotors',
@@ -490,7 +501,7 @@ const dict = {
     'zone.machines.peek': 'Flat belt \u00b7 Rollers \u00b7 pumps and lifts',
     'zone.lab.peek': 'Gears \u00b7 Belts \u00b7 Bearings \u00b7 ISO',
     'zone.fluids.peek': 'Pumps \u00b7 Cylinders \u00b7 Press \u00b7 Pneumatics',
-    'zone.lab': 'Laboratory',
+    'zone.lab': 'Transmission lab',
     'zone.labIntro':
       'Gears, belts, bearings and tolerances: transmission essentials with standards-based checks and report-ready outputs.',
     'zone.fluids': 'Hydraulics and pneumatics',
@@ -535,19 +546,23 @@ const dict = {
     'hub.fluids.sectionActive': 'Available',
     'hub.fluids.sectionSoon': 'Coming soon',
     'hub.fluids.pump.title': 'Hydraulic pump',
-    'hub.fluids.pump.desc': 'Flow, pressure and power to size the hydraulic group.',
+    'hub.fluids.pump.desc':
+      'Flow, pressure and power to size the hydraulic group. Advanced sections require a Pro plan.',
     'hub.fluids.pneuCyl.title': 'Pneumatic cylinder',
-    'hub.fluids.pneuCyl.desc': 'Force, air use and stroke timing with compressed air.',
+    'hub.fluids.pneuCyl.desc':
+      'Force, air use and stroke timing with compressed air. Advanced sections require a Pro plan.',
     'hub.fluids.hydCyl.title': 'Hydraulic cylinder',
-    'hub.fluids.hydCyl.desc': 'Force, speed and flow for oleohydraulic actuation.',
+    'hub.fluids.hydCyl.desc':
+      'Force, speed and flow for oleohydraulic actuation. Advanced sections require a Pro plan.',
     'hub.fluids.hydPress.title': 'Hydraulic press',
-    'hub.fluids.hydPress.desc': 'Clamping force and indicative circuit parameters.',
+    'hub.fluids.hydPress.desc':
+      'Clamping force and indicative circuit parameters. Advanced sections require a Pro plan.',
     'hub.fluids.soonCompressor.title': 'Pneumatic compressor',
     'hub.fluids.soonCompressor.desc': 'Module in preparation.',
     'hub.fluids.soonValves.title': 'Valves and distribution',
     'hub.fluids.soonValves.desc': 'Module in preparation.',
-    'hub.lab.eyebrow': 'Laboratory',
-    'hub.lab.title': 'Machine-element lab',
+    'hub.lab.eyebrow': 'Transmission lab',
+    'hub.lab.title': 'Transmission lab',
     'hub.lab.startHint':
       'Not sure where to start? If you have a motor and a load, begin with Gears or Belts.',
     'hub.lab.leadHtml':
@@ -592,12 +607,13 @@ const dict = {
       'Demo geared-motor catalogue, J_ext/J_mot ratio and motor torque vs load chart.',
     'hub.lab.spring.title': 'Helical compression spring \u00b7 DIN 2089',
     'hub.lab.spring.desc':
-      'k, F\u2099, \u03c4 with Wahl factor; live SVG, F\u2013s chart and Pro slider simulation.',
+      'k, F\u2099, \u03c4 with Wahl factor; live SVG, F\u2013s chart and Pro slider simulation. Advanced sections require a Pro plan.',
     'hub.lab.canvas.title': 'Multi-shaft technical canvas',
     'hub.lab.canvas.desc':
       'Build multi-shaft trains with direct element drag, automatic n/T propagation and live verdicts while you edit.',
     'hub.machines.centrif.title': 'Centrifugal pump',
-    'hub.machines.centrif.desc': 'Curve, power and operating parameters to guide selection and review.',
+    'hub.machines.centrif.desc':
+      'Curve, power and operating parameters to guide selection and review. Advanced sections require a Pro plan.',
     'hub.machines.flatConv.title': 'Flat belt conveyor',
     'hub.machines.flatConv.desc': 'Tension, power and geometry for horizontal conveying (indicative).',
     'hub.machines.roller.title': 'Roller conveyor',
@@ -605,13 +621,17 @@ const dict = {
     'hub.machines.inclined.title': 'Inclined belt',
     'hub.machines.inclined.desc': 'Slope duty: power, tensions and service factors.',
     'hub.machines.bucket.title': 'Bucket elevator',
-    'hub.machines.bucket.desc': 'Lift height, solid throughput and power for vertical conveying.',
+    'hub.machines.bucket.desc':
+      'Lift height, solid throughput and power for vertical conveying. Advanced sections require a Pro plan.',
     'hub.machines.screw.title': 'Screw conveyor',
-    'hub.machines.screw.desc': 'Fill level, speed and power for helical bulk transport.',
+    'hub.machines.screw.desc':
+      'Fill level, speed and power for helical bulk transport. Advanced sections require a Pro plan.',
     'hub.machines.traction.title': 'Traction lift',
-    'hub.machines.traction.desc': 'Kinematics, counterweight and controller-oriented parameters.',
+    'hub.machines.traction.desc':
+      'Kinematics, counterweight and controller-oriented parameters. Advanced sections require a Pro plan.',
     'hub.machines.carLift.title': 'Vehicle lift',
-    'hub.machines.carLift.desc': 'Mechanism and loads for screw-type vehicle platforms.',
+    'hub.machines.carLift.desc':
+      'Mechanism and loads for screw-type vehicle platforms. Advanced sections require a Pro plan.',
     'hub.machines.soonExtruder.title': 'Extruder',
     'hub.machines.soonExtruder.desc': 'Module in preparation.',
     'hub.machines.soonFan.title': 'Industrial fan',
@@ -636,7 +656,7 @@ const dict = {
     'aria.transmissionCalcs': 'Power transmission calculators',
     'aria.fluidCalcs': 'Hydraulic and pneumatic calculators',
     'aria.machinesHub': 'Open machine and bulk-handling calculators',
-    'aria.labHub': 'Open transmission lab and calculators',
+    'aria.labHub': 'Open transmission lab',
     'aria.fluidsHub': 'Open hydraulic and pneumatic calculators',
     footnote: '',
     badgePro: 'PRO',
@@ -648,8 +668,8 @@ const dict = {
     'pricing.free.price': '0 \u20ac',
     'pricing.free.hint': '1000 welcome credits for the full catalog',
     'pricing.free.tagline': 'Run calculators with your own inputs after creating an account.',
-    'pricing.free.b1': 'Guest demos with presets (custom fields are read-only)',
-    'pricing.free.b2': 'One balance across lab, machines and hydraulics',
+    'pricing.free.b1': 'Transmission lab (gears, belts, bearings, ISO fits and bolting)',
+    'pricing.free.b2': 'One balance across transmission lab, machines and hydraulics',
     'pricing.free.b3': 'One charge per calc session, not per auto-recalc',
     'pricing.free.b4': 'PDF and cloud save via credits or a paid plan',
     'pricing.free.cta': 'Create free account',
@@ -661,14 +681,17 @@ const dict = {
     'pricing.starter.tagline':
       'For engineers sizing 1\u20135 installations per month who need a signed report.',
     'pricing.starter.creditsHint':
-      '1000 credits \u00b7 10 per calc session \u00b7 PDF costs 10 extra',
+      '1000 credits \u00b7 10 per calc session (12 min) \u00b7 PDF 10 each',
+    'pricing.starter.creditsDetailsSummary': 'How do credits work?',
     'pricing.starter.b1': 'Elevator, screw, buckets, pump and hydraulics',
     'pricing.starter.b2': 'PDF report per calculation (up to 30/month)',
     'pricing.starter.b3': 'Gearmotor checker with 5 demo brands',
-    'pricing.starter.b4': 'Pay-per-calculator unlock included (\u20ac1/calculator/31 days)',
+    'pricing.starter.b4': 'Pay-per-calculator unlock available: \u20ac1/calculator/30 days',
     'pricing.starter.cta': 'Starter \u20ac9/month',
+    'pricing.renewalNoteHtml':
+      'Renews automatically. Cancel anytime from <a href="https://mechassist.lemonsqueezy.com/billing" target="_blank" rel="noopener">your customer portal</a>.',
     'pricing.unlockNote':
-      'One-time unlock \u20ac1: access to one calculator for 31\u00a0days. No subscription, no sign-up required.',
+      'One-time unlock \u20ac1: access to one calculator for 30\u00a0days. No subscription. A free account is required to receive your access.',
     'pricing.roi':
       'If TheMechAssist saves you 1 hour a month, it pays for itself. A plant engineer bills or costs between 25 and 50\u00a0\u20ac/hour.',
     'pricing.unlimited.ribbon': 'Unlimited',
@@ -676,11 +699,12 @@ const dict = {
     'pricing.unlimited.priceBig': '\u20ac25',
     'pricing.unlimited.perMonth': '/month',
     'pricing.unlimited.annualLine': 'or \u20ac199/year \u00b7 \u2248 \u20ac16.58/mo average',
-    'pricing.unlimited.tagline': 'Full catalog without spending credits.',
+    'pricing.unlimited.tagline':
+      'For engineering offices that size daily without interruptions.',
     'pricing.unlimited.b1': 'No credit spend on any calculator',
     'pricing.unlimited.b2': 'PDF and calc sessions not limited by balance',
-    'pricing.unlimited.b3': 'Best for intensive daily technical use',
-    'pricing.unlimited.b4': 'VAT by country at Lemon checkout',
+    'pricing.unlimited.b3': 'Priority email support',
+    'pricing.unlimited.b4': 'Unlimited saved project history',
     'pricing.unlimited.useCase': 'When you calculate daily and do not want to track credit balance.',
     'pricing.unlimited.cta': 'Unlimited \u20ac25/month',
     'pricing.unlock.name': 'One calculator',
@@ -756,6 +780,19 @@ function currentLang() {
   return 'es';
 }
 
+function applyCreditsPricingExplainer(lang) {
+  if (!isCreditsSystemEnabled()) return;
+  const hint = document.querySelector('[data-credits-pricing-hint]');
+  const explainer = document.querySelector('[data-credits-pricing-explainer]');
+  const summary = document.querySelector('[data-credits-pricing-summary]');
+  if (hint) hint.textContent = getCreditsPricingHint(lang);
+  if (explainer) explainer.innerHTML = getCreditsPricingExplainerHtml(lang);
+  if (summary) {
+    const key = 'pricing.starter.creditsDetailsSummary';
+    summary.textContent = dict[lang === 'en' ? 'en' : 'es'][key] || summary.textContent;
+  }
+}
+
 function setLang(lang) {
   const l = lang === 'en' ? 'en' : 'es';
   try {
@@ -780,17 +817,15 @@ function setLang(lang) {
       el.textContent = txt;
     }
   });
-  document.querySelectorAll('.hub-lang__btn[data-lang]').forEach((btn) => {
-    const on = btn.getAttribute('data-lang') === l;
-    btn.classList.toggle('hub-lang__btn--active', on);
-    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-  });
+  syncLangToggleButtons(l);
   window.__homeLang = l;
   window.__t = (k) => dict[l][k] || k;
   window.dispatchEvent(new CustomEvent('home-language-changed', { detail: { lang: l } }));
   window.dispatchEvent(new CustomEvent(HOME_LANG_CHANGED_EVENT, { detail: { lang: l } }));
   window.dispatchEvent(new CustomEvent(LAB_LANG_EVENT, { detail: { lang: l } }));
   if (l === 'en') applyMachinePresetLabels('en');
+  applyCreditsPricingExplainer(l);
+  applySubscriptionRenewalNotes(l);
   updateCounterUI();
 }
 

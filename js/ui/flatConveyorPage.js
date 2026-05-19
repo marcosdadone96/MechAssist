@@ -33,6 +33,9 @@ import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { FLAT_CONVEYOR_EN } from '../lab/i18n/pages/flatConvEn.js';
+import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
+
+const FLAT_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...FLAT_CONVEYOR_EN };
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
 import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { incrementCalcCounter } from '../services/calcCounter.js';
@@ -950,7 +953,7 @@ bindFlatRangeSlider('beltSpeedR', 'beltSpeed', 0.05, 5, 0.01);
 bindFlatRangeSlider('rollerDR', 'rollerD', 50, 1200, 1);
 bindFlatRangeSlider('frictionR', 'friction', 0.15, 0.65, 0.01);
 
-watchLangAndApply(FLAT_CONVEYOR_EN, {
+watchLangAndApply(FLAT_PAGE_EN, {
   onEnApplied: () => {
     document.documentElement.lang = 'en';
     refreshMountingConfigSection();

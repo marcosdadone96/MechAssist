@@ -50,19 +50,19 @@
   </head>
   <body class="hub-body">
     <header class="site-nav site-nav--home">
-      <a class="site-nav__brand" href="index.html">
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
         <img
           class="site-nav__logo"
           src="logo-themechassist.svg"
           width="40"
           height="40"
-          alt=""
+          alt="TheMechAssist"
           decoding="async"
         />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
@@ -135,10 +135,10 @@
               <a class="hub-hero__btn hub-hero__btn--secondary" href="#hub-zones" data-i18n="hero.ctaExplore">Ver todas las áreas</a>
             </div>
           </div>
-          <div class="hub-hero__mockup-col">
-            <div class="hub-hero__mockup-wrap">
+          <div class="hub-hero__mockup-col" aria-hidden="true">
+            <div class="hub-hero__mockup-wrap" tabindex="-1">
               <div class="hub-hero__mockup-glow" aria-hidden="true"></div>
-              <aside class="hub-hero__mockup" aria-label="Vista previa de calculadora" data-i18n="aria.heroMockup" data-i18n-attr="aria-label">
+              <div class="hub-hero__mockup">
                 <div class="hub-hero__mockup-head">
                   <span class="hub-hero__dot hub-hero__dot--r"></span>
                   <span class="hub-hero__dot hub-hero__dot--y"></span>
@@ -146,7 +146,7 @@
                   <div class="hub-hero__mockup-chrome">
                     <span class="hub-hero__mockup-url" data-i18n="hero.mockup.url">www.themechassist.com/calc-belts.html</span>
                   </div>
-                  <span class="hub-hero__mockup-live" data-i18n="hero.mockup.live">En vivo</span>
+                  <span class="hub-hero__mockup-live" data-i18n="hero.mockup.live">Vista previa</span>
                 </div>
                 <div class="hub-hero__mockup-body">
                   <div class="hub-hero__mockup-heading-row">
@@ -176,10 +176,10 @@
                       <span class="hub-hero__value">1.25</span>
                     </div>
                   </div>
-                  <div class="hub-hero__mockup-diagram" role="group" aria-labelledby="hub-hero-mockup-diagram-heading">
-                    <h3 class="hub-hero__mockup-diagram-title" id="hub-hero-mockup-diagram-heading" data-i18n="hero.mockup.diagramPanelTitle">
+                  <div class="hub-hero__mockup-diagram">
+                    <p class="hub-hero__mockup-diagram-title" data-i18n="hero.mockup.diagramPanelTitle">
                       Esquema de Transmisión
-                    </h3>
+                    </p>
                     <div class="hub-hero__mockup-sketch" aria-hidden="true">
                       <svg viewBox="0 0 360 88" xmlns="http://www.w3.org/2000/svg" class="hub-hero__mockup-svg">
                         <!-- Polea motriz -->
@@ -212,10 +212,10 @@
                   <div class="hub-hero__result">
                     <span class="hub-hero__result-kicker" data-i18n="hero.mockup.suggested">Correa sugerida</span>
                     <strong data-i18n="hero.mockup.result">SPA 1600 + Poleas 112/315</strong>
-                    <span class="hub-hero__result-hint" data-i18n="hero.mockup.hint">Actualizado al cambiar entradas</span>
+                    <span class="hub-hero__result-hint" data-i18n="hero.mockup.hint">Valores de ejemplo · no interactivo</span>
                   </div>
                 </div>
-              </aside>
+              </div>
             </div>
           </div>
         </div>
@@ -494,7 +494,7 @@
           </div>
           <p class="hub-scene__peek" data-i18n="zone.lab.peek">Engranajes · Correas · Rodamientos · ISO</p>
         </a>
-        <h3 class="hub-zone__title hub-zone__title--below" data-i18n="zone.lab">Laboratorio</h3>
+        <h3 class="hub-zone__title hub-zone__title--below" data-i18n="zone.lab">Laboratorio de transmisión</h3>
         <p class="hub-zone__intro" data-i18n="zone.labIntro">
           Engranajes, correas, rodamientos y tolerancias: el núcleo de transmisión con criterio de norma y salida lista para informe.
         </p>
@@ -564,15 +564,22 @@
                 <p class="hub-pricing-card__price-hint" data-i18n="pricing.free.hint">Sin tarjeta · para siempre</p>
               </div>
               <ul class="hub-pricing-card__list hub-pricing-card__list--check">
-                <li data-i18n="pricing.free.b1">Laboratorio de transmisión y calculadoras ISO / tornillería</li>
+                <li data-i18n="pricing.free.b1">Laboratorio de transmisión (engranajes, correas, rodamientos, ISO y tornillería)</li>
                 <li data-i18n="pricing.free.b2">Cinta plana, inclinada y rodillos sin límite en módulos abiertos</li>
                 <li data-i18n="pricing.free.b3">Actualizaciones del núcleo gratuito sin coste</li>
                 <li data-i18n="pricing.free.b4">Ideal para presupuestos rápidos, aulas y mantenimiento</li>
               </ul>
+              <p
+                class="plan-use-case"
+                style="font-size: 0.78rem; color: var(--muted)"
+                data-i18n="pricing.free.clarification"
+              >
+                Incluye también todo el Laboratorio de transmisión (engranajes, rodamientos, ajustes ISO, muelles y más).
+              </p>
               <p class="plan-use-case" data-i18n="pricing.free.useCase">
                 Para estudiantes de ingeniería y verificaciones ocasionales.
               </p>
-              <a class="hub-pricing-card__cta hub-pricing-card__cta--free" href="transmission-lab.html" data-i18n="pricing.free.cta">Empezar gratis</a>
+              <a class="hub-pricing-card__cta hub-pricing-card__cta--free" href="machines-hub.html" data-i18n="pricing.free.cta">Empezar gratis</a>
             </article>
             <article class="hub-pricing-card hub-pricing-card--pro">
               <span class="hub-pricing-card__ribbon" data-i18n="pricing.starter.ribbon">Starter</span>
@@ -587,17 +594,40 @@
                     <span class="hub-pricing-card__price-unit" data-i18n="pricing.starter.perMonth">/mes</span>
                   </div>
                   <p class="hub-pricing-card__annual" data-i18n="pricing.starter.annualLine">o 79 €/año · ≈ 6,58 €/mes de media</p>
-                  <p class="hub-pricing-card__credits-hint" data-i18n="pricing.starter.creditsHint">
-                    1000 créditos · 10 por sesión de cálculo · PDF 10 adicionales
+                  <p
+                    class="hub-pricing-card__credits-hint"
+                    data-i18n="pricing.starter.creditsHint"
+                    data-credits-pricing-hint
+                  >
+                    1000 créditos · 10 por sesión (12 min) · PDF 10 c/u
                   </p>
+                  <details class="hub-pricing-card__credits-details">
+                    <summary data-i18n="pricing.starter.creditsDetailsSummary" data-credits-pricing-summary>
+                      ¿Cómo funcionan los créditos?
+                    </summary>
+                    <div class="hub-pricing-card__credits-explainer" data-credits-pricing-explainer>
+                      <ul class="hub-pricing-card__credits-list">
+                        <li>1000 créditos se recargan el 1º de cada mes</li>
+                        <li>Cada sesión de 12 min consume 10 créditos</li>
+                        <li>Exportar PDF consume 10 créditos adicionales</li>
+                        <li>Máximo 30 PDFs al mes (incluidos en el saldo)</li>
+                        <li>Con créditos agotados: cálculo disponible, PDF no</li>
+                        <li>El plan Ilimitado no consume créditos</li>
+                      </ul>
+                    </div>
+                  </details>
                 </div>
               </div>
               <ul class="hub-pricing-card__list hub-pricing-card__list--check hub-pricing-card__list--pro">
                 <li data-i18n="pricing.starter.b1">Elevador, tornillo, cangilones, bomba e hidráulica</li>
                 <li data-i18n="pricing.starter.b2">Informe PDF de cada cálculo (hasta 30/mes)</li>
                 <li data-i18n="pricing.starter.b3">Comprobador de motorreductor con 5 marcas</li>
-                <li data-i18n="pricing.starter.b4">Desbloqueo puntual incluido (1 €/calculadora/31 días)</li>
+                <li data-i18n="pricing.starter.b4">Desbloqueo puntual disponible: 1 €/calculadora/30 días</li>
               </ul>
+              <p class="hub-pricing-card__renewal-note" data-i18n="pricing.renewalNoteHtml" data-i18n-html>
+                Se renueva automáticamente. Cancela en cualquier momento desde
+                <a href="https://mechassist.lemonsqueezy.com/billing" target="_blank" rel="noopener">tu portal de cliente</a>.
+              </p>
               <a
                 href="checkout.html"
                 class="hub-pricing-card__cta hub-pricing-card__cta--pro"
@@ -608,12 +638,20 @@
               >
                 Starter 9 €/mes
               </a>
+              <p
+                class="hub-pricing-card__sub-renewal"
+                data-sub-renewal="starter"
+                data-sub-billing="any"
+                hidden
+              ></p>
             </article>
             <article class="hub-pricing-card hub-pricing-card--unlimited">
               <span class="hub-pricing-card__ribbon hub-pricing-card__ribbon--unlimited" data-i18n="pricing.unlimited.ribbon">Ilimitado</span>
               <div class="hub-pricing-card__top">
                 <h3 class="hub-pricing-card__name" data-i18n="pricing.unlimited.name">Ilimitado</h3>
-                <p class="hub-pricing-card__tagline" data-i18n="pricing.unlimited.tagline">Todo el catálogo sin gastar créditos.</p>
+                <p class="hub-pricing-card__tagline" data-i18n="pricing.unlimited.tagline">
+                  Para oficinas técnicas que dimensionan a diario sin interrupciones.
+                </p>
                 <div class="hub-pricing-card__price-stack hub-pricing-card__price-stack--unlimited" aria-label="Precio Ilimitado">
                   <div class="hub-pricing-card__price-row">
                     <span class="hub-pricing-card__price-mega hub-pricing-card__price--unlimited" data-i18n="pricing.unlimited.priceBig">25 €</span>
@@ -627,11 +665,15 @@
               <ul class="hub-pricing-card__list hub-pricing-card__list--check hub-pricing-card__list--unlimited">
                 <li data-i18n="pricing.unlimited.b1">Sin consumir créditos en ninguna calculadora</li>
                 <li data-i18n="pricing.unlimited.b2">PDF y sesiones sin límite por saldo</li>
-                <li data-i18n="pricing.unlimited.b3">Para uso intensivo en oficina técnica</li>
-                <li data-i18n="pricing.unlimited.b4">IVA según país en checkout Lemon</li>
+                <li data-i18n="pricing.unlimited.b3">Soporte por email con respuesta prioritaria</li>
+                <li data-i18n="pricing.unlimited.b4">Historial de proyectos guardados sin límite</li>
               </ul>
               <p class="plan-use-case" data-i18n="pricing.unlimited.useCase">
                 Si dimensiona a diario y no quiere vigilar el saldo de créditos.
+              </p>
+              <p class="hub-pricing-card__renewal-note" data-i18n="pricing.renewalNoteHtml" data-i18n-html>
+                Se renueva automáticamente. Cancela en cualquier momento desde
+                <a href="https://mechassist.lemonsqueezy.com/billing" target="_blank" rel="noopener">tu portal de cliente</a>.
               </p>
               <a
                 href="checkout.html#unlimited"
@@ -643,6 +685,12 @@
               >
                 Ilimitado 25 €/mes
               </a>
+              <p
+                class="hub-pricing-card__sub-renewal"
+                data-sub-renewal="unlimited"
+                data-sub-billing="any"
+                hidden
+              ></p>
             </article>
             <article class="hub-pricing-card hub-pricing-card--unlock">
               <div class="hub-pricing-card__top">
@@ -665,14 +713,14 @@
             </article>
           </div>
           <p class="hub-pricing__unlock-note" data-i18n="pricing.unlockNote">
-            Desbloqueo puntual 1 €: acceso a una calculadora durante 31 días. Sin suscripción, sin registro obligatorio.
+            Desbloqueo puntual 1 €: acceso a una calculadora durante 30 días. Sin suscripción. Cuenta gratuita necesaria para recibir tu acceso.
           </p>
           <p class="hub-pricing__roi" data-i18n="pricing.roi">
             Si TheMechAssist te ahorra 1 hora al mes, ya se ha pagado.
             Un ingeniero de planta factura o vale entre 25 y 50 €/hora.
           </p>
           <p class="hub-pricing__footnote" data-i18n="pricing.footnote">
-            Precios orientativos en euros; IVA o impuestos aplicables según país. Importe final en checkout.
+            Precios orientativos en euros. El importe final en checkout Lemon Squeezy puede incluir IVA u otros impuestos según su país (aplica a todos los planes).
           </p>
         </div>
       </section>

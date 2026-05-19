@@ -18,6 +18,7 @@ export const SEEGER_PAGE_EN = {
   'seeger.diagTitle': 'Groove and ring schematic (updates with your size)',
   'seeger.diagCaptionHtml':
     '<strong>DIN 471</strong>: shaft section with groove and external ring. <strong>DIN 472</strong>: bore view with internal ring. Educational schematic.',
+  'seeger.seoSummary': 'Extended context and usage notes',
   'seeger.helpSummary': 'Methodology and limits',
   'seeger.labelD': 'Nominal diameter d (mm)',
   'seeger.labelKind': 'Housing',
@@ -34,4 +35,13 @@ export const SEEGER_PAGE_EN = {
   'seeger.copyToast': 'Link copied!',
   'seeger.summaryFull': 'Full results',
   'seeger.copyResults': 'Copy results',
+  'seeger.diagAriaLabel': 'Seeger ring schematic',
+  'seeger.seoIntroHtml':
+    'This tool retrieves commercial Seeger ring codes for shafts and bores per DIN 471 and DIN 472 with groove dimensions from a teaching extract and estimates allowable axial force. Useful when machining grooves without a physical table. Picture defining the inner stop on a pneumatic piston where the circlip must retain bearing and seal without enlarging the rail nominal diameter.',
+  'seeger.helpLeadHtml':
+    'Enter the <strong>nominal shaft diameter</strong> (external ring) or <strong>bore diameter</strong> (internal ring). The tool shows the <strong>order code</strong> (e.g. <em>Seeger ring DIN 471 - 20</em> or <em>- INOX</em>), the standard and <strong>groove dimensions</strong> from reference tables (3\u2013100 mm extract). Always verify with drawing and manufacturer before machining.',
+  'seeger.nextStepsAria': 'Typical next step',
+  'seeger.nextStepsTitle': 'Typical next step',
+  'seeger.nextLi1Html': '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 diameter where the ring sits.',
+  'seeger.nextLi2Html': '<a href="calc-iso-fit.html">ISO 286 fits</a> \u2014 groove diameter tolerance.',
 };

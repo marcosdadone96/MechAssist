@@ -50,12 +50,12 @@
   </head>
   <body class="lab-body lab-body--hub">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" aria-current="page" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" aria-current="page" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
@@ -74,8 +74,8 @@
     </header>
     <main class="lab-main">
       <section class="lab-panel lab-panel--hub" id="lab-hub-root" data-lab-hub-id="transmission-lab">
-        <p class="lab-hub-eyebrow" data-i18n="hub.lab.eyebrow">Laboratorio</p>
-        <h1 data-i18n="hub.lab.title">Laboratorio de elementos de m&#225;quina</h1>
+        <p class="lab-hub-eyebrow" data-i18n="hub.lab.eyebrow">Laboratorio de transmisión</p>
+        <h1 data-i18n="hub.lab.title">Laboratorio de transmisión</h1>
         <p class="lab-start-hint" data-i18n="hub.lab.startHint">
           &#191;No sabes por d&#243;nde empezar? Si tienes un motor y una carga, empieza por Engranajes o Correas.
         </p>
@@ -339,10 +339,10 @@
                 />
               </svg>
             </span>
-            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <span class="lab-hub-badges"><span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span><span class="lab-badge lab-badge--pro" data-i18n="badgePro">Pro</span></span>
             <h3 data-i18n="hub.lab.spring.title">Muelle helicoidal compresi&#243;n &#183; DIN 2089</h3>
             <p data-i18n="hub.lab.spring.desc">
-              k, F&#8345;, &#964; con factor de Wahl; esquema SVG din&#225;mico, gr&#225;fico F&#8211;s y simulaci&#243;n Pro por deslizador.
+              k, F&#8345;, &#964; con factor de Wahl; esquema SVG din&#225;mico, gr&#225;fico F&#8211;s y simulaci&#243;n Pro por deslizador. M&#243;dulos avanzados requieren plan Pro.
             </p>
           </a>
         </div>
@@ -358,7 +358,7 @@
                 <path d="M12.5 15.5l5.5 9M27.5 15.5l-5.5 9M13 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
               </svg>
             </span>
-            <span class="lab-badge lab-badge--free" data-i18n="badgeFree">GRATIS</span>
+            <span class="lab-badge lab-badge--pro" data-i18n="badgePro">Pro</span>
             <h3 data-i18n="hub.lab.canvas.title">Lienzo t&#233;cnico multieje</h3>
             <p data-i18n="hub.lab.canvas.desc">
               Construye transmisiones multieje con arrastre directo de elementos, propagaci&#243;n autom&#225;tica de n/T y veredictos en vivo mientras editas.

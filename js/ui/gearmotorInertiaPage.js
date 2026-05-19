@@ -3,7 +3,7 @@
  */
 
 import { renderInertiaTransmissionLine } from '../lab/diagramCatalogModules.js';
-import { bindInputValidation, wireLabCopyResultsButton } from './labCalcUx.js';
+import { bindInputValidation, mountLabPresetsBar, wireLabCopyLink, wireLabCopyResultsButton } from './labCalcUx.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
 import { withCalcCredits } from '../services/creditSession.js';
@@ -211,10 +211,62 @@ bindInputValidation([
   { id: 'gmTload', min: 0, max: 1e9, label: 'T carga' },
 ]);
 
+const GM_PRESETS = [
+  {
+    label: 'Servo + husillo CNC',
+    labelKey: 'gm.preset1',
+    values: {
+      gmJmotor: 0.00035,
+      gmJratioMax: 1,
+      gmTN: 8,
+      gmNsync: 3000,
+      gmTpeak: 2.5,
+      gmJext: 0.00028,
+      gmJload: '',
+      gmIratio: '',
+      gmN: 2800,
+      gmTload: 6,
+    },
+  },
+  {
+    label: 'Motor asíncrono + ventilador',
+    labelKey: 'gm.preset2',
+    values: {
+      gmJmotor: 0.0012,
+      gmJratioMax: 5,
+      gmTN: 48,
+      gmNsync: 1500,
+      gmTpeak: 2.2,
+      gmJext: 0.006,
+      gmN: 1455,
+      gmTload: 38,
+    },
+  },
+  {
+    label: 'Motor variador + bomba',
+    labelKey: 'gm.preset3',
+    values: {
+      gmJmotor: 0.0008,
+      gmJratioMax: 3,
+      gmTN: 22,
+      gmNsync: 1500,
+      gmTpeak: 2.0,
+      gmJext: 0.0024,
+      gmJload: '',
+      gmIratio: '',
+      gmN: 1450,
+      gmTload: 18,
+    },
+  },
+];
+
 function scheduleGmRender() {
+  if (!gmPresets.applying) gmPresets.clearActive();
   if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
   else render();
 }
+
+const gmPresets = mountLabPresetsBar('gmPresetsBar', GM_PRESETS, scheduleGmRender);
 
 ['gmJmotor', 'gmJratioMax', 'gmTN', 'gmNsync', 'gmTpeak', 'gmJload', 'gmIratio', 'gmJext', 'gmN', 'gmTload'].forEach((id) => {
   document.getElementById(id)?.addEventListener('input', scheduleGmRender);
@@ -233,6 +285,7 @@ document.querySelectorAll('.gm-ref-chip').forEach((chip) => {
 wireLabCopyResultsButton('gmCopyResults', {
   moduleTitle: bx('Inercia motor / carga', 'Motor / load inertia'),
 });
+wireLabCopyLink('gmCopyLinkBtn', 'gmCopyToast');
 
 scheduleGmRender();
 mountLabCloudSaveBar(bx('Inercia motor / carga', 'Motor / load inertia'));

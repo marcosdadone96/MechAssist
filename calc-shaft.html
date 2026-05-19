@@ -3,7 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Diámetro mínimo por par y tensión torsional admisible. Eje macizo a torsión pura orientativa." />
+    <meta
+      name="description"
+      data-i18n="shaft.metaDesc"
+      data-i18n-attr="content"
+      content="Diámetro mínimo de eje macizo por torsión pura o tensión equivalente Von Mises/Tresca con momento flector y Kt. Predimensionado orientativo."
+    />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -16,21 +21,21 @@
     <meta property="og:description" content="Diámetro mínimo por par y tensión torsional admisible. Eje macizo a torsión pura orientativa." />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Eje a torsión — TheMechAssist" />
+    <meta name="twitter:title" data-i18n="shaft.docTitle" data-i18n-attr="content" content="Eje · torsión y flexión — TheMechAssist" />
 
-    <title>Eje a torsión — TheMechAssist</title>
+    <title data-i18n="shaft.docTitle">Eje · torsión y flexión — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
@@ -69,12 +74,12 @@
             </div>
           </details>
         </header>
-        <nav class="lab-next-steps" aria-label="Siguiente paso habitual">
-          <h3 class="lab-next-steps__title">Siguiente paso habitual</h3>
+        <nav class="lab-next-steps" data-i18n="shaft.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="shaft.nextStepsTitle">Siguiente paso habitual</h3>
           <ul class="lab-next-steps__list">
-            <li><a href="calc-keys-din6885.html">Chavetas DIN 6885</a> — acople de elementos al eje.</li>
-            <li><a href="calc-bearings.html">Rodamientos · L10</a> — apoyos en vanos de diseño.</li>
-            <li><a href="calc-gears.html">Engranajes cilíndricos</a> — si dimensiona antes el par en el piñón.</li>
+            <li data-i18n="shaft.nextLi1Html" data-i18n-html><a href="calc-keys-din6885.html">Chavetas DIN 6885</a> — acople de elementos al eje.</li>
+            <li data-i18n="shaft.nextLi2Html" data-i18n-html><a href="calc-bearings.html">Rodamientos · L10</a> — apoyos en vanos de diseño.</li>
+            <li data-i18n="shaft.nextLi3Html" data-i18n-html><a href="calc-gears.html">Engranajes cilíndricos</a> — si dimensiona antes el par en el piñón.</li>
           </ul>
         </nav>
         <div class="lab-presets-row">
@@ -84,7 +89,7 @@
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-              <p class="lab-diagram-wrap__title">Vista esquemática · torsión (y flexión en avanzado)</p>
+              <p class="lab-diagram-wrap__title" data-i18n="shaft.diagTitle">Vista esquemática · torsión (y flexión en avanzado)</p>
               <svg
                 id="shDiagram"
                 xmlns="http://www.w3.org/2000/svg"
@@ -92,7 +97,7 @@
                 data-i18n="shaft.diagAriaLabel"
                 data-i18n-attr="aria-label"
               ></svg>
-              <p class="lab-diagram-caption">Vista lateral con <strong>T</strong> en extremos y arcos de par <strong>debajo</strong> del eje; a la derecha, sección circular <strong>Ø d</strong>. Con flexión, <strong>M</strong> se indica arriba del tramo central.</p>
+              <p class="lab-diagram-caption" data-i18n="shaft.diagCaptionHtml" data-i18n-html>Vista lateral con <strong>T</strong> en extremos y arcos de par <strong>debajo</strong> del eje; a la derecha, sección circular <strong>Ø d</strong>. Con flexión, <strong>M</strong> se indica arriba del tramo central.</p>
             </div>
           </div>
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
@@ -230,28 +235,29 @@
               data-lab-convert-title="Conversor (eje y torsion)"
               data-lab-convert-tip="Diametros y tramos en mm; velocidad de giro; v periferica; par motor o de torsion."
             >
-              <span class="lab-units-bar__title">Cómo ver los resultados</span>
+              <span class="lab-units-bar__title" data-i18n="shaft.unitsBarTitle">Cómo ver los resultados</span>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Distancias</span>
+                <span class="lab-units-bar__lbl" data-i18n="shaft.lblLength">Distancias</span>
                 <select id="labUnitLength" class="lab-units-bar__select">
-                  <option value="mm">mm (taller)</option>
-                  <option value="cm">cm</option>
-                  <option value="m">m (SI)</option>
+                  <option value="mm" data-i18n="shaft.optMmShop">mm (taller)</option>
+                  <option value="in" data-i18n="shaft.optInches">in</option>
+                  <option value="cm" data-i18n="shaft.optCm">cm</option>
+                  <option value="m" data-i18n="shaft.optMSi">m (SI)</option>
                 </select>
               </label>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Giro</span>
+                <span class="lab-units-bar__lbl" data-i18n="shaft.lblRotation">Giro</span>
                 <select id="labUnitRotation" class="lab-units-bar__select">
-                  <option value="rpm">RPM</option>
-                  <option value="rad_s">rad/s</option>
+                  <option value="rpm" data-i18n="shaft.optRpm">RPM</option>
+                  <option value="rad_s" data-i18n="shaft.optRadS">rad/s</option>
                 </select>
               </label>
               <label class="lab-units-bar__field">
-                <span class="lab-units-bar__lbl">Velocidad lineal</span>
+                <span class="lab-units-bar__lbl" data-i18n="shaft.lblLinear">Velocidad lineal</span>
                 <select id="labUnitLinear" class="lab-units-bar__select">
-                  <option value="m_s">m/s</option>
-                  <option value="mm_s">mm/s</option>
-                  <option value="km_h">km/h</option>
+                  <option value="m_s" data-i18n="shaft.optMs">m/s</option>
+                  <option value="mm_s" data-i18n="shaft.optMms">mm/s</option>
+                  <option value="km_h" data-i18n="shaft.optKmh">km/h</option>
                 </select>
               </label>
             </div>

@@ -5,6 +5,8 @@ export const CAR_LIFT_EN = {
     'This calculator links lifted mass, stroke and target time to ISO trapezoidal screw lead and diameter for advance speed, resisting torque and motor power, plus indicative bronze nut pressure and friction-angle self-locking behavior. It helps lift OEMs and body shops validate an existing screw before extending the platform. A practical case is checking whether a higher rated load forces a larger thread or longer nut bearing length.',
   'carConv.heroLead':
     'Two columns, power screw and bronze nut. Torque, power, nut pressure and self-locking (lambda < phi) with the same workflow as belt and roller tools: form on the left, schematic and results on the right.',
+  'carConv.safetyNoticeHtml':
+    '<strong>&#9888; Indicative calculation</strong> \u2014 Does not replace code-compliant design (EN&nbsp;1570 / ISO&nbsp;16531) or sign-off by a competent professional. Always validate with the manufacturer and an authorised installer.',
   'carConv.helpSummary': 'Quick guide',
   'carConv.helpBodyHtml': `<p class="help-details__lead muted">
       Several labels have a <span class="info-chip info-chip--static" aria-hidden="true">?</span>: hover on desktop; on touch, <strong>tap</strong> for help.
@@ -16,6 +18,17 @@ export const CAR_LIFT_EN = {
       <li><strong>Self-locking:</strong> if lambda &ge; phi, the model flags an error; real installs need brake and safety nut.</li>
     </ul>`,
   'carConv.accStandards': 'Standards and power-screw safety',
+  'carConv.labelCapacityHtml':
+    'Capacity (total mass) <span class="info-chip" title="Nominal mass lifted by the equipment (vehicle + operational margin you assign). 50/50 split between two columns in the model." aria-label="Help capacity.">?</span>',
+  'carConv.labelHHtml':
+    'Lift height H <span class="info-chip" title="Useful vertical stroke. Drives screw turns = H/p." aria-label="Help height.">?</span>',
+  'carConv.labelTHtml':
+    'Lift time <span class="info-chip" title="Target time to travel H. Shorter time means higher screw rpm and more power." aria-label="Help time.">?</span>',
+  'carConv.labelPitchHtml':
+    'Screw pitch (lead) <span class="field-lock-icon" id="clPitchLock" aria-label="Field locked by standard">🔒</span> <span class="info-chip" title="Axial advance per revolution (single start). Larger lead tends to increase lambda and affect self-locking." aria-label="Help lead.">?</span>',
+  'carConv.hintCapacity': 'Typ. 2000–5000 kg (vehicle + workshop load)',
+  'carConv.hintH': 'Typ. 1.5–2.2 m useful stroke in workshop',
+  'carConv.hintT': 'Typ. 40–90 s (comfort / local rules)',
   'carConv.accGeometry': 'Geometry and kinematics',
   'carConv.accNut': 'Nut, friction and service factor',
   'carConv.accStandardsBodyHtml': `<p class="muted" style="margin: 0 0 0.8rem; line-height: 1.45">
@@ -103,4 +116,7 @@ export const CAR_LIFT_EN = {
   'carConv.pdfExportH2Html': '<span class="panel-icon">PDF</span> Export report',
   'carConv.threadPresetHintLocked': 'd and lead locked to the selected standard',
   'carConv.threadPresetHintCustom': 'Enter d and lead manually',
+  'carConv.presetLightTooltip': '2800 kg, H 1.65 m, 55 s, Tr 32\u00d76 screw.',
+  'carConv.presetHeavyTooltip': '4200 kg, H 2.1 m, 62 s, Tr 45\u00d77 screw.',
+  'carConv.presetShowroomTooltip': '3500 kg, H 1.85 m, 58 s, Tr 40\u00d77 screw.',
 };

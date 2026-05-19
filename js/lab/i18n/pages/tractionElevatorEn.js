@@ -5,7 +5,10 @@ export const TRACTION_ELEVATOR_EN = {
     'This sheet integrates cabin mass, payload and counterweight with cable tension on the inclined path, applying an Euler\u2013Eytelwein traction limit and estimating sheave torque, for training only and not replacing the lift code memo in your jurisdiction. It helps installation engineers and educators compare doubling ropes or changing groove friction. Picture retuning counterweight when switching from freight to a service with more short stops.',
   'teConv.heroLeadHtml':
     'Indicative <strong>ropes and counterweight</strong> model: tension ratio vs <strong>Euler\u2013Eytelwein</strong>, counterweight mass (car + 40\u201350% useful load), <strong>diameter and rope count</strong> with safety factor (\u224810 freight / 12 passenger), and <strong>braking torque</strong> at the sheave. The <strong>shaft schematic</strong> is on the right, like flat belt and bucket elevator tools. Does not replace EN 81 or a full installation study.',
-  'teConv.helpSummary': 'Quick guide to each quantity',
+  'teConv.safetyNoticeHtml':
+    '<strong>&#9888; Indicative calculation</strong> \u2014 Does not replace code-compliant design (EN&nbsp;81-1 / EN&nbsp;81-20) or sign-off by a competent professional. Always validate with the manufacturer and an authorised installer.',
+  'teConv.diagramSvgAria': 'Traction elevator schematic',
+  'teConv.helpSummary': 'Quick guide to each parameter',
   'teConv.helpBodyHtml': `<p class="help-details__lead muted">
       Every label has a <span class="info-chip info-chip--static" aria-hidden="true">?</span>: on desktop hover; on touch, tap to read help.
     </p><ul>
@@ -19,8 +22,14 @@ export const TRACTION_ELEVATOR_EN = {
   'teConv.lblH': 'Travel height',
   'teConv.lblV': 'Rated speed',
   'teConv.lblDuty': 'Service type',
+  'teConv.optFreight': 'Goods lift / freight (SF \u2248 10)',
+  'teConv.optPersons': 'Passenger lift (SF \u2248 12)',
   'teConv.lblReeving': 'Roping ratio',
-  'teConv.lblKcw': 'Q fraction in optimal counterweight',
+  'teConv.reeving11Desc': 'Fixed sheave \u00b7 cabin moves at cable speed.',
+  'teConv.reeving21Desc': 'Movable sheave on car \u00b7 more mechanical advantage, higher sheave rpm.',
+  'teConv.lblKcw': 'Useful load fraction balanced (k)',
+  'teConv.hintKcw':
+    'Fraction of useful load Q balanced by the counterweight. Typical range: 0.40\u20130.50 (EN 81: \u2265 0.40). With 0.45 and Q=2000 kg, counterweight mass is Mc + 0.45\u00b7Q.',
   'teConv.lblCwManual': 'Fix counterweight manually (kg)',
   'teConv.lblMcpManual': 'Suggested counterweight (editable)',
   'teConv.lblD': 'Traction sheave pitch \u00d8',
@@ -33,4 +42,11 @@ export const TRACTION_ELEVATOR_EN = {
   'teConv.accLoads': 'Loads and travel',
   'teConv.accCw': 'Counterweight',
   'teConv.accSheave': 'Sheave and traction (Euler\u2013Eytelwein)',
+  'teConv.presetFreightTooltip':
+    'Freight lift Q 2000 kg, car 1200 kg, 1:1, v 1 m/s, H 12 m.',
+  'teConv.presetGoodsTooltip': 'Goods Q 3200 kg, 2:1, v 0.63 m/s, H 8.5 m.',
+  'teConv.engTitle': 'Engineering breakdown',
+  'teConv.engHint': 'Collapsed by default \u2014 traction ratio, strategies and model steps',
+  'teConv.motorsTitle': 'Gearmotors (sample catalog \u00b7 SEW, Siemens, Nord\u2026)',
+  'teConv.motorsHint': 'Collapsed by default \u2014 brand cards and verifier',
 };

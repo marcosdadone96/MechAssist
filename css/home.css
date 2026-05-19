@@ -374,6 +374,8 @@ a.hub-account__btn--link:hover {
   position: relative;
   width: 100%;
   max-width: min(520px, 100%);
+  pointer-events: none;
+  user-select: none;
 }
 
 .hub-hero__mockup-glow {
@@ -453,14 +455,14 @@ a.hub-account__btn--link:hover {
   margin-left: auto;
   font-size: 0.62rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #047857;
+  color: #475569;
   padding: 0.28rem 0.55rem;
   border-radius: 999px;
-  background: rgba(209, 250, 229, 0.95);
-  border: 1px solid rgba(52, 211, 153, 0.55);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+  background: rgba(241, 245, 249, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  box-shadow: none;
 }
 
 .hub-hero__dot {
@@ -1430,11 +1432,108 @@ a.hub-account__btn--link:hover {
   color: #475569;
 }
 
+.hub-pricing-card__renewal-note {
+  margin: 0.35rem 0 0;
+  padding: 0 0.35rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--muted, #64748b);
+  text-align: center;
+}
+
+.hub-pricing-card__renewal-note a {
+  color: #0d9488;
+  font-weight: 600;
+  text-underline-offset: 2px;
+}
+
+.hub-pricing-card__sub-renewal {
+  margin: 0.35rem 0 0;
+  padding: 0 0.35rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--muted, #64748b);
+  text-align: center;
+}
+
+.hub-pricing-card__sub-renewal a {
+  color: #0d9488;
+  font-weight: 600;
+  text-underline-offset: 2px;
+}
+
+.hub-pricing-card__sub-renewal strong {
+  color: #334155;
+  font-weight: 700;
+}
+
 .hub-pricing-card__credits-hint {
   font-size: 0.75rem;
   color: var(--muted, #64748b);
   margin: 0.25rem 0 0;
   text-align: center;
+}
+
+.hub-pricing-card__credits-details {
+  margin: 0.5rem 0 0;
+  font-size: 0.72rem;
+  text-align: left;
+}
+
+.hub-pricing-card__credits-details summary {
+  cursor: pointer;
+  color: #0d9488;
+  font-weight: 600;
+  list-style: none;
+  text-align: center;
+}
+
+.hub-pricing-card__credits-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.hub-pricing-card__credits-details summary::after {
+  content: ' ▾';
+  font-size: 0.65rem;
+}
+
+.hub-pricing-card__credits-details[open] summary::after {
+  content: ' ▴';
+}
+
+.hub-pricing-card__credits-explainer {
+  margin-top: 0.5rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.hub-pricing-card__credits-list {
+  list-style: disc;
+  padding-left: 1.1rem;
+  font-size: 0.78rem;
+  color: var(--muted, #64748b);
+  line-height: 1.6;
+  margin: 0.35rem 0 0;
+}
+
+.hub-pricing-credits-dl {
+  margin: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.hub-pricing-credits-dl dt {
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.7rem;
+}
+
+.hub-pricing-credits-dl dd {
+  margin: 0.1rem 0 0;
+  color: #475569;
+  line-height: 1.45;
 }
 
 .hub-pricing__unlock-note {

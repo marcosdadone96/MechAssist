@@ -25,12 +25,12 @@
   </head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
@@ -55,19 +55,26 @@
           </p>
           <details class="lab-calc-seo">
             <summary data-i18n="bolt.seoSummary">Contexto ampliado y notas de uso</summary>
-            <p class="calc-seo-intro">
+            <p class="calc-seo-intro" data-i18n="bolt.seoIntroHtml" data-i18n-html>
           Aquí obtiene el par de apriete orientativo y la precarga asociada para tornillos de clase 8.8, 10.9 o 12.9 según el planteamiento sintético de ISO 898-1 aplicado a uniones sometidas a tracción de cálculo. Sirve para preparar instrucciones de montaje y contrastar si la unión puede mantener la carga externa sin fluencia del material bajo cabeza. Es útil para ingenieros de instalación y mantenimiento que trabajan con llaves dinamométricas en campo. Un ejemplo es verificar el apriete de bridas en una bomba tras una intervención nocturna para minimizar fugas sin sobrecargar el material.
             </p>
           </details>
           <details class="lab-calc-help">
             <summary class="lab-calc-help__summary" data-i18n="bolt.helpSummary">Metodología y límites del modelo</summary>
             <div class="lab-calc-help__body">
-              <p class="lab-lead lab-lead--in-help">
+              <p class="lab-lead lab-lead--in-help" data-i18n="bolt.helpLeadHtml" data-i18n-html>
                 Grados <strong>8.8 · 10.9 · 12.9</strong>; precarga y par de apriete <strong>orientativos</strong> (estilo datos de montaje). La fuerza introducida es la <strong>tracción de cálculo</strong> que debe soportar el tornillo en modelo simplificado; no sustituye norma completa ni juntas críticas certificadas.
               </p>
             </div>
           </details>
         </header>
+        <nav class="lab-next-steps" data-i18n="bolt.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="bolt.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="bolt.nextLi1Html" data-i18n-html><a href="calc-iso-fit.html">Ajustes ISO 286</a> — tolerancias en agujeros de brida.</li>
+            <li data-i18n="bolt.nextLi2Html" data-i18n-html><a href="calc-shaft.html">Eje · torsión</a> — si la unión transmite par.</li>
+          </ul>
+        </nav>
         <div class="lab-presets-row">
           <span class="lab-presets-row__label" data-i18n="bolt.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="blPresetsBar"></div>
@@ -75,9 +82,9 @@
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
-              <p class="lab-diagram-wrap__title">Unión pretensada · platinas, tornillo y fuerza axial F</p>
-              <svg id="blDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama unión atornillada"></svg>
-              <p class="lab-diagram-caption">
+              <p class="lab-diagram-wrap__title" data-i18n="bolt.diagTitle">Unión pretensada · platinas, tornillo y fuerza axial F</p>
+              <svg id="blDiagram" xmlns="http://www.w3.org/2000/svg" data-i18n="bolt.diagAriaLabel" data-i18n-attr="aria-label" aria-label="Diagrama unión atornillada"></svg>
+              <p class="lab-diagram-caption" data-i18n="bolt.diagCaptionHtml" data-i18n-html>
                 El <strong>diámetro nominal</strong> del menú escala el vástago en el dibujo. Compare <strong>F</strong> con la resistencia de cálculo y el
                 <strong>par de apriete</strong> recomendado.
               </p>
@@ -107,18 +114,23 @@
               <div class="lab-field">
                 <label for="blMu" data-i18n="bolt.labelMu">Coeficiente de rozamiento μ</label>
                 <select id="blMu">
-                  <option value="0.18">Seco (μ = 0.18)</option>
-                  <option value="0.12" selected>Ligeramente lubricado (μ = 0.12)</option>
-                  <option value="0.08">Lubricado con grasa (μ = 0.08)</option>
+                  <option value="0.18" data-i18n="bolt.optMuDry">Seco (μ = 0.18)</option>
+                  <option value="0.12" selected data-i18n="bolt.optMuLube">Ligeramente lubricado (μ = 0.12)</option>
+                  <option value="0.08" data-i18n="bolt.optMuGrease">Lubricado con grasa (μ = 0.08)</option>
                 </select>
               </div>
               <div class="lab-field lab-field--wide">
-                <label for="blF">Fuerza tracción de cálculo (kN)</label>
+                <label for="blF" data-i18n="bolt.labelF">Fuerza tracción de cálculo (kN)</label>
                 <input id="blF" type="number" min="0" step="any" value="42" />
+                <p class="lab-field-help" data-i18n="bolt.helpF" data-i18n-html>
+                  Carga axial de cálculo total de la <strong>unión</strong> (no por tornillo).
+                  Introduce la fuerza de servicio sin factor de seguridad; el modelo compara con la precarga estimada.
+                  Si hay cortante combinado, use solo la componente de tracción y compruebe el cortante por separado.
+                </p>
               </div>
               <div class="lab-field lab-field--wide">
                 <details class="lab-results-details lab-results-details--chevron-end">
-                  <summary>Tabla rápida de par recomendado (μ ≈ 0.12)</summary>
+                  <summary data-i18n="bolt.quickTorqueSummary">Tabla rápida de par recomendado (μ ≈ 0.12)</summary>
                   <div class="lab-table-wrap">
                     <table class="lab-table">
                       <thead>
@@ -133,7 +145,7 @@
                         <tr><td>M20</td><td>410 N·m</td><td>580 N·m</td><td>690 N·m</td></tr>
                       </tbody>
                     </table>
-                    <p class="lab-small-print">Valores orientativos para rosca métrica estándar ISO, μ ≈ 0.12. Verificar siempre con especificación del fabricante.</p>
+                    <p class="lab-small-print" data-i18n="bolt.quickTorqueFootnote">Valores orientativos para rosca métrica estándar ISO, μ ≈ 0.12. Verificar siempre con especificación del fabricante.</p>
                   </div>
                 </details>
               </div>
@@ -143,7 +155,7 @@
                   <div class="lab-table-wrap">
                     <table class="lab-table">
                       <thead>
-                        <tr><th>Grado</th><th>σy mín. (MPa)</th><th>σu mín. (MPa)</th></tr>
+                        <tr><th data-i18n="bolt.tableGrade">Grado</th><th data-i18n="bolt.tableSigmaY">σy mín. (MPa)</th><th data-i18n="bolt.tableSigmaU">σu mín. (MPa)</th></tr>
                       </thead>
                       <tbody>
                         <tr><td>8.8</td><td>640</td><td>800</td></tr>

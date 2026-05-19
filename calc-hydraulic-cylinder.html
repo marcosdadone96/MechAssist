@@ -190,13 +190,13 @@
   </head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
@@ -229,7 +229,7 @@
             </p>
           </details>
           <details class="lab-calc-help">
-            <summary class="lab-calc-help__summary">Metodología y límites del modelo</summary>
+            <summary class="lab-calc-help__summary" data-i18n="hydCyl.helpSummary">Metodología y límites del modelo</summary>
             <div class="lab-calc-help__body">
               <p class="lab-lead lab-lead--in-help" data-i18n="hydCyl.lead">
                 Valida fuerza de empuje/tracción, caudal requerido, pandeo del vástago (Euler) y espesor mínimo de tubo para operar con seguridad a presión nominal.
@@ -238,6 +238,24 @@
           </details>
         </header>
 
+        <nav class="lab-next-steps" data-i18n="fluids.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="fluids.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="fluids.nextStepsHcLi1Html" data-i18n-html>
+              <a href="calc-hydraulic-pump.html">Bomba hidráulica</a> — dimensionar caudal y pérdidas del circuito.
+            </li>
+            <li data-i18n="fluids.nextStepsHcLi2Html" data-i18n-html>
+              <a href="calc-hydraulic-press.html">Prensa hidráulica</a> — tonelaje, tiempo de ciclo y bomba.
+            </li>
+            <li data-i18n="fluids.nextStepsHcLi3Html" data-i18n-html>
+              <a href="calc-pneumatic-cylinder.html">Cilindro neumático</a> — comparar fuerza a menor presión en movimientos auxiliares.
+            </li>
+          </ul>
+        </nav>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label" data-i18n="hydCyl.presetsLabel">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="hcPresetsBar"></div>
+        </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">

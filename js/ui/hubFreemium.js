@@ -156,7 +156,8 @@ wirePlansLinksForLoggedInUser();
 
 if (isCreditsSystemEnabled()) {
   queueMicrotask(async () => {
-    if (!getCurrentUser()?.email) {
+    const { isPromoEmbed } = await import('../util/promoMode.js');
+    if (!getCurrentUser()?.email && !isPromoEmbed()) {
       const { initGuestCalcMode } = await import('./guestCalcMode.js');
       initGuestCalcMode();
     } else {

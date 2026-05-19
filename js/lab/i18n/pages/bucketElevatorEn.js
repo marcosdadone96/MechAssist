@@ -1,12 +1,25 @@
-/** English strings for bucket-elevator.html (`beConv.*` field keys). ASCII-safe. */
+/**
+ * English strings for bucket-elevator.html (`beConv.*` keys via `data-i18n`).
+ * Machine field labels (`beLbl*`, `beAcc*`, …) live in `js/ui/bucketElevatorStaticI18n.js`
+ * (`data-be-i18n`); EN copies are merged into the page dict via `getBucketElevatorBeStrings('en')`.
+ */
 export const BUCKET_ELEVATOR_EN = {
   'beConv.docTitle': 'Bucket elevator calculator online \u2014 TheMechAssist',
   'beConv.h2': 'Bucket elevator \u00b7 capacity, speed and drive',
   'beConv.heroLead':
     'Step-by-step bucket elevator sizing: geometry, capacity, belt speed and drive power.',
+  'beConv.safetyNoticeHtml':
+    '<strong>&#9888; Indicative calculation</strong> \u2014 Does not replace code-compliant design (CEMA / ISO&nbsp;5048) or sign-off by a competent professional. Always validate with the manufacturer and an authorised installer.',
   'beConv.helpSummary': 'Methodology and model limits',
   'beConv.presetsLabel': 'Typical examples:',
+  'beConv.presetGrainTooltip':
+    'Dry grain, 28 m, 45 t/h, 400 mm belt. Centrifugal discharge.',
+  'beConv.presetMineralsTooltip':
+    'Dense mineral, 20 m, 25 t/h. Gravity discharge, abrasive.',
+  'beConv.presetCementTooltip':
+    'Cement clinker, 38 m, 85 t/h, centrifugal discharge, abrasive bulk.',
   'beConv.diagTitle': 'Schematic view \u00b7 elevator and boot',
+  'beConv.diagramSvgAria': 'Bucket elevator schematic',
   'beConv.labelHeight': 'Lift height H (m)',
   'beConv.helpHeight': 'Vertical distance from boot (feed) to head (discharge).',
   'beConv.labelCapacity': 'Required capacity Q (t/h)',

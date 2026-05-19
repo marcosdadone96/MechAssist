@@ -47,13 +47,13 @@
       })();
     </script>
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
@@ -88,6 +88,21 @@
             </div>
           </details>
         </header>
+
+        <nav class="lab-next-steps" data-i18n="machineHub.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="machineHub.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="machineHub.nextStepsFlatLi1Html" data-i18n-html>
+              <a href="my-gearmotors.html">Mis motorreductores</a> — verificar par calculado con catálogo.
+            </li>
+            <li data-i18n="machineHub.nextStepsFlatLi2Html" data-i18n-html>
+              <a href="calc-bearings.html">Rodamientos · L10</a> — vida útil en apoyos del tambor motriz.
+            </li>
+            <li data-i18n="machineHub.nextStepsFlatLi3Html" data-i18n-html>
+              <a href="calc-shaft.html">Eje · torsión</a> — dimensionar el eje del tambor con el par calculado.
+            </li>
+          </ul>
+        </nav>
 
         <details class="help-details flat-help">
           <summary data-i18n="flatConv.helpSummary">Guía rápida de cada magnitud</summary>
@@ -242,7 +257,7 @@
           <div class="flat-accordion__body field-grid field-grid--essential">
           <div class="field flat-field--slider">
             <label for="loadMass" data-i18n="flatConv.labelLoadMassHtml" data-i18n-html
-              >Masa de carga m <span class="info-chip" title="Masa nominal asociada al tramo L; el modelo supone reparto uniforme sobre ese tramo." aria-label="Ayuda masa: nominal en el tramo L, reparto uniforme.">?</span></label
+              >Masa de carga m <span class="info-chip" data-i18n-attrs="title=flatConv.tipLoadMass" title="Masa nominal asociada al tramo L; el modelo supone reparto uniforme sobre ese tramo." aria-label="Ayuda masa: nominal en el tramo L, reparto uniforme.">?</span></label
             >
             <input type="range" id="loadMassR" class="flat-slider" min="10" max="8000" step="1" value="800" data-i18n="flatConv.ariaSliderM" data-i18n-attr="aria-label" aria-label="m (deslizador)" />
             <div class="flat-field__num">
@@ -441,7 +456,7 @@
               </div>
               <div class="field">
                 <label for="loadDistribution" data-i18n="flatConv.labelLoadDistHtml" data-i18n-html
-                  >Fracción carga activa f_dist <span class="info-chip" title="Parte de la masa m que genera normal sobre rodillos (0,05–1). 1 = toda la carga apoyada en rodillos; menor si parte del peso va a estructura, tolva, etc." aria-label="Ayuda fracción carga activa sobre rodillos.">?</span></label
+                  >Fracción carga activa f_dist <span class="info-chip" data-i18n-attrs="title=flatConv.tipLoadDist" title="Parte de la masa m que genera normal sobre rodillos (0,05–1). 1 = toda la carga apoyada en rodillos; menor si parte del peso va a estructura, tolva, etc." aria-label="Ayuda fracción carga activa sobre rodillos.">?</span></label
                 >
                 <input
                   id="loadDistribution"
@@ -681,6 +696,7 @@
         <section class="panel flat-panel--verify">
           <div class="verify-panel" id="verifyPanel">
             <h2 data-i18n="flatConv.verifyH2Html" data-i18n-html><span class="panel-icon">✓</span> Comprobar un motorreductor que ya tengo</h2>
+            <p class="muted verify-panel__catalog-lead" style="margin: -0.5rem 0 0.75rem; font-size: 0.84rem" data-i18n="machineHub.verifyCatalogLead">Selecciona un motorreductor de catálogo para comparar su potencia y par con los resultados calculados. No modifica los datos del formulario. Los datos son orientativos según especificaciones publicadas por el fabricante.</p>
             <p class="muted panel-lead" data-i18n="flatConv.verifyLeadHtml" data-i18n-html>
               <strong>Dos formas:</strong> (1) Marca y modelo del <strong>catálogo de ejemplo</strong> abajo y botón «Comprobar para esta máquina». (2) Si su equipo no está en la lista, abra el desplegable
               <em>O bien: introducir mi motorreductor a mano</em> (justo debajo), rellene datos de placa/ficha y pulse «Comprobar con estos datos». En ambos casos se contrastan potencia de motor, par nominal de salida y rpm de salida con el punto calculado.

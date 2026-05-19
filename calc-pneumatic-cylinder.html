@@ -179,17 +179,40 @@
         color: #0f172a;
         font-weight: 800;
       }
+      @media (max-width: 479px) {
+        .lab-calc-layout--hc.lab-calc-layout--with-diag {
+          grid-template-columns: minmax(0, 1fr) !important;
+          grid-template-areas:
+            'diagram'
+            'inputs'
+            'out' !important;
+        }
+        .lab-calc-layout--hc .lab-calc-layout__diagram {
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+        }
+        .lab-calc-layout--hc #pcDiagram {
+          width: 100%;
+          max-width: 100%;
+          height: auto;
+          display: block;
+        }
+        .lab-calc-layout--hc .lab-diagram-wrap {
+          max-width: 100%;
+        }
+      }
     </style>
   </head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
@@ -217,14 +240,14 @@
           </p>
           <details class="lab-calc-seo">
             <summary data-i18n="pneuCyl.seoSummary">Contexto ampliado y notas de uso</summary>
-            <p class="calc-seo-intro">
+            <p class="calc-seo-intro" data-i18n="pneuCyl.seoIntroHtml" data-i18n-html>
           La herramienta calcula la fuerza efectiva disponible a partir de la presión de red y las áreas útiles en cada sentido, estima el consumo libre de aire por ciclo y contrasta la estabilidad frente al pandeo del vástago cuando la guía es corta. Sirve para dimensionar compactadores neumáticos, puertas balanceadas y manipuladores ligeros antes de cerrar la válvula reguladora y el depósito buffer. Es habitual entre automatistas integradores de PLC que necesitan saber si la válvula puede mantener cadencias altas sin caída brusca de presión al final del trayecto.
             </p>
           </details>
           <details class="lab-calc-help">
             <summary class="lab-calc-help__summary" data-i18n="pneuCyl.helpSummary">Metodología y límites del modelo</summary>
             <div class="lab-calc-help__body">
-              <p class="lab-lead lab-lead--in-help">
+              <p class="lab-lead lab-lead--in-help" data-i18n="pneuCyl.methodologyLeadHtml" data-i18n-html>
                 Calcula fuerza real, consumo de aire libre, chequeo de pandeo y margen de seguridad para validar si el cilindro es apto para la carga y la carrera.
                 Consumo y caídas de presión son <strong>modelo orientativo</strong>; valide válvulas, tubería y catálogo del fabricante.
               </p>
@@ -232,12 +255,30 @@
           </details>
         </header>
 
-        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
+        <nav class="lab-next-steps" data-i18n="fluids.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="fluids.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="fluids.nextStepsPcLi1Html" data-i18n-html>
+              <a href="calc-hydraulic-cylinder.html">Cilindro hidráulico</a> — más fuerza con el mismo diámetro a presión de aceite.
+            </li>
+            <li data-i18n="fluids.nextStepsPcLi2Html" data-i18n-html>
+              <a href="calc-bearings.html">Rodamientos · L10</a> — vida en guías del vástago si la carga es conocida.
+            </li>
+            <li data-i18n="fluids.nextStepsPcLi3Html" data-i18n-html>
+              <a href="fluids-hub.html">Hub de fluidos</a> — otras calculadoras de fluidos.
+            </li>
+          </ul>
+        </nav>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label" data-i18n="pneuCyl.presetsLabel">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="pcPresetsBar"></div>
+        </div>
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
               <p class="lab-diagram-wrap__title" data-i18n="pneuCyl.diagTitle">Corte de cilindro neumático (doble efecto)</p>
-              <svg id="pcDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema de cilindro con cámaras A y B"></svg>
-              <p class="lab-diagram-caption">Cámara A: avance. Cámara B: retroceso. Se muestran émbolo, sellos y vástago.</p>
+              <svg id="pcDiagram" xmlns="http://www.w3.org/2000/svg" data-i18n="pneuCyl.diagAriaLabel" data-i18n-attr="aria-label" aria-label="Esquema de cilindro con cámaras A y B"></svg>
+              <p class="lab-diagram-caption" data-i18n="pneuCyl.diagCaption">Cámara A: avance. Cámara B: retroceso. Se muestran émbolo, sellos y vástago.</p>
             </div>
           </div>
 
@@ -265,23 +306,23 @@
                 <p class="lab-field-help">El diagnóstico calcula la fuerza real a partir del diámetro y la presión de la máquina instalada.</p>
               </div>
               <div class="lab-field lab-field--wide">
-                <label for="pcLabTier">Nivel de detalle memoria</label>
+                <label for="pcLabTier" data-i18n="pneuCyl.labelTier">Nivel de detalle memoria</label>
                 <select id="pcLabTier">
-                  <option value="basic" selected>Aula (básico)</option>
-                  <option value="project">Proyecto (Patm + Euler + nota)</option>
+                  <option value="basic" selected data-i18n="pneuCyl.optBasic">Aula (básico)</option>
+                  <option value="project" data-i18n="pneuCyl.optProject">Proyecto (Patm + Euler + nota)</option>
                 </select>
                 <span class="hint">Memoria ampliada y PDF</span>
-                <p class="lab-field-help">Proyecto permite Patm distinta de 1 bar para Nl, factor de longitud efectiva en pandeo y nota de método.</p>
+                <p class="lab-field-help" data-i18n="pneuCyl.helpProjectTier">Proyecto permite Patm distinta de 1 bar para Nl, factor de longitud efectiva en pandeo y nota de método.</p>
               </div>
               <div class="lab-field lab-field--wide" id="pcProjectPanel" hidden>
                 <div class="lab-grid lab-grid--2" style="gap:0.65rem">
                   <div class="lab-field">
-                    <label for="pcPatmBar">Presión atmosférica local (bar abs)</label>
+                    <label for="pcPatmBar" data-i18n="pneuCyl.labelPatm">Presión atmosférica local (bar abs)</label>
                     <input id="pcPatmBar" type="number" step="any" value="1.013" />
                     <span class="hint">Para conversión a aire libre Nl</span>
                   </div>
                   <div class="lab-field">
-                    <label for="pcEulerLengthFactor">Factor longitud efectiva pandeo (× carrera)</label>
+                    <label for="pcEulerLengthFactor" data-i18n="pneuCyl.labelEulerFactor">Factor longitud efectiva pandeo (× carrera)</label>
                     <select id="pcEulerLengthFactor">
                       <option value="1">1,0 — apoyos ideales cortos</option>
                       <option value="1.2" selected>1,2 — valor por defecto previo</option>
@@ -290,7 +331,7 @@
                     </select>
                   </div>
                   <div class="lab-field lab-field--wide">
-                    <label for="pcMethodNote">Nota de método / supuestos (opcional)</label>
+                    <label for="pcMethodNote" data-i18n="pneuCyl.labelMethodNote">Nota de método / supuestos (opcional)</label>
                     <input id="pcMethodNote" type="text" maxlength="200" placeholder="Ej. ISO 15552, montaje con guía…" />
                     <span class="hint">Aparece en memoria y PDF</span>
                   </div>
@@ -310,11 +351,11 @@
                 <input id="pcPressureBar" type="number" min="1" step="any" value="6" />
                 <span class="hint">Presión manométrica de alimentación</span>
                 <p class="lab-field-help" data-i18n="pneuCyl.helpPressure">Valor disponible en la red neumática en condiciones reales de operación, sin caídas locales severas.</p>
-                <table class="pc-mini-table" aria-label="Presión de red típica por aplicación">
+                <table class="pc-mini-table" data-i18n="pneuCyl.pressureTableAria" data-i18n-attr="aria-label" aria-label="Presión de red típica por aplicación">
                   <thead>
                     <tr>
-                      <th>Aplicación</th>
-                      <th>Presión de red típica</th>
+                      <th data-i18n="pneuCyl.pressureTableApp">Aplicación</th>
+                      <th data-i18n="pneuCyl.pressureTablePressure">Presión de red típica</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -393,7 +434,7 @@
                 </select>
                 <span class="hint">Ajusta el criterio del factor de seguridad</span>
                 <p class="lab-field-help">Para elevación vertical se recomienda margen de fuerza mayor (habitualmente superior a 2,0×).</p>
-                <p class="pc-fs-note">
+                <p class="pc-fs-note" data-i18n="pneuCyl.fsNoteHtml" data-i18n-html>
                   Para movimiento horizontal: <strong>FS ≥ 1,5</strong>. Para elevación vertical: <strong>FS ≥ 2,0</strong>.
                   Para aplicaciones de seguridad (sujeción de personas, piezas sobre operario): <strong>FS ≥ 3,0</strong> y verificar con la normativa de seguridad aplicable.
                 </p>
@@ -403,7 +444,7 @@
 
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
             <details class="lab-fluid-formulas" id="pcFormulasBlock">
-              <summary>Memoria de cálculo, fórmulas y supuestos</summary>
+              <summary data-i18n="pneuCyl.formulasSummary">Memoria de cálculo, fórmulas y supuestos</summary>
               <div id="pcFormulaBody" class="lab-fluid-formulas__body"></div>
             </details>
             <div id="pcResults" class="lab-results"></div>

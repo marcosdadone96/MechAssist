@@ -610,11 +610,7 @@ function localizeCarLiftStaticContent() {
     const chipHtml = chip ? chip.outerHTML : '';
     lab.innerHTML = chipHtml ? `${plainText}\n                ${chipHtml}` : plainText;
   };
-  setLabelKeepChip('clCapacity', 'Capacity (total mass)');
-  setLabelKeepChip('clH', 'Lift height H');
-  setLabelKeepChip('clT', 'Lift time');
   setLabelKeepChip('clThreadPreset', 'Trapezoidal screw (ISO)');
-  setLabelKeepChip('clPitch', 'Screw lead');
   setLabelKeepChip('clD', 'Screw diameter d');
   setLabelKeepChip('clMotorPos', 'Motor position');
   setLabelKeepChip('clNutL', 'Effective nut length');
@@ -773,15 +769,16 @@ function refreshCore() {
     `;
   }
 
+  const verdictHtml = r.verdicts
+    .map(
+      (v) =>
+        `<p class="design-alert design-alert--${v.level === 'err' ? 'error' : v.level === 'warn' ? 'warn' : 'info'}">${esc(v.text)}</p>`,
+    )
+    .join('');
   const ver = document.getElementById('clVerdicts');
-  if (ver) {
-    ver.innerHTML = r.verdicts
-      .map(
-        (v) =>
-          `<p class="design-alert design-alert--${v.level === 'err' ? 'error' : v.level === 'warn' ? 'warn' : 'info'}">${esc(v.text)}</p>`,
-      )
-      .join('');
-  }
+  if (ver) ver.innerHTML = verdictHtml;
+  const sideAlerts = document.getElementById('clDesignAlerts');
+  if (sideAlerts) sideAlerts.innerHTML = verdictHtml;
 
   const disc = document.getElementById('clDisclaimer');
   if (disc) disc.textContent = r.disclaimer;

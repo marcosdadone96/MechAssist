@@ -9,7 +9,10 @@ const DUTY_ROWS = {
   uniform: { es: 'Carga uniforme \u2014 SF \u2248 1,15', en: 'Uniform load \u2014 SF \u2248 1.15' },
   moderate: { es: 'Choque moderado \u2014 SF \u2248 1,35', en: 'Moderate shock \u2014 SF \u2248 1.35' },
   heavy: { es: 'Choque pesado \u2014 SF \u2248 1,75', en: 'Heavy shock \u2014 SF \u2248 1.75' },
-  custom: { es: 'Personalizado', en: 'Custom' },
+  custom: {
+    es: 'Personalizado (editar \u00abFactor de servicio\u00bb arriba)',
+    en: 'Custom (edit Service factor above)',
+  },
 };
 
 /** @param {'es'|'en'} lang */

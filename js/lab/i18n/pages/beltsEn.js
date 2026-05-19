@@ -10,6 +10,14 @@ export const BELTS_PAGE_EN = {
   'belt.calcSeoIntro':
     'This calculator covers belt drive kinematics between two pulleys: speed ratio, open-belt primitive length, and allowable linear speed band by belt family. It blends common design cues for ISO 4184 V-belts, synchronous pitch/tooth count, plus indicative flat and Poly-V modes. Useful when sizing compact drives or checking a field swap before ordering from the supplier. For example, you can check whether a shorter belt still keeps enough wrap angle after the centre distance changes on an industrial retrofit.',
   'belt.methodSummary': 'Methodology and model limits',
+  'belt.nextStepsAria': 'Typical next step',
+  'belt.nextStepsTitle': 'Typical next step',
+  'belt.nextLi1Html':
+    '<a href="calc-gears.html">Cylindrical gears</a> \u2014 alternative drive with defined ratio.',
+  'belt.nextLi2Html':
+    '<a href="calc-chains.html">Roller chains</a> \u2014 high torque, fixed ratio.',
+  'belt.nextLi3Html':
+    '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 size the driving pulley shaft.',
   'belt.presetsLabel': 'Typical examples:',
   'belt.preset1': 'Motor \u2192 industrial fan',
   'belt.preset2': 'Servo \u2192 CNC spindle',
@@ -72,10 +80,19 @@ export const BELTS_PAGE_EN = {
   'belt.hintN1': '0 = skip n\u2082 and v',
   'belt.helpN1Html': 'Angular speed of pulley 1: <strong>\u03c9\u2081 = 2\u03c0 n\u2081 / 60</strong> rad/s.',
   'belt.icoPower': 'Power (advisor)',
-  'belt.labelPower': 'Transmitted power (kW) \u2014 optional',
+  'belt.labelPower': 'Transmitted power (kW)',
   'belt.placeholderPower': 'e.g. 5.5',
   'belt.helpPowerHtml':
-    'Only for the <strong>AI advisor</strong>: indicative loss comparison across belt families. Does not change the kinematics shown.',
+    'Does not change kinematics. With the <strong>AI Advisor panel</strong> active, compares indicative losses across belt families.',
+  'belt.advisorCtaLead':
+    'Transmitted power only feeds the <strong>AI advisor</strong> (does not change n\u2081, n\u2082 or belt speed).',
+  'belt.advisorCtaBtn': 'Show optional field',
+  'belt.advisorPowerSummary': 'AI advisor \u00b7 loss comparison (optional)',
+  'belt.advisorPowerSummaryOff': 'AI advisor (off) \u00b7 optional power',
+  'belt.advisorInactiveLead':
+    'The side <strong>AI Advisor</strong> panel is not active on this page. You can leave power empty: kinematics shown are unchanged.',
+  'belt.advisorInactiveHint':
+    'When the advisor is available, this value enables an indicative loss comparison (kW) across belt families.',
   'belt.icoSlip': 'Slip',
   'belt.labelSlip': 'Slip s (%)',
   'belt.hintSlip': 'V-belt: typ. 1\u20133 \u00b7 flat/Poly-V: lower',

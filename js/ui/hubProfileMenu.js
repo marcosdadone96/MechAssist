@@ -48,7 +48,7 @@ function renderCreditsInMenu(host, state) {
   }
   const cost = b.costs?.calcSession ?? 10;
   const total = creditsAmountFromBalance(b);
-  host.innerHTML = `<p class="hub-user-menu__credits-title">${en ? 'Credits' : 'Cr\u00e9ditos'}</p><p class="hub-user-menu__credits-line"><strong>${total}</strong> ${en ? 'available across lab, machines and hydraulics' : 'disponibles en laboratorio, m\u00e1quinas e hidr\u00e1ulica'}</p><p class="hub-user-menu__credits-hint">${en ? `${cost} credits per calc session` : `${cost} cr\u00e9ditos por sesi\u00f3n de c\u00e1lculo`}</p>`;
+  host.innerHTML = `<p class="hub-user-menu__credits-title">${en ? 'Credits' : 'Cr\u00e9ditos'}</p><p class="hub-user-menu__credits-line"><strong>${total}</strong> ${en ? 'available across transmission lab, machines and hydraulics' : 'disponibles en laboratorio de transmisi\u00f3n, m\u00e1quinas e hidr\u00e1ulica'}</p><p class="hub-user-menu__credits-hint">${en ? `${cost} credits per calc session` : `${cost} cr\u00e9ditos por sesi\u00f3n de c\u00e1lculo`}</p>`;
 }
 
 async function refreshMenuCredits(host) {

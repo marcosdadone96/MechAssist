@@ -6,6 +6,7 @@ export const ROLLER_CONVEYOR_EN = {
     'This tool maps load distribution on free or driven rollers, pitch and line speed into drag force and power at the drive zone, using the same dashboard workflow as flat belts for easy comparison. It suits picking, controlled accumulation and parcel lines where throughput changes brushless motor duty. Plant engineers can check whether a heavier EUR pallet forces zone drives instead of under-table belt propulsion.',
   'rollerConv.heroLead':
     'Horizontal line with rolling resistance and extra drag. Same workflow as flat belt: results panel and schematic on the right.',
+  'rollerConv.diagramSvgAria': 'Motorized roller conveyor schematic',
   'rollerConv.helpSummary': 'Quick guide to each quantity',
   'rollerConv.helpBodyHtml': `<p class="help-details__lead muted">
       Almost every label has a <span class="info-chip info-chip--static" aria-hidden="true">?</span>: on desktop hover; on touch <strong>tap</strong> for help.
@@ -23,11 +24,22 @@ export const ROLLER_CONVEYOR_EN = {
   'rollerConv.accSupport': 'Load support and roller pitch',
   'rollerConv.accRolling': 'Rolling resistance and efficiency',
   'rollerConv.labelStandard': 'Reference standard',
-  'rollerConv.optIso5048': 'ISO 5048',
-  'rollerConv.optCema': 'CEMA',
+  'rollerConv.labelStandardHtml':
+    'Reference standard <span class="info-chip" title="Declared framework in reports. ISO 5048: simplified analytic model here (not full DIN 22101). CEMA: +6 % on steady traction only." aria-label="Help ISO and CEMA standard.">?</span>',
+  'rollerConv.optIso5048':
+    'ISO 5048 / DIN 22101 \u2014 analytic approach (default)',
+  'rollerConv.optCema': 'CEMA \u2014 +6 % margin over steady traction',
   'rollerConv.cemaHint': 'CEMA applies \u00d71.06 to steady traction only (horizontal traction as modeled).',
   'rollerConv.labelLoadDuty': 'Load duty',
+  'rollerConv.labelLoadDutyHtml':
+    'Load type (sets SF) <span class="info-chip" title="Service class (orientative). Sets the numeric factor except Custom, where you edit it below." aria-label="Help load type and service factor.">?</span>',
+  'rollerConv.optDutyUniform': 'Uniform load \u2014 SF \u2248 1.15',
+  'rollerConv.optDutyModerate': 'Moderate shock \u2014 SF \u2248 1.35',
+  'rollerConv.optDutyHeavy': 'Heavy shock \u2014 SF \u2248 1.75',
+  'rollerConv.optDutyCustom': 'Custom (edit Service factor above)',
   'rollerConv.labelSf': 'Service factor',
+  'rollerConv.labelSfHtml':
+    'Service factor (number) <span class="info-chip" title="Synced with Load type (read-only except Custom mode)." aria-label="Help synced service factor.">?</span>',
   'rollerConv.labelLength': 'Useful length L',
   'rollerConv.labelLoadMass': 'Total load m',
   'rollerConv.labelSpeed': 'Line speed v',
@@ -69,6 +81,9 @@ export const ROLLER_CONVEYOR_EN = {
   'rollerConv.motorsHint': 'Recommendations, export, verification',
   'rollerConv.engTitle': 'Engineering breakdown',
   'rollerConv.engHint': 'Collapsed by default \u2014 expand for intermediate math and rationale',
+  'rollerConv.presetEcommerceTooltip': 'Short line, light cartons, low C_rr, uniform spread.',
+  'rollerConv.presetPalletTooltip': 'EUR pallet, medium travel, distribution duty.',
+  'rollerConv.presetHeavyTooltip': 'Heavy pallet load, higher C_rr, CEMA margin.',
   'rollerConv.engLead': 'Intermediate calculations, motor strategies and design-point reasoning at the drive roller.',
   'rollerConv.assumptionsTitle': 'Model assumptions',
   'rollerConv.assumptionsHint': 'Assumptions and limits',

@@ -18,6 +18,7 @@ export const ISO_FIT_PAGE_EN = {
   'iso.computing': 'Recalculating',
   'iso.footerNote':
     'Assumption: this module covers the 1\u2013500 mm extract. For special ranges, materials or conditions, see full ISO 286-1.',
+  'iso.seoSummary': 'Extended context and usage notes',
   'iso.helpSummary': 'Methodology and limits',
   'iso.presetsLabel': 'Typical examples:',
   'iso.labelD': 'Nominal diameter d (mm)',
@@ -36,4 +37,13 @@ export const ISO_FIT_PAGE_EN = {
   'iso.copyToast': 'Link copied!',
   'iso.summaryFull': 'Full results',
   'iso.copyResults': 'Copy results',
+  'iso.diagAriaLabel': 'Hole and shaft tolerance zones schematic',
+  'iso.diagCaptionHtml':
+    'Reference example: <strong>25 H7/g6</strong> \u2192 hole +21/0 \u03bcm, shaft \u22127/\u221220 \u03bcm; max. clearance 41 \u03bcm, min. 7 \u03bcm.',
+  'iso.nextStepsAria': 'Typical next step',
+  'iso.nextStepsTitle': 'Typical next step',
+  'iso.nextLi1Html':
+    '<a href="calc-bearings-catalog.html">Bearing catalogue</a> \u2014 check inner ring fit.',
+  'iso.nextLi2Html': '<a href="calc-keys-din6885.html">Keys DIN 6885</a> \u2014 keyway tolerance.',
+  'iso.nextLi3Html': '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 size the coupling shaft.',
 };

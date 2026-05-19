@@ -4266,6 +4266,23 @@ html[data-conveyor-tool='flat'] .metric {
   font-weight: 600;
 }
 
+.machine-calc-notice {
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #7c2d12;
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  border-left: 4px solid #ea580c;
+  border-radius: 8px;
+}
+
+.machine-calc-notice strong {
+  font-weight: 700;
+  color: #9a3412;
+}
+
 .flat-scope-panel {
   margin: 0 0 1.05rem;
   padding: 0.85rem 1rem;
@@ -4811,6 +4828,63 @@ main.app-main.checkout-page {
   margin-bottom: 0.25rem;
 }
 
+.register-pw-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.register-pw-strength {
+  margin-top: 0.45rem;
+}
+
+.register-pw-strength__track {
+  height: 6px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.register-pw-strength__fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.register-pw-strength__fill--weak {
+  background: #ef4444;
+}
+
+.register-pw-strength__fill--medium {
+  background: #f59e0b;
+}
+
+.register-pw-strength__fill--strong {
+  background: #10b981;
+}
+
+.register-pw-strength__label {
+  margin: 0.3rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.register-pw-strength--weak .register-pw-strength__label {
+  color: #b91c1c;
+}
+
+.register-pw-strength--medium .register-pw-strength__label {
+  color: #b45309;
+}
+
+.register-pw-strength--strong .register-pw-strength__label {
+  color: #047857;
+}
+
 .register-error {
   margin: 0 0 1rem;
   padding: 0.65rem 0.85rem;
@@ -4866,6 +4940,33 @@ main.app-main.checkout-page {
 }
 
 .register-form--login {
+  margin-top: 0;
+}
+
+.register-forgot-row {
+  margin: 0.45rem 0 0;
+  text-align: right;
+}
+
+.register-forgot-link {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--accent, #2563eb);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.register-forgot-link:hover {
+  color: var(--accent-dark, #1d4ed8);
+}
+
+.register-form--forgot,
+.register-form--reset {
   margin-top: 0;
 }
 
@@ -5180,6 +5281,96 @@ main.app-main.checkout-page {
   margin: 0 0 0.65rem;
   font-size: 0.86rem;
   line-height: 1.45;
+}
+
+.checkout-plan-card__renewal-note {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--muted, #64748b);
+  text-align: center;
+}
+
+.checkout-plan-card__renewal-note a {
+  color: #0d9488;
+  font-weight: 600;
+  text-underline-offset: 2px;
+}
+
+.checkout-plan-card__sub-renewal {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--muted, #64748b);
+  text-align: center;
+}
+
+.checkout-plan-card__sub-renewal a {
+  color: #0d9488;
+  font-weight: 600;
+  text-underline-offset: 2px;
+}
+
+.checkout-plan-card__sub-renewal strong {
+  color: #334155;
+  font-weight: 700;
+}
+
+.checkout-plan-card__foot .checkout-plan-card__sub-renewal {
+  margin-top: 0.5rem;
+}
+
+.checkout-plan-card__credits-hint {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.checkout-plan-card__credits-details {
+  margin: 0 0 0.65rem;
+  font-size: 0.76rem;
+}
+
+.checkout-plan-card__credits-details summary {
+  cursor: pointer;
+  color: #0d9488;
+  font-weight: 600;
+  list-style: none;
+}
+
+.checkout-plan-card__credits-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.checkout-plan-card__credits-details summary::after {
+  content: ' ▾';
+  font-size: 0.65rem;
+}
+
+.checkout-plan-card__credits-details[open] summary::after {
+  content: ' ▴';
+}
+
+.checkout-plan-card__credits-explainer {
+  margin-top: 0.45rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.hub-pricing-card__credits-list {
+  list-style: disc;
+  padding-left: 1.1rem;
+  font-size: 0.78rem;
+  color: var(--muted, #64748b);
+  line-height: 1.6;
+  margin: 0.35rem 0 0;
+}
+
+.checkout-plan-card__credits-explainer .hub-pricing-credits-dl {
+  margin: 0;
 }
 
 .checkout-plan-card__price {

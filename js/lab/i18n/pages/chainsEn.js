@@ -10,6 +10,14 @@ export const CHAINS_EN = {
   'chains.helpSummary': 'Methodology and model limits',
   'chains.methodologyHtml':
     'Roller chain per <strong>DIN\u00a08187\u00a0/\u00a0ISO\u00a0606</strong> (metric pitch) and <strong>ANSI\u00a0B29.1</strong> references in the demo catalogue. Length in <strong>pitches</strong> with fixed centre; kinematics on pitch circles <code>D\u00a0=\u00a0p\u00a0/\u00a0sin(\u03c0/z)</code>. Articulation frequency and lubrication guidance are indicative; confirm with the standard and manufacturer.',
+  'chains.nextStepsAria': 'Typical next step',
+  'chains.nextStepsTitle': 'Typical next step',
+  'chains.nextLi1Html':
+    '<a href="calc-gears.html">Cylindrical gears</a> \u2014 compare ratio and centre distance.',
+  'chains.nextLi2Html':
+    '<a href="calc-belts.html">Belt drives</a> \u2014 higher speed, elastic slip.',
+  'chains.nextLi3Html':
+    '<a href="calc-bearings.html">Bearings \u00b7 L10</a> \u2014 sprocket shaft supports.',
   'chains.presetsLabel': 'Typical examples:',
   'chains.preset1': 'ISO 12B \u00b7 centred',
   'chains.preset2': 'ISO 08B \u00b7 slow',

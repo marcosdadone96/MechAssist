@@ -30,6 +30,7 @@ import { getCurrentLang } from '../config/locales.js';
 import {
   applyBucketElevatorPageLanguage,
   BUCKET_ELEVATOR_LANG_EVENT,
+  getBucketElevatorBeStrings,
 } from './bucketElevatorStaticI18n.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
 import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
@@ -37,7 +38,11 @@ import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { BUCKET_ELEVATOR_EN } from '../lab/i18n/pages/bucketElevatorEn.js';
 
-const BUCKET_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...BUCKET_ELEVATOR_EN };
+const BUCKET_PAGE_EN = {
+  ...MACHINE_HUB_UX_EN,
+  ...BUCKET_ELEVATOR_EN,
+  ...getBucketElevatorBeStrings('en'),
+};
 import { BUCKET_PRESET_BY_ID } from '../modules/machineHubPresets.js';
 import { incrementCalcCounter } from '../services/calcCounter.js';
 

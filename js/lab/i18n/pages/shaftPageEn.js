@@ -1,6 +1,8 @@
 /** English strings for calc-shaft.html (`shaft.*`). ASCII-safe. */
 export const SHAFT_PAGE_EN = {
-  'shaft.docTitle': 'Solid shaft torsion calculator \u2014 TheMechAssist',
+  'shaft.docTitle': 'Shaft \u00b7 torsion and bending \u2014 TheMechAssist',
+  'shaft.metaDesc':
+    'Minimum solid shaft diameter for pure torsion or Von Mises/Tresca equivalent stress with bending moment and Kt. Indicative pre-design.',
   'shaft.h2': 'Solid shaft \u00b7 torsion and bending (basic/advanced)',
   'shaft.heroLeadHtml':
     'Get the <strong>minimum diameter</strong> for pure torsion or, in advanced mode, equivalent stress with <strong>M</strong> and <strong>Kt</strong> (Von Mises / Tresca). Compare with a commercial \u00d8 or diagnose an installed shaft.',
@@ -40,4 +42,18 @@ export const SHAFT_PAGE_EN = {
   'shaft.copyLink': 'Copy link',
   'shaft.copyToast': 'Link copied!',
   'shaft.copyResults': 'Copy results',
+  'shaft.unitsAria': 'Result units',
+  'shaft.unitsBarTitle': 'How to read results',
+  'shaft.lblLength': 'Distances',
+  'shaft.optMmShop': 'mm (shop)',
+  'shaft.optInches': 'in',
+  'shaft.optCm': 'cm',
+  'shaft.optMSi': 'm (SI)',
+  'shaft.lblRotation': 'Rotation',
+  'shaft.optRpm': 'RPM',
+  'shaft.optRadS': 'rad/s',
+  'shaft.lblLinear': 'Linear speed',
+  'shaft.optMs': 'm/s',
+  'shaft.optMms': 'mm/s',
+  'shaft.optKmh': 'km/h',
 };

@@ -248,9 +248,10 @@ function buildParams() {
 function syncCounterweightSuggestion() {
   const q = readNum('teQ', 2000);
   const mc = readNum('teMc', 1200);
+  const k = readNum('teKcw', 0.45);
   const input = document.getElementById('teMcpManual');
   if (!(input instanceof HTMLInputElement)) return;
-  const suggested = mc + 0.45 * q;
+  const suggested = mc + k * q;
   const isAuto = input.dataset.autoSuggestion !== 'false';
   if (isAuto || !Number.isFinite(parseFloat(input.value))) {
     input.value = String(Math.round(suggested));
@@ -449,15 +450,16 @@ function computeAndRenderCore() {
     `;
   }
 
+  const verdictHtml = r.verdicts
+    .map(
+      (v) =>
+        `<p class="design-alert design-alert--${v.level === 'err' ? 'error' : v.level === 'warn' ? 'warn' : 'info'}">${esc(v.text)}</p>`,
+    )
+    .join('');
   const ver = document.getElementById('teVerdicts');
-  if (ver) {
-    ver.innerHTML = r.verdicts
-      .map(
-        (v) =>
-          `<p class="design-alert design-alert--${v.level === 'err' ? 'error' : v.level === 'warn' ? 'warn' : 'info'}">${esc(v.text)}</p>`,
-      )
-      .join('');
-  }
+  if (ver) ver.innerHTML = verdictHtml;
+  const sideAlerts = document.getElementById('teDesignAlerts');
+  if (sideAlerts) sideAlerts.innerHTML = verdictHtml;
 
   const disc = document.getElementById('teDisclaimer');
   if (disc) disc.textContent = r.disclaimer;

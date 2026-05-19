@@ -7,7 +7,7 @@ export const PNEUMATIC_CYL_EN = {
   'pneuCyl.helpSummary': 'Methodology and model limits',
   'pneuCyl.presetsLabel': 'Typical examples:',
   'pneuCyl.diagTitle': 'Schematic view \u00b7 cylinder cross-section',
-  'pneuCyl.diagAriaLabel': 'Pneumatic cylinder diagram',
+  'pneuCyl.diagAriaLabel': 'Pneumatic cylinder schematic with chambers A and B',
   'pneuCyl.labelBore': 'Bore \u00d8 (mm) \u2014 ISO\u00a06432\u00a0/\u00a0ISO\u00a015552',
   'pneuCyl.helpBore':
     'Standard bore diameter. Push force scales with bore area; pull force uses annular rod-side area.',
@@ -59,4 +59,28 @@ export const PNEUMATIC_CYL_EN = {
   'pneuCyl.optDesign': 'Design new installation',
   'pneuCyl.optDiagnostic': 'Diagnose existing machine',
   'pneuCyl.seoSummary': 'Extended context and usage notes',
+  'pneuCyl.seoIntroHtml':
+    'Computes effective force from supply pressure and useful areas, estimates free-air consumption per cycle and checks rod buckling when the guide is short. Useful for pneumatic compactors, balanced doors and light manipulators before sizing the regulator and buffer tank. Typical for PLC integrators checking whether the valve can keep cadence without a sharp pressure drop at stroke end.',
+  'pneuCyl.methodologyLeadHtml':
+    'Computes real force, free-air consumption, buckling check and safety margin to validate whether the cylinder suits the load and stroke. Consumption and pressure drops are an <strong>indicative model</strong>; validate valves, tubing and manufacturer catalogue.',
+  'pneuCyl.diagCaption':
+    'Chamber A: extend. Chamber B: retract. Piston, seals and rod shown schematically.',
+  'pneuCyl.labelTier': 'Report detail level',
+  'pneuCyl.optBasic': 'Classroom (basic)',
+  'pneuCyl.optProject': 'Project (P<sub>atm</sub> + Euler + note)',
+  'pneuCyl.helpProjectTier':
+    'Project mode allows P<sub>atm</sub> other than 1 bar for Nl conversion, effective buckling length factor and a method note.',
+  'pneuCyl.labelPatm': 'Local atmospheric pressure (bar abs)',
+  'pneuCyl.labelEulerFactor': 'Effective buckling length factor (\u00d7 stroke)',
+  'pneuCyl.labelMethodNote': 'Method / assumptions note (optional)',
+  'pneuCyl.pressureTableAria': 'Typical supply pressure by application',
+  'pneuCyl.pressureTableApp': 'Application',
+  'pneuCyl.pressureTablePressure': 'Typical supply pressure',
+  'pneuCyl.fsNoteHtml':
+    'Horizontal motion: <strong>SF \u2265 1.5</strong>. Vertical lift: <strong>SF \u2265 2.0</strong>. Safety-critical applications (persons, parts over operator): <strong>SF \u2265 3.0</strong> and verify applicable safety codes.',
+  'pneuCyl.formulasSummary': 'Calculation memory, formulas and assumptions',
+  'pneuCyl.presetsLabel': 'Typical examples:',
+  'pneuCyl.preset1': 'Packaging \u00d863',
+  'pneuCyl.preset2': 'Handling \u00d8100',
+  'pneuCyl.preset3': 'Vertical \u00b7 8 bar',
 };

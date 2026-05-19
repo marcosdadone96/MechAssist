@@ -22,12 +22,17 @@ export const INCLINED_CONVEYOR_EN = {
   'incConv.accGeom': 'Geometry and kinematics',
   'incConv.accFriction': 'Friction and efficiency',
   'incConv.labelBulkMaterial': 'Bulk material',
+  'incConv.labelMaterialHtml':
+    'Material type (angle warning) <span class="info-chip" title="Only affects the indicative maximum-angle warning. Does not enter the power calculation." aria-label="Help material type.">?</span>',
+  'incConv.hintMaterial':
+    'Only affects the indicative maximum-angle warning; does not change the power calculation.',
   'incConv.matGrain': 'Grain / cereal',
   'incConv.matSandDry': 'Dry sand',
   'incConv.matSandWet': 'Wet sand',
   'incConv.matCoal': 'Coal / coke',
   'incConv.matGravel': 'Gravel / aggregate',
-  'incConv.matDefault': 'General bulk',
+  'incConv.matSoil': 'Soil / earth',
+  'incConv.matDefault': 'General material',
   'incConv.modelScopeHtml':
     '<strong>Model:</strong> inclined \u00b7 Coulomb \u00b7 weight on slope + friction \u00b7 no Euler. <a href="#inclined-conveyor-assumptions">Assumptions and exclusions</a>',
   'incConv.advSummary':
@@ -54,6 +59,86 @@ export const INCLINED_CONVEYOR_EN = {
   'incConv.assumptionsHint': 'Assumptions and limits',
   'incConv.pdfExportH2Html':
     '<span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Export report',
+  'incConv.labelDesignStandardHtml':
+    'Reference standard <span class="info-chip" title="Declares the calculation framework in reports. CEMA adds margin on steady traction only." aria-label="Help reference standard.">?</span>',
+  'incConv.labelLoadDutyHtml':
+    'Load type (sets SF) <span class="info-chip" title="Select service severity and recommended service factor. Use Custom for a manual SF." aria-label="Help load type.">?</span>',
+  'incConv.labelServiceFactorHtml':
+    'Service factor (number) <span class="info-chip" title="Design multiplier on steady/startup torque. Higher SF = more margin and higher required torque." aria-label="Help service factor.">?</span>',
+  'incConv.labelLengthHtml':
+    'Length L (slope) <span class="info-chip" title="Useful transport length measured along the belt slope." aria-label="Help belt length.">?</span>',
+  'incConv.labelAngleHtml':
+    'Angle \u03b8 (optional) <span class="info-chip" title="If filled, the model uses this angle instead of deriving it from H and L." aria-label="Help angle.">?</span>',
+  'incConv.labelSpeedHtml':
+    'Belt speed v <span class="info-chip" title="Linear belt speed. Affects drum rpm and motor power." aria-label="Help belt speed.">?</span>',
   'incConv.optIso5048': 'ISO 5048 / DIN 22101 \u2014 analytic approach',
-  'incConv.optCema': 'CEMA \u2014 +6% margin on steady traction',
+  'incConv.optCema': 'CEMA \u2014 +6 % margin over steady traction',
+  'incConv.optUniform': 'Uniform load \u2014 SF \u2248 1.15',
+  'incConv.optModerate': 'Moderate shock \u2014 SF \u2248 1.35',
+  'incConv.optHeavy': 'Heavy shock \u2014 SF \u2248 1.75',
+  'incConv.optCustom': 'Custom (edit Service factor above)',
+  'incConv.diagramSvgAria': 'Inclined belt schematic',
+  'incConv.visualSectionAria': 'Schematic and reference',
+  'incConv.presetQuarryTooltip': 'Quarry, L ~35 m, variable load',
+  'incConv.presetSandTooltip': 'Wet sand, higher \u03bc and extra resistance',
+  'incConv.presetWarehouseTooltip': 'Silo feed, shorter lighter belt',
+  'incConv.tipDesignStandard':
+    'Declares the calculation framework in reports. CEMA adds margin on steady traction only.',
+  'incConv.tipLoadDuty':
+    'Select service severity and recommended service factor. Use Custom for a manual SF.',
+  'incConv.tipServiceFactor':
+    'Design multiplier on steady/startup torque. Higher SF = more margin and higher required torque.',
+  'incConv.tipLength': 'Useful transport length measured along the belt slope.',
+  'incConv.tipHeight':
+    'Vertical lift between loading and discharge. If \u03b8 is empty, calculated as arcsin(H/L).',
+  'incConv.tipAngle': 'If filled, the model uses this angle instead of deriving it from H and L.',
+  'incConv.tipMaterial':
+    'Only affects the indicative maximum-angle warning. Does not enter the power calculation.',
+  'incConv.tipLoadMass': 'Total material mass in the span considered by the model.',
+  'incConv.tipSpeed': 'Belt line speed. Affects drum rpm and motor power.',
+  'incConv.tipRollerD': 'Drive drum pitch diameter. Converts force to torque (T = F\u00b7D/2).',
+  'incConv.tipFriction':
+    'Effective friction coefficient on the slope. Typical range 0.25\u20130.60 depending on condition.',
+  'incConv.tipEfficiency':
+    'Total mechanical efficiency from motor to drum. Usually 80\u201395% depending on transmission.',
+  'incConv.tipBeltWidth': 'Nominal belt width. Helps contextualize flow and belt family.',
+  'incConv.tipBeltMass':
+    'Belt self-weight used in the extended gravity/friction term of the model.',
+  'incConv.tipLoadDist':
+    'Fraction of load effectively active in the analysed span (1 = full load active).',
+  'incConv.tipBeltSlopePart':
+    'Fraction of belt mass on the inclined run that contributes to the effort.',
+  'incConv.tipAddResistance':
+    'Extra losses not modelled (scrapers, seals, hard spots, etc.) in newtons.',
+  'incConv.tipAccelTime':
+    'Ramp time to nominal speed. Shorter time implies higher startup peak.',
+  'incConv.tipInertiaFactor':
+    'Multiplier for drum/coupling rotational inertias during startup.',
+  'incConv.tipVerifyBrand': 'Demo catalogue manufacturer for quick verification.',
+  'incConv.tipVerifySearch': 'Filter by text or code to find a catalogue model faster.',
+  'incConv.tipVerifyModel': 'Compared against the calculated point: power, torque and rpm.',
+  'incConv.labelHeightHtml':
+    'Lift H <span class="info-chip" title="Vertical lift between loading and discharge. If \u03b8 is empty, calculated as arcsin(H/L)." aria-label="Help lift.">?</span>',
+  'incConv.labelLoadMassHtml':
+    'Load mass m <span class="info-chip" title="Total material mass in the span considered by the model." aria-label="Help load mass.">?</span>',
+  'incConv.labelRollerDHtml':
+    'Drive drum diameter D <span class="info-chip" title="Drive drum pitch diameter. Converts force to torque (T = F\u00b7D/2)." aria-label="Help drum diameter.">?</span>',
+  'incConv.labelFrictionHtml':
+    'Coefficient \u03bc <span class="info-chip" title="Effective friction coefficient on the slope. Typical range 0.25\u20130.60." aria-label="Help friction.">?</span>',
+  'incConv.labelEfficiencyHtml':
+    'Efficiency \u03b7 (to drum) <span class="info-chip" title="Total mechanical efficiency from motor to drum. Usually 80\u201395%." aria-label="Help efficiency.">?</span>',
+  'incConv.labelBeltWidthHtml':
+    'Belt width B <span class="info-chip" title="Nominal belt width." aria-label="Help belt width.">?</span>',
+  'incConv.labelBeltMassHtml':
+    'Belt mass m_b <span class="info-chip" title="Belt self-weight in the extended model." aria-label="Help belt mass.">?</span>',
+  'incConv.labelLoadDistHtml':
+    'Active load fraction f_dist <span class="info-chip" title="Fraction of load active in the analysed span (1 = all load active)." aria-label="Help load fraction.">?</span>',
+  'incConv.labelBeltSlopePartHtml':
+    'Belt on slope f_p <span class="info-chip" title="Fraction of belt mass on the inclined run contributing to effort." aria-label="Help belt on slope.">?</span>',
+  'incConv.labelAddResistanceHtml':
+    'Additional resistance <span class="info-chip" title="Extra losses not modelled (scrapers, seals, etc.) in N." aria-label="Help additional resistance.">?</span>',
+  'incConv.labelAccelTimeHtml':
+    'Acceleration time <span class="info-chip" title="Ramp time to nominal speed." aria-label="Help acceleration time.">?</span>',
+  'incConv.labelInertiaFactorHtml':
+    'Inertia factor k_in <span class="info-chip" title="Multiplier for drum/coupling inertias at startup." aria-label="Help inertia factor.">?</span>',
 };

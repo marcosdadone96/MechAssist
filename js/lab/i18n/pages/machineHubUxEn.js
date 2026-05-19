@@ -4,9 +4,70 @@
  */
 
 export const MACHINE_HUB_UX_EN = {
+  'machineHub.indicativeNotice':
+    '<strong>Indicative results only.</strong> They do not replace code-compliant calculation (EN\u00a081, ISO\u00a04413, etc.) or sign-off by a qualified professional engineer.',
+  'machineHub.verifyCatalogLead':
+    'Select a gearmotor from the sample catalog to compare its power and torque with the calculated results. It does not change the form inputs. Values are indicative, based on specifications published by the manufacturer.',
   'machineHub.toastRfqCopied': 'Copied to clipboard.',
   'machineHub.toastRfqErr':
     'Could not copy (browser blocked clipboard). Select and copy manually.',
+
+  'machineHub.nextStepsAria': 'Usual next step',
+  'machineHub.nextStepsTitle': 'Usual next step',
+
+  'machineHub.nextStepsFlatLi1Html':
+    '<a href="my-gearmotors.html">My gearmotors</a> \u2014 check calculated torque against the catalog.',
+  'machineHub.nextStepsFlatLi2Html':
+    '<a href="calc-bearings.html">Bearings \u00b7 L10</a> \u2014 life at drive drum supports.',
+  'machineHub.nextStepsFlatLi3Html':
+    '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 size the drum shaft with the calculated torque.',
+
+  'machineHub.nextStepsIncLi1Html':
+    '<a href="calc-bearings.html">Bearings \u00b7 L10</a> \u2014 life at drive drum supports.',
+  'machineHub.nextStepsIncLi2Html':
+    '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 size the drum shaft with the calculated torque.',
+  'machineHub.nextStepsIncLi3Html':
+    '<a href="my-gearmotors.html">My gearmotors</a> \u2014 check torque and power against the catalog.',
+
+  'machineHub.nextStepsRollerLi1Html':
+    '<a href="calc-bearings.html">Bearings \u00b7 L10</a> \u2014 life at rollers and motor supports.',
+  'machineHub.nextStepsRollerLi2Html':
+    '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 size the drive roller shaft.',
+  'machineHub.nextStepsRollerLi3Html':
+    '<a href="my-gearmotors.html">My gearmotors</a> \u2014 check roller drive or gearmotor unit.',
+
+  'machineHub.nextStepsBeLi1Html':
+    '<a href="calc-bearings.html">Bearings \u00b7 L10</a> \u2014 life at head and boot sheaves.',
+  'machineHub.nextStepsBeLi2Html':
+    '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 head shaft with calculated torque.',
+  'machineHub.nextStepsBeLi3Html':
+    '<a href="my-gearmotors.html">My gearmotors</a> \u2014 selection and verification.',
+
+  'machineHub.nextStepsScLi1Html':
+    '<a href="calc-bearings.html">Bearings \u00b7 L10</a> \u2014 life at screw supports.',
+  'machineHub.nextStepsScLi2Html':
+    '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 screw shaft under axial torque.',
+  'machineHub.nextStepsScLi3Html':
+    '<a href="my-gearmotors.html">My gearmotors</a> \u2014 check low-speed gearbox.',
+
+  'machineHub.nextStepsTeLi1Html':
+    '<a href="calc-bearings.html">Bearings \u00b7 L10</a> \u2014 life at traction sheave supports.',
+  'machineHub.nextStepsTeLi2Html':
+    '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 sheave shaft with calculated torque.',
+
+  'machineHub.nextStepsCarLi1Html':
+    '<a href="calc-bearings.html">Bearings \u00b7 L10</a> \u2014 life at screw supports.',
+  'machineHub.nextStepsCarLi2Html':
+    '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 check screw shaft in torsion.',
+  'machineHub.nextStepsCarLi3Html':
+    '<a href="calc-keys-din6885.html">Keys DIN 6885</a> \u2014 shaft\u2013sheave hub connection.',
+
+  'machineHub.nextStepsPumpLi1Html':
+    '<a href="calc-bearings.html">Bearings \u00b7 L10</a> \u2014 life at pump shaft supports.',
+  'machineHub.nextStepsPumpLi2Html':
+    '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 size shaft with pump torque.',
+  'machineHub.nextStepsPumpLi3Html':
+    '<a href="calc-hydraulic-pump.html">Hydraulic pump</a> \u2014 if you also need to size the circuit pump.',
 
   'machineHub.uxPresetsTitle': 'Typical cases (one click)',
   'machineHub.uxPresetsLead':

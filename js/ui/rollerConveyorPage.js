@@ -453,9 +453,30 @@ function syncRollersSuggestion() {
   }
 }
 
+function escAlertText(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;');
+}
+
+/** @param {string[]} warnings @param {boolean} en */
+function localizeRollerSupportWarnings(warnings, en) {
+  if (!en) return warnings;
+  return warnings.map((w) => {
+    if (w.includes('huella en direcci')) {
+      return 'Footprint along transport exceeds useful length L: review inputs or increase L.';
+    }
+    if (w.includes('Menos de 2 rodillos')) {
+      return 'Fewer than 2 rollers under the footprint at this pitch: unstable support risk; review pitch or pallet orientation.';
+    }
+    return w;
+  });
+}
+
 function getEls() {
   return {
     diagram: /** @type {SVGSVGElement | null} */ (document.getElementById('diagramRoller')),
+    designAlerts: document.getElementById('designAlerts'),
     results: document.getElementById('resultsGrid'),
     engineeringReport: document.getElementById('engineeringReport'),
     motorBlock: document.getElementById('motorBlock'),
@@ -515,8 +536,8 @@ function localizeRollerStaticContent() {
   setText('.flat-accordion:nth-of-type(4) .flat-accordion__label', 'Rolling resistance and efficiency');
   const isoOpt = document.querySelector('#designStandard option[value="ISO5048"]');
   const cemaOpt = document.querySelector('#designStandard option[value="CEMA"]');
-  if (isoOpt) isoOpt.textContent = 'ISO 5048';
-  if (cemaOpt) cemaOpt.textContent = 'CEMA';
+  if (isoOpt) isoOpt.textContent = 'ISO 5048 / DIN 22101 — analytic approach (default)';
+  if (cemaOpt) cemaOpt.textContent = 'CEMA — +6 % margin over steady traction';
   const cemaHint = document.querySelector('#designStandard')?.closest('.field')?.querySelector('.field-hint');
   if (cemaHint) {
     cemaHint.textContent =
@@ -707,12 +728,15 @@ function refreshCore() {
     .join(' · ');
   const vLine = `${formatNum(raw.speed_m_s, 2)} m/s · ${formatNum(r.drumRpm, 2)} rpm`;
 
+  if (els.designAlerts) {
+    const warnings = localizeRollerSupportWarnings(r.supportInfo?.warnings || [], en);
+    els.designAlerts.innerHTML = warnings
+      .map((text) => `<p class="design-alert design-alert--warn">${escAlertText(text)}</p>`)
+      .join('');
+  }
+
   if (els.results) {
     const sup = r.supportInfo;
-    const warnBlock =
-      sup?.warnings?.length > 0
-        ? `<div style="margin:0.75rem 0 0;padding:0.65rem 0.85rem;border-radius:8px;background:#fffbeb;border:1px solid rgba(245,158,11,0.35);font-size:0.9rem">${sup.warnings.map((x) => `<p style="margin:0.25rem 0">${x}</p>`).join('')}</div>`
-        : '';
     const huellaTxt =
       sup?.mode === 'pallet' && sup.footprintAlong_mm != null && sup.footprintAcross_mm != null
         ? `${formatNum(sup.footprintAlong_mm, 0)}×${formatNum(sup.footprintAcross_mm, 0)} mm`
@@ -724,7 +748,7 @@ function refreshCore() {
         <div class="metric"><div class="label">${rollersLabel}</div><div class="value">${sup?.rollersAlongFootprint != null ? formatNum(sup.rollersAlongFootprint, 0) : '—'}</div></div>
         <div class="metric metric--text"><div class="label">${TX.footprint}</div><div class="value">${huellaTxt}</div></div>
         <div class="metric metric--text"><div class="label">${TX.supportDoc}</div><div class="value">${sup?.mode === 'pallet' ? TX.pallet : TX.uniform}</div></div>
-      </div>${warnBlock}`;
+      </div>`;
     const normRow =
       r.steadyStandardMultiplier > 1
         ? `<div class="metric"><div class="label">${TX.normativeMargin}</div><div class="value">x${formatNum(r.steadyStandardMultiplier, 2)} (${r.designStandard})</div></div>`

@@ -3,7 +3,14 @@
  */
 
 import { FEATURES } from '../config/features.js';
-import { registerAccount, loginAccount, getCurrentUser, clearLocalUser } from '../services/accountAuth.js';
+import {
+  registerAccount,
+  loginAccount,
+  requestPasswordReset,
+  completePasswordReset,
+  getCurrentUser,
+  clearLocalUser,
+} from '../services/accountAuth.js';
 import { consumeSessionEndedReason } from '../services/authSessionClient.js';
 import { refreshCreditsAfterAuth, clearCreditsCache } from '../services/creditsApi.js';
 import { getRegisterNextPath } from '../services/proCheckoutFlow.js';
@@ -22,27 +29,27 @@ const TX = {
     ariaLang: 'Selector de idioma',
     navAria: 'Navegaci\u00f3n principal',
     navHome: 'Inicio',
-    navLab: 'Laboratorio',
+    navLab: 'Laboratorio de transmisi\u00f3n',
     chips: {
       nameChip: {
-        title: 'Se mostrar\u00e1 como saludo en el panel de cuenta.',
-        aria: 'Ayuda: nombre.',
+        title: 'Tu nombre completo; se mostrar\u00e1 en el panel de cuenta.',
+        aria: 'Ayuda: nombre',
       },
       emailChip: {
         title: 'Solo para la demo local; no se env\u00eda a ning\u00fan servidor.',
-        aria: 'Ayuda: email.',
+        aria: 'Ayuda: correo electr\u00f3nico',
       },
       emailChipServer: {
         title: 'Recibir\u00e1s un enlace de verificaci\u00f3n en este correo.',
-        aria: 'Ayuda: email.',
+        aria: 'Ayuda: correo electr\u00f3nico',
       },
       pwChip: {
         title: 'M\u00ednimo 8 caracteres.',
-        aria: 'Ayuda: contrase\u00f1a.',
+        aria: 'Ayuda: contrase\u00f1a',
       },
       pw2Chip: {
-        title: 'Debe coincidir con el campo anterior.',
-        aria: 'Ayuda: confirmar contrase\u00f1a.',
+        title: 'Debe coincidir con la contrase\u00f1a anterior.',
+        aria: 'Ayuda: confirmar contrase\u00f1a',
       },
     },
     heading: 'Crear cuenta',
@@ -54,8 +61,14 @@ const TX = {
     namePh: 'Ej. Ana Garc\u00eda',
     emailLabel: 'Correo electr\u00f3nico',
     emailPh: 'correo@ejemplo.com',
-    pwLabel: 'Contrase\u00f1a',
+    pwLabel: 'Contrase\u00f1a nueva',
     pwPh: 'M\u00ednimo 8 caracteres',
+    pwRequirements:
+      'M\u00ednimo 8 caracteres. Recomendamos mezclar letras, n\u00fameros y s\u00edmbolos.',
+    pwStrengthWeak: 'D\u00e9bil',
+    pwStrengthMedium: 'Media',
+    pwStrengthStrong: 'Fuerte',
+    pwStrengthMeterAria: 'Fortaleza de la contrase\u00f1a',
     pw2Label: 'Confirmar contrase\u00f1a',
     pw2Ph: 'Repita la contrase\u00f1a',
     submit: 'Crear cuenta',
@@ -97,6 +110,22 @@ const TX = {
     loginHeading: 'Iniciar sesi\u00f3n',
     loginLead: 'Accede con el correo y la contrase\u00f1a de tu cuenta verificada.',
     loginSubmit: 'Entrar',
+    forgotLink: '\u00bfOlvidaste tu contrase\u00f1a?',
+    forgotHeading: 'Recuperar contrase\u00f1a',
+    forgotLead:
+      'Introduce tu correo y te enviaremos un enlace para elegir una contrase\u00f1a nueva.',
+    forgotSubmit: 'Enviar enlace',
+    forgotBack: 'Volver al inicio de sesi\u00f3n',
+    forgotSent:
+      'Si existe una cuenta con ese correo, recibir\u00e1s un enlace en los pr\u00f3ximos minutos. Revisa tambi\u00e9n la carpeta de spam.',
+    resetHeading: 'Nueva contrase\u00f1a',
+    resetLead: 'Elige una contrase\u00f1a nueva para tu cuenta (m\u00ednimo 8 caracteres).',
+    resetPwLabel: 'Contrase\u00f1a nueva',
+    resetPw2Label: 'Confirmar contrase\u00f1a',
+    resetSubmit: 'Guardar contrase\u00f1a',
+    resetBackLogin: 'Ir a iniciar sesi\u00f3n',
+    resetDone:
+      'Contrase\u00f1a actualizada. Ya puedes iniciar sesi\u00f3n con tu correo y la nueva clave.',
     sessionRevoked:
       'Tu sesi\u00f3n se cerr\u00f3 porque iniciaste sesi\u00f3n en otro dispositivo. Vuelve a iniciar sesi\u00f3n.',
     sessionExpired: 'Tu sesi\u00f3n ha expirado. Por favor, inicia sesi\u00f3n de nuevo.',
@@ -106,19 +135,19 @@ const TX = {
     ariaLang: 'Language selector',
     navAria: 'Main navigation',
     navHome: 'Home',
-    navLab: 'Lab',
+    navLab: 'Transmission lab',
     chips: {
       nameChip: {
-        title: 'Shown in the account greeting on the hub.',
-        aria: 'Help: name.',
+        title: 'Your full name; shown in the account panel.',
+        aria: 'Help: name',
       },
       emailChip: {
         title: 'For local demo only; nothing is sent to any server.',
-        aria: 'Help: email.',
+        aria: 'Help: email address',
       },
       emailChipServer: {
         title: 'You will receive a verification link at this address.',
-        aria: 'Help: email.',
+        aria: 'Help: email address',
       },
       pwChip: {
         title: 'At least 8 characters.',
@@ -140,6 +169,12 @@ const TX = {
     emailPh: 'you@example.com',
     pwLabel: 'Password',
     pwPh: 'At least 8 characters',
+    pwRequirements:
+      'At least 8 characters. We recommend mixing letters, numbers and symbols.',
+    pwStrengthWeak: 'Weak',
+    pwStrengthMedium: 'Fair',
+    pwStrengthStrong: 'Strong',
+    pwStrengthMeterAria: 'Password strength',
     pw2Label: 'Confirm password',
     pw2Ph: 'Re-enter password',
     submit: 'Create account',
@@ -178,6 +213,20 @@ const TX = {
     loginHeading: 'Sign in',
     loginLead: 'Use your verified email and password.',
     loginSubmit: 'Sign in',
+    forgotLink: 'Forgot your password?',
+    forgotHeading: 'Reset password',
+    forgotLead: 'Enter your email and we\u2019ll send you a link to choose a new password.',
+    forgotSubmit: 'Send reset link',
+    forgotBack: 'Back to sign in',
+    forgotSent:
+      'If an account exists for that email, you\u2019ll receive a link within a few minutes. Check your spam folder too.',
+    resetHeading: 'New password',
+    resetLead: 'Choose a new password for your account (at least 8 characters).',
+    resetPwLabel: 'New password',
+    resetPw2Label: 'Confirm password',
+    resetSubmit: 'Save password',
+    resetBackLogin: 'Go to sign in',
+    resetDone: 'Password updated. You can now sign in with your email and new password.',
     sessionRevoked:
       'Your session ended because you signed in on another device. Please sign in again.',
     sessionExpired: 'Your session has expired. Please sign in again.',
@@ -212,6 +261,7 @@ function applyTx() {
   setTx('continueCheckout', t.continueCheckout);
   setTx('pendingTitle', t.pendingTitle);
   setTx('pendingLead', t.pendingLead);
+  setTx('pwRequirements', t.pwRequirements);
   setTx('tabRegister', t.tabRegister);
   setTx('tabLogin', t.tabLogin);
   setTx('loginHeading', t.loginHeading);
@@ -288,19 +338,103 @@ function showNotice(msg) {
 }
 
 /**
+ * @param {'register'|'login'|'forgot'|'reset'} view
+ */
+function setAuthView(view) {
+  const registerForm = document.getElementById('registerForm');
+  const loginForm = document.getElementById('registerLoginForm');
+  const forgotForm = document.getElementById('registerForgotForm');
+  const resetForm = document.getElementById('registerResetForm');
+  const tabs = document.querySelector('.register-auth-tabs');
+
+  if (registerForm instanceof HTMLElement) registerForm.hidden = view !== 'register';
+  if (loginForm instanceof HTMLElement) loginForm.hidden = view !== 'login';
+  if (forgotForm instanceof HTMLElement) forgotForm.hidden = view !== 'forgot';
+  if (resetForm instanceof HTMLElement) resetForm.hidden = view !== 'reset';
+  if (tabs instanceof HTMLElement) {
+    tabs.hidden = view === 'forgot' || view === 'reset';
+  }
+
+  document.querySelectorAll('[data-reg-auth-tab]').forEach((btn) => {
+    if (!(btn instanceof HTMLButtonElement)) return;
+    const tab = btn.getAttribute('data-reg-auth-tab');
+    const on = tab === view;
+    btn.classList.toggle('is-active', on);
+    btn.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+}
+
+/**
  * @param {'register'|'login'} mode
  */
 function setAuthMode(mode) {
-  const registerForm = document.getElementById('registerForm');
-  const loginForm = document.getElementById('registerLoginForm');
-  const isLogin = mode === 'login';
-  if (registerForm instanceof HTMLElement) registerForm.hidden = isLogin;
-  if (loginForm instanceof HTMLElement) loginForm.hidden = !isLogin;
-  document.querySelectorAll('[data-reg-auth-tab]').forEach((btn) => {
-    if (!(btn instanceof HTMLButtonElement)) return;
-    const on = btn.getAttribute('data-reg-auth-tab') === mode;
-    btn.classList.toggle('is-active', on);
-    btn.setAttribute('aria-selected', on ? 'true' : 'false');
+  setAuthView(mode === 'login' ? 'login' : 'register');
+}
+
+function wirePasswordRecovery(lang) {
+  const t = TX[lang];
+  const forgotBtn = document.getElementById('regForgotPasswordBtn');
+  const forgotBack = document.getElementById('regForgotBackBtn');
+  const forgotForm = document.getElementById('registerForgotForm');
+  const resetForm = document.getElementById('registerResetForm');
+
+  forgotBtn?.addEventListener('click', () => {
+    const loginEmail = document.getElementById('regLoginEmail');
+    const forgotEmail = document.getElementById('regForgotEmail');
+    if (loginEmail instanceof HTMLInputElement && forgotEmail instanceof HTMLInputElement) {
+      forgotEmail.value = loginEmail.value;
+    }
+    showError('', 'registerForgotError');
+    showNotice('');
+    setAuthView('forgot');
+    forgotEmail?.focus();
+  });
+
+  forgotBack?.addEventListener('click', () => {
+    showError('', 'registerForgotError');
+    setAuthView('login');
+  });
+
+  forgotForm?.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    showError('', 'registerForgotError');
+    const email = document.getElementById('regForgotEmail')?.value ?? '';
+    try {
+      await requestPasswordReset({ email }, { lang });
+      setAuthView('login');
+      showNotice(t.forgotSent);
+    } catch (e) {
+      showError(String(e?.message || e), 'registerForgotError');
+    }
+  });
+
+  resetForm?.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    showError('', 'registerResetError');
+    const token = resetForm instanceof HTMLFormElement ? resetForm.dataset.resetToken || '' : '';
+    const password = document.getElementById('regResetPassword')?.value ?? '';
+    const password2 = document.getElementById('regResetPassword2')?.value ?? '';
+    if (password !== password2) {
+      showError(t.errMatch, 'registerResetError');
+      return;
+    }
+    if (!token) {
+      showError(t.verifyInvalid, 'registerResetError');
+      return;
+    }
+    try {
+      await completePasswordReset({ token, password }, { lang });
+      try {
+        window.history.replaceState({}, '', 'register.html?auth=login&reset=done');
+      } catch (_) {
+        /* ignore */
+      }
+      setAuthView('login');
+      if (resetForm instanceof HTMLFormElement) resetForm.hidden = true;
+      showNotice(t.resetDone);
+    } catch (e) {
+      showError(String(e?.message || e), 'registerResetError');
+    }
   });
 }
 
@@ -318,6 +452,84 @@ function showAuthPanels() {
   if (wrap instanceof HTMLElement) wrap.hidden = false;
 }
 
+const WEAK_PASSWORD_PATTERNS = [
+  /^12345678$/,
+  /^password\d*$/i,
+  /^qwerty\d*$/i,
+  /^(.)\1{7,}$/,
+];
+
+/**
+ * @param {string} pw
+ * @returns {0|1|2|3}
+ */
+function scorePasswordStrength(pw) {
+  if (!pw) return 0;
+  const len = pw.length;
+  const hasLower = /[a-z]/.test(pw);
+  const hasUpper = /[A-Z]/.test(pw);
+  const hasDigit = /\d/.test(pw);
+  const hasSymbol = /[^A-Za-z0-9]/.test(pw);
+  const types = [hasLower, hasUpper, hasDigit, hasSymbol].filter(Boolean).length;
+  if (len < 8) return 1;
+  if (WEAK_PASSWORD_PATTERNS.some((re) => re.test(pw)) || types < 2) return 1;
+  if (len >= 12 && types >= 3) return 3;
+  if (types >= 3 || (len >= 10 && types >= 2)) return 2;
+  return 2;
+}
+
+function updatePasswordStrengthUI() {
+  const lang = getLang();
+  const t = TX[lang];
+  const input = document.getElementById('regPassword');
+  const wrap = document.getElementById('regPasswordStrength');
+  const fill = document.getElementById('regPasswordStrengthFill');
+  const label = document.getElementById('regPasswordStrengthLabel');
+  const meter = document.getElementById('regPasswordStrengthMeter');
+  if (!(input instanceof HTMLInputElement) || !(wrap instanceof HTMLElement)) return;
+
+  const pw = input.value;
+  if (!pw) {
+    wrap.hidden = true;
+    if (label) label.textContent = '';
+    return;
+  }
+
+  wrap.hidden = false;
+  const level = scorePasswordStrength(pw);
+  const labels = [t.pwStrengthWeak, t.pwStrengthMedium, t.pwStrengthStrong];
+  const text = labels[level - 1] || t.pwStrengthWeak;
+
+  wrap.classList.remove(
+    'register-pw-strength--weak',
+    'register-pw-strength--medium',
+    'register-pw-strength--strong',
+  );
+  if (level === 1) wrap.classList.add('register-pw-strength--weak');
+  else if (level === 2) wrap.classList.add('register-pw-strength--medium');
+  else wrap.classList.add('register-pw-strength--strong');
+
+  if (fill instanceof HTMLElement) {
+    fill.className = 'register-pw-strength__fill';
+    if (level === 1) fill.classList.add('register-pw-strength__fill--weak');
+    else if (level === 2) fill.classList.add('register-pw-strength__fill--medium');
+    else fill.classList.add('register-pw-strength__fill--strong');
+    fill.style.width = `${(level / 3) * 100}%`;
+  }
+  if (label) label.textContent = text;
+  if (meter instanceof HTMLElement) {
+    meter.setAttribute('aria-valuenow', String(level));
+    meter.setAttribute('aria-label', t.pwStrengthMeterAria || 'Password strength');
+  }
+}
+
+function wirePasswordStrength() {
+  const input = document.getElementById('regPassword');
+  if (!(input instanceof HTMLInputElement)) return;
+  input.addEventListener('input', updatePasswordStrengthUI);
+  updatePasswordStrengthUI();
+}
+
 export function mountRegisterPage() {
   try {
     document.documentElement.removeAttribute('data-guest-calc');
@@ -330,7 +542,10 @@ export function mountRegisterPage() {
 
   applyTx();
 
-  window.addEventListener('home-language-changed', () => applyTx());
+  window.addEventListener('home-language-changed', () => {
+    applyTx();
+    updatePasswordStrengthUI();
+  });
 
   const form = document.getElementById('registerForm');
   const signedIn = document.getElementById('registerSignedIn');
@@ -351,8 +566,12 @@ export function mountRegisterPage() {
   }
 
   const authParam = params.get('auth');
+  const resetToken = String(params.get('reset') || '').trim();
   const preferLogin =
-    authParam === 'login' || params.get('session') === 'replaced' || params.get('session') === 'expired';
+    authParam === 'login' ||
+    params.get('session') === 'replaced' ||
+    params.get('session') === 'expired' ||
+    params.get('reset') === 'done';
 
   const user = getCurrentUser();
 
@@ -390,7 +609,28 @@ export function mountRegisterPage() {
 
   showAuthPanels();
   wireAuthTabs();
-  setAuthMode(preferLogin ? 'login' : 'register');
+  wirePasswordStrength();
+  wirePasswordRecovery(lang);
+
+  if (resetToken && resetToken !== 'done') {
+    const resetForm = document.getElementById('registerResetForm');
+    if (resetForm instanceof HTMLFormElement) {
+      resetForm.dataset.resetToken = resetToken;
+    }
+    setAuthView('reset');
+    try {
+      const clean = new URL(window.location.href);
+      clean.searchParams.delete('reset');
+      window.history.replaceState({}, '', clean.pathname + clean.search + clean.hash);
+    } catch (_) {
+      /* ignore */
+    }
+  } else {
+    setAuthMode(preferLogin ? 'login' : 'register');
+    if (params.get('reset') === 'done') {
+      showNotice(t.resetDone);
+    }
+  }
 
   const loginForm = document.getElementById('registerLoginForm');
   loginForm?.addEventListener('submit', async (ev) => {

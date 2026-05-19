@@ -25,12 +25,12 @@
   </head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
@@ -54,7 +54,7 @@
             Límites y tipo de ajuste (juego, transición, apriete) a partir de Ø nominal, posición de tolerancia e IT — extracto docente, no sustituye la norma completa.
           </p>
           <details class="lab-calc-seo">
-            <summary>Contexto ampliado y notas de uso</summary>
+            <summary data-i18n="iso.seoSummary">Contexto ampliado y notas de uso</summary>
             <p class="calc-seo-intro">
           Este módulo traduce el diámetro nominal, la posición de tolerancia del agujero y del eje y el grado IT en límites dimensionales y en una clasificación práctica de juego, transición o apriete basada en tablas tipo ISO 286-1. Ayuda a lectura de planos y a preparar instrucciones de inspección cuando se trabaja con extractos docentes de campañas H7/k6 o similares. Lo emplean ingenieros de proceso, calidad y diseño mecánico que coordinan mecanizado y montaje. Por ejemplo, puede anticipar si un rodamiento montado con interferencia ligera seguirá dentro de tolerancia tras repasar la carcasa de aluminio.
             </p>
@@ -68,6 +68,14 @@
             </div>
           </details>
         </header>
+        <nav class="lab-next-steps" data-i18n="iso.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="iso.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="iso.nextLi1Html" data-i18n-html><a href="calc-bearings-catalog.html">Rodamientos catálogo</a> — verificar apriete del aro interior.</li>
+            <li data-i18n="iso.nextLi2Html" data-i18n-html><a href="calc-keys-din6885.html">Chavetas DIN 6885</a> — tolerancia de ranura de chaveta.</li>
+            <li data-i18n="iso.nextLi3Html" data-i18n-html><a href="calc-shaft.html">Eje · torsión</a> — dimensionar el eje del acoplamiento.</li>
+          </ul>
+        </nav>
         <div class="lab-presets-row">
           <span class="lab-presets-row__label" data-i18n="iso.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="isoPresetsBar"></div>
@@ -76,8 +84,8 @@
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
               <p class="lab-diagram-wrap__title" data-i18n="iso.diagTitle">Zonas de tolerancia vs línea cero</p>
-              <svg id="isoDiagram" xmlns="http://www.w3.org/2000/svg" aria-label="Diagrama de tolerancias agujero y eje"></svg>
-              <p class="lab-diagram-caption">
+              <svg id="isoDiagram" xmlns="http://www.w3.org/2000/svg" data-i18n="iso.diagAriaLabel" data-i18n-attr="aria-label" aria-label="Diagrama de tolerancias agujero y eje"></svg>
+              <p class="lab-diagram-caption" data-i18n="iso.diagCaptionHtml" data-i18n-html>
                 Ejemplo de referencia: <strong>25 H7/g6</strong> &rarr; agujero +21/0 um, eje -7/-20 um; juego máx. 41 um, mín. 7 um.
               </p>
               <div style="display:flex;flex-wrap:wrap;gap:.35rem;padding:0 .75rem .55rem">

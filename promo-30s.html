@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TheMechAssist &mdash; Promo 30s (UI real)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/app.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #020617;
+        font-family: Inter, system-ui, sans-serif;
+        color: #f8fafc;
+      }
+
+      .record-hint {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 0.65rem 1rem;
+        background: rgba(15, 23, 42, 0.95);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+        font-size: 0.82rem;
+        color: #cbd5e1;
+        text-align: center;
+        line-height: 1.4;
+      }
+
+      body[data-record='1'] .record-hint {
+        display: none;
+      }
+
+      .stage-outer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100vw;
+        height: calc(100vh - 48px);
+        overflow: hidden;
+      }
+
+      body[data-record='1'] .stage-outer {
+        height: 100vh;
+      }
+
+      .stage {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        flex-shrink: 0;
+        transform-origin: center center;
+        transform: scale(min(calc(100vw / 1920), calc((100vh - 48px) / 1080)));
+        overflow: hidden;
+        background: linear-gradient(165deg, #0f172a 0%, #020617 50%, #0f172a 100%);
+        box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55);
+      }
+
+      body[data-record='1'] .stage {
+        transform: scale(min(calc(100vw / 1920), calc(100vh / 1080)));
+      }
+
+      .promo-scene {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.45s ease;
+      }
+
+      .promo-scene.is-active {
+        opacity: 1;
+      }
+
+      .promo-browser {
+        position: absolute;
+        left: 50%;
+        top: 52%;
+        transform: translate(-50%, -50%);
+        width: min(1680px, 92%);
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+        background: #fff;
+      }
+
+      .promo-browser[hidden] {
+        display: none !important;
+      }
+
+      .promo-browser__chrome {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.55rem 1rem;
+        background: linear-gradient(180deg, #f8fafc, #e2e8f0);
+        border-bottom: 1px solid #cbd5e1;
+      }
+
+      .promo-browser__dots {
+        display: flex;
+        gap: 0.35rem;
+      }
+
+      .promo-browser__dots::before,
+      .promo-browser__dots::after {
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #94a3b8;
+      }
+
+      .promo-browser__dots {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #f87171;
+        box-shadow: 16px 0 0 #fbbf24, 32px 0 0 #4ade80;
+      }
+
+      .promo-browser__url {
+        flex: 1;
+        padding: 0.35rem 0.85rem;
+        border-radius: 8px;
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        font-size: 0.82rem;
+        color: #475569;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .promo-browser__viewport {
+        position: relative;
+        height: 860px;
+        overflow: hidden;
+        background: #f4f7fb;
+      }
+
+      .promo-browser__viewport iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1920px;
+        height: 1080px;
+        border: 0;
+        transform-origin: 0 0;
+        transition: transform 0.55s ease;
+        pointer-events: none;
+      }
+
+      /* Encuadre por tipo de pagina */
+      .promo-browser--home iframe {
+        transform: scale(0.56) translate(0, -20px);
+      }
+
+      .promo-browser--hub iframe {
+        transform: scale(0.68) translate(0, -100px);
+      }
+
+      .promo-browser--calc-machine iframe {
+        transform: scale(0.82) translate(-32px, -72px);
+      }
+
+      .promo-browser--calc-lab iframe {
+        transform: scale(0.8) translate(-24px, -56px);
+      }
+
+      .promo-browser--calc-fluid iframe {
+        transform: scale(0.8) translate(-24px, -48px);
+      }
+
+      .promo-pointer {
+        position: absolute;
+        z-index: 30;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        background: rgba(13, 148, 136, 0.85);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+
+      body[data-promo-scene='flat'] .promo-pointer,
+      body[data-promo-scene='gears'] .promo-pointer,
+      body[data-promo-scene='hydraulic'] .promo-pointer {
+        opacity: 1;
+        animation: promoCursor 4.5s ease-in-out infinite;
+      }
+
+      .promo-overlay--light {
+        padding-bottom: 1.25rem;
+        background: linear-gradient(0deg, rgba(15, 23, 42, 0.75) 0%, transparent 70%);
+      }
+
+      .promo-overlay--light .promo-overlay__title {
+        font-size: 1.65rem;
+      }
+
+      .promo-overlay--light .promo-overlay__lead {
+        font-size: 1rem;
+      }
+
+      .promo-overlay--calc {
+        background: linear-gradient(0deg, rgba(15, 23, 42, 0.88) 0%, rgba(15, 23, 42, 0.35) 45%, transparent);
+      }
+
+      @keyframes promoCursor {
+        0% {
+          transform: translate(42%, 38%);
+        }
+        35% {
+          transform: translate(58%, 52%);
+        }
+        70% {
+          transform: translate(72%, 62%);
+        }
+        100% {
+          transform: translate(42%, 38%);
+        }
+      }
+
+      .promo-overlay {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 25;
+        padding: 1.5rem 2.5rem 2rem;
+        background: linear-gradient(0deg, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.55) 55%, transparent);
+        text-align: left;
+        pointer-events: none;
+      }
+
+      .promo-overlay__title {
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.35rem;
+        color: #f8fafc;
+      }
+
+      .promo-overlay__lead {
+        font-size: 1.15rem;
+        font-weight: 500;
+        color: #94a3b8;
+        max-width: 42rem;
+      }
+
+      .promo-cta {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: radial-gradient(900px 500px at 50% 35%, rgba(13, 148, 136, 0.25), transparent 65%),
+          linear-gradient(165deg, #0f172a, #020617);
+        z-index: 40;
+      }
+
+      .promo-cta[hidden] {
+        display: none !important;
+      }
+
+      .promo-cta img {
+        width: 110px;
+        height: 110px;
+        margin-bottom: 1.5rem;
+        filter: drop-shadow(0 12px 40px rgba(13, 148, 136, 0.4));
+      }
+
+      .promo-cta h2 {
+        font-size: 3.5rem;
+        font-weight: 900;
+        margin-bottom: 0.75rem;
+        background: linear-gradient(120deg, #34d399, #2dd4bf);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .promo-cta p {
+        font-size: 1.65rem;
+        color: #94a3b8;
+      }
+
+      .promo-progress {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 4px;
+        background: rgba(148, 163, 184, 0.15);
+        z-index: 50;
+      }
+
+      .promo-progress__bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, #10b981, #0d9488, #38bdf8);
+      }
+
+      @keyframes promoProgress {
+        from {
+          width: 0;
+        }
+        to {
+          width: 100%;
+        }
+      }
+
+      /* Destello en iframe (inyectado desde padre vùa class en doc hijo no posible); overlay en viewport */
+      .promo-flash-results {
+        position: absolute;
+        right: 8%;
+        bottom: 12%;
+        width: 28%;
+        height: 22%;
+        border-radius: 12px;
+        border: 3px solid #2dd4bf;
+        box-shadow: 0 0 0 6px rgba(45, 212, 191, 0.25);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 20;
+      }
+
+      body[data-promo-scene='flat'] .promo-flash-results {
+        right: 6%;
+        bottom: 8%;
+        width: 42%;
+        height: 38%;
+      }
+
+      body[data-promo-scene='gears'] .promo-flash-results {
+        right: 5%;
+        bottom: 6%;
+        width: 38%;
+        height: 42%;
+        animation: promoFlash 2s ease 1s 2;
+      }
+
+      body[data-promo-scene='hydraulic'] .promo-flash-results {
+        right: 4%;
+        bottom: 10%;
+        width: 40%;
+        height: 36%;
+        animation: promoFlash 2s ease 1s 2;
+      }
+
+      @keyframes promoFlash {
+        0%,
+        100% {
+          opacity: 0;
+        }
+        30%,
+        70% {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <p class="record-hint">
+      Promo 30 s (UI real) &middot; Sirva con <code>npx serve .</code> &middot;
+      <a href="?record=1" style="color: #5eead4">?record=1</a> oculta esta barra &middot; Graba 1920&times;1080
+    </p>
+
+    <div class="stage-outer">
+      <div class="stage">
+        <div class="promo-scene is-active" aria-hidden="true"></div>
+
+        <div class="promo-browser" id="promoBrowser">
+          <div class="promo-browser__chrome">
+            <span class="promo-browser__dots" aria-hidden="true"></span>
+            <span class="promo-browser__url" id="promoBrowserUrl">themechassist.com</span>
+          </div>
+          <div class="promo-browser__viewport">
+            <iframe
+              id="promoIframe"
+              title="TheMechAssist"
+              src="index.html?promo=1"
+              loading="eager"
+            ></iframe>
+            <span class="promo-pointer" id="promoPointer" aria-hidden="true"></span>
+            <span class="promo-flash-results" aria-hidden="true"></span>
+          </div>
+          <div class="promo-overlay" id="promoOverlay">
+            <p class="promo-overlay__title" id="promoOverlayTitle"></p>
+            <p class="promo-overlay__lead" id="promoOverlayLead"></p>
+          </div>
+        </div>
+
+        <div class="promo-cta" id="promoCta" hidden>
+          <img src="logo-themechassist.svg" width="110" height="110" alt="" />
+          <h2>Empieza gratis</h2>
+          <p>www.themechassist.com</p>
+        </div>
+
+        <div class="promo-progress" aria-hidden="true">
+          <div class="promo-progress__bar" id="promoProgressBar"></div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      /* Inyectado en paginas embebidas (?promo=1) */
+    </style>
+    <script type="module">
+      import { mountPromo30s } from './js/ui/promo30s.js';
+      mountPromo30s();
+    </script>
+  </body>
+</html>

@@ -38,13 +38,13 @@
       })();
     </script>
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
@@ -80,6 +80,21 @@
           </details>
         </header>
 
+        <nav class="lab-next-steps" data-i18n="machineHub.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="machineHub.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="machineHub.nextStepsScLi1Html" data-i18n-html>
+              <a href="calc-bearings.html">Rodamientos · L10</a> — vida en apoyos del tornillo.
+            </li>
+            <li data-i18n="machineHub.nextStepsScLi2Html" data-i18n-html>
+              <a href="calc-shaft.html">Eje · torsión</a> — eje del helicoide bajo par axial.
+            </li>
+            <li data-i18n="machineHub.nextStepsScLi3Html" data-i18n-html>
+              <a href="my-gearmotors.html">Mis motorreductores</a> — verificar reductor de baja velocidad.
+            </li>
+          </ul>
+        </nav>
+
         <details class="help-details flat-help">
           <summary data-i18n="scConv.helpSummary">Guía rápida de cada magnitud</summary>
           <div class="help-details__body" data-i18n="scConv.helpBodyHtml" data-i18n-html>
@@ -103,13 +118,31 @@
             Rellena parámetros coherentes por sector; puede ajustar después. El diagrama y el dashboard se actualizan al instante.
           </p>
           <div class="flat-ux-preset-row" role="group" aria-label="Presets tornillo">
-            <button type="button" class="btn-flat-preset" data-screw-preset="food_powder" title="Polvo fino / alimentación, Ø250 mm, pendiente suave">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-screw-preset="food_powder"
+              data-i18n-attrs="title=scConv.presetFoodTooltip"
+              title="Polvo fino, Ø250 mm, 18 m³/h, pendiente 5°."
+            >
               <span class="btn-flat-preset__name">Polvo · alimentación</span>
             </button>
-            <button type="button" class="btn-flat-preset" data-screw-preset="biomass_chip" title="Astilla o biomasa, Ø400 mm, mayor pendiente">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-screw-preset="biomass_chip"
+              data-i18n-attrs="title=scConv.presetBiomassTooltip"
+              title="Astilla biomasa Ø400 mm, 12° inclinación, 45 m³/h."
+            >
               <span class="btn-flat-preset__name">Astilla · biomasa</span>
             </button>
-            <button type="button" class="btn-flat-preset" data-screw-preset="cement_slurry" title="Material denso y abrasivo, tornillo grande">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-screw-preset="cement_slurry"
+              data-i18n-attrs="title=scConv.presetCementTooltip"
+              title="Mineral denso Ø500 mm, 35 t/h, pendiente 18°, abrasivo."
+            >
               <span class="btn-flat-preset__name">Mineral · denso</span>
             </button>
           </div>
@@ -378,7 +411,7 @@
         <section class="flat-visual flat-visual--integrated" aria-label="Esquema tornillo">
           <div class="flat-visual__workbench">
             <div class="diagram-duo__schematic flat-visual__diagram-col">
-              <svg id="diagramScrew" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema tornillo"></svg>
+              <svg id="diagramScrew" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema tornillo" data-i18n="scConv.diagramSvgAria" data-i18n-attr="aria-label" aria-label="Esquema tornillo sin fin"></svg>
               <p class="diagram-schematic-note muted">
                 <strong>Lectura rápida:</strong> vista lateral cualitativa del canal, tornillo y flujo; <strong>L</strong>, <strong>Ø</strong>, <strong>paso</strong> e <strong>inclinación</strong> salen del formulario. El dashboard se actualiza al cambiar entradas.
               </p>
@@ -405,7 +438,7 @@
         <section class="panel flat-panel--verify">
           <div class="verify-panel" id="screwVerifyPanel">
             <h2><span class="panel-icon">✓</span> Comprobar motorreductor</h2>
-            <p class="muted panel-lead">Misma lógica que cinta plana: compare con el punto calculado del tornillo.</p>
+            <p class="muted verify-panel__catalog-lead" style="margin: -0.5rem 0 1rem; font-size: 0.84rem" data-i18n="machineHub.verifyCatalogLead">Selecciona un motorreductor de catálogo para comparar su potencia y par con los resultados calculados. No modifica los datos del formulario. Los datos son orientativos según especificaciones publicadas por el fabricante.</p>
             <div class="verify-grid">
               <div class="field">
                 <label for="screwVerifyBrand"><span data-sc-for="lblVBrand" data-i18n="scConv.lblVBrand">Marca</span> <span class="info-chip" data-sc-chip="vBrand">?</span></label>
@@ -437,8 +470,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">⌗</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title">Desglose de ingeniería</span>
-                  <span class="motors-details__hint">Cálculo paso a paso</span>
+                  <span class="motors-details__title" data-i18n="scConv.engTitle">Desglose de ingeniería</span>
+                  <span class="motors-details__hint" data-i18n="scConv.engHint">Cálculo paso a paso</span>
                 </span>
               </span>
             </summary>
@@ -454,8 +487,8 @@
               <span class="motors-details__summary-main">
                 <span class="panel-icon">◎</span>
                 <span class="motors-details__text">
-                  <span class="motors-details__title">Motorreductores (catálogo ejemplo)</span>
-                  <span class="motors-details__hint">Recomendaciones y exportación</span>
+                  <span class="motors-details__title" data-i18n="scConv.motorsTitle">Motorreductores (catálogo ejemplo)</span>
+                  <span class="motors-details__hint" data-i18n="scConv.motorsHint">Recomendaciones y exportación</span>
                 </span>
               </span>
             </summary>

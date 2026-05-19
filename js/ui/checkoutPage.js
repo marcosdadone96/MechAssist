@@ -4,6 +4,8 @@
 
 import { FEATURES } from '../config/features.js';
 import { isCreditsSystemEnabled } from '../config/credits.js';
+import { getCreditsPricingExplainerHtml, getCreditsPricingHint } from './creditsPricingCopy.js';
+import { applySubscriptionRenewalNotes } from './subscriptionPreContractNote.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { grantProLicensePersistent } from '../services/accessTier.js';
 import { claimAndVerifyProAfterCheckout } from '../services/proEntitlement.js';
@@ -32,10 +34,12 @@ const TX = {
     subsLead: 'Mismo bot\u00f3n principal en cada tarjeta. El plan anual de Starter es un enlace aparte.',
     starterHeading: 'Starter',
     starterPrice: '9 \u20ac/mes',
-    starterHint: 'Cr\u00e9ditos de bienvenida renovados con el plan y hasta 30 PDF/mes en todo el cat\u00e1logo.',
+    starterHint:
+      '1000 cr\u00e9ditos de bienvenida al verificar la cuenta. No es uso ilimitado: consulte el desglose debajo.',
+    starterCreditsSummary: '\u00bfC\u00f3mo funcionan los cr\u00e9ditos?',
     starterBullets: [
-      'Hasta 30 PDF/mes incluidos en el plan',
-      'Cr\u00e9ditos para sesiones de c\u00e1lculo en lab, m\u00e1quinas e hidr\u00e1ulica',
+      'Hasta 30 PDF/mes en el contador del plan Starter',
+      'Sesiones de c\u00e1lculo (12 min) en lab, m\u00e1quinas e hidr\u00e1ulica: 10 cr\u00e9ditos cada una',
       'Plan anual con descuento (79 \u20ac/a\u00f1o)',
       'Gestione la suscripci\u00f3n en el portal Lemon',
     ],
@@ -59,6 +63,8 @@ const TX = {
       'Puede comprar varias herramientas por separado',
     ],
     unlockPick: 'Elija la calculadora',
+    unlockLoading: 'Cargando\u2026',
+    unlockLoadError: 'No se pudieron cargar las calculadoras',
     unlockBtn: 'Desbloquear por 1 \u20ac',
     unlockFor: (name) => `Desbloquear: ${name}`,
     starterMonthly: 'Starter \u2014 9 \u20ac/mes',
@@ -118,10 +124,12 @@ const TX = {
     subsLead: 'Each card has one main button. Starter annual billing is a separate link.',
     starterHeading: 'Starter',
     starterPrice: '\u20ac9/month',
-    starterHint: 'Plan credits renewed monthly and up to 30 PDFs/month across the catalog.',
+    starterHint:
+      '1000 welcome credits when you verify your account. Not unlimited — see the breakdown below.',
+    starterCreditsSummary: 'How do credits work?',
     starterBullets: [
-      'Up to 30 PDFs/month included',
-      'Credits for calc sessions in lab, machines and hydraulics',
+      'Up to 30 PDFs/month on your Starter plan counter',
+      'Calc sessions (12 min) in lab, machines and hydraulics: 10 credits each',
       'Annual plan with discount (\u20ac79/year)',
       'Manage billing in the Lemon portal',
     ],
@@ -140,6 +148,8 @@ const TX = {
     unlockHint:
       '\u20ac1/month per calculator. Unlimited calc and PDF on that page for 30 days. Stack multiple unlocks without Starter.',
     unlockPick: 'Pick a calculator',
+    unlockLoading: 'Loading\u2026',
+    unlockLoadError: 'Could not load the calculator list',
     unlockBtn: 'Unlock for \u20ac1/month',
     unlockFor: (name) => `Unlock: ${name}`,
     starterMonthly: 'Starter \u2014 \u20ac9/month',
@@ -235,6 +245,24 @@ function applyManageSubscriptionBlock(t) {
   if (tr && t.manageTermsRef) tr.innerHTML = t.manageTermsRef;
 }
 
+function applyCreditsPricingToCheckout(t) {
+  const lang = getLang() === 'en' ? 'en' : 'es';
+  const enabled = isCreditsSystemEnabled();
+  const hint = document.getElementById('coStarterCreditsHint');
+  const details = document.getElementById('coStarterCreditsDetails');
+  const summary = document.getElementById('coStarterCreditsSummary');
+  const explainer = document.getElementById('coStarterCreditsExplainer');
+  if (hint instanceof HTMLElement) {
+    hint.hidden = !enabled;
+    if (enabled) hint.textContent = getCreditsPricingHint(lang);
+  }
+  if (details instanceof HTMLElement) details.hidden = !enabled;
+  if (summary) summary.textContent = t.starterCreditsSummary || '';
+  if (explainer instanceof HTMLElement && enabled) {
+    explainer.innerHTML = getCreditsPricingExplainerHtml(lang);
+  }
+}
+
 function applyTx(t) {
   document.documentElement.lang = getLang() === 'en' ? 'en' : 'es';
   document.title = t.docTitle;
@@ -287,6 +315,7 @@ function applyTx(t) {
   set('coStarterHeading', t.starterHeading);
   set('coStarterPrice', t.starterPrice);
   set('coStarterHint', t.starterHint);
+  applyCreditsPricingToCheckout(t);
   set('coUnlimitedHeading', t.unlimitedHeading);
   set('coUnlimitedPrice', t.unlimitedPrice);
   set('coUnlimitedHint', t.unlimitedHint);
@@ -464,6 +493,8 @@ export async function mountCheckoutPage() {
     if (manageWrap instanceof HTMLElement) manageWrap.hidden = false;
     const manageTitleEl = document.getElementById('coManageTitle');
     if (manageTitleEl) manageTitleEl.textContent = t.manageTitlePaidReturn;
+  } else {
+    applySubscriptionRenewalNotes(getLang());
   }
 
   const user = getCurrentUser();
@@ -549,42 +580,74 @@ const UNLOCK_CALC_OPTIONS = [
 
 /**
  * @param {typeof TX.es} t
+ */
+function syncUnlockCalcControls(t) {
+  const sel = document.getElementById('coUnlockCalc');
+  const btn = document.getElementById('coUnlockCalcBtn');
+  if (!(sel instanceof HTMLSelectElement) || !(btn instanceof HTMLButtonElement)) return;
+
+  const slug = sel.value.trim();
+  const hasRealOptions = [...sel.options].some((o) => o.value);
+  const lemonOk = Boolean(String(FEATURES.lemonCheckout?.calcUnlock || '').trim());
+  btn.disabled = !slug || !hasRealOptions || !lemonOk;
+
+  if (slug && hasRealOptions) {
+    const label = sel.selectedOptions[0]?.textContent || slug;
+    btn.textContent = typeof t.unlockFor === 'function' ? t.unlockFor(label) : t.unlockBtn;
+  } else {
+    btn.textContent = t.unlockBtn;
+  }
+}
+
+/**
+ * @param {typeof TX.es} t
  * @param {string} preselect
  */
 function mountCalcUnlockCheckoutBlock(t, preselect = '') {
   const block = document.getElementById('coUnlockBlock');
   const sel = document.getElementById('coUnlockCalc');
+  const btn = document.getElementById('coUnlockCalcBtn');
   if (!(block instanceof HTMLElement) || !(sel instanceof HTMLSelectElement)) return;
 
   block.hidden = false;
-  const en = getLang() === 'en';
-  sel.innerHTML = '';
-  const placeholder = document.createElement('option');
-  placeholder.value = '';
-  placeholder.textContent = t.unlockPick;
-  sel.appendChild(placeholder);
+  if (btn instanceof HTMLButtonElement) btn.disabled = true;
+  sel.disabled = true;
+  sel.setAttribute('aria-busy', 'true');
 
-  for (const opt of UNLOCK_CALC_OPTIONS) {
-    const o = document.createElement('option');
-    o.value = opt.slug;
-    o.textContent = en ? opt.en : opt.es;
-    sel.appendChild(o);
-  }
+  try {
+    if (!UNLOCK_CALC_OPTIONS.length) throw new Error('unlock_options_empty');
 
-  const fromUrl = String(preselect || '').trim();
-  if (fromUrl && [...sel.options].some((o) => o.value === fromUrl)) {
-    sel.value = fromUrl;
-  }
+    const en = getLang() === 'en';
+    sel.innerHTML = '';
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = t.unlockPick;
+    sel.appendChild(placeholder);
 
-  const btn = document.getElementById('coUnlockCalcBtn');
-  if (btn instanceof HTMLButtonElement && sel.value) {
-    const label = sel.selectedOptions[0]?.textContent || sel.value;
-    btn.textContent = typeof t.unlockFor === 'function' ? t.unlockFor(label) : t.unlockBtn;
+    for (const opt of UNLOCK_CALC_OPTIONS) {
+      const o = document.createElement('option');
+      o.value = opt.slug;
+      o.textContent = en ? opt.en : opt.es;
+      sel.appendChild(o);
+    }
+
+    const fromUrl = String(preselect || '').trim();
+    if (fromUrl && [...sel.options].some((o) => o.value === fromUrl)) {
+      sel.value = fromUrl;
+    }
+
+    sel.disabled = false;
+    sel.removeAttribute('aria-busy');
+    sel.onchange = () => syncUnlockCalcControls(t);
+    syncUnlockCalcControls(t);
+  } catch (_) {
+    sel.innerHTML = '';
+    const err = document.createElement('option');
+    err.value = '';
+    err.textContent = t.unlockLoadError || t.unlockLoading;
+    sel.appendChild(err);
+    sel.disabled = true;
+    sel.removeAttribute('aria-busy');
+    if (btn instanceof HTMLButtonElement) btn.disabled = true;
   }
-  sel.addEventListener('change', () => {
-    if (!(btn instanceof HTMLButtonElement)) return;
-    const label = sel.selectedOptions[0]?.textContent || '';
-    btn.textContent =
-      sel.value && typeof t.unlockFor === 'function' ? t.unlockFor(label) : t.unlockBtn;
-  });
 }

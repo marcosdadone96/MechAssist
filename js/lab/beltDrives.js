@@ -137,6 +137,10 @@ export function beltLinearSpeedVerdict(v_m_s, beltType = 'v_trapezoidal') {
  */
 export function computeBeltDriveTransmission(p) {
   const beltType = /** @type {BeltDriveType} */ (p.beltType || 'v_trapezoidal');
+  /** Correa síncrona: sin deslizamiento cinemático; el campo del formulario se ignora siempre. */
+  if (beltType === 'synchronous') {
+    p = { ...p, slip_pct: 0 };
+  }
   const C = Number(p.center_mm);
   const n1 = Number(p.n1_rpm);
   const n1f = Number.isFinite(n1) && n1 > 0 ? n1 : null;

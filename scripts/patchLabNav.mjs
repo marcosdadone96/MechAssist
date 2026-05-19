@@ -19,7 +19,7 @@ const labCalcs = [
 ];
 
 const re =
-  /(<a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio<\/a>)\s*\n(\s*)<a class="site-nav__link" href="my-gearmotors.html">/g;
+  /(<a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión<\/a>)\s*\n(\s*)<a class="site-nav__link" href="my-gearmotors.html">/g;
 
 const ins =
   '$1\n$2<a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">M\u00e1quinas</a>\n$2<a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidr\u00e1ulica</a>\n$2<a class="site-nav__link" href="my-gearmotors.html">';
@@ -40,7 +40,7 @@ const machineNav =
   /(<a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">M\u00e1quinas<\/a>)\s*\n(\s*)<a class="site-nav__link" href="my-gearmotors.html">/g;
 
 const machineIns =
-  '$1\n$2<a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>\n$2<a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidr\u00e1ulica</a>\n$2<a class="site-nav__link" href="my-gearmotors.html">';
+  '$1\n$2<a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>\n$2<a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidr\u00e1ulica</a>\n$2<a class="site-nav__link" href="my-gearmotors.html">';
 
 const machineFiles = [
   'flat-conveyor.html',
@@ -69,7 +69,7 @@ const fluidNav =
   /(<a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidr\u00e1ulica<\/a>)\s*\n(\s*)<a class="site-nav__link" href="my-gearmotors.html">/g;
 
 const fluidIns =
-  '$1\n$2<a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>\n$2<a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">M\u00e1quinas</a>\n$2<a class="site-nav__link" href="my-gearmotors.html">';
+  '$1\n$2<a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>\n$2<a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">M\u00e1quinas</a>\n$2<a class="site-nav__link" href="my-gearmotors.html">';
 
 const fluidFiles = [
   'calc-hydraulic-pump.html',
@@ -91,7 +91,7 @@ for (const f of fluidFiles) {
 }
 
 const hubOnly = `<nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">M\u00e1quinas</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidr\u00e1ulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>

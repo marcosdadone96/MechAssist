@@ -1,4 +1,4 @@
-import { bindInputValidation } from './labCalcUx.js';
+import { bindInputValidation, mountLabPresetsBar } from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
@@ -6,7 +6,58 @@ import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { HYDRAULIC_PRESS_EN } from '../lab/i18n/pages/hydraulicPressEn.js';
+import { FLUIDS_HUB_UX_EN } from '../lab/i18n/pages/fluidsHubUxEn.js';
 import { applyHydraulicPressPageLanguage } from './hydraulicPressStaticI18n.js';
+
+const HPP_PRESETS = [
+  {
+    label: '120 t · conformado',
+    labelKey: 'hpress.preset1',
+    values: {
+      hppMode: 'design',
+      hppLabTier: 'basic',
+      hppForceTon: 120,
+      hppPressureBar: 210,
+      hppStrokeMm: 450,
+      hppCycleS: 12,
+      hppApproachFactor: 2.5,
+      hppPumpFlowLmin: 120,
+      hppColumns: '4',
+      hppSteelMpa: 160,
+    },
+  },
+  {
+    label: '50 t · carrera corta',
+    labelKey: 'hpress.preset2',
+    values: {
+      hppMode: 'design',
+      hppLabTier: 'basic',
+      hppForceTon: 50,
+      hppPressureBar: 180,
+      hppStrokeMm: 220,
+      hppCycleS: 8,
+      hppApproachFactor: 2,
+      hppPumpFlowLmin: 75,
+      hppColumns: '2',
+      hppSteelMpa: 160,
+    },
+  },
+  {
+    label: 'Diagnóstico · instalada',
+    labelKey: 'hpress.preset3',
+    values: {
+      hppMode: 'diagnostic',
+      hppLabTier: 'basic',
+      hppPressureBar: 200,
+      hppDiagPistonMm: 250,
+      hppDiagColumnMm: 110,
+      hppStrokeMm: 400,
+      hppCycleS: 10,
+      hppPumpFlowLmin: 100,
+      hppColumns: '4',
+    },
+  },
+];
 
 function pressLang() {
   return getCurrentLang() === 'en';
@@ -604,9 +655,14 @@ function computeAndRenderCore() {
   });
   advisor.innerHTML = alerts.join('');
 
-  const balanced = pBar <= 300 && pumpFlowLmin >= qReqLmin * 0.95 && motorRec <= motorKw * 1.3 && (mode !== 'diagnostic' || maxTonByCols >= tonReal)
-    && !(labTier === 'project' && Number.isFinite(fsEulerCol) && fsEulerCol < 2)
-    && !(Number.isFinite(userColMm) && userColMm + 0.01 < colDiaSafeMm);
+  const pumpOk = pumpFlowLmin >= qReqLmin * 0.95;
+  const columnsOk =
+    !(labTier === 'project' && Number.isFinite(fsEulerCol) && fsEulerCol < 2) &&
+    !(Number.isFinite(userColMm) && userColMm + 0.01 < colDiaSafeMm);
+  const balanced = pBar <= 300 && pumpOk && motorRec <= motorKw * 1.3 && (mode !== 'diagnostic' || maxTonByCols >= tonReal) &&
+    columnsOk;
+  renderHppVerdictSummary({ pumpOk, columnsOk, balanced });
+
   verdict.className = balanced ? 'lab-verdict lab-verdict--ok' : 'lab-verdict lab-verdict--muted';
   verdict.textContent = balanced
     ? en
@@ -657,6 +713,25 @@ function computeAndRenderCore() {
     pressPdfSnapshot.resultRows.push({ label: 'Pcr col', value: `${fmt(pCrColN / 1000, 1)} kN` });
     pressPdfSnapshot.resultRows.push({ label: 'FS Euler', value: fmt(fsEulerCol, 2) });
   }
+}
+
+/** @param {{ pumpOk: boolean, columnsOk: boolean, balanced: boolean }} opts */
+function renderHppVerdictSummary(opts) {
+  const el = document.getElementById('hppVerdictSummary');
+  if (!(el instanceof HTMLElement)) return;
+  const en = getCurrentLang() === 'en';
+  const row = (ok, label, sub) =>
+    `<div class="hc-vs-item ${ok ? 'hc-vs-item--ok' : 'hc-vs-item--bad'}">
+      <span class="hc-vs-ico" aria-hidden="true">${ok ? '\u2713' : '\u2717'}</span>
+      <div><div class="hc-vs-label">${label}</div><div class="hc-vs-sub">${sub}</div></div>
+    </div>`;
+  const t = (k, es) => (en ? HYDRAULIC_PRESS_EN[`hpress.${k}`] : es);
+  el.innerHTML = `
+    <div class="hc-verdict-summary__title">${t('vsTitle', 'Resumen de comprobaciones')}</div>
+    ${row(opts.pumpOk, t('vsPump', 'Caudal de bomba'), opts.pumpOk ? t('vsPumpOk', 'Caudal instalado cubre el ciclo.') : t('vsPumpBad', 'Caudal por debajo del requerido.'))}
+    ${row(opts.columnsOk, t('vsColumns', 'Columnas'), opts.columnsOk ? t('vsColumnsOk', 'Secci\u00f3n de columna adecuada (orientativo).') : t('vsColumnsBad', 'Di\u00e1metro o pandeo de columnas insuficiente.'))}
+    ${row(opts.balanced, t('vsBalance', 'Conjunto'), opts.balanced ? t('vsBalanceOk', 'Configuraci\u00f3n equilibrada.') : t('vsBalanceBad', 'Ajuste caudal, presi\u00f3n y potencia.'))}
+  `;
 }
 
 function syncModeUi() {
@@ -726,6 +801,8 @@ bindInputValidation([
   { id: 'hppDiagColumnMm', min: 10, max: 5000, label: pressLbl('\u00d8 columna', 'Column \u00d8') },
 ]);
 
+mountLabPresetsBar('hppPresetsBar', HPP_PRESETS, computeAndRender);
+
 computeAndRender();
 
 mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMount'), {
@@ -738,18 +815,8 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMount'), {
 
 applyHydraulicPressPageLanguage();
 
-function onPressLabLangChange() {
-  if (getCurrentLang() === 'en') {
-    applyHydraulicPressPageLanguage();
-    computeAndRender();
-  } else {
-    location.reload();
-  }
-}
-window.addEventListener('lab-language-changed', onPressLabLangChange);
-window.addEventListener('home-language-changed', onPressLabLangChange);
-
-watchLangAndApply(HYDRAULIC_PRESS_EN, {
+watchLangAndApply({ ...HYDRAULIC_PRESS_EN, ...FLUIDS_HUB_UX_EN }, {
+  reloadOnEs: false,
   onEnApplied: () => {
     applyHydraulicPressPageLanguage();
     syncModeUi();

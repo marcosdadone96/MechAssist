@@ -1,11 +1,66 @@
-import { bindInputValidation } from './labCalcUx.js';
+import { bindInputValidation, mountLabPresetsBar } from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
 import { PNEUMATIC_CYL_EN } from '../lab/i18n/pages/pneumaticCylEn.js';
+import { FLUIDS_HUB_UX_EN } from '../lab/i18n/pages/fluidsHubUxEn.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+
+const PC_PRESETS = [
+  {
+    label: 'Embalaje · Ø63',
+    labelKey: 'pneuCyl.preset1',
+    values: {
+      pcMode: 'design',
+      pcLabTier: 'basic',
+      pcCylinderType: 'double',
+      pcDiameterMode: 'iso',
+      pcPressureBar: 6,
+      pcBoreIso: '63',
+      pcRodIso: '25',
+      pcStrokeMm: 500,
+      pcLoadKg: 120,
+      pcCyclesMin: 12,
+      pcMotionType: 'horizontal',
+    },
+  },
+  {
+    label: 'Manipulación · Ø100',
+    labelKey: 'pneuCyl.preset2',
+    values: {
+      pcMode: 'design',
+      pcLabTier: 'basic',
+      pcCylinderType: 'double',
+      pcDiameterMode: 'iso',
+      pcPressureBar: 6,
+      pcBoreIso: '100',
+      pcRodIso: '32',
+      pcStrokeMm: 400,
+      pcLoadKg: 350,
+      pcCyclesMin: 8,
+      pcMotionType: 'horizontal',
+    },
+  },
+  {
+    label: 'Vertical · 8 bar',
+    labelKey: 'pneuCyl.preset3',
+    values: {
+      pcMode: 'design',
+      pcLabTier: 'basic',
+      pcCylinderType: 'double',
+      pcDiameterMode: 'iso',
+      pcPressureBar: 8,
+      pcBoreIso: '80',
+      pcRodIso: '25',
+      pcStrokeMm: 1200,
+      pcLoadKg: 80,
+      pcCyclesMin: 6,
+      pcMotionType: 'vertical',
+    },
+  },
+];
 
 /** @type {object | null} */
 let pcPdfSnapshot = null;
@@ -38,7 +93,7 @@ const TXT = {
     e4: 'Velocidad estimada',
     e5: 'Carga equivalente',
     navHome: 'Inicio',
-    navLab: 'Laboratorio',
+    navLab: 'Laboratorio de transmisi\u00f3n',
     navCanvas: 'Lienzo Pro',
     diagramTitle: 'Corte de cilindro neumático (doble efecto)',
     diagramTitleSe: 'Corte de cilindro neumático (simple efecto — retorno por muelle)',
@@ -181,7 +236,7 @@ const TXT = {
     e4: 'Estimated speed',
     e5: 'Equivalent load',
     navHome: 'Home',
-    navLab: 'Laboratory',
+    navLab: 'Transmission lab',
     navCanvas: 'Pro canvas',
     diagramTitle: 'Pneumatic cylinder cross-section (double acting)',
     diagramTitleSe: 'Pneumatic cylinder cross-section (single acting — spring return)',
@@ -1128,6 +1183,8 @@ bindInputValidation([
   { id: 'pcCyclesMin', min: 0.01, max: 60000, label: 'Ciclos/min' },
 ]);
 
+mountLabPresetsBar('pcPresetsBar', PC_PRESETS, computeAndRender);
+
 computeAndRender();
 
 mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountPc'), {
@@ -1138,7 +1195,7 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountPc'), {
   },
 });
 
-watchLangAndApply(PNEUMATIC_CYL_EN, {
+watchLangAndApply({ ...PNEUMATIC_CYL_EN, ...FLUIDS_HUB_UX_EN }, {
   onEnApplied: () => {
     applyStaticI18n();
     computeAndRender();

@@ -9,6 +9,7 @@ export const CENTRIFUGAL_PUMP_EN = {
   'cPump.helpSummary': 'Methodology and model limits',
   'cPump.presetsLabel': 'Typical examples:',
   'cPump.diagTitle': 'Q\u2013H operating point and efficiency',
+  'cPump.diagramSvgAria': 'Centrifugal pump schematic',
   'cPump.labelFlow': 'Flow Q (m\u00b3/h)',
   'cPump.helpFlow': 'Required volumetric flow at the duty point.',
   'cPump.labelHead': 'Total head H (m)',
@@ -109,4 +110,7 @@ export const CENTRIFUGAL_PUMP_EN = {
   'cPump.proTeaserHtml':
     'Enable <strong>Pro</strong> to enter suction, line and daily hours; you get <strong>installation alerts</strong> and a more realistic <strong>service factor</strong> for continuous duty.',
   'cPump.proTeaserCta': 'Enable Pro',
+  'cPump.presetChilledTooltip': 'Water, Q 120 m\u00b3/h, H 32 m, \u03b7 76 %.',
+  'cPump.presetProcessTooltip': 'Brine, Q 65 m\u00b3/h, H 48 m, \u03b7 72 %.',
+  'cPump.presetViscousTooltip': 'Hot oil, Q 28 m\u00b3/h, H 22 m, \u03b7 62 %.',
 };

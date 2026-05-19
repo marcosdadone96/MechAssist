@@ -7,6 +7,7 @@ export const HYDRAULIC_CYLINDER_EN = {
   'hydCyl.heroLead':
     'Push/pull force, required flow, rod buckling (Euler) and minimum wall thickness for safe operation at working pressure.',
   'hydCyl.seoSummary': 'Expanded context and usage notes',
+  'hydCyl.helpSummary': 'Methodology and model limits',
   'hydCyl.calcSeoIntro':
     'This section combines force from pressure on effective push and annulus areas with the flows required for each stroke time, and checks rod buckling and wall thickness using indicative strength criteria. Use it to size oleohydraulic actuators in presses, clamps and lift tables before ordering the full power unit. It helps fluid-power and industrial automation engineers compare working pressures. For example, it can show whether a shorter stroke allows a slimmer rod while staying within the Euler margin on a fast lift line.',
   'hydCyl.lead':
@@ -96,4 +97,8 @@ export const HYDRAULIC_CYLINDER_EN = {
   'hydCyl.sealFkmTemp': '\u221220 to +200 \u00b0C',
   'hydCyl.formulasSummary': 'Calculation memo, formulas and assumptions',
   'hydCyl.verdictDefault': 'SYSTEM SUITABLE',
+  'hydCyl.presetsLabel': 'Typical examples:',
+  'hydCyl.preset1': 'Clamp \u00b7 63 mm',
+  'hydCyl.preset2': 'Lift \u00b7 100 mm',
+  'hydCyl.preset3': 'Diagnostic \u00b7 80 mm',
 };

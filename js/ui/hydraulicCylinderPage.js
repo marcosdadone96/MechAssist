@@ -1,4 +1,4 @@
-import { bindInputValidation } from './labCalcUx.js';
+import { bindInputValidation, mountLabPresetsBar } from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
@@ -6,6 +6,60 @@ import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { HYDRAULIC_CYLINDER_EN } from '../lab/i18n/pages/hydCylEn.js';
+import { FLUIDS_HUB_UX_EN } from '../lab/i18n/pages/fluidsHubUxEn.js';
+
+const HC_PRESETS = [
+  {
+    label: 'Pinza · Ø63',
+    labelKey: 'hydCyl.preset1',
+    values: {
+      hcMode: 'design',
+      hcLabTier: 'basic',
+      hcPressureBar: 160,
+      hcBoreMm: 63,
+      hcRodMm: 28,
+      hcStrokeMm: 300,
+      hcLoadKg: 800,
+      hcTargetSpeedMs: 0.08,
+      hcPumpFlowLmin: 25,
+      hcPortDiaMm: 10,
+      hcWallMm: 5,
+    },
+  },
+  {
+    label: 'Elevación · Ø100',
+    labelKey: 'hydCyl.preset2',
+    values: {
+      hcMode: 'design',
+      hcLabTier: 'basic',
+      hcPressureBar: 180,
+      hcBoreMm: 100,
+      hcRodMm: 56,
+      hcStrokeMm: 800,
+      hcLoadKg: 1500,
+      hcTargetSpeedMs: 0.12,
+      hcPumpFlowLmin: 35,
+      hcPortDiaMm: 12,
+      hcWallMm: 6,
+    },
+  },
+  {
+    label: 'Diagnóstico · Ø80',
+    labelKey: 'hydCyl.preset3',
+    values: {
+      hcMode: 'diagnostic',
+      hcLabTier: 'basic',
+      hcPressureBar: 200,
+      hcBoreMm: 80,
+      hcRodMm: 45,
+      hcStrokeMm: 500,
+      hcLoadKg: 1200,
+      hcPumpFlowLmin: 40,
+      hcPortDiaMm: 12,
+      hcWallMm: 6,
+    },
+  },
+];
 
 const G = 9.81;
 /** @type {object | null} */
@@ -943,9 +997,11 @@ bindInputValidation([
   { id: 'hcPortDiaMm', min: 1, max: 500, label: 'Ø puerto' },
 ]);
 
+mountLabPresetsBar('hcPresetsBar', HC_PRESETS, computeAndRender);
+
 computeAndRender();
 
-watchLangAndApply(HYDRAULIC_CYLINDER_EN, {
+watchLangAndApply({ ...HYDRAULIC_CYLINDER_EN, ...FLUIDS_HUB_UX_EN }, {
   onEnApplied: () => {
     applyStaticI18n();
     syncHcLabTierUi();

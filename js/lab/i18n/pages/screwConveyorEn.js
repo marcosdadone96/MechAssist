@@ -6,6 +6,7 @@ export const SCREW_CONVEYOR_EN = {
     'This assistant links target mass throughput to screw pitch, diameter and trough fill to estimate speed, shaft power and torque, following semi-empirical lines documented in CEMA-style guides without replacing the full OEM manual. It helps process engineers in feed, biomass and waste plants compare diameters before tendering. For example, you can see whether higher pellet moisture cuts fill enough to need a larger diameter or different speed to avoid dry running.',
   'scConv.heroLead':
     'Capacity, geometry and bulk solid. Indicative model (not a full CEMA 350 replacement). Dashboard and schematic on the right, like the flat belt tool.',
+  'scConv.diagramSvgAria': 'Screw conveyor schematic',
   'scConv.helpSummary': 'Quick guide to each quantity',
   'scConv.helpBodyHtml': `<p class="help-details__lead muted">
       Almost every label has a <span class="info-chip info-chip--static" aria-hidden="true">?</span>: on desktop hover; on touch <strong>tap</strong> for help.
@@ -40,4 +41,11 @@ export const SCREW_CONVEYOR_EN = {
   'scConv.accFriction': 'Friction and service',
   'scConv.coldStartNote':
     'Note: cold-start power with a full screw may be 2\u20133\u00d7 steady-state power for cohesive or wet materials. Check available breakaway torque with the gearmotor supplier.',
+  'scConv.presetFoodTooltip': 'Fine powder, \u00d8250 mm, 18 m\u00b3/h, 5\u00b0 incline.',
+  'scConv.presetBiomassTooltip': 'Biomass chip \u00d8400 mm, 12\u00b0 incline, 45 m\u00b3/h.',
+  'scConv.presetCementTooltip': 'Dense mineral \u00d8500 mm, 35 t/h, 18\u00b0 incline, abrasive.',
+  'scConv.engTitle': 'Engineering breakdown',
+  'scConv.engHint': 'Step-by-step calculation',
+  'scConv.motorsTitle': 'Gearmotors (sample catalog)',
+  'scConv.motorsHint': 'Recommendations and export',
 };

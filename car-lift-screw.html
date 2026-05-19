@@ -39,13 +39,13 @@
     </script>
 
         <header class="site-nav site-nav--sticky">
-      <a class="site-nav__brand" href="index.html">
-        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="" decoding="async" />
-        <span class="site-nav__title">The<em>MechAssist</em></span>
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
       </a>
             <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
         <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
         <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>
@@ -66,6 +66,12 @@
         <header class="flat-sidebar__head">
           <p class="flat-sidebar__eyebrow">TheMechAssist</p>
           <h2 class="flat-sidebar__title" data-i18n="carConv.h2">Elevador de coches (husillo)</h2>
+          <p class="flat-sidebar__lead lab-calc-hero-lead" data-i18n="carConv.heroLead">
+            Dos columnas, tornillo de potencia y tuerca de bronce. Par, potencia, presi&oacute;n de tuerca y autofrenado (&lambda; &lt; &phi;) con la misma experiencia que cinta plana y rodillos: formulario a la izquierda, esquema y resultados a la derecha.
+          </p>
+          <div class="lab-safety-notice" role="note" aria-label="Aviso de seguridad" data-i18n="carConv.safetyNoticeHtml" data-i18n-html>
+            <strong>&#9888; Cálculo orientativo</strong> — No sustituye al diseño conforme a normativa (EN&nbsp;1570 / ISO&nbsp;16531) ni a la firma de un técnico competente. Validar siempre con el fabricante y el instalador habilitado.
+          </div>
           <details class="flat-sidebar-intro">
             <summary class="flat-sidebar-intro__summary" data-i18n="carConv.introSummary">
               Descripción y alcance de la calculadora
@@ -74,12 +80,24 @@
               <p class="calc-seo-intro" data-i18n="carConv.calcSeoIntro">
                 Esta calculadora enlaza la masa elevada, la carrera y el tiempo objetivo con el paso y diámetro del husillo trapecial ISO para obtener velocidad de avance, par resistente y potencia en el motor, además de una estimación orientativa de presión en la tuerca de bronce y del comportamiento frente al ángulo de fricción cuando se habla de autofrenado. Sirve a fabricantes de equipos de taller y talleres de carrocería que deben validar un husillo existente antes de alargar la plataforma. Un ejemplo práctico es comprobar si un aumento del peso máximo admisible obliga a cambiar la entrada del tornillo o la longitud portante de la tuerca.
               </p>
-              <p class="flat-sidebar__lead" data-i18n="carConv.heroLead">
-                Dos columnas, tornillo de potencia y tuerca de bronce. Par, potencia, presi&oacute;n de tuerca y autofrenado (&lambda; &lt; &phi;) con la misma experiencia que cinta plana y rodillos: formulario a la izquierda, esquema y resultados a la derecha.
-              </p>
             </div>
           </details>
         </header>
+
+        <nav class="lab-next-steps" data-i18n="machineHub.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="machineHub.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="machineHub.nextStepsCarLi1Html" data-i18n-html>
+              <a href="calc-bearings.html">Rodamientos · L10</a> — vida en apoyos del husillo.
+            </li>
+            <li data-i18n="machineHub.nextStepsCarLi2Html" data-i18n-html>
+              <a href="calc-shaft.html">Eje · torsión</a> — verificar eje del husillo a torsión.
+            </li>
+            <li data-i18n="machineHub.nextStepsCarLi3Html" data-i18n-html>
+              <a href="calc-keys-din6885.html">Chavetas DIN 6885</a> — unión eje-cono de la polea.
+            </li>
+          </ul>
+        </nav>
 
         <details class="help-details flat-help">
           <summary data-i18n="carConv.helpSummary">Gu&iacute;a r&aacute;pida</summary>
@@ -192,11 +210,32 @@
             Rellena un taller típico; puede ajustar después.
           </p>
           <div class="flat-ux-preset-row" role="group" aria-label="Presets elevador husillo">
-            <button type="button" class="btn-flat-preset" data-cl-preset="workshop_light" title="Taller ligero, Tr 32×6">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-cl-preset="workshop_light"
+              data-i18n-attrs="title=carConv.presetLightTooltip"
+              title="2800 kg, H 1,65 m, 55 s, husillo Tr 32×6."
+            >
               <span class="btn-flat-preset__name">Taller · ligero</span>
             </button>
-            <button type="button" class="btn-flat-preset" data-cl-preset="workshop_heavy" title="Mayor masa, Tr 45×7">
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-cl-preset="workshop_heavy"
+              data-i18n-attrs="title=carConv.presetHeavyTooltip"
+              title="4200 kg, H 2,1 m, 62 s, husillo Tr 45×7."
+            >
               <span class="btn-flat-preset__name">Taller · pesado</span>
+            </button>
+            <button
+              type="button"
+              class="btn-flat-preset"
+              data-cl-preset="showroom_standard"
+              data-i18n-attrs="title=carConv.presetShowroomTooltip"
+              title="3500 kg, H 1,85 m, 58 s, husillo Tr 40×7."
+            >
+              <span class="btn-flat-preset__name">Taller · estándar</span>
             </button>
           </div>
         </section>
@@ -208,7 +247,7 @@
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
-              <label for="clCapacity"
+              <label for="clCapacity" data-i18n="carConv.labelCapacityHtml" data-i18n-html
                 >Capacidad (masa total)
                 <span
                   class="info-chip"
@@ -222,10 +261,10 @@
                 <input id="clCapacity" type="number" step="50" min="100" value="3500" placeholder="ej. 2800–4200 kg" />
                 <span class="field-hint">kg</span>
               </div>
-              <p class="field-context muted">Típ. 2000–5000 kg (coche + carga en taller)</p>
+              <p class="field-context muted" data-i18n="carConv.hintCapacity">Típ. 2000–5000 kg (coche + carga en taller)</p>
             </div>
             <div class="field flat-field--slider">
-              <label for="clH"
+              <label for="clH" data-i18n="carConv.labelHHtml" data-i18n-html
                 >Altura de elevaci&oacute;n H
                 <span class="info-chip" title="Carrera &uacute;til vertical. Entra en n&uacute;mero de vueltas del husillo = H/p." aria-label="Ayuda altura.">?</span></label
               >
@@ -234,10 +273,10 @@
                 <input id="clH" type="number" step="0.05" min="0.2" value="1.8" placeholder="ej. 1,6–2,2 m" />
                 <span class="field-hint">m</span>
               </div>
-              <p class="field-context muted">Típ. 1,5–2,2 m carrera útil en taller</p>
+              <p class="field-context muted" data-i18n="carConv.hintH">Típ. 1,5–2,2 m carrera útil en taller</p>
             </div>
             <div class="field flat-field--slider">
-              <label for="clT"
+              <label for="clT" data-i18n="carConv.labelTHtml" data-i18n-html
                 >Tiempo de elevaci&oacute;n
                 <span class="info-chip" title="Tiempo deseado para recorrer H. M&aacute;s corto implica m&aacute;s rpm del husillo y m&aacute;s potencia." aria-label="Ayuda tiempo.">?</span></label
               >
@@ -246,7 +285,7 @@
                 <input id="clT" type="number" step="1" min="5" value="45" placeholder="ej. 45–70 s" />
                 <span class="field-hint">s</span>
               </div>
-              <p class="field-context muted">Típ. 40–90 s (comodidad / normativa local)</p>
+              <p class="field-context muted" data-i18n="carConv.hintT">Típ. 40–90 s (comodidad / normativa local)</p>
             </div>
             <div class="field" style="grid-column: 1 / -1">
               <label for="clThreadPreset"
@@ -264,7 +303,7 @@
               <span class="field-hint" id="clThreadPresetHint">d y paso bloqueados al est&aacute;ndar seleccionado</span>
             </div>
             <div class="field flat-field--slider">
-              <label for="clPitch"
+              <label for="clPitch" data-i18n="carConv.labelPitchHtml" data-i18n-html
                 >Paso del husillo (lead)
                 <span class="field-lock-icon" id="clPitchLock" aria-label="Campo bloqueado por estándar">🔒</span>
                 <span class="info-chip" title="Avance axial por vuelta (una entrada). M&aacute;s paso suele aumentar &lambda; y afectar al autofrenado." aria-label="Ayuda paso.">?</span></label
@@ -364,6 +403,8 @@
           <a href="#car-lift-assumptions">Hip&oacute;tesis y exclusiones</a>
         </p>
 
+        <div id="clDesignAlerts" class="design-alerts" aria-live="polite"></div>
+
         <div id="mountingConfigHost" class="mounting-config-host"></div>
 
         <button type="button" class="btn-calc" id="btnCarLiftCalc" data-i18n="carConv.btnMotors">Ver motorreductores sugeridos</button>
@@ -461,6 +502,7 @@
         <section class="panel flat-panel--verify">
           <div class="verify-panel" id="carLiftVerifyPanel">
             <h2 data-i18n="carConv.verifyH2Html" data-i18n-html><span class="panel-icon">&#10003;</span> Comprobar un motorreductor que ya tengo</h2>
+            <p class="muted verify-panel__catalog-lead" style="margin: -0.5rem 0 0.75rem; font-size: 0.84rem" data-i18n="machineHub.verifyCatalogLead">Selecciona un motorreductor de catálogo para comparar su potencia y par con los resultados calculados. No modifica los datos del formulario. Los datos son orientativos según especificaciones publicadas por el fabricante.</p>
             <p class="muted panel-lead" data-i18n="carConv.verifyLeadHtml" data-i18n-html>
               <strong>Dos formas:</strong> (1) Marca y modelo del <strong>cat&aacute;logo de ejemplo</strong> y bot&oacute;n &laquo;Comprobar para este elevador&raquo;. (2) Desplegable
               <em>O bien: introducir mi motorreductor a mano</em>, datos de placa y &laquo;Comprobar con estos datos&raquo;. Se contrastan potencia, par y <strong>rpm de salida con el husillo</strong> calculado.

@@ -3,7 +3,10 @@
  * El atributo title sigue existiendo para escritorio (hover); lectores usan aria-label.
  */
 
+import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
+
 let activeEl = null;
+let langListenersBound = false;
 
 function removePopover() {
   if (activeEl) {
@@ -37,16 +40,78 @@ function positionPopover(bubble, anchor) {
 }
 
 /**
+ * @param {Element} chip
+ * @returns {string}
+ */
+export function getChipFieldLabel(chip) {
+  const label = chip.closest('label');
+  if (!label) return '';
+  const clone = label.cloneNode(true);
+  clone.querySelectorAll('.info-chip, [aria-hidden="true"]').forEach((n) => n.remove());
+  return clone.textContent.replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * @param {string} fieldName
+ * @param {'es'|'en'} [lang]
+ */
+export function chipHelpAriaLabel(fieldName, lang = getCurrentLang()) {
+  const name = fieldName.trim();
+  if (!name) return '';
+  return lang === 'en' ? `Help about ${name}` : `Ayuda sobre ${name}`;
+}
+
+/**
+ * @param {Element} chip
+ * @param {'es'|'en'} [lang]
+ * @param {{ fieldName?: string, force?: boolean }} [opts]
+ */
+export function syncInfoChipA11y(chip, lang = getCurrentLang(), opts = {}) {
+  if (!(chip instanceof HTMLElement) || chip.classList.contains('info-chip--static')) return;
+  const cur = (chip.getAttribute('aria-label') || '').trim();
+  if (cur && !opts.force) return;
+
+  const fieldName = (opts.fieldName || getChipFieldLabel(chip)).trim();
+  const label = chipHelpAriaLabel(fieldName, lang);
+  if (label) chip.setAttribute('aria-label', label);
+}
+
+/**
+ * @param {ParentNode} [root]
+ * @param {'es'|'en'} [lang]
+ * @param {{ force?: boolean }} [opts]
+ */
+export function syncAllInfoChipA11y(root = document.body, lang = getCurrentLang(), opts = {}) {
+  root.querySelectorAll('.info-chip').forEach((chip) => {
+    syncInfoChipA11y(chip, lang, opts);
+  });
+}
+
+function bindLangResync() {
+  if (langListenersBound) return;
+  langListenersBound = true;
+  const resync = () => syncAllInfoChipA11y(document.body, getCurrentLang(), { force: true });
+  window.addEventListener(HOME_LANG_CHANGED_EVENT, resync);
+  window.addEventListener('lab-language-changed', resync);
+  window.addEventListener('home-language-changed', resync);
+}
+
+/**
  * @param {ParentNode} [root]
  */
 export function initInfoChipPopovers(root = document.body) {
-  if (root.dataset.infoChipPopoverInit === '1') return;
+  if (root.dataset.infoChipPopoverInit === '1') {
+    syncAllInfoChipA11y(root);
+    return;
+  }
   root.dataset.infoChipPopoverInit = '1';
 
   root.querySelectorAll('.info-chip').forEach((chip) => {
     if (!chip.hasAttribute('tabindex')) chip.setAttribute('tabindex', '0');
     if (!chip.hasAttribute('role')) chip.setAttribute('role', 'button');
   });
+  syncAllInfoChipA11y(root);
+  bindLangResync();
 
   document.addEventListener(
     'mousedown',
@@ -66,7 +131,7 @@ export function initInfoChipPopovers(root = document.body) {
     const chip = /** @type {HTMLElement | null} */ (e.target)?.closest?.('.info-chip');
     if (!chip || !root.contains(chip)) return;
     if (chip.classList.contains('info-chip--static')) return;
-    const text = (chip.getAttribute('title') || chip.getAttribute('aria-label') || '').trim();
+    const text = (chip.getAttribute('title') || '').trim();
     if (!text) return;
     e.preventDefault();
     e.stopPropagation();
