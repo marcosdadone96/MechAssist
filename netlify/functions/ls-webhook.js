@@ -17,6 +17,8 @@ const {
   isVariantAllowed,
   isCalcUnlockVariant,
   subscriptionRecordActive,
+  tierFromSubscriptionAttrs,
+  subscriptionAttrsAllowed,
 } = require('./lib/proEntitlementLogic.js');
 const {
   tierFromVariant,
@@ -70,8 +72,7 @@ function computeOrderActive(attrs) {
  * @param {Record<string, unknown>} attrs
  */
 function computeSubscriptionActive(eventName, attrs) {
-  const variantId = attrs.variant_id != null ? attrs.variant_id : null;
-  if (!isVariantAllowed(variantId)) return false;
+  if (!subscriptionAttrsAllowed(attrs)) return false;
   if (eventName === 'subscription_expired') return false;
 
   const st = String(attrs.status || '').toLowerCase();
@@ -108,6 +109,7 @@ function buildRecord(eventName, attrs, kind) {
   return {
     email,
     variantId: variantId != null ? String(variantId) : null,
+    productName: attrs.product_name != null ? String(attrs.product_name) : null,
     active,
     status: attrs.status != null ? String(attrs.status) : '',
     endsAt,
@@ -126,6 +128,7 @@ function toStored(rec) {
     active: rec.active,
     status: rec.status,
     variantId: rec.variantId,
+    productName: rec.productName || null,
     endsAt: rec.endsAt,
     renewsAt: rec.renewsAt,
     updatedAt: rec.updatedAt,
@@ -241,6 +244,10 @@ exports.handler = async (event) => {
       tier: 'starter',
       endsAt: rec.endsAt,
     });
+  } else if (creditTier === 'starter' && !stored.active) {
+    console.warn(
+      `ls-webhook: starter_inactive email=${rec.email} status=${stored.status} variant=${rec.variantId} product=${attrs.product_name || '-'}`,
+    );
   } else if (orderPaid && isUnlockProduct && calcSlug) {
     const applied = await applyCalcUnlock(store, rec.email, calcSlug);
     if (applied) {

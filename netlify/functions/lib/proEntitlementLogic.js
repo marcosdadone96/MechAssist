@@ -83,6 +83,47 @@ function tierFromVariant(variantId) {
   return null;
 }
 
+/**
+ * Lemon webhooks usan variant_id numérico (API); checkout usa UUID. Respaldo por nombre.
+ * @param {Record<string, unknown>} attrs
+ */
+function tierFromSubscriptionAttrs(attrs) {
+  const vid = attrs?.variant_id != null ? String(attrs.variant_id).trim() : '';
+  const fromVariant = tierFromVariant(vid);
+  if (fromVariant) return fromVariant;
+
+  const product = String(attrs?.product_name || '').toLowerCase();
+  const variant = String(attrs?.variant_name || '').toLowerCase();
+  if (!product && !variant) return null;
+
+  if (
+    product.includes('ilimitado') ||
+    product.includes('unlimited') ||
+    variant.includes('ilimitado') ||
+    variant.includes('unlimited')
+  ) {
+    return 'unlimited';
+  }
+  if (
+    product.includes('themechassist') &&
+    (product.includes('pro') || product.includes('starter'))
+  ) {
+    return 'starter';
+  }
+  if (product.includes('starter') || variant.includes('starter')) {
+    return 'starter';
+  }
+  return null;
+}
+
+/**
+ * @param {Record<string, unknown>} attrs
+ */
+function subscriptionAttrsAllowed(attrs) {
+  if (isVariantAllowed(attrs?.variant_id)) return true;
+  return tierFromSubscriptionAttrs(attrs) != null;
+}
+
 /** @returns {Set<string>} */
 function parseCalcUnlockVariantsFromEnv() {
   const raw = process.env.LEMON_VARIANT_CALC_UNLOCK_IDS || '';
@@ -136,7 +177,9 @@ function subscriptionRecordActive(rec) {
   const ends = rec.endsAt ? Date.parse(String(rec.endsAt)) : NaN;
   if (Number.isFinite(ends) && Date.now() > ends) return false;
   if (rec.active === false) {
-    const tier = tierFromVariant(rec.variantId);
+    const tier =
+      tierFromVariant(rec.variantId) ||
+      (rec.productName ? tierFromSubscriptionAttrs({ product_name: rec.productName }) : null);
     if (tier === 'starter' || tier === 'unlimited') {
       return st === 'active' || st === 'on_trial' || st === 'past_due' || st === 'cancelled';
     }
@@ -152,6 +195,8 @@ module.exports = {
   isVariantAllowed,
   isCalcUnlockVariant,
   tierFromVariant,
+  tierFromSubscriptionAttrs,
+  subscriptionAttrsAllowed,
   subscriptionRecordActive,
   DEFAULT_STARTER_VARIANT_IDS,
   DEFAULT_UNLIMITED_VARIANT_IDS,

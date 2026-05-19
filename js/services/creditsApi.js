@@ -163,18 +163,103 @@ export async function refreshCreditsAfterAuth() {
 /**
  * Refresca plan/saldo y reconcilia un desbloqueo 1 € pendiente (webhook lento).
  */
-export async function syncAccountBillingState() {
-  if (!isCreditsSystemEnabled()) return;
+/**
+ * @returns {Promise<{ ok: boolean, hint?: string, message?: string }>}
+ */
+export async function fetchBillingStatus() {
+  if (!isCreditsSystemEnabled()) return { ok: true, hint: 'credits_disabled' };
   const u = getCurrentUser();
-  if (!u?.email || !u?.serverAuth) return;
+  if (!u?.email || !u?.serverAuth) return { ok: false, hint: 'auth' };
 
-  await reconcileSubscriptionAfterPayment().catch(() => {});
+  const headers = authHeaders();
+  const res = await fetch(`${functionsBase()}/credits-billing-status`, {
+    method: 'GET',
+    headers,
+  });
+  const data = await res.json().catch(() => ({}));
+  const usedTok = headers.Authorization || '';
+  if (handleAuthHttpResponse(res, data, usedTok)) return { ok: false, hint: 'session_revoked' };
+  if (!res.ok || !data.ok) return { ok: false, hint: data.error || 'status' };
+  return { ok: true, hint: data.hint, lemon: data.lemon, credits: data.credits };
+}
 
+/** @param {string} [hint] */
+export function billingStatusMessage(hint, lang = 'es') {
+  const en = lang === 'en';
+  /** @type {Record<string, [string, string]>} */
+  const map = {
+    ok: [
+      'Plan sincronizado correctamente.',
+      'Plan synced successfully.',
+    ],
+    lemon_webhook_never_received: [
+      'Lemon aún no ha notificado este correo al servidor. Revise el webhook (URL ls-webhook, modo test/live, mismo email en el pago) y pulse «Reenviar» en la suscripción.',
+      'Lemon has not notified this email yet. Check webhook (ls-webhook URL, test/live mode, same checkout email) and resend from the subscription.',
+    ],
+    lemon_record_inactive: [
+      'Hay registro en Lemon pero está inactivo. Compruebe la suscripción en Lemon o el signing secret en Netlify.',
+      'Lemon record exists but is inactive. Check subscription in Lemon or webhook secret in Netlify.',
+    ],
+    subscription_not_synced_to_credits: [
+      'Suscripción detectada; sincronizando créditos… Si sigue en 0, vuelva a pulsar Actualizar.',
+      'Subscription detected; syncing credits… If still 0, tap Refresh again.',
+    ],
+    starter_low_credits: [
+      'Plan Starter activo. Si el saldo es 0, pulse Actualizar de nuevo tras desplegar.',
+      'Starter plan active. If balance is 0, tap Refresh again after deploy.',
+    ],
+    no_active_subscription: [
+      'No hay suscripción activa en el servidor para este correo. ¿Mismo email que en Lemon?',
+      'No active subscription on the server for this email. Same email as in Lemon?',
+    ],
+    no_subscription: [
+      'No hay suscripción activa en el servidor para este correo. ¿Mismo email que en Lemon?',
+      'No active subscription on the server for this email. Same email as in Lemon?',
+    ],
+  };
+  const pair = map[String(hint || '')] || [
+    'No se pudo sincronizar el plan. Revise webhook Lemon → ls-webhook en Netlify.',
+    'Could not sync plan. Check Lemon webhook → ls-webhook on Netlify.',
+  ];
+  return en ? pair[1] : pair[0];
+}
+
+export async function syncAccountBillingState() {
+  if (!isCreditsSystemEnabled()) return { ok: false, hint: 'credits_disabled' };
+  const u = getCurrentUser();
+  if (!u?.email || !u?.serverAuth) return { ok: false, hint: 'auth' };
+
+  const sub = await reconcileSubscriptionAfterPayment().catch(() => ({ ok: false }));
   const pending = readPendingCalcUnlockSlug();
   if (pending) {
     await reconcileCalcUnlockAfterPayment(pending).catch(() => {});
   }
   await fetchCreditsBalance().catch(() => {});
+
+  const status = await fetchBillingStatus().catch(() => ({ ok: false }));
+  if (status.ok && status.hint === 'ok') {
+    return { ok: true, hint: 'ok', message: billingStatusMessage('ok') };
+  }
+  if (sub.ok) {
+    const again = await fetchBillingStatus().catch(() => status);
+    if (again.ok && again.hint === 'ok') {
+      return { ok: true, hint: 'ok', message: billingStatusMessage('ok') };
+    }
+    return {
+      ok: false,
+      hint: again.hint || status.hint,
+      message: billingStatusMessage(again.hint || status.hint),
+    };
+  }
+  const errHint =
+    status.hint ||
+    (sub && typeof sub === 'object' && 'error' in sub ? String(sub.error) : '') ||
+    'no_subscription';
+  return {
+    ok: false,
+    hint: errHint,
+    message: billingStatusMessage(errHint),
+  };
 }
 
 /**

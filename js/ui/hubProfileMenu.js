@@ -10,6 +10,7 @@ import {
   fetchCreditsBalance,
   syncAccountBillingState,
 } from '../services/creditsApi.js';
+import { showToast } from './toast.js';
 import { getCalcUnlockCatalogEntry } from '../config/calcUnlockCatalog.js';
 
 function lang() {
@@ -123,18 +124,41 @@ function renderCreditsInMenu(host, state) {
 
   parts.push(
     `<button type="button" class="hub-user-menu__sync" data-hub-sync-billing>${en ? 'Refresh account status' : 'Actualizar estado de cuenta'}</button>`,
+    `<p class="hub-user-menu__billing-msg" data-hub-billing-msg hidden></p>`,
   );
 
   host.innerHTML = parts.join('');
 }
 
-async function refreshMenuCredits(host, { forceSync = false } = {}) {
+/**
+ * @param {HTMLElement} host
+ * @param {{ forceSync?: boolean, showToast?: boolean }} [opts]
+ */
+async function refreshMenuCredits(host, opts = {}) {
   if (!isCreditsSystemEnabled() || !host) return;
   const cached = getCachedCreditsState();
   if (cached) renderCreditsInMenu(host, cached);
-  if (forceSync) await syncAccountBillingState().catch(() => {});
+  let syncResult = null;
+  if (opts.forceSync) {
+    syncResult = await syncAccountBillingState().catch(() => null);
+  }
   const data = await fetchCreditsBalance().catch(() => null);
   if (data?.ok) renderCreditsInMenu(host, data);
+
+  const msgEl = host.querySelector('[data-hub-billing-msg]');
+  if (msgEl instanceof HTMLElement && syncResult?.message) {
+    msgEl.textContent = syncResult.message;
+    msgEl.hidden = false;
+    msgEl.classList.toggle(
+      'hub-user-menu__billing-msg--ok',
+      syncResult.ok === true,
+    );
+  }
+  if (opts.showToast && syncResult?.message) {
+    showToast(syncResult.message, {
+      variant: syncResult.ok ? 'success' : 'warning',
+    });
+  }
 }
 
 function closeAllProfileMenus() {
@@ -219,8 +243,12 @@ export function mountProfileMenu(slot) {
       if (!btn) return;
       ev.preventDefault();
       btn.textContent = lang() === 'en' ? 'Updating…' : 'Actualizando…';
-      void refreshMenuCredits(creditsHost, { forceSync: true }).finally(() => {
-        renderCreditsInMenu(creditsHost, getCachedCreditsState());
+      void refreshMenuCredits(creditsHost, { forceSync: true, showToast: true }).finally(() => {
+        const btn = creditsHost.querySelector('[data-hub-sync-billing]');
+        if (btn instanceof HTMLButtonElement) {
+          btn.textContent =
+            lang() === 'en' ? 'Refresh account status' : 'Actualizar estado de cuenta';
+        }
       });
     });
   }

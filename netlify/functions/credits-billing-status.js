@@ -1,5 +1,5 @@
 /**
- * POST  Tras pago Lemon Starter/Ilimitado: sincroniza suscripcin al ledger de crditos.
+ * GET  Diagnstico de facturacin (cuenta + blob Lemon + ledger crditos).
  */
 const { getProStore } = require('./lib/blobStore.js');
 const { verifyAuthSession } = require('./lib/authSession.js');
@@ -13,8 +13,6 @@ const {
   loadRecord,
   publicBalance,
   subscriptionActive,
-  activeCalcUnlocks,
-  syncSubscriptionFromProRecord,
 } = require('./lib/creditsLogic.js');
 
 function corsHeaders(event) {
@@ -29,7 +27,7 @@ function corsHeaders(event) {
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Headers': 'Authorization, Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
     Vary: 'Origin',
   };
 }
@@ -46,7 +44,7 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: cors };
   }
-  if (event.httpMethod !== 'POST') {
+  if (event.httpMethod !== 'GET') {
     return { statusCode: 405, headers: cors, body: JSON.stringify({ error: 'method' }) };
   }
 
@@ -66,78 +64,59 @@ exports.handler = async (event) => {
     };
   }
 
-  const proKey = emailBlobKey(auth.email);
+  const email = auth.email;
   let proRec = null;
   try {
-    proRec = await store.get(proKey, { type: 'json' });
+    proRec = await store.get(emailBlobKey(email), { type: 'json' });
   } catch (_) {
     proRec = null;
   }
 
-  if (!subscriptionRecordActive(proRec)) {
-    return {
-      statusCode: 403,
-      headers: cors,
-      body: JSON.stringify({
-        error: 'no_active_subscription',
-        hint: 'check_lemon_webhook_and_variant_ids',
-      }),
-    };
-  }
+  const { rec } = await loadRecord(store, email);
+  const proActive = subscriptionRecordActive(proRec);
+  const tier = proRec
+    ? tierFromVariant(proRec.variantId) ||
+      tierFromSubscriptionAttrs({
+        variant_id: proRec.variantId,
+        product_name: proRec.productName,
+      })
+    : null;
+  const creditsSubActive = subscriptionActive(rec);
 
-  const tier =
-    tierFromVariant(proRec.variantId) ||
-    tierFromSubscriptionAttrs({
-      variant_id: proRec.variantId,
-      product_name: proRec.productName,
-    });
-  if (tier !== 'starter' && tier !== 'unlimited') {
-    return {
-      statusCode: 403,
-      headers: cors,
-      body: JSON.stringify({ error: 'not_subscription_tier', variantId: proRec.variantId || null }),
-    };
+  let hint = 'ok';
+  if (!proRec) {
+    hint = 'lemon_webhook_never_received';
+  } else if (!proActive) {
+    hint = 'lemon_record_inactive';
+  } else if (tier === 'starter' && !creditsSubActive) {
+    hint = 'subscription_not_synced_to_credits';
+  } else if (tier === 'starter' && rec.credits < 10) {
+    hint = 'starter_low_credits';
   }
-
-  if (proRec.active === false) {
-    try {
-      await store.setJSON(proKey, {
-        ...proRec,
-        active: true,
-        updatedAt: new Date().toISOString(),
-      });
-    } catch (_) {
-      /* ignore */
-    }
-  }
-
-  const synced = await syncSubscriptionFromProRecord(store, auth.email, proRec);
-  if (!synced.ok) {
-    return {
-      statusCode: 500,
-      headers: cors,
-      body: JSON.stringify({ error: synced.error || 'sync_failed' }),
-    };
-  }
-
-  const { rec } = await loadRecord(store, auth.email);
-  const subActive = subscriptionActive(rec);
-  let subscriptionPlan = null;
-  if (subActive && rec.subscription === 'unlimited') subscriptionPlan = 'unlimited';
-  else if (subActive && rec.subscription === 'starter') subscriptionPlan = 'starter';
 
   return {
     statusCode: 200,
     headers: { ...cors, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       ok: true,
-      tier: synced.tier,
-      balance: publicBalance(rec),
-      unlimited: subscriptionPlan === 'unlimited',
-      starter: subscriptionPlan === 'starter',
-      subscriptionPlan,
-      subscriptionEndsAt: subActive ? rec.subscriptionEndsAt || null : null,
-      unlockedCalcs: activeCalcUnlocks(rec),
+      email,
+      hint,
+      lemon: proRec
+        ? {
+            active: proRec.active === true,
+            status: proRec.status || null,
+            variantId: proRec.variantId || null,
+            tier,
+            lastEvent: proRec.lastEvent || null,
+            updatedAt: proRec.updatedAt || null,
+          }
+        : null,
+      credits: {
+        balance: publicBalance(rec),
+        subscription: rec.subscription,
+        subscriptionActive: creditsSubActive,
+        subscriptionEndsAt: rec.subscriptionEndsAt || null,
+      },
     }),
   };
 };

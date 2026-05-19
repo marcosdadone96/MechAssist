@@ -369,6 +369,17 @@ a.site-nav__btn {
   border-color: #94a3b8;
 }
 
+.hub-user-menu__billing-msg {
+  margin: 0.35rem 0.85rem 0.5rem;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: #b45309;
+}
+
+.hub-user-menu__billing-msg--ok {
+  color: #166534;
+}
+
 .hub-user-menu__nav {
   display: flex;
   flex-direction: column;
