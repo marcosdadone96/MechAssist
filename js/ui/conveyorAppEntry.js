@@ -13,7 +13,7 @@ const tool = toolAttr === 'inclined' ? 'inclined' : 'flat';
 
 mountTierStatusBar();
 
-if (isCreditsSystemEnabled() && !getCurrentUser()?.email) {
+if (!getCurrentUser()?.email) {
   const { initGuestCalcMode } = await import('./guestCalcMode.js');
   initGuestCalcMode();
 }

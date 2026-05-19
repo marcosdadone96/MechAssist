@@ -121,15 +121,22 @@ export async function loginAccount(fields, opts = {}) {
   if (!res.ok) {
     throw new Error(mapLoginError(data.error || 'default', lang));
   }
-  persistServerSession({
+  const user = persistServerSession({
     name: data.user?.name,
     email: data.user?.email,
     authToken: data.token,
   });
+  if (!user?.email || !user?.authToken) {
+    throw new Error(
+      lang === 'en'
+        ? 'Could not save your session. Try again or use register.html.'
+        : 'No se pudo guardar la sesi\u00f3n. Int\u00e9ntelo de nuevo o use register.html.',
+    );
+  }
   if (FEATURES.useSupabaseRLS) {
     await syncSupabaseSessionFromNetlifyJwt();
   }
-  return getCurrentUser();
+  return user;
 }
 
 /**

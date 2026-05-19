@@ -166,24 +166,22 @@ renderHubProBadges();
 ensureHomeAccountControls();
 wirePlansLinksForLoggedInUser();
 
-if (isCreditsSystemEnabled()) {
-  queueMicrotask(async () => {
-    const { isPromoEmbed } = await import('../util/promoMode.js');
-    if (!getCurrentUser()?.email && !isPromoEmbed()) {
-      const { initGuestCalcMode } = await import('./guestCalcMode.js');
-      initGuestCalcMode();
-    } else {
-      const { bootPageCredits } = await import('./creditsPageBoot.js');
-      await bootPageCredits();
-    }
-    const hubRoot = document.getElementById('lab-hub-root');
-    if (hubRoot) {
-      const { applyHubCalcCreditBadges, watchHubCalcCreditBadges } = await import('./hubCreditsBadges.js');
-      applyHubCalcCreditBadges(hubRoot);
-      watchHubCalcCreditBadges(hubRoot);
-    }
-  });
-}
+queueMicrotask(async () => {
+  const { isPromoEmbed } = await import('../util/promoMode.js');
+  if (!getCurrentUser()?.email && !isPromoEmbed()) {
+    const { initGuestCalcMode } = await import('./guestCalcMode.js');
+    initGuestCalcMode();
+  } else if (isCreditsSystemEnabled()) {
+    const { bootPageCredits } = await import('./creditsPageBoot.js');
+    await bootPageCredits();
+  }
+  const hubRoot = document.getElementById('lab-hub-root');
+  if (hubRoot) {
+    const { applyHubCalcCreditBadges, watchHubCalcCreditBadges } = await import('./hubCreditsBadges.js');
+    applyHubCalcCreditBadges(hubRoot);
+    watchHubCalcCreditBadges(hubRoot);
+  }
+});
 
 if (FEATURES.useServerAuth) {
   queueMicrotask(() => {

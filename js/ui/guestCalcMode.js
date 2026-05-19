@@ -1,7 +1,6 @@
 /**
- * Modo visitante (opcion B): presets demo; valores propios -> registro.
+ * Visitantes sin cuenta: solo lectura en calculadoras (lab, m\u00e1quinas, hidr\u00e1ulica).
  */
-import { isCreditsSystemEnabled } from '../config/credits.js';
 import { isPromoEmbed } from '../util/promoMode.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { showCreditsModal } from './creditsUi.js';
@@ -17,19 +16,23 @@ function registerUrl() {
   return `register.html${next}`;
 }
 
+export function isGuestCalcModeActive() {
+  return document.documentElement.hasAttribute('data-guest-calc');
+}
+
 /**
  * @param {HTMLElement} root
  */
 function mountGuestBanner(root) {
   if (document.getElementById('guest-calc-banner')) return;
   const en = langEn();
-  const bar = document.createElement('di' + 'v');
+  const bar = document.createElement('div');
   bar.id = 'guest-calc-banner';
   bar.className = 'guest-calc-banner';
   bar.setAttribute('role', 'status');
   bar.innerHTML = en
-    ? `<p><strong>Demo mode.</strong> Try the example presets below. To use your own values and save results, <a href="${registerUrl()}">create a free account</a>.</p>`
-    : `<p><strong>Modo demostraci\u00f3n.</strong> Prueba los ejemplos t\u00edpicos. Para usar tus valores y guardar resultados, <a href="${registerUrl()}">crea una cuenta gratuita</a>.</p>`;
+    ? `<p><strong>View only.</strong> You can see fields and results. <a href="${registerUrl()}">Sign in or register</a> to edit values, save and export PDF.</p>`
+    : `<p><strong>Solo lectura.</strong> Puede ver campos y resultados. <a href="${registerUrl()}">Inicie sesi\u00f3n o reg\u00edstrese</a> para editar, guardar y exportar PDF.</p>`;
   const head = root.querySelector('.lab-calc-page-head, .flat-sidebar__head, section.panel h2');
   if (head?.parentElement) {
     head.parentElement.insertBefore(bar, head.nextSibling);
@@ -41,20 +44,17 @@ function mountGuestBanner(root) {
 function showGuestRegisterModal() {
   const en = langEn();
   showCreditsModal({
-    title: en ? 'Sign in to customize' : 'Reg\u00edstrate para personalizar',
+    title: en ? 'Sign in to edit' : 'Inicie sesi\u00f3n para editar',
     body: en
-      ? 'You are viewing a demonstration. Create a free account to enter your own data, run full calculations and export PDFs.'
-      : 'Est\u00e1s en modo demostraci\u00f3n. Crea una cuenta gratuita para introducir tus datos, calcular con tus valores y exportar PDF.',
-    primaryLabel: en ? 'Create account' : 'Crear cuenta',
+      ? 'This calculator is view-only for guests. Create a free account or sign in to change values and save your work.'
+      : 'Esta calculadora es solo lectura para visitantes. Cree una cuenta gratuita o inicie sesi\u00f3n para cambiar valores y guardar.',
+    primaryLabel: en ? 'Sign in / Register' : 'Entrar / Registrarse',
     primaryHref: registerUrl(),
-    secondaryLabel: en ? 'Continue demo' : 'Seguir en demo',
+    secondaryLabel: en ? 'Continue viewing' : 'Seguir viendo',
     onSecondary: () => {},
   });
 }
 
-/**
- * Inicializa modo visitante en calculadoras y maquinas.
- */
 function isAuthAccountPage() {
   const file = (location.pathname.split('/').pop() || '').toLowerCase();
   if (file === 'register.html' || file === 'checkout.html') return true;
@@ -63,11 +63,32 @@ function isAuthAccountPage() {
   );
 }
 
+function isHubBrowsePage() {
+  return Boolean(document.querySelector('main.lab-main #lab-hub-root'));
+}
+
+/** @type {MutationObserver | null} */
+let guestLockObserver = null;
+
+function applyGuestInputLock() {
+  if (!isGuestCalcModeActive()) return;
+  const root =
+    document.querySelector('main.lab-main') ||
+    document.querySelector('main.app-main') ||
+    document.querySelector('main');
+  if (!(root instanceof HTMLElement)) return;
+  const inputsRoot = findCalcInputsRoot() || root;
+  lockCalcInputs(inputsRoot, { allowPresets: false, useDisabled: true });
+}
+
+/**
+ * Inicializa modo visitante en calculadoras y m\u00e1quinas.
+ */
 export function initGuestCalcMode() {
   if (isPromoEmbed()) return;
-  if (!isCreditsSystemEnabled()) return;
   if (getCurrentUser()?.email) return;
   if (isAuthAccountPage()) return;
+  if (isHubBrowsePage()) return;
 
   const root =
     document.querySelector('main.lab-main') ||
@@ -77,22 +98,35 @@ export function initGuestCalcMode() {
 
   document.documentElement.setAttribute('data-guest-calc', '1');
   mountGuestBanner(root);
+  applyGuestInputLock();
 
   const inputsRoot = findCalcInputsRoot() || root;
-  lockCalcInputs(inputsRoot, { allowPresets: true });
+  if (!inputsRoot.dataset.guestFocusWired) {
+    inputsRoot.dataset.guestFocusWired = '1';
+    inputsRoot.addEventListener(
+      'focusin',
+      (ev) => {
+        const t = ev.target;
+        if (!(t instanceof HTMLElement)) return;
+        if (!t.matches('input, select, textarea, button')) return;
+        if (t.closest('[data-guest-allow]')) return;
+        if (t.classList.contains('calc-input-locked') || t.disabled) {
+          showGuestRegisterModal();
+          t.blur();
+        }
+      },
+      true,
+    );
+  }
 
-  inputsRoot.addEventListener(
-    'focusin',
-    (ev) => {
-      const t = ev.target;
-      if (!(t instanceof HTMLElement)) return;
-      if (!t.matches('input, select, textarea')) return;
-      if (t.closest('.lab-presets-bar, [data-guest-allow]')) return;
-      if (t.classList.contains('calc-input-locked')) {
-        showGuestRegisterModal();
-        t.blur();
-      }
-    },
-    true,
-  );
+  if (!guestLockObserver) {
+    guestLockObserver = new MutationObserver(() => {
+      applyGuestInputLock();
+    });
+    guestLockObserver.observe(root, { childList: true, subtree: true });
+  }
+}
+
+export function syncGuestInputLock() {
+  applyGuestInputLock();
 }

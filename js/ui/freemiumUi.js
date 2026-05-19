@@ -47,14 +47,26 @@ function showAuthFormError(message) {
   errEl.hidden = false;
 }
 
-function finishAuthSuccess() {
+async function finishAuthSuccess() {
+  const u = getCurrentUser();
+  if (!u?.email || (FEATURES.useServerAuth && !u?.serverAuth)) {
+    showAuthFormError(
+      modalLang() === 'en'
+        ? 'Sign-in did not complete. Check your email and password.'
+        : 'No se complet\u00f3 el inicio de sesi\u00f3n. Revise correo y contrase\u00f1a.',
+    );
+    return;
+  }
   const next = pendingAuthNext.trim();
   pendingAuthNext = '';
   clearAuthFormError();
   closeModal();
-  import('../services/creditsApi.js')
-    .then((m) => m.refreshCreditsAfterAuth())
-    .catch(() => {});
+  try {
+    const { refreshCreditsAfterAuth } = await import('../services/creditsApi.js');
+    await refreshCreditsAfterAuth();
+  } catch (_) {
+    /* ignore */
+  }
   if (next) {
     try {
       const url = new URL(next, window.location.href);
@@ -210,7 +222,7 @@ document.addEventListener('click', (e) => {
             { lang },
           );
         }
-        finishAuthSuccess();
+        await finishAuthSuccess();
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         showAuthFormError(msg);

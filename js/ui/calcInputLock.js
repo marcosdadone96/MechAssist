@@ -88,9 +88,10 @@ export function findCalcInputsRoot() {
       return null;
     }
     return (
+      labMain.querySelector('.lab-calc-layout') ||
       labMain.querySelector('.lab-calc-layout__inputs') ||
       labMain.querySelector('.lab-grid') ||
-      null
+      labMain
     );
   }
   return (

@@ -134,9 +134,10 @@ export async function loginLocalUser({ email, password }, opts = {}) {
 }
 
 export function persistServerSession({ name, email, authToken }) {
-  const nm = String(name || '').trim();
   const em = String(email || '').trim().toLowerCase();
   const tok = String(authToken || '').trim();
+  let nm = String(name || '').trim();
+  if (!nm && em) nm = em.split('@')[0] || em;
   if (!nm || !em || !tok) return null;
   const user = {
     id: 'srv',

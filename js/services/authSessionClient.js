@@ -52,8 +52,8 @@ export function handleAuthSessionEnded(reason = 'expired') {
 export function handleAuthHttpResponse(res, data) {
   if (res?.status !== 401) return false;
   const parsed = data !== undefined ? data : null;
-  const revoked = isSessionRevokedResponse(res, parsed);
-  handleAuthSessionEnded(revoked ? 'revoked' : 'expired');
+  if (!isSessionRevokedResponse(res, parsed)) return false;
+  handleAuthSessionEnded('revoked');
   return true;
 }
 
