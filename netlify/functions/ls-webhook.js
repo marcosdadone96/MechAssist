@@ -225,28 +225,57 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ received: true }) };
   }
 
+  console.log(1034986, {
+    event: eventName,
+    kind,
+    email: rec.email,
+    lemon_variant_id: attrs.variant_id,
+    lemon_product_id: attrs.product_id,
+    lemon_product_name: attrs.product_name,
+    lemon_variant_name: attrs.variant_name,
+    lemon_status: attrs.status,
+    variantIdResolved: rec.variantId,
+    subscription_id: data?.id ?? null,
+    order_id: attrs.order_id ?? null,
+  });
+
   const stored = toStored(rec);
   await store.setJSON(key, stored);
 
-  const creditTier = tierFromVariant(rec.variantId);
+  const creditTier = tierFromVariant(rec.variantId) || tierFromSubscriptionAttrs(attrs);
   const orderPaid = kind === 'order' && String(attrs.status || '').toLowerCase() === 'paid';
   const calcSlug = extractCalcSlugFromOrder(attrs, payload.meta);
   const isUnlockProduct =
     creditTier === 'calc_unlock' || (kind === 'order' && isCalcUnlockVariant(rec.variantId));
 
-  if (creditTier === 'unlimited' && stored.active) {
+  const st = String(attrs.status || '').toLowerCase();
+  const grantSubscription =
+    stored.active ||
+    st === 'active' ||
+    st === 'on_trial' ||
+    st === 'past_due' ||
+    st === 'cancelled';
+
+  if (creditTier === 'unlimited' && grantSubscription) {
     await applySubscription(store, rec.email, {
       tier: 'unlimited',
       endsAt: rec.endsAt,
     });
-  } else if (creditTier === 'starter' && stored.active) {
+    if (!stored.active) {
+      await store.setJSON(key, { ...stored, active: true, status: stored.status || attrs.status });
+    }
+  } else if (creditTier === 'starter' && grantSubscription) {
     await applySubscription(store, rec.email, {
       tier: 'starter',
       endsAt: rec.endsAt,
     });
-  } else if (creditTier === 'starter' && !stored.active) {
+    if (!stored.active) {
+      await store.setJSON(key, { ...stored, active: true, status: stored.status || attrs.status });
+    }
+    console.log(`ls-webhook: starter_applied email=${rec.email} credits_granted=1`);
+  } else if (creditTier === 'starter' && !grantSubscription) {
     console.warn(
-      `ls-webhook: starter_inactive email=${rec.email} status=${stored.status} variant=${rec.variantId} product=${attrs.product_name || '-'}`,
+      `ls-webhook: starter_skipped email=${rec.email} status=${stored.status} variant=${rec.variantId} product=${attrs.product_name || '-'}`,
     );
   } else if (orderPaid && isUnlockProduct && calcSlug) {
     const applied = await applyCalcUnlock(store, rec.email, calcSlug);

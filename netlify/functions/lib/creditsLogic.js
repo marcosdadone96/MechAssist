@@ -8,6 +8,7 @@ const {
   emailBlobKey,
   isCalcUnlockVariant,
   tierFromVariant,
+  tierFromSubscriptionAttrs,
   subscriptionRecordActive: proSubscriptionRecordActive,
 } = require('./proEntitlementLogic.js');
 const { isAllowedCalcUnlockSlug } = require('./calcUnlockCatalog.js');
@@ -291,7 +292,7 @@ async function applySubscription(store, email, sub) {
   rec.subscriptionEndsAt = sub.endsAt || null;
   const isActiveStarter =
     sub.tier === 'starter' && subscriptionActive(rec);
-  if (isActiveStarter && !wasActiveStarter) {
+  if (isActiveStarter && (!wasActiveStarter || rec.credits < COST_CALC)) {
     rec.credits = WELCOME_TOTAL;
     rec.welcomeGranted = true;
   }
@@ -309,7 +310,12 @@ async function syncSubscriptionFromProRecord(store, email, proRec) {
   if (!proRec || !proSubscriptionRecordActive(proRec)) {
     return { ok: false, error: 'no_active_subscription' };
   }
-  const tier = tierFromVariant(proRec.variantId);
+  const tier =
+    tierFromVariant(proRec.variantId) ||
+    tierFromSubscriptionAttrs({
+      variant_id: proRec.variantId,
+      product_name: proRec.productName,
+    });
   if (tier !== 'starter' && tier !== 'unlimited') {
     return { ok: false, error: 'not_subscription_tier' };
   }

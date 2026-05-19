@@ -193,8 +193,8 @@ export function billingStatusMessage(hint, lang = 'es') {
       'Plan synced successfully.',
     ],
     lemon_webhook_never_received: [
-      'Lemon aún no ha notificado este correo al servidor. Revise el webhook (URL ls-webhook, modo test/live, mismo email en el pago) y pulse «Reenviar» en la suscripción.',
-      'Lemon has not notified this email yet. Check webhook (ls-webhook URL, test/live mode, same checkout email) and resend from the subscription.',
+      'Lemon no tiene datos para este correo. Inicie sesión con el mismo email del pago (p. ej. marcosdadone96@gmail.com si pagó con ese) y reenvíe el webhook.',
+      'No Lemon data for this email. Sign in with the same email used at checkout, then resend the webhook.',
     ],
     lemon_record_inactive: [
       'Hay registro en Lemon pero está inactivo. Compruebe la suscripción en Lemon o el signing secret en Netlify.',

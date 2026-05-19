@@ -101,6 +101,10 @@ exports.handler = async (event) => {
       ok: true,
       email,
       hint,
+      message:
+        hint === 'lemon_webhook_never_received'
+          ? `No hay datos Lemon para ${email}. ¿Mismo correo que en el pago?`
+          : undefined,
       lemon: proRec
         ? {
             active: proRec.active === true,
