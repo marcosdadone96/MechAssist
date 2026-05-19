@@ -16,6 +16,7 @@ import { calcSlugFromPath, isCreditsSystemEnabled } from '../config/credits.js';
 import { hasProductionProSessionCache } from './proEntitlement.js';
 import { getCachedCreditsState, isCalcSlugUnlocked } from './creditsApi.js';
 import { getCurrentUser } from './localAuth.js';
+import { shouldLockCalcInputsForCredits } from './creditSession.js';
 
 /** Atajos Pro solo-navegador desactivados (licencia local, URL, usos prueba). */
 function clientProShortcutsDisabled() {
@@ -111,10 +112,33 @@ export function getEffectiveTier() {
   return 'free';
 }
 
+/** Calculadoras de maquinas: acceso por creditos (cuenta) en lugar de paywall Pro. */
+export function machineFormsUseCreditsAccess() {
+  return isCreditsSystemEnabled();
+}
+
+/** Usuario registrado con sesion en calculadoras maquinas (creditos o Pro legacy). */
+export function hasMachineCalculatorAccountAccess() {
+  const u = getCurrentUser();
+  return Boolean(u?.email && u?.serverAuth);
+}
+
+/** Puede editar entradas: con creditos disponibles o Pro; sin creditos solo lectura. */
+export function canEditMachineCalculatorInputs() {
+  if (FEATURES.publicFreeRelease === true) return true;
+  if (FEATURES.devSimulatePremium) return true;
+  if (machineFormsUseCreditsAccess()) {
+    if (!hasMachineCalculatorAccountAccess()) return false;
+    return !shouldLockCalcInputsForCredits();
+  }
+  return isPremiumForMachineForm();
+}
+
 /** @param {'flat'|'inclined'} tool — solo entradas de conveyorAppEntry */
 export function isToolUnlocked(tool) {
   if (getEffectiveTier() === 'premium') return true;
   if (tool === 'flat' || tool === 'inclined') return true;
+  if (machineFormsUseCreditsAccess() && hasMachineCalculatorAccountAccess()) return true;
   return false;
 }
 
@@ -233,6 +257,9 @@ export function canUseGearmotorCloudSave() {
 export function isPremiumForMachineForm() {
   if (FEATURES.publicFreeRelease === true) return true;
   if (FEATURES.devSimulatePremium) return true;
+  if (machineFormsUseCreditsAccess() && hasMachineCalculatorAccountAccess()) {
+    return true;
+  }
   if (hasCreditsUnlimitedAccess()) return true;
   if (hasCreditsCalcUnlockForCurrentPage()) return true;
   if (FEATURES.proClientPolicy === 'production') {

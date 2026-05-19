@@ -26,8 +26,8 @@ function mountNoCreditsBanner(root) {
   bar.className = 'no-credits-lock-banner';
   bar.setAttribute('role', 'status');
   bar.innerHTML = en
-    ? `<p><strong>No credits left</strong> in this area. Inputs are read-only until you add credits or unlock this calculator. <a href="${checkout}">View plans</a></p>`
-    : `<p><strong>Sin cr\u00e9ditos</strong> en esta zona. Los campos est\u00e1n bloqueados hasta que recargues cr\u00e9ditos o desbloquees esta calculadora. <a href="${checkout}">Ver planes</a></p>`;
+    ? `<p><strong>No credits left.</strong> You can still view all fields and results; inputs are read-only. Recharge credits to edit again. <a href="${checkout}">View plans</a></p>`
+    : `<p><strong>Sin cr\u00e9ditos.</strong> Puede ver todos los campos y resultados; los datos est\u00e1n en solo lectura. Recargue cr\u00e9ditos para volver a editar. <a href="${checkout}">Ver planes</a></p>`;
   const head = root.querySelector('.lab-calc-page-head, .flat-sidebar__head, section.panel h2, .lab-calc-layout__inputs');
   if (head instanceof HTMLElement && head.parentElement) {
     head.parentElement.insertBefore(bar, head.nextSibling);

@@ -1,5 +1,8 @@
 import { isFreeMachineFullAccess } from '../config/freemium.js';
-import { isPremiumForMachineForm } from '../services/accessTier.js';
+import {
+  isPremiumForMachineForm,
+  machineFormsUseCreditsAccess,
+} from '../services/accessTier.js';
 import { startProCheckoutFlow } from '../services/proCheckoutFlow.js';
 
 const LOCK_HTML = `
@@ -47,6 +50,7 @@ function lockOneDetails(detailsEl) {
 }
 
 export function applyMachinePremiumGates(root = document) {
+  if (machineFormsUseCreditsAccess()) return;
   if (isFreeMachineFullAccess()) return;
   if (isPremiumForMachineForm()) return;
   root.querySelectorAll('details').forEach((el) => {
@@ -54,4 +58,3 @@ export function applyMachinePremiumGates(root = document) {
     lockOneDetails(el);
   });
 }
-

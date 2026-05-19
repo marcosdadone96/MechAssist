@@ -4,7 +4,7 @@
  */
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
-import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
 import { bindLabUnitSelectors, formatLength, getLabUnitPrefs } from '../lab/labUnitPrefs.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
@@ -1103,7 +1103,7 @@ const SPRING_PRESETS = [
 ];
 mountLabPresetsBar('springPresetsBar', SPRING_PRESETS, debounced);
 
-mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountSpring'), {
+mountLabCloudSaveBar('compression_spring', {
   getPayload: () => springPdfSnapshot,
   getDiagramElements: () => {
     const a = document.getElementById('springDiagram');

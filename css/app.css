@@ -3538,6 +3538,14 @@ html[data-conveyor-tool='bucket'] #beResults {
   letter-spacing: 0.03em;
 }
 
+/* Créditos: máquinas por saldo, sin paywall Pro en formularios del hub */
+html[data-credits-machines] main.app-main .premium-flag,
+html[data-credits-machines] main.lab-main .premium-flag,
+html[data-credits-machines] .lab-badge--pro,
+html[data-credits-machines] .premium-gate-badge {
+  display: none !important;
+}
+
 /* --- Elevador de cangilones (asistente) --- */
 .be-wizard-nav {
   display: flex;

@@ -29,8 +29,19 @@ function badgeText() {
 }
 
 function isProNode(anchor) {
+  if (isCreditsSystemEnabled()) return false;
   const href = anchor.getAttribute('href') || '';
   return isProCalculatorPath(href);
+}
+
+function applyCreditsMachinesHubUi() {
+  if (!isCreditsSystemEnabled()) return;
+  document.documentElement.setAttribute('data-credits-machines', '1');
+  document.querySelectorAll(
+    'main.app-main .premium-flag, main.lab-main .premium-flag, .lab-badge--pro, .premium-gate-badge',
+  ).forEach((el) => {
+    el.hidden = true;
+  });
 }
 
 function applyPublicFreeReleaseHomeUi() {
@@ -150,6 +161,7 @@ function ensureHomeAccountControls() {
 }
 
 applyPublicFreeReleaseHomeUi();
+applyCreditsMachinesHubUi();
 renderHubProBadges();
 ensureHomeAccountControls();
 wirePlansLinksForLoggedInUser();
@@ -183,6 +195,7 @@ if (FEATURES.useServerAuth) {
 
 window.addEventListener('home-language-changed', () => {
   applyPublicFreeReleaseHomeUi();
+  applyCreditsMachinesHubUi();
   renderHubProBadges();
   ensureHomeAccountControls();
   wirePlansLinksForLoggedInUser();

@@ -3,7 +3,11 @@
  */
 
 import { isPublicFreeRelease } from '../config/features.js';
-import { isPremiumEffective } from '../services/accessTier.js';
+import {
+  canEditMachineCalculatorInputs,
+  isPremiumEffective,
+  machineFormsUseCreditsAccess,
+} from '../services/accessTier.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import {
   collectInputsFromScope,
@@ -27,11 +31,13 @@ function getLang() {
   }
 }
 
-function getTx(lang, isPro, hasAccount) {
+function getTx(lang, showProBadge, hasAccount, opts = {}) {
   const free = isPublicFreeRelease();
+  const creditsMode = opts.creditsMode === true;
+  const controlsEnabled = opts.controlsEnabled !== false;
   if (lang === 'en') {
     return {
-      panelTitle: free
+      panelTitle: free || !showProBadge
         ? 'Machine configuration'
         : '<span class="premium-flag">Pro</span> Machine Configuration',
       namePlaceholder: 'Name (e.g. Production 1)',
@@ -43,11 +49,15 @@ function getTx(lang, isPro, hasAccount) {
         ? !hasAccount
           ? 'Sign in to save and load configurations in this browser.'
           : 'Saved in this browser (localStorage) for your signed-in account.'
-        : !isPro
-          ? 'Pro feature: activate Pro version to save and load configurations.'
-          : !hasAccount
-            ? 'Sign in to save and load configurations in this browser.'
-            : 'Saved in this browser (localStorage) for your signed-in account.',
+        : creditsMode && !controlsEnabled
+          ? 'No credits left: fields are read-only. Recharge credits to save configurations.'
+          : creditsMode && hasAccount
+            ? 'Saved in this browser (localStorage) for your signed-in account.'
+            : !showProBadge
+              ? 'Sign in to save and load configurations in this browser.'
+              : !hasAccount
+                ? 'Sign in to save and load configurations in this browser.'
+                : 'Pro feature: activate Pro version to save and load configurations.',
       promptName: 'Enter a name to save.',
       saved: (name) => `Configuration "${name}" saved.`,
       pickToLoad: 'Select a configuration to load.',
@@ -59,7 +69,7 @@ function getTx(lang, isPro, hasAccount) {
     };
   }
   return {
-    panelTitle: free
+    panelTitle: free || !showProBadge
       ? 'Configuraci\u00f3n de la m\u00e1quina'
       : '<span class="premium-flag">Pro</span> Configuraci\u00f3n de la m\u00e1quina',
     namePlaceholder: 'Nombre (ej. Producci\u00f3n 1)',
@@ -71,11 +81,15 @@ function getTx(lang, isPro, hasAccount) {
       ? !hasAccount
         ? 'Inicie sesi\u00f3n para guardar y cargar configuraciones en este navegador.'
         : 'Se guardan en este navegador (localStorage) asociadas a su cuenta.'
-      : !isPro
-        ? 'Funci\u00f3n Pro: active la versi\u00f3n Pro para guardar y cargar configuraciones.'
-        : !hasAccount
-          ? 'Inicie sesi\u00f3n para guardar y cargar configuraciones en este navegador.'
-          : 'Se guardan en este navegador (localStorage) asociadas a su cuenta.',
+      : creditsMode && !controlsEnabled
+        ? 'Sin cr\u00e9ditos: solo lectura. Recargue cr\u00e9ditos para guardar configuraciones.'
+        : creditsMode && hasAccount
+          ? 'Se guardan en este navegador (localStorage) asociadas a su cuenta.'
+          : !showProBadge
+            ? 'Inicie sesi\u00f3n para guardar y cargar configuraciones en este navegador.'
+            : !hasAccount
+              ? 'Inicie sesi\u00f3n para guardar y cargar configuraciones en este navegador.'
+              : 'Funci\u00f3n Pro: active la versi\u00f3n Pro para guardar y cargar configuraciones.',
     promptName: 'Indique un nombre para guardar.',
     saved: (name) => `Configuraci\u00f3n "${name}" guardada.`,
     pickToLoad: 'Seleccione una configuraci\u00f3n para cargar.',
@@ -225,11 +239,11 @@ export function mountMachineConfigBar() {
   if (document.getElementById('machineConfigBar')) return;
 
   const tool = getToolKey();
-  const isPro = isPremiumEffective();
   const hasAccount = Boolean(accountEmail());
-  /** Modo gratuito total: Pro efectivo para todos; solo hace falta sesión para guardar. */
-  const controlsEnabled = isPro && hasAccount;
-  const tx = getTx(getLang(), isPro, hasAccount);
+  const creditsMode = machineFormsUseCreditsAccess();
+  const isPro = isPremiumEffective() || (creditsMode && hasAccount);
+  const controlsEnabled = canEditMachineCalculatorInputs() && hasAccount;
+  const tx = getTx(getLang(), isPro && !creditsMode, hasAccount, { creditsMode, controlsEnabled });
   const host = document.createElement('section');
   host.className = 'panel machine-config-panel';
   host.id = 'machineConfigBar';
@@ -263,7 +277,7 @@ export function mountMachineConfigBar() {
   const loadBtn = host.querySelector('#mcLoad');
   const delBtn = host.querySelector('#mcDelete');
   if (!nameIn || !select || !msg || !saveBtn || !loadBtn || !delBtn) return;
-  if (!isPro) return;
+  if (!isPro && !creditsMode) return;
 
   if (!hasAccount) {
     refreshSelect(select, {}, tx);
