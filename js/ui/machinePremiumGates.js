@@ -49,6 +49,9 @@ function lockOneDetails(detailsEl) {
 export function applyMachinePremiumGates(root = document) {
   if (isFreeMachineFullAccess()) return;
   if (isPremiumForMachineForm()) return;
-  root.querySelectorAll('details').forEach((el) => lockOneDetails(el));
+  root.querySelectorAll('details').forEach((el) => {
+    if (el.closest('[data-be-panel][hidden]')) return;
+    lockOneDetails(el);
+  });
 }
 

@@ -662,7 +662,11 @@ function computeCore() {
     resultsBox.innerHTML = metrics.join('');
     const wrap = document.createElement('div');
     wrap.className = 'spring-chart-embed';
-    wrap.innerHTML = `<p class="spring-chart-embed__title">${uxCopy('Caracteristica F-s (hasta bloqueo)', 'F-s curve (to solid)')}</p><svg id="${chartHostId}" xmlns="http://www.w3.org/2000/svg" width="100%" height="140"></svg>`;
+    const chartTitle =
+      isEnglishUi() && COMPRESSION_SPRING_EN['spring.chartTitle']
+        ? COMPRESSION_SPRING_EN['spring.chartTitle']
+        : 'Característica F-s (hasta bloqueo)';
+    wrap.innerHTML = `<p class="spring-chart-embed__title">${chartTitle}</p><svg id="${chartHostId}" xmlns="http://www.w3.org/2000/svg" width="100%" height="140"></svg>`;
     resultsBox.appendChild(wrap);
     renderFsChart(document.getElementById(chartHostId), Math.max(0, sMax), Fn, k, sOp);
   }
@@ -1016,6 +1020,16 @@ document.getElementById('springResetDefaults')?.addEventListener('click', () => 
   syncSpringLabTierUi();
   syncSpringWorkInputsUi();
   runCalcWithIndustrialFeedback(resultsWrap, computeCore);
+});
+
+renderSpringDiagram(document.getElementById('springDiagram'), {
+  d: 4,
+  Dm: 24,
+  De: 28,
+  L0: 65,
+  n: 8,
+  sSim: 0,
+  sMax: 12,
 });
 
 runCalcWithIndustrialFeedback(resultsWrap, computeCore);

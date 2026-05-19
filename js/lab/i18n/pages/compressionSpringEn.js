@@ -10,6 +10,14 @@ export const COMPRESSION_SPRING_EN = {
     'This module estimates stiffness, deflection under load and wire shear stress using the Wahl correction factor for compression helical springs aligned with DIN 2089 philosophy in indicative form, including buckling hints when slenderness is high. Useful for valve springs, safety stops and return mechanisms before ordering certified material. Typical for product engineers and short-run prototyping. For example, it can show whether increasing the spring index C helps lower stress when free travel is large but radial clearance is tight.',
   'spring.methodLeadHtml':
     'Stiffness <strong>k</strong>, <strong>service</strong> condition (<strong>s<sub>op</sub></strong> or <strong>F<sub>op</sub></strong>), stress with <strong>K</strong> (Wahl), <strong>buckling</strong> check (educational slenderness), solid <strong>F<sub>n</sub></strong> and optional <strong>fatigue</strong> data. Material values and tables are simplified; always validate with <strong>DIN/EN</strong>, drawing and manufacturer.',
+  'spring.nextStepsAria': 'Typical next step',
+  'spring.nextStepsTitle': 'Typical next step',
+  'spring.nextLi1Html':
+    '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 guided rod or mandrel diameter.',
+  'spring.nextLi2Html':
+    '<a href="calc-keys-din6885.html">Keys DIN 6885</a> \u2014 torque coupling on the shaft.',
+  'spring.nextLi3Html':
+    '<a href="calc-bearings.html">Bearings \u00b7 L10</a> or <a href="calc-bearings-catalog.html">62xx catalogue</a> \u2014 supports.',
   'spring.presetsLabel': 'Typical examples:',
   'spring.preset1': 'Valve spring \u00b7 d 4 mm',
   'spring.preset2': 'Stop \u00b7 high rate',
@@ -97,4 +105,16 @@ export const COMPRESSION_SPRING_EN = {
   'spring.mat.aisi302': 'Stainless AISI 302',
   'spring.mat.piano': 'Piano wire',
   'spring.mat.bronze': 'Phosphor bronze',
+  'spring.pdfExportH2Html':
+    '<span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Export report',
+  'spring.pdfSectionHint':
+    'The block below is always shown: with Pro you can download the full engineering PDF. On the free plan you see a short teaser and a link to upgrade.',
+  'spring.relatedHintHtml':
+    'Sizing a full mechanism? <a href="transmission-lab.html">More lab calculators \u2192</a>',
+  'spring.unitsBarAria': 'Units in results',
+  'spring.convertTitle': 'Unit converter (compression spring)',
+  'spring.convertTip':
+    'Lengths and strokes; forces (N, kN); stiffness k (N/mm); stress MPa or pressure bar (MPa = N/mm\u00b2).',
+  'spring.phTauAdm': 'Empty = catalogue',
+  'spring.chartTitle': 'F\u2013s curve (to solid)',
 };

@@ -293,16 +293,56 @@ function applyBePresetFromId(presetId) {
 
 function drawDiagramOnly() {
   const svg = document.getElementById('beDiagram');
-  if (!lastP || !lastR) return;
-  renderBucketElevatorDiagram(svg instanceof SVGSVGElement ? svg : null, {
-    liftHeight_m: lastP.liftHeight_m,
-    centerDistance_m: lastP.centerDistance_m,
-    headDrumDiameter_m: lastP.headDrumDiameter_m,
-    bootDrumDiameter_m: lastP.bootDrumDiameter_m,
-    pitch_mm: lastR.pitch_mm,
-    beltSpeed_m_s: lastP.beltSpeed_m_s,
+  if (!(svg instanceof SVGSVGElement)) return;
+  let p = lastP;
+  let pitch_mm = lastR?.pitch_mm;
+  if (!p) {
+    try {
+      p = buildParams();
+    } catch {
+      return;
+    }
+  }
+  if (pitch_mm == null || !Number.isFinite(pitch_mm)) {
+    try {
+      pitch_mm = computeBucketElevator(p, getCurrentLang()).pitch_mm;
+    } catch {
+      pitch_mm = readNum('bePitchManual', 380);
+    }
+  }
+  renderBucketElevatorDiagram(svg, {
+    liftHeight_m: p.liftHeight_m,
+    centerDistance_m: p.centerDistance_m,
+    headDrumDiameter_m: p.headDrumDiameter_m,
+    bootDrumDiameter_m: p.bootDrumDiameter_m,
+    pitch_mm,
+    beltSpeed_m_s: p.beltSpeed_m_s,
     animPhase,
     lang: getCurrentLang(),
+  });
+}
+
+function mountBePdfExport() {
+  const pdfMount = document.getElementById('premiumPdfExportMount');
+  if (!pdfMount) return;
+  const lang = getCurrentLang();
+  const en = lang === 'en';
+  let p;
+  let r;
+  try {
+    p = lastP ?? buildParams();
+    r = lastR ?? computeBucketElevator(p, lang);
+  } catch {
+    return;
+  }
+  const driveReq = getDriveRequirements();
+  mountPremiumPdfExportBar(pdfMount, {
+    getPayload: () => buildBucketPdfPayload(p, r, driveReq),
+    getDiagramElement: () => {
+      const el = document.getElementById('beDiagram');
+      return el instanceof SVGSVGElement ? el : null;
+    },
+    diagramTitle: en ? 'Bucket elevator diagram' : 'Diagrama elevador de cangilones',
   });
 }
 
@@ -316,6 +356,8 @@ function computeAndRenderCore() {
     r = computeBucketElevator(p, lang);
   } catch (e) {
     console.error(e);
+    drawDiagramOnly();
+    mountBePdfExport();
     return;
   }
   lastP = p;
@@ -532,18 +574,7 @@ function computeAndRenderCore() {
         : `<div class="motor-error"><strong>Motorreductores:</strong> ${String(err.message || err)}. Use servidor HTTP si abre en <code>file://</code>.</div>`;
     }
   }
-  const pdfMount = document.getElementById('premiumPdfExportMount');
-  if (pdfMount) {
-    const driveReq = getDriveRequirements();
-    mountPremiumPdfExportBar(pdfMount, {
-      getPayload: () => buildBucketPdfPayload(p, r, driveReq),
-      getDiagramElement: () => {
-        const el = document.getElementById('beDiagram');
-        return el instanceof SVGSVGElement ? el : null;
-      },
-      diagramTitle: en ? 'Bucket elevator diagram' : 'Diagrama elevador de cangilones',
-    });
-  }
+  mountBePdfExport();
   applyMachinePremiumGates();
   foldAllMachineDetailsOncePerPageLoad();
 }
@@ -568,26 +599,59 @@ function fillBucketSelect() {
   sel.value = BUCKET_CATALOG.some((b) => b.id === cur) ? cur : 'b2';
 }
 
+function panelVisibleForWizardStep(panelNum, step) {
+  if (step === 1) return panelNum === 1;
+  if (step === 2) return panelNum === 1 || panelNum === 2;
+  return true;
+}
+
+function openBeAccordionByLabelKey(panelRoot, labelKey) {
+  if (!(panelRoot instanceof HTMLElement)) return;
+  panelRoot.querySelectorAll('details.flat-accordion').forEach((d) => {
+    if (d instanceof HTMLDetailsElement) d.open = false;
+  });
+  const label = panelRoot.querySelector(`[data-be-i18n="${labelKey}"]`);
+  const details = label?.closest('details.flat-accordion');
+  if (details instanceof HTMLDetailsElement) details.open = true;
+}
+
 function setStep(n) {
   const step = Math.max(1, Math.min(3, n));
   document.querySelectorAll('[data-be-panel]').forEach((el) => {
     if (!(el instanceof HTMLElement)) return;
-    const on = Number(el.getAttribute('data-be-panel')) === step;
-    el.hidden = !on;
+    const panelNum = Number(el.getAttribute('data-be-panel'));
+    el.hidden = !panelVisibleForWizardStep(panelNum, step);
   });
   document.querySelectorAll('[data-be-step]').forEach((btn) => {
     if (!(btn instanceof HTMLElement)) return;
     const b = Number(btn.getAttribute('data-be-step')) === step;
     btn.classList.toggle('be-wizard-nav__btn--active', b);
   });
+
+  const panel1 = document.querySelector('[data-be-panel="1"]');
+  if (step === 1) openBeAccordionByLabelKey(panel1, 'beAccGeom');
+  if (step === 2) {
+    openBeAccordionByLabelKey(panel1, 'beAccMat');
+    const panel2 = document.querySelector('[data-be-panel="2"]');
+    openBeAccordionByLabelKey(panel2, 'beAccSel');
+  }
+  if (step === 3) {
+    openBeAccordionByLabelKey(panel1, 'beAccKin');
+    const panel3 = document.querySelector('[data-be-panel="3"]');
+    panel3?.querySelectorAll('details.flat-accordion').forEach((d, i) => {
+      if (d instanceof HTMLDetailsElement) d.open = i === 0;
+    });
+  }
+
   if (step === 3) {
     if (!animId) animId = requestAnimationFrame(animLoop);
   } else {
     cancelAnimationFrame(animId);
     animId = 0;
     animPhase = 0;
-    computeAndRender();
+    drawDiagramOnly();
   }
+  computeAndRender();
 }
 
 fillBucketSelect();
@@ -655,6 +719,7 @@ try {
 
 setStep(1);
 bootMachineCalcView(computeAndRender);
+computeAndRender.runPreview();
 initInfoChipPopovers(document.body);
 
 document.querySelector('main.app-main--be')?.addEventListener('click', (e) => {

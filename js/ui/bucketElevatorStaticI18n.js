@@ -304,6 +304,12 @@ function buildBeI18nDict(en) {
       ? 'Calculation detail for quick audit and traceability.'
       : 'Detalle de c\u00e1lculo para auditor\u00eda r\u00e1pida y trazabilidad de decisiones.',
     bePdfH2: en ? 'Export report' : 'Exportar informe',
+    bePdfH2Html: en
+      ? '<span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Export report'
+      : '<span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Exportar informe',
+    bePdfSectionHint: en
+      ? 'With Pro you can generate the full PDF including the diagram; on the free plan you will see a summary and a link to upgrade.'
+      : 'Con plan Pro puede generar el PDF completo con diagrama; en gratuito ver\u00e1 un resumen y el enlace para contratar.',
     beSchematicH2: en ? 'Schematic' : 'Esquema',
     bePhotoAlt: en
       ? 'Bucket elevator in an industrial plant'

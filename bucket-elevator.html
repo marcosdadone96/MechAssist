@@ -167,7 +167,7 @@
 
         <div class="be-step" data-be-panel="1">
           <section class="panel">
-            <details class="flat-accordion">
+            <details class="flat-accordion" open>
               <summary class="flat-accordion__summary">
                 <span class="flat-accordion__icon" aria-hidden="true">&#9671;</span>
                 <span class="flat-accordion__label" data-be-i18n="beAccGeom">Geometría y capacidad</span>
@@ -484,8 +484,11 @@
             </div>
           </details>
         </section>
-        <section class="panel">
-          <h2><span class="panel-icon">PDF</span> <span data-be-i18n="bePdfH2">Exportar informe</span></h2>
+        <section class="panel flat-pdf-section">
+          <h2 data-be-i18n="bePdfH2Html" data-be-i18n-html><span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Exportar informe</h2>
+          <p class="muted flat-pdf-section__hint" data-be-i18n="bePdfSectionHint">
+            Con plan Pro puede generar el PDF completo con diagrama; en gratuito verá un resumen y el enlace para contratar.
+          </p>
           <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
         </section>
       </div>

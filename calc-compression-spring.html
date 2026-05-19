@@ -130,6 +130,26 @@
           max-height: 280px;
         }
       }
+      .flat-pdf-section {
+        margin-top: 1rem;
+        padding: 0.85rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        background: #fff;
+      }
+      .flat-pdf-section h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1rem;
+        font-weight: 800;
+        color: #0f172a;
+      }
+      .flat-pdf-section__hint {
+        margin: 0 0 0.65rem;
+        font-size: 0.82rem;
+        line-height: 1.45;
+        color: #64748b;
+        max-width: 40rem;
+      }
     </style>
   </head>
   <body class="lab-body">
@@ -179,6 +199,20 @@
             </div>
           </details>
         </header>
+        <nav class="lab-next-steps" data-i18n="spring.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="spring.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="spring.nextLi1Html" data-i18n-html>
+              <a href="calc-shaft.html">Eje &middot; torsi&oacute;n</a> &mdash; di&aacute;metro de v&aacute;stago o mandril gu&iacute;a.
+            </li>
+            <li data-i18n="spring.nextLi2Html" data-i18n-html>
+              <a href="calc-keys-din6885.html">Chavetas DIN 6885</a> &mdash; acople de par en el eje.
+            </li>
+            <li data-i18n="spring.nextLi3Html" data-i18n-html>
+              <a href="calc-bearings.html">Rodamientos &middot; L10</a> o <a href="calc-bearings-catalog.html">cat&aacute;logo 62xx</a> &mdash; apoyos.
+            </li>
+          </ul>
+        </nav>
         <div class="lab-presets-row">
           <span class="lab-presets-row__label" data-i18n="spring.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="springPresetsBar"></div>
@@ -228,8 +262,8 @@
                       </span>
                       <span class="lab-field__label-text" data-i18n="spring.labelTauAdm">&tau;<sub>adm</sub> est&aacute;tica manual (MPa)</span>
                     </label>
-                    <input id="springTauAdmMpa" type="number" min="0" step="any" value="" placeholder="Vac&iacute;o = cat&aacute;logo" />
-                    <span class="hint">L&iacute;mite para &tau;<sub>m</sub> en Goodman</span>
+                    <input id="springTauAdmMpa" type="number" min="0" step="any" value="" placeholder="Vacío = catálogo" data-i18n="spring.phTauAdm" data-i18n-attr="placeholder" />
+                    <span class="hint" data-i18n="spring.hintTauAdm">L&iacute;mite para &tau;<sub>m</sub> en Goodman</span>
                   </div>
                   <div class="lab-field">
                     <label for="springTauW" class="lab-field__label-row">
@@ -238,10 +272,10 @@
                           <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                         </svg>
                       </span>
-                      <span class="lab-field__label-text">&tau;<sub>W</sub> alternante adm. (MPa)</span>
+                      <span class="lab-field__label-text" data-i18n="spring.labelTauW">&tau;<sub>W</sub> alternante adm. (MPa)</span>
                     </label>
                     <input id="springTauW" type="number" min="0" step="any" value="" placeholder="Fabricante / ensayo" />
-                    <span class="hint">Para &tau;<sub>alt</sub> / Goodman docente</span>
+                    <span class="hint" data-i18n="spring.hintTauW">Para &tau;<sub>alt</sub> / Goodman docente</span>
                   </div>
                   <div class="lab-field lab-field--wide">
                     <label for="springAssumptionNote" class="lab-field__label-row">
@@ -250,16 +284,12 @@
                           <path d="M4 19.5V5a2 2 0 012-2h12v14H6l-2 2.5z" />
                         </svg>
                       </span>
-                      <span class="lab-field__label-text">Nota de supuestos (opcional)</span>
+                      <span class="lab-field__label-text" data-i18n="spring.labelAssumptionNote">Nota de supuestos (opcional)</span>
                     </label>
-                    <input id="springAssumptionNote" type="text" maxlength="220" placeholder="Ej. ensayo, norma interna..." />
+                    <input id="springAssumptionNote" type="text" maxlength="220" placeholder="Ej. ensayo, norma interna..." data-i18n="spring.phAssumptionNote" data-i18n-attr="placeholder" />
                   </div>
                 </div>
               </div>
-              <div class="spring-reset-row lab-field lab-field--wide">
-                <button type="button" id="springResetDefaults" class="lab-btn spring-reset-btn" data-i18n="spring.resetDefaults">Restablecer valores por defecto</button>
-              </div>
-
               <div class="lab-field lab-field--wide">
                 <label for="springMaterial" class="lab-field__label-row">
                   <span class="lab-field-ico" title="Material del hilo">
@@ -284,13 +314,13 @@
                   <div class="lab-table-wrap">
                     <table class="lab-table">
                       <thead>
-                        <tr><th>Material</th><th>G (N/mm²)</th></tr>
+                        <tr><th data-i18n="spring.thMaterial">Material</th><th data-i18n="spring.thG">G (N/mm²)</th></tr>
                       </thead>
                       <tbody>
-                        <tr><td>Acero de muelles (50CrV4)</td><td>81.500</td></tr>
-                        <tr><td>Inoxidable AISI 302</td><td>68.000</td></tr>
-                        <tr><td>Cuerda de piano</td><td>81.500</td></tr>
-                        <tr><td>Bronce fosforoso</td><td>42.000</td></tr>
+                        <tr><td data-i18n="spring.gRowSpring">Acero de muelles (50CrV4)</td><td>81.500</td></tr>
+                        <tr><td data-i18n="spring.mat.aisi302">Inoxidable AISI 302</td><td>68.000</td></tr>
+                        <tr><td data-i18n="spring.mat.piano">Cuerda de piano</td><td>81.500</td></tr>
+                        <tr><td data-i18n="spring.mat.bronze">Bronce fosforoso</td><td>42.000</td></tr>
                       </tbody>
                     </table>
                   </div>
@@ -319,13 +349,13 @@
                       <ellipse cx="12" cy="12" rx="5" ry="3" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Referencia de di&aacute;metro</span>
+                  <span class="lab-field__label-text" data-i18n="spring.labelDiaMode">Referencia de di&aacute;metro</span>
                 </label>
                 <select id="springDiaMode">
-                  <option value="dm" selected>Di&aacute;metro medio D<sub>m</sub></option>
-                  <option value="de">Di&aacute;metro exterior D<sub>e</sub></option>
+                  <option value="dm" selected data-i18n="spring.optDm">Di&aacute;metro medio D<sub>m</sub></option>
+                  <option value="de" data-i18n="spring.optDe">Di&aacute;metro exterior D<sub>e</sub></option>
                 </select>
-                <span class="hint">D<sub>m</sub> = D<sub>e</sub> &minus; d</span>
+                <span class="hint" data-i18n="spring.hintDmDe">D<sub>m</sub> = D<sub>e</sub> &minus; d</span>
               </div>
 
               <div class="lab-field lab-field--wide">
@@ -335,7 +365,7 @@
                       <path d="M4 18h16M7 18V9M12 18V6M17 18v-5" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Valor D<sub>m</sub> o D<sub>e</sub> (mm)</span>
+                  <span class="lab-field__label-text" data-i18n="spring.labelDiaValue">Valor D<sub>m</sub> o D<sub>e</sub> (mm)</span>
                 </label>
                 <input id="springDiaValue" type="number" min="1" step="any" value="28" />
               </div>
@@ -348,10 +378,10 @@
                       <path d="M8 18c3-5 7-8 12-8" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Espiras activas n (&minus;)</span>
+                  <span class="lab-field__label-text" data-i18n="spring.labelNActive">Espiras activas n (&minus;)</span>
                 </label>
                 <input id="springNActive" type="number" min="1" step="any" value="8" />
-                <p class="lab-field-help">Entra en <strong>k</strong> como divisor; m&aacute;s espiras ablanda el muelle (menor <strong>k</strong>).</p>
+                <p class="lab-field-help" data-i18n="spring.helpNActive" data-i18n-html>Entra en <strong>k</strong> como divisor; m&aacute;s espiras ablanda el muelle (menor <strong>k</strong>).</p>
               </div>
 
               <div class="lab-field">
@@ -361,10 +391,10 @@
                       <path d="M12 4v16M8 8V6M16 8V6M8 18v2M16 18v2" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Longitud libre L<sub>0</sub> (mm)</span>
+                  <span class="lab-field__label-text" data-i18n="spring.labelL0">Longitud libre L<sub>0</sub> (mm)</span>
                 </label>
                 <input id="springL0" type="number" min="1" step="any" value="65" />
-                <p class="lab-field-help">Sin carga. Con <strong>L<sub>s</sub></strong> (altura s&oacute;lida modelada) da el recorrido &uacute;til hasta bloqueo.</p>
+                <p class="lab-field-help" data-i18n="spring.helpL0" data-i18n-html>Sin carga. Con <strong>L<sub>s</sub></strong> (altura s&oacute;lida modelada) da el recorrido &uacute;til hasta bloqueo.</p>
               </div>
 
               <div class="lab-field lab-field--wide">
@@ -374,14 +404,14 @@
                       <path d="M5 8h14v8H5zM9 8V6M15 8V6" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Extremos</span>
+                  <span class="lab-field__label-text" data-i18n="spring.labelEnds">Extremos</span>
                 </label>
                 <select id="springEnds">
-                  <option value="open">Abiertos</option>
-                  <option value="closed">Cerrados (no rectificados)</option>
-                  <option value="ground" selected>Rectificados y apoyados</option>
+                  <option value="open" data-i18n="spring.optEndsOpen">Abiertos</option>
+                  <option value="closed" data-i18n="spring.optEndsClosed">Cerrados (no rectificados)</option>
+                  <option value="ground" selected data-i18n="spring.optEndsGround">Rectificados y apoyados</option>
                 </select>
-                <p class="lab-field-help"><strong>L<sub>s</sub></strong> &asymp; (n + k<sub>ext</sub>)&middot;d con k<sub>ext</sub> docente 0,5 / 1,5 / 2.</p>
+                <p class="lab-field-help" data-i18n="spring.helpEnds" data-i18n-html><strong>L<sub>s</sub></strong> &asymp; (n + k<sub>ext</sub>)&middot;d con k<sub>ext</sub> docente 0,5 / 1,5 / 2.</p>
               </div>
 
               <div class="lab-field lab-field--wide">
@@ -391,13 +421,13 @@
                       <path d="M12 3v18M8 7h8M8 17h8" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Condici&oacute;n de servicio</span>
+                  <span class="lab-field__label-text" data-i18n="spring.labelWorkDefine">Condici&oacute;n de servicio</span>
                 </label>
                 <select id="springWorkDefine">
-                  <option value="deflection" selected>Por carrera s_op (mm)</option>
-                  <option value="force">Por fuerza F_op (N)</option>
+                  <option value="deflection" selected data-i18n="spring.optWorkDeflection">Por carrera s_op (mm)</option>
+                  <option value="force" data-i18n="spring.optWorkForce">Por fuerza F_op (N)</option>
                 </select>
-                <p class="lab-field-help">Para verificar <strong>&tau;</strong> en servicio y pandeo con la deflexi&oacute;n real. Si deja vac&iacute;o, solo se analiza el <strong>bloqueo</strong>.</p>
+                <p class="lab-field-help" data-i18n="spring.helpWorkDefine" data-i18n-html>Para verificar <strong>&tau;</strong> en servicio y pandeo con la deflexi&oacute;n real. Si deja vac&iacute;o, solo se analiza el <strong>bloqueo</strong>.</p>
               </div>
 
               <div class="lab-field" id="springSWorkWrap">
@@ -407,10 +437,10 @@
                       <path d="M4 12h16M8 8l-4 4 4 4M16 16l4-4-4-4" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Carrera trabajo <span class="math-plain">s<sub>op</sub></span> (mm)</span>
+                  <span class="lab-field__label-text" data-i18n="spring.labelSWork">Carrera trabajo <span class="math-plain">s<sub>op</sub></span> (mm)</span>
                 </label>
-                <input id="springSWork" type="number" min="0" step="any" value="" placeholder="Opcional" />
-                <p class="lab-field-help">Debe ser <strong>&le; s<sub>max</sub></strong> (hasta s&oacute;lido). Equivale a <strong>F<sub>op</sub> = k &middot; s<sub>op</sub></strong>.</p>
+                <input id="springSWork" type="number" min="0" step="any" value="" placeholder="Opcional" data-i18n="spring.phSWork" data-i18n-attr="placeholder" />
+                <p class="lab-field-help" data-i18n="spring.helpSWork" data-i18n-html>Debe ser <strong>&le; s<sub>max</sub></strong> (hasta s&oacute;lido). Equivale a <strong>F<sub>op</sub> = k &middot; s<sub>op</sub></strong>.</p>
               </div>
 
               <div class="lab-field" id="springFWorkWrap" hidden>
@@ -420,10 +450,10 @@
                       <path d="M6 12h12M12 6v12" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Fuerza trabajo <span class="math-plain">F<sub>op</sub></span> (N)</span>
+                  <span class="lab-field__label-text" data-i18n="spring.labelFWork">Fuerza trabajo <span class="math-plain">F<sub>op</sub></span> (N)</span>
                 </label>
-                <input id="springFWork" type="number" min="0" step="any" value="" placeholder="Opcional" />
-                <p class="lab-field-help"><strong>s<sub>op</sub> = F<sub>op</sub> / k</strong> (ley lineal).</p>
+                <input id="springFWork" type="number" min="0" step="any" value="" placeholder="Opcional" data-i18n="spring.phFWork" data-i18n-attr="placeholder" />
+                <p class="lab-field-help" data-i18n="spring.helpFWork" data-i18n-html><strong>s<sub>op</sub> = F<sub>op</sub> / k</strong> (ley lineal).</p>
               </div>
 
               <div class="lab-field lab-field--wide">
@@ -434,10 +464,14 @@
                       <path d="M4 12h4l2-3 4 6 2-3h4" />
                     </svg>
                   </span>
-                  <span class="lab-field__label-text">Fuerza m&iacute;nima en ciclo <span class="math-plain">F<sub>min</sub></span> (N)</span>
+                  <span class="lab-field__label-text" data-i18n="spring.labelFMin">Fuerza m&iacute;nima en ciclo <span class="math-plain">F<sub>min</sub></span> (N)</span>
                 </label>
                 <input id="springFMin" type="number" min="0" step="any" value="0" />
-                <p class="lab-field-help"><strong>0</strong> = carga est&aacute;tica; si hay fluctuaci&oacute;n, indique la carga m&iacute;nima para estimar <strong>&tau;<sub>alt</sub></strong> y Goodman simplificado (proyecto con <strong>&tau;<sub>W</sub></strong>).</p>
+                <p class="lab-field-help" data-i18n="spring.helpFMin" data-i18n-html><strong>0</strong> = carga est&aacute;tica; si hay fluctuaci&oacute;n, indique la carga m&iacute;nima para estimar <strong>&tau;<sub>alt</sub></strong> y Goodman simplificado (proyecto con <strong>&tau;<sub>W</sub></strong>).</p>
+              </div>
+
+              <div class="spring-reset-row lab-field lab-field--wide">
+                <button type="button" id="springResetDefaults" class="lab-btn spring-reset-btn" data-i18n="spring.resetDefaults">Restablecer valores por defecto</button>
               </div>
             </div>
           </div>
@@ -446,10 +480,11 @@
             <div
               class="lab-units-bar lab-units-bar--spring"
               role="group"
+              data-i18n-attrs="aria-label=spring.unitsBarAria data-lab-convert-title=spring.convertTitle data-lab-convert-tip=spring.convertTip"
               aria-label="Unidades de los resultados"
               data-lab-convert-categories="length force stiffness pressure"
-              data-lab-convert-title="Conversor (muelle de compresion)"
-              data-lab-convert-tip="Longitudes y carreras; fuerzas (N, kN); rigidez k (N/mm); tension MPa o presion bar (MPa = N/mm2)."
+              data-lab-convert-title="Conversor (muelle de compresión)"
+              data-lab-convert-tip="Longitudes y carreras; fuerzas (N, kN); rigidez k (N/mm); tensión MPa o presión bar (MPa = N/mm²)."
             >
               <span class="lab-units-bar__title" data-i18n="spring.unitsBarTitle">Unidades en resultados</span>
               <label class="lab-units-bar__field">
@@ -493,6 +528,11 @@
               </div>
             </div>
 
+            <p class="lab-related-hint" data-i18n="spring.relatedHintHtml" data-i18n-html>
+              &iquest;Dimensionando un mecanismo completo?
+              <a href="transmission-lab.html">M&aacute;s calculadoras del laboratorio &rarr;</a>
+            </p>
+
             <div id="springSubstitution"></div>
 
             <div id="labPurchaseSuggestions" hidden></div>
@@ -503,7 +543,7 @@
               </div>
               <div class="spring-pro__body" id="springSimBody" hidden>
                 <div class="spring-pro__slider-row">
-                  <label for="springSimSlider">Deflexi&oacute;n s (mm)</label>
+                  <label for="springSimSlider" data-i18n="spring.simSliderLabel">Deflexi&oacute;n s (mm)</label>
                   <input type="range" id="springSimSlider" min="0" max="1" step="0.05" value="0" />
                   <p class="spring-pro__f">F = <span id="springSimF">0</span> N &middot; L = <span id="springSimL">&mdash;</span> mm</p>
                 </div>
@@ -515,11 +555,20 @@
               <div class="lab-fluid-formulas__body" id="springFormulaBody"></div>
             </details>
 
+            <section class="panel flat-pdf-section">
+              <h2 data-i18n="spring.pdfExportH2Html" data-i18n-html>
+                <span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Exportar informe
+              </h2>
+              <p class="muted flat-pdf-section__hint" data-i18n="spring.pdfSectionHint">
+                El bloque inferior muestra siempre la opci&oacute;n de informe: con plan Pro puede generar el PDF completo; en gratuito ver&aacute; un resumen y el enlace para contratar.
+              </p>
+              <div id="labFluidPdfMountSpring" class="premium-pdf-mount"></div>
+            </section>
+
             <div class="lab-results-share lab-results-share--footer" id="springShareLinkWrap" aria-live="polite">
               <button type="button" class="lab-btn lab-btn--text" id="springCopyLinkBtn" data-i18n="spring.copyLink">Copiar enlace</button>
               <div class="lab-copy-toast" id="springCopyToast" role="status" data-i18n="spring.copyToast">¡Enlace copiado!</div>
             </div>
-            <div id="labFluidPdfMountSpring" class="premium-pdf-mount"></div>
           </div>
         </div>
       </section>
@@ -532,7 +581,7 @@
 
     <script type="module" src="js/ui/homeI18n.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>
-    <script type="module" src="js/ui/compressionSpringPage.js?v=20260424h"></script>
+    <script type="module" src="js/ui/compressionSpringPage.js?v=20260519a"></script>
     <script type="module" src="js/ui/labDonationFooter.js"></script>
   </body>
 </html>
