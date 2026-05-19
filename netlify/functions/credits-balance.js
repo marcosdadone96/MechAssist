@@ -3,6 +3,7 @@
  */
 const { getProStore } = require('./lib/blobStore.js');
 const { verifyAuthSession } = require('./lib/authSession.js');
+const { emailBlobKey, subscriptionRecordActive } = require('./lib/proEntitlementLogic.js');
 const {
   ensureWelcomeCredits,
   loadRecord,
@@ -10,6 +11,7 @@ const {
   calcUnlockActive,
   subscriptionActive,
   activeCalcUnlocks,
+  syncSubscriptionFromProRecord,
 } = require('./lib/creditsLogic.js');
 
 function corsHeaders(event) {
@@ -62,6 +64,16 @@ exports.handler = async (event) => {
   }
 
   const email = auth.email;
+
+  let proRec = null;
+  try {
+    proRec = await store.get(emailBlobKey(email), { type: 'json' });
+  } catch (_) {
+    proRec = null;
+  }
+  if (subscriptionRecordActive(proRec)) {
+    await syncSubscriptionFromProRecord(store, email, proRec).catch(() => {});
+  }
 
   await ensureWelcomeCredits(store, email);
   const { rec } = await loadRecord(store, email);

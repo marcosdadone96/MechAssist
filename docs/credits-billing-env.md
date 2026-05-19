@@ -35,8 +35,22 @@ El desbloqueo puntual usa `LEMON_VARIANT_CALC_UNLOCK_IDS` (distinto de Starter/I
 
 En cliente: `FEATURES.lemonCheckout.calcUnlock` (URL base Lemon) y `buildCalcUnlockCheckoutUrl(slug)` en `js/services/calcUnlockCheckout.js`.
 
+## Lemon — modo test vs live
+
+| Modo Lemon | Webhook | Pago de prueba |
+|------------|---------|----------------|
+| **Test mode** (interruptor naranja) | Crear webhook en **Settings ? Webhooks** con aviso *Test mode* | Solo pedidos/suscripciones de prueba |
+| **Live** | Otro webhook (o el mismo URL) sin modo test | Pagos reales |
+
+URL del webhook (test y live): `https://www.themechassist.com/.netlify/functions/ls-webhook`
+
+El email de la cuenta en la web debe ser **el mismo** que en el checkout Lemon.
+
+Tras pagar en test: menú perfil ? **Actualizar estado de cuenta**, o recargar la página (el saldo sincroniza la suscripción Starter si Lemon ya notificó al servidor).
+
 ## Funciones
 
-- `credits-balance` (GET, Bearer sesión)
+- `credits-balance` (GET, Bearer sesión) — sincroniza Starter/Ilimitado desde el blob Pro si existe
 - `credits-consume` (POST, Bearer sesión)
+- `credits-reconcile-subscription` (POST) — forzar sync tras pago
 - Los créditos se guardan en Blobs (`credits:e:…`) en el store `mechassist-pro`.
