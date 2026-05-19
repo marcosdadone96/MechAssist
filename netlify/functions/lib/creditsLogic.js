@@ -1,9 +1,10 @@
 /**
- * Ledger de crÈditos por usuario (Netlify Blobs, store mechassist-pro).
- * Saldo ˙nico compartido (lab, m·quinas e hidr·ulica).
+ * Ledger de crùditos por usuario (Netlify Blobs, store mechassist-pro).
+ * Saldo ùnico compartido (lab, mùquinas e hidrùulica).
  */
 const crypto = require('crypto');
-const { normalizeEmail, emailBlobKey } = require('./proEntitlementLogic.js');
+const { normalizeEmail, emailBlobKey, isCalcUnlockVariant } = require('./proEntitlementLogic.js');
+const { isAllowedCalcUnlockSlug } = require('./calcUnlockCatalog.js');
 
 const WELCOME_TOTAL =
   Number(process.env.CREDITS_WELCOME_TOTAL) ||
@@ -28,7 +29,7 @@ function monthKey() {
 }
 
 /**
- * Migra registros antiguos (lab + machines + fluids) al saldo ˙nico.
+ * Migra registros antiguos (lab + machines + fluids) al saldo ùnico.
  * @param {Record<string, unknown>} r
  */
 function resolveCreditsAmount(r) {
@@ -290,9 +291,14 @@ function tierFromVariant(variantId) {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
+  const unlockSet =
+    unlock.length > 0
+      ? unlock
+      : ['3e5a7c0f-4faf-47fd-aede-0a6488ef5f40'];
   if (unlimited.includes(id)) return 'unlimited';
   if (starter.includes(id)) return 'starter';
-  if (unlock.includes(id)) return 'calc_unlock';
+  if (unlockSet.includes(id)) return 'calc_unlock';
+  if (isCalcUnlockVariant(id)) return 'calc_unlock';
   return null;
 }
 
@@ -316,7 +322,10 @@ async function applySubscription(store, email, sub) {
  */
 async function applyCalcUnlock(store, email, calcSlug) {
   const slug = String(calcSlug || '').trim().slice(0, 80);
-  if (!slug) return null;
+  if (!slug || !isAllowedCalcUnlockSlug(slug)) {
+    if (slug) console.warn(`calc_unlock_rejected_slug:${slug}`);
+    return null;
+  }
   const { key, rec } = await loadRecord(store, email);
   const until = new Date();
   until.setUTCDate(until.getUTCDate() + UNLOCK_DAYS);
@@ -332,16 +341,62 @@ function calcSlugFromCustomData(customData) {
   if (!customData) return '';
   let obj = customData;
   if (typeof customData === 'string') {
+    const trimmed = customData.trim();
+    if (!trimmed) return '';
+    if (trimmed.endsWith('.html') && !trimmed.includes('{')) {
+      return trimmed.slice(0, 80);
+    }
     try {
-      obj = JSON.parse(customData);
+      obj = JSON.parse(trimmed);
     } catch (_) {
       return '';
     }
   }
   if (!obj || typeof obj !== 'object') return '';
+  if (Array.isArray(obj)) {
+    for (const item of obj) {
+      if (!item || typeof item !== 'object') continue;
+      const row = /** @type {Record<string, unknown>} */ (item);
+      const key = String(row.key || row.name || row.field || '').toLowerCase();
+      if (key === 'calc_slug' || key === 'calcslug' || key === 'calculator') {
+        const v = row.value ?? row.val ?? row.answer;
+        if (v) return String(v).trim().slice(0, 80);
+      }
+    }
+    return '';
+  }
   const o = /** @type {Record<string, unknown>} */ (obj);
+  if (o.custom && typeof o.custom === 'object') {
+    const nested = calcSlugFromCustomData(o.custom);
+    if (nested) return nested;
+  }
+  if (o.checkout && typeof o.checkout === 'object') {
+    const nested = calcSlugFromCustomData(o.checkout);
+    if (nested) return nested;
+  }
   const slug = o.calc_slug || o.calcSlug || o.calculator;
   return slug ? String(slug).trim().slice(0, 80) : '';
+}
+
+/**
+ * Extrae calc_slug del pedido Lemon (varios formatos de custom data).
+ * @param {Record<string, unknown>} attrs
+ * @param {Record<string, unknown> | null | undefined} [meta]
+ */
+function extractCalcSlugFromOrder(attrs, meta) {
+  const sources = [
+    attrs?.custom_data,
+    attrs?.checkout_data,
+    attrs?.first_order_item && typeof attrs.first_order_item === 'object'
+      ? /** @type {Record<string, unknown>} */ (attrs.first_order_item).custom_data
+      : null,
+    meta?.custom_data,
+  ];
+  for (const src of sources) {
+    const slug = calcSlugFromCustomData(src);
+    if (slug) return slug;
+  }
+  return '';
 }
 
 module.exports = {
@@ -364,5 +419,6 @@ module.exports = {
   applySubscription,
   applyCalcUnlock,
   calcSlugFromCustomData,
+  extractCalcSlugFromOrder,
   activeCalcUnlocks,
 };

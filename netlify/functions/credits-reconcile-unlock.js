@@ -1,16 +1,12 @@
 /**
- * GET  saldo de crditos y suscripcin del usuario autenticado.
+ * POST  Tras pago Lemon de desbloqueo 1 : aplica calc_slug si el webhook tard.
+ * Requiere sesin y pedido reciente del producto desbloqueo en Blobs Pro.
  */
 const { getProStore } = require('./lib/blobStore.js');
 const { verifyAuthSession } = require('./lib/authSession.js');
-const {
-  ensureWelcomeCredits,
-  loadRecord,
-  publicBalance,
-  calcUnlockActive,
-  subscriptionActive,
-  activeCalcUnlocks,
-} = require('./lib/creditsLogic.js');
+const { emailBlobKey, isCalcUnlockVariant, subscriptionRecordActive } = require('./lib/proEntitlementLogic.js');
+const { applyCalcUnlock, activeCalcUnlocks, loadRecord } = require('./lib/creditsLogic.js');
+const { isAllowedCalcUnlockSlug } = require('./lib/calcUnlockCatalog.js');
 
 function corsHeaders(event) {
   const allowed = ['https://www.themechassist.com', 'https://themechassist.com'];
@@ -24,7 +20,7 @@ function corsHeaders(event) {
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Headers': 'Authorization, Content-Type',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
     Vary: 'Origin',
   };
 }
@@ -41,7 +37,7 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: cors };
   }
-  if (event.httpMethod !== 'GET') {
+  if (event.httpMethod !== 'POST') {
     return { statusCode: 405, headers: cors, body: JSON.stringify({ error: 'method' }) };
   }
 
@@ -61,33 +57,58 @@ exports.handler = async (event) => {
     };
   }
 
-  const email = auth.email;
+  let body = {};
+  try {
+    body = JSON.parse(event.body || '{}');
+  } catch (_) {
+    body = {};
+  }
 
-  await ensureWelcomeCredits(store, email);
-  const { rec } = await loadRecord(store, email);
+  const calcSlug = String(body.calcSlug || '').trim().slice(0, 80);
+  if (!calcSlug || !isAllowedCalcUnlockSlug(calcSlug)) {
+    return {
+      statusCode: 400,
+      headers: cors,
+      body: JSON.stringify({ error: 'invalid_calc_slug' }),
+    };
+  }
 
-  const calcSlug = String(event.queryStringParameters?.calcSlug || '').trim().slice(0, 80);
-  const unlockedCalcs = activeCalcUnlocks(rec);
-  const unlockedCalc = calcSlug ? calcUnlockActive(rec, calcSlug) : false;
+  const proKey = emailBlobKey(auth.email);
+  let proRec = null;
+  try {
+    proRec = await store.getJSON(proKey);
+  } catch (_) {
+    proRec = null;
+  }
 
-  const subActive = subscriptionActive(rec);
-  let subscriptionPlan = null;
-  if (subActive && rec.subscription === 'unlimited') subscriptionPlan = 'unlimited';
-  else if (subActive && rec.subscription === 'starter') subscriptionPlan = 'starter';
+  const variantId = proRec?.variantId != null ? String(proRec.variantId) : '';
+  const paidUnlock =
+    proRec?.active === true &&
+    isCalcUnlockVariant(variantId) &&
+    String(proRec?.status || '').toLowerCase() === 'paid';
+
+  const updatedAt = proRec?.updatedAt ? Date.parse(String(proRec.updatedAt)) : NaN;
+  const recent = Number.isFinite(updatedAt) && Date.now() - updatedAt < 3 * 60 * 60 * 1000;
+
+  if (!paidUnlock || !recent) {
+    return {
+      statusCode: 403,
+      headers: cors,
+      body: JSON.stringify({ error: 'no_recent_unlock_payment' }),
+    };
+  }
+
+  await applyCalcUnlock(store, auth.email, calcSlug);
+  const { rec } = await loadRecord(store, auth.email);
 
   return {
     statusCode: 200,
     headers: { ...cors, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       ok: true,
-      balance: publicBalance(rec),
-      unlimited: subscriptionPlan === 'unlimited',
-      starter: subscriptionPlan === 'starter',
-      subscriptionPlan,
-      subscriptionEndsAt: subActive ? rec.subscriptionEndsAt || null : null,
-      calcUnlocked: unlockedCalc,
-      calcSlug: calcSlug || undefined,
-      unlockedCalcs,
+      calcSlug,
+      calcUnlocked: true,
+      unlockedCalcs: activeCalcUnlocks(rec),
     }),
   };
 };

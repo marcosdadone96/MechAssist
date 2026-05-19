@@ -1,7 +1,9 @@
 /**
- * Desbloqueo puntual de una calculadora (1 ù/mes): independiente de Starter e Ilimitado.
+ * Desbloqueo puntual de una calculadora (1 ?/mes): independiente de Starter e Ilimitado.
  */
 import { FEATURES } from '../config/features.js';
+import { isCalcUnlockCatalogSlug } from '../config/calcUnlockCatalog.js';
+import { rememberPendingCalcUnlockSlug } from './creditsApi.js';
 
 /**
  * @param {string} calcSlug p. ej. calc-gears.html
@@ -9,6 +11,10 @@ import { FEATURES } from '../config/features.js';
  */
 export function buildCalcUnlockCheckoutUrl(calcSlug) {
   const slug = String(calcSlug || '').trim().slice(0, 80);
+  if (slug && !isCalcUnlockCatalogSlug(slug)) {
+    return 'checkout.html#unlock';
+  }
+  if (slug) rememberPendingCalcUnlockSlug(slug);
   const base = String(FEATURES.lemonCheckout?.calcUnlock || '').trim();
   if (!base) {
     const q = slug ? `?unlock=${encodeURIComponent(slug)}` : '';

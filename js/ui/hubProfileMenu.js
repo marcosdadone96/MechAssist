@@ -6,6 +6,7 @@ import { clearProEntitlementClient } from '../services/proEntitlement.js';
 import { FEATURES } from '../config/features.js';
 import { creditsAmountFromBalance, isCreditsSystemEnabled } from '../config/credits.js';
 import { getCachedCreditsState, fetchCreditsBalance } from '../services/creditsApi.js';
+import { getCalcUnlockCatalogEntry } from '../config/calcUnlockCatalog.js';
 
 function lang() {
   return window.__homeLang === 'en' ? 'en' : 'es';
@@ -28,27 +29,86 @@ function userInitials(name) {
   return (parts[0]?.[0] || '?').toUpperCase();
 }
 
+function formatUnlockUntil(iso, en) {
+  const t = Date.parse(String(iso || ''));
+  if (!Number.isFinite(t)) return '';
+  try {
+    return new Date(t).toLocaleDateString(en ? 'en-GB' : 'es-ES', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  } catch (_) {
+    return '';
+  }
+}
+
+function calcLabelFromSlug(slug, en) {
+  const entry = getCalcUnlockCatalogEntry(slug);
+  if (entry) return en ? entry.en : entry.es;
+  return slug.replace(/\.html$/, '').replace(/-/g, ' ');
+}
+
 /**
  * @param {HTMLElement} host
- * @param {{ unlimited?: boolean, balance?: { credits?: number, costs?: { calcSession?: number } } }} state
+ * @param {Record<string, unknown> | null | undefined} state
  */
 function renderCreditsInMenu(host, state) {
   if (!host) return;
   const en = lang() === 'en';
   const b = state?.balance;
-  if (!b && !state?.unlimited) {
+  const unlockMap =
+    state?.unlockedCalcs && typeof state.unlockedCalcs === 'object'
+      ? /** @type {Record<string, string>} */ (state.unlockedCalcs)
+      : {};
+  const unlockEntries = Object.entries(unlockMap).filter(([, until]) => {
+    const t = Date.parse(until);
+    return Number.isFinite(t) && Date.now() < t;
+  });
+
+  if (!b && !state?.unlimited && !state?.starter && !unlockEntries.length) {
     host.hidden = true;
     host.textContent = '';
     return;
   }
+
   host.hidden = false;
+  const parts = [];
+
   if (state?.unlimited) {
-    host.innerHTML = `<p class="hub-user-menu__credits-line hub-user-menu__credits-line--unlimited"><span class="hub-user-menu__credits-badge">${en ? 'Unlimited' : 'Ilimitado'}</span> ${en ? 'Full access' : 'Acceso completo'}</p>`;
-    return;
+    parts.push(
+      `<p class="hub-user-menu__credits-line hub-user-menu__credits-line--unlimited"><span class="hub-user-menu__credits-badge">${en ? 'Unlimited' : 'Ilimitado'}</span> ${en ? 'Full site access' : 'Acceso completo al sitio'}</p>`,
+    );
+  } else if (state?.starter) {
+    parts.push(
+      `<p class="hub-user-menu__credits-line"><span class="hub-user-menu__credits-badge">${en ? 'Starter' : 'Starter'}</span> ${en ? 'Active subscription' : 'Suscripci\u00f3n activa'}</p>`,
+    );
   }
-  const cost = b.costs?.calcSession ?? 10;
-  const total = creditsAmountFromBalance(b);
-  host.innerHTML = `<p class="hub-user-menu__credits-title">${en ? 'Credits' : 'Cr\u00e9ditos'}</p><p class="hub-user-menu__credits-line"><strong>${total}</strong> ${en ? 'available across transmission lab, machines and hydraulics' : 'disponibles en laboratorio de transmisi\u00f3n, m\u00e1quinas e hidr\u00e1ulica'}</p><p class="hub-user-menu__credits-hint">${en ? `${cost} credits per calc session` : `${cost} cr\u00e9ditos por sesi\u00f3n de c\u00e1lculo`}</p>`;
+
+  if (unlockEntries.length) {
+    parts.push(`<p class="hub-user-menu__credits-title">${en ? 'Unlocked calculators' : 'Calculadoras desbloqueadas'}</p>`);
+    parts.push('<ul class="hub-user-menu__unlock-list">');
+    for (const [slug, until] of unlockEntries) {
+      const label = calcLabelFromSlug(slug, en);
+      const untilStr = formatUnlockUntil(until, en);
+      parts.push(
+        `<li><strong>${label}</strong>${untilStr ? `<br><span class="hub-user-menu__credits-hint">${en ? 'Until' : 'Hasta'} ${untilStr}</span>` : ''}</li>`,
+      );
+    }
+    parts.push('</ul>');
+  }
+
+  if (b && !state?.unlimited) {
+    const cost = b.costs?.calcSession ?? 10;
+    const total = creditsAmountFromBalance(b);
+    parts.push(
+      `<p class="hub-user-menu__credits-title">${en ? 'Credits' : 'Cr\u00e9ditos'}</p>`,
+      `<p class="hub-user-menu__credits-line"><strong>${total}</strong> ${en ? 'available (shared balance)' : 'disponibles (saldo \u00fanico)'}</p>`,
+      `<p class="hub-user-menu__credits-hint">${en ? `${cost} credits per calc session` : `${cost} cr\u00e9ditos por sesi\u00f3n de c\u00e1lculo`}</p>`,
+    );
+  }
+
+  host.innerHTML = parts.join('');
 }
 
 async function refreshMenuCredits(host) {

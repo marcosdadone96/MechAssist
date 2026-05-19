@@ -150,3 +150,83 @@ export async function refreshCreditsAfterAuth() {
   if (!u?.email || !u?.serverAuth) return;
   await fetchCreditsBalance().catch(() => {});
 }
+
+const SS_PENDING_UNLOCK = 'mdr-pending-unlock-slug';
+
+export function rememberPendingCalcUnlockSlug(slug) {
+  try {
+    const s = String(slug || '').trim();
+    if (s) sessionStorage.setItem(SS_PENDING_UNLOCK, s);
+    else sessionStorage.removeItem(SS_PENDING_UNLOCK);
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+export function readPendingCalcUnlockSlug() {
+  try {
+    return String(sessionStorage.getItem(SS_PENDING_UNLOCK) || '').trim();
+  } catch (_) {
+    return '';
+  }
+}
+
+export function clearPendingCalcUnlockSlug() {
+  try {
+    sessionStorage.removeItem(SS_PENDING_UNLOCK);
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+/**
+ * Tras pago Lemon: intenta reconciliar desbloqueo si el webhook tardó.
+ * @param {string} calcSlug
+ */
+export async function reconcileCalcUnlockAfterPayment(calcSlug) {
+  const slug = String(calcSlug || '').trim();
+  if (!slug || !isCreditsSystemEnabled()) return { ok: false };
+  const u = getCurrentUser();
+  if (!u?.email || !u?.serverAuth) return { ok: false, error: 'auth' };
+
+  const res = await fetch(`${functionsBase()}/credits-reconcile-unlock`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ calcSlug: slug }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.ok) return { ok: false, error: data.error || 'reconcile' };
+
+  await fetchCreditsBalance(slug).catch(() => {});
+  return { ok: true, data };
+}
+
+/**
+ * Espera a que el saldo refleje suscripción o desbloqueo tras ?paid=1.
+ * @param {string} [preferredSlug]
+ * @param {{ maxMs?: number }} [opts]
+ */
+export async function waitForCreditsAfterCheckout(preferredSlug = '', opts = {}) {
+  const slug = String(preferredSlug || '').trim();
+  const maxMs = Number(opts.maxMs) > 0 ? Number(opts.maxMs) : 30000;
+  const started = Date.now();
+
+  while (Date.now() - started < maxMs) {
+    if (slug) {
+      await reconcileCalcUnlockAfterPayment(slug).catch(() => {});
+    }
+    const data = await fetchCreditsBalance(slug).catch(() => null);
+    if (data?.ok) {
+      if (data.unlimited) return { status: 'unlimited', data };
+      if (data.starter) return { status: 'starter', data };
+      const map = data.unlockedCalcs && typeof data.unlockedCalcs === 'object' ? data.unlockedCalcs : {};
+      const keys = Object.keys(map);
+      if (keys.length) return { status: 'unlock', data, slugs: keys };
+      if (slug && data.calcUnlocked) return { status: 'unlock', data, slugs: [slug] };
+    }
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+
+  const last = getCachedCreditsState();
+  return { status: 'pending', data: last };
+}

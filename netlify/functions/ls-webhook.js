@@ -15,13 +15,14 @@ const {
   normalizeEmail,
   emailBlobKey,
   isVariantAllowed,
+  isCalcUnlockVariant,
   subscriptionRecordActive,
 } = require('./lib/proEntitlementLogic.js');
 const {
   tierFromVariant,
   applySubscription,
   applyCalcUnlock,
-  calcSlugFromCustomData,
+  extractCalcSlugFromOrder,
 } = require('./lib/creditsLogic.js');
 
 function getHeader(headers, name) {
@@ -225,6 +226,11 @@ exports.handler = async (event) => {
   await store.setJSON(key, stored);
 
   const creditTier = tierFromVariant(rec.variantId);
+  const orderPaid = kind === 'order' && String(attrs.status || '').toLowerCase() === 'paid';
+  const calcSlug = extractCalcSlugFromOrder(attrs, payload.meta);
+  const isUnlockProduct =
+    creditTier === 'calc_unlock' || (kind === 'order' && isCalcUnlockVariant(rec.variantId));
+
   if (creditTier === 'unlimited' && stored.active) {
     await applySubscription(store, rec.email, {
       tier: 'unlimited',
@@ -235,15 +241,20 @@ exports.handler = async (event) => {
       tier: 'starter',
       endsAt: rec.endsAt,
     });
-  } else if (creditTier === 'calc_unlock' && stored.active) {
-    const slug =
-      calcSlugFromCustomData(attrs.custom_data) ||
-      calcSlugFromCustomData(attrs.checkout_data) ||
-      '';
-    if (slug) await applyCalcUnlock(store, rec.email, slug);
+  } else if (orderPaid && isUnlockProduct && calcSlug) {
+    const applied = await applyCalcUnlock(store, rec.email, calcSlug);
+    if (applied) {
+      console.log(`ls-webhook: calc_unlock email=${rec.email} slug=${calcSlug}`);
+    } else {
+      console.warn(`ls-webhook: calc_unlock_rejected email=${rec.email} slug=${calcSlug}`);
+    }
+  } else if (orderPaid && isUnlockProduct && !calcSlug) {
+    console.warn(`ls-webhook: calc_unlock_missing_slug email=${rec.email} variant=${rec.variantId}`);
   }
 
-  console.log(`ls-webhook: event=${eventName} email=${rec.email} active=${stored.active}`);
+  console.log(
+    `ls-webhook: event=${eventName} email=${rec.email} active=${stored.active} tier=${creditTier || 'none'} slug=${calcSlug || '-'}`,
+  );
 
   return {
     statusCode: 200,

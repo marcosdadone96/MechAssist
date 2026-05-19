@@ -11,6 +11,13 @@ import { grantProLicensePersistent } from '../services/accessTier.js';
 import { claimAndVerifyProAfterCheckout } from '../services/proEntitlement.js';
 import { buildRegisterUrlWithNextCheckout, getHomeLang } from '../services/proCheckoutFlow.js';
 import { buildCalcUnlockCheckoutUrl } from '../services/calcUnlockCheckout.js';
+import { CALC_UNLOCK_CATALOG, getCalcUnlockCatalogEntry } from '../config/calcUnlockCatalog.js';
+import {
+  rememberPendingCalcUnlockSlug,
+  readPendingCalcUnlockSlug,
+  clearPendingCalcUnlockSlug,
+  waitForCreditsAfterCheckout,
+} from '../services/creditsApi.js';
 
 function getLang() {
   return getHomeLang();
@@ -105,7 +112,13 @@ const TX = {
       'Detalle jur\u00eddico: secci\u00f3n <strong>Renovaci\u00f3n y cancelaci\u00f3n</strong> en los <a href="terms.html" target="_blank" rel="noopener">T\u00e9rminos de uso</a>.',
     paidWelcomeLine:
       '\u00a1Ya eres Pro! Todas las funciones est\u00e1n desbloqueadas en este navegador.',
-    manageTitlePaidReturn: 'Tu plan Pro est\u00e1 activo',
+    paidUnlockWelcome: (name) =>
+      `Pago recibido. La calculadora <strong>${name}</strong> queda desbloqueada 30 d\u00edas (c\u00e1lculos y PDF sin gastar cr\u00e9ditos en esa p\u00e1gina).`,
+    paidUnlockPending:
+      'Pago recibido. Estamos activando el desbloqueo en su cuenta; en unos segundos recargue esta p\u00e1gina o abra el men\u00fa de su perfil.',
+    paidStarterWelcome: 'Pago recibido. Plan <strong>Starter</strong> activo en su cuenta.',
+    paidUnlimitedWelcome: 'Pago recibido. Plan <strong>Ilimitado</strong> activo en su cuenta.',
+    manageTitlePaidReturn: 'Tu plan est\u00e1 activo',
   },
   en: {
     docTitle: 'Pro checkout \u2014 TheMechAssist',
@@ -189,7 +202,13 @@ const TX = {
     manageTermsRef:
       'Legal detail: <strong>Renewal and cancellation</strong> in the <a href="terms.html" target="_blank" rel="noopener">Terms of use</a>.',
     paidWelcomeLine: "You're Pro now! All features are unlocked in this browser.",
-    manageTitlePaidReturn: 'Your Pro plan is active',
+    paidUnlockWelcome: (name) =>
+      `Payment received. <strong>${name}</strong> is unlocked for 30 days (unlimited calc and PDF on that page).`,
+    paidUnlockPending:
+      'Payment received. We are activating your unlock; reload this page in a few seconds or open your profile menu.',
+    paidStarterWelcome: 'Payment received. <strong>Starter</strong> plan is active on your account.',
+    paidUnlimitedWelcome: 'Payment received. <strong>Unlimited</strong> plan is active on your account.',
+    manageTitlePaidReturn: 'Your plan is active',
   },
 };
 
@@ -479,7 +498,35 @@ export async function mountCheckoutPage() {
     const welcomeEl = document.getElementById('coProWelcome');
     if (welcomeEl) {
       welcomeEl.hidden = false;
-      welcomeEl.textContent = t.paidWelcomeLine;
+      if (isCreditsSystemEnabled()) {
+        welcomeEl.innerHTML = t.paidUnlockPending;
+        const pendingSlug =
+          readPendingCalcUnlockSlug() ||
+          new URLSearchParams(window.location.search).get('unlock') ||
+          '';
+        void (async () => {
+          const result = await waitForCreditsAfterCheckout(pendingSlug);
+          if (result.status === 'unlimited') {
+            welcomeEl.innerHTML = t.paidUnlimitedWelcome;
+          } else if (result.status === 'starter') {
+            welcomeEl.innerHTML = t.paidStarterWelcome;
+          } else if (result.status === 'unlock') {
+            const slug = result.slugs?.[0] || pendingSlug;
+            const entry = slug ? getCalcUnlockCatalogEntry(slug) : null;
+            const label = entry ? (getLang() === 'en' ? entry.en : entry.es) : slug;
+            welcomeEl.innerHTML =
+              typeof t.paidUnlockWelcome === 'function' ? t.paidUnlockWelcome(label) : t.paidUnlockPending;
+            clearPendingCalcUnlockSlug();
+          }
+          const { refreshCreditsAfterAuth } = await import('../services/creditsApi.js');
+          await refreshCreditsAfterAuth().catch(() => {});
+          const { mountProfileMenu } = await import('./hubProfileMenu.js');
+          const slot = document.getElementById('hub-header-auth-slot');
+          if (slot) mountProfileMenu(slot);
+        })();
+      } else {
+        welcomeEl.textContent = t.paidWelcomeLine;
+      }
     }
     const lemonM = document.getElementById('coLemonMonthly');
     const lemonA = document.getElementById('coLemonAnnual');
@@ -541,6 +588,7 @@ export async function mountCheckoutPage() {
     const sel = document.getElementById('coUnlockCalc');
     const slug = sel instanceof HTMLSelectElement ? sel.value : '';
     if (!slug) return;
+    rememberPendingCalcUnlockSlug(slug);
     window.location.href = buildCalcUnlockCheckoutUrl(slug);
   });
 
@@ -566,17 +614,15 @@ export async function mountCheckoutPage() {
   });
 }
 
-/** Calculadoras habituales para desbloqueo puntual. */
-const UNLOCK_CALC_OPTIONS = [
-  { slug: 'calc-gears.html', es: 'Engranajes', en: 'Spur gears' },
-  { slug: 'calc-belts.html', es: 'Correas', en: 'Belts' },
-  { slug: 'calc-bearings.html', es: 'Rodamientos L10', en: 'Bearings L10' },
-  { slug: 'calc-shaft.html', es: 'Eje a torsi\u00f3n', en: 'Shaft torsion' },
-  { slug: 'flat-conveyor.html', es: 'Cinta plana', en: 'Flat conveyor' },
-  { slug: 'inclined-conveyor.html', es: 'Cinta inclinada', en: 'Inclined conveyor' },
-  { slug: 'calc-hydraulic-cylinder.html', es: 'Cilindro hidr\u00e1ulico', en: 'Hydraulic cylinder' },
-  { slug: 'transmission-canvas.html', es: 'Lienzo multieje', en: 'Multi-shaft canvas' },
-];
+/** Todas las calculadoras del sitio (config/calc-unlock-catalog.json). */
+function sortedUnlockCalcOptions(lang) {
+  const en = lang === 'en';
+  return [...CALC_UNLOCK_CATALOG].sort((a, b) => {
+    const la = en ? a.en : a.es;
+    const lb = en ? b.en : b.es;
+    return la.localeCompare(lb, en ? 'en' : 'es', { sensitivity: 'base' });
+  });
+}
 
 /**
  * @param {typeof TX.es} t
@@ -615,7 +661,8 @@ function mountCalcUnlockCheckoutBlock(t, preselect = '') {
   sel.setAttribute('aria-busy', 'true');
 
   try {
-    if (!UNLOCK_CALC_OPTIONS.length) throw new Error('unlock_options_empty');
+    const options = sortedUnlockCalcOptions(getLang());
+    if (!options.length) throw new Error('unlock_options_empty');
 
     const en = getLang() === 'en';
     sel.innerHTML = '';
@@ -624,7 +671,7 @@ function mountCalcUnlockCheckoutBlock(t, preselect = '') {
     placeholder.textContent = t.unlockPick;
     sel.appendChild(placeholder);
 
-    for (const opt of UNLOCK_CALC_OPTIONS) {
+    for (const opt of options) {
       const o = document.createElement('option');
       o.value = opt.slug;
       o.textContent = en ? opt.en : opt.es;

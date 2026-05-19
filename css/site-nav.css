@@ -297,10 +297,22 @@ a.site-nav__btn {
   color: #64748b;
 }
 
-.hub-user-menu__credits-list {
+.hub-user-menu__credits-list,
+.hub-user-menu__unlock-list {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.hub-user-menu__unlock-list li {
+  font-size: 0.82rem;
+  color: #334155;
+  padding: 0.2rem 0;
+  line-height: 1.35;
+}
+
+.hub-user-menu__unlock-list li strong {
+  color: #0f172a;
 }
 
 .hub-user-menu__credits-row {
