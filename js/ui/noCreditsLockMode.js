@@ -40,6 +40,20 @@ function removeNoCreditsBanner() {
   document.getElementById('no-credits-lock-banner')?.remove();
 }
 
+function isBillingOrAuthPage() {
+  const file = (location.pathname.split('/').pop() || '').toLowerCase();
+  if (file === 'checkout.html' || file === 'register.html') return true;
+  return Boolean(document.querySelector('main.checkout-page, main.register-page'));
+}
+
+function clearNoCreditsLockFromDocument() {
+  document.documentElement.removeAttribute('data-no-credits-lock');
+  document.querySelectorAll('main').forEach((main) => {
+    if (main instanceof HTMLElement) unlockCalcInputs(main);
+  });
+  removeNoCreditsBanner();
+}
+
 function wireNoCreditsFocusBlock(root) {
   if (focusWired) return;
   focusWired = true;
@@ -66,11 +80,15 @@ export function syncNoCreditsInputLock() {
   if (!isCreditsSystemEnabled()) return;
   if (!getCurrentUser()?.email) return;
 
+  if (isBillingOrAuthPage()) {
+    clearNoCreditsLockFromDocument();
+    return;
+  }
+
   const inputsRoot = findCalcInputsRoot();
-  const root =
-    inputsRoot instanceof HTMLElement
-      ? inputsRoot.closest('main') || inputsRoot
-      : document.querySelector('main.app-main, main.lab-main, main');
+  if (!(inputsRoot instanceof HTMLElement)) return;
+
+  const root = inputsRoot.closest('main') || inputsRoot;
   if (!(root instanceof HTMLElement)) return;
 
   if (shouldLockCalcInputsForCredits()) {

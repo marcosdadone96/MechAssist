@@ -3,7 +3,7 @@
  */
 
 export const CALC_LOCK_NAV_ALLOW =
-  '.site-nav, .hub-lang, .guest-calc-banner, .no-credits-lock-banner, #credits-balance-bar, .credits-modal-backdrop, [data-credits-allow], [data-no-credits-allow], .register-form, .register-panel, #registerForm, #registerLoginForm, .register-auth-tabs, .be-wizard-nav, [data-be-step], details.flat-accordion > summary, details.motors-details > summary, details.lab-results-details > summary';
+  '.site-nav, .hub-lang, .guest-calc-banner, .no-credits-lock-banner, #credits-balance-bar, .credits-modal-backdrop, [data-credits-allow], [data-no-credits-allow], .register-form, .register-panel, #registerForm, #registerLoginForm, .register-auth-tabs, .be-wizard-nav, [data-be-step], details.flat-accordion > summary, details.motors-details > summary, details.lab-results-details > summary, .checkout-page, .checkout-card, #coWithdrawalWrap';
 
 /**
  * @param {ParentNode} panel
@@ -72,12 +72,15 @@ export function unlockCalcInputs(panel) {
 export function findCalcInputsRoot() {
   const appMain = document.querySelector('main.app-main');
   if (appMain instanceof HTMLElement) {
-    return (
+    const scoped =
       appMain.querySelector('.flat-sidebar') ||
       appMain.querySelector('.be-main-col') ||
-      appMain.querySelector('.lab-calc-layout__inputs') ||
-      appMain
-    );
+      appMain.querySelector('.lab-calc-layout__inputs');
+    if (scoped instanceof HTMLElement) return scoped;
+    if (appMain.classList.contains('checkout-page') || appMain.classList.contains('register-page')) {
+      return null;
+    }
+    return appMain;
   }
   return (
     document.querySelector('main.lab-main .lab-calc-layout__inputs') ||

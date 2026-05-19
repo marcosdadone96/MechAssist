@@ -4802,14 +4802,21 @@ main.app-main.checkout-page {
 
 .register-page .register-checkbox input[type='checkbox'],
 .checkout-page .register-checkbox input[type='checkbox'] {
-  width: 1.05rem;
-  height: 1.05rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  min-width: 1.15rem;
+  min-height: 1.15rem;
   margin: 0.15rem 0 0;
   padding: 0;
   flex-shrink: 0;
   grid-column: 1;
   grid-row: 1;
   align-self: start;
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+  pointer-events: auto;
+  accent-color: var(--accent-dark, #0f766e);
 }
 
 .register-page .register-checkbox__text,
