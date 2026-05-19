@@ -3,7 +3,7 @@
  */
 import { calcSlugFromPath, creditPoolFromPath, isCreditsSystemEnabled } from '../config/credits.js';
 import { shouldLockCalcInputsForCredits, withCalcCredits } from '../services/creditSession.js';
-import { fetchCreditsBalance, getCachedCreditsState } from '../services/creditsApi.js';
+import { fetchCreditsBalance, getCachedCreditsState, syncAccountBillingState } from '../services/creditsApi.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { mountCreditsBar } from './creditsUi.js';
 import { initNoCreditsLockWatch, syncNoCreditsInputLock } from './noCreditsLockMode.js';
@@ -17,6 +17,7 @@ export async function bootPageCredits() {
   if (!getCurrentUser()?.email) return;
   const pool = creditPoolFromPath();
   const slug = calcSlugFromPath();
+  await syncAccountBillingState().catch(() => {});
   await fetchCreditsBalance(slug && slug !== 'unknown' ? slug : '').catch(() => {});
   await mountCreditsBar(pool);
   initNoCreditsLockWatch();

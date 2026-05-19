@@ -2,7 +2,12 @@
  * UI: barra de creditos, modales de paywall.
  */
 import { calcSlugFromPath, creditsAmountFromBalance, isCreditsSystemEnabled } from '../config/credits.js';
-import { fetchCreditsBalance, getCachedCreditsState, isCalcSlugUnlocked } from '../services/creditsApi.js';
+import {
+  fetchCreditsBalance,
+  getCachedCreditsState,
+  isCalcSlugUnlocked,
+  countActiveCalcUnlocks,
+} from '../services/creditsApi.js';
 import { buildCalcUnlockCheckoutUrl } from '../services/calcUnlockCheckout.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { FEATURES } from '../config/features.js';
@@ -88,8 +93,16 @@ function renderBarContent(bar, state) {
     bar.hidden = false;
     return;
   }
+  const unlockN = countActiveCalcUnlocks(state);
   const val = creditsAmountFromBalance(b);
   bar.className = 'credits-bar';
+  if (unlockN > 0 && !state?.unlimited) {
+    bar.innerHTML = en
+      ? `<span class="credits-bar__badge">Unlocked</span> ${unlockN} calculator(s) active · <strong>${val}</strong> credits left`
+      : `<span class="credits-bar__badge">Desbloqueadas</span> ${unlockN} calculadora(s) activa(s) · <strong>${val}</strong> cr\u00e9ditos restantes`;
+    bar.hidden = false;
+    return;
+  }
   const sessionWord = en ? 'session' : 'sesi\u00f3n';
   const creditsWord = en ? 'credits' : 'cr\u00e9ditos';
   const poolLabel = en ? 'Credits' : 'Cr\u00e9ditos';

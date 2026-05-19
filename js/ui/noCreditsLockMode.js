@@ -46,6 +46,17 @@ function isBillingOrAuthPage() {
   return Boolean(document.querySelector('main.checkout-page, main.register-page'));
 }
 
+function isHubBrowsePage() {
+  const file = (location.pathname.split('/').pop() || '').toLowerCase();
+  return (
+    file === '' ||
+    file === 'index.html' ||
+    file === 'machines-hub.html' ||
+    file === 'transmission-lab.html' ||
+    file === 'fluids-hub.html'
+  );
+}
+
 function clearNoCreditsLockFromDocument() {
   document.documentElement.removeAttribute('data-no-credits-lock');
   document.querySelectorAll('main').forEach((main) => {
@@ -80,13 +91,16 @@ export function syncNoCreditsInputLock() {
   if (!isCreditsSystemEnabled()) return;
   if (!getCurrentUser()?.email) return;
 
-  if (isBillingOrAuthPage()) {
+  if (isBillingOrAuthPage() || isHubBrowsePage()) {
     clearNoCreditsLockFromDocument();
     return;
   }
 
   const inputsRoot = findCalcInputsRoot();
-  if (!(inputsRoot instanceof HTMLElement)) return;
+  if (!(inputsRoot instanceof HTMLElement)) {
+    clearNoCreditsLockFromDocument();
+    return;
+  }
 
   const root = inputsRoot.closest('main') || inputsRoot;
   if (!(root instanceof HTMLElement)) return;

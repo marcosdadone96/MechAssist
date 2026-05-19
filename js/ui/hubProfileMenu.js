@@ -5,7 +5,11 @@ import { getCurrentUser, clearLocalUser } from '../services/accountAuth.js';
 import { clearProEntitlementClient } from '../services/proEntitlement.js';
 import { FEATURES } from '../config/features.js';
 import { creditsAmountFromBalance, isCreditsSystemEnabled } from '../config/credits.js';
-import { getCachedCreditsState, fetchCreditsBalance } from '../services/creditsApi.js';
+import {
+  getCachedCreditsState,
+  fetchCreditsBalance,
+  syncAccountBillingState,
+} from '../services/creditsApi.js';
 import { getCalcUnlockCatalogEntry } from '../config/calcUnlockCatalog.js';
 
 function lang() {
@@ -101,20 +105,34 @@ function renderCreditsInMenu(host, state) {
   if (b && !state?.unlimited) {
     const cost = b.costs?.calcSession ?? 10;
     const total = creditsAmountFromBalance(b);
+    const unlockN = unlockEntries.length;
     parts.push(
       `<p class="hub-user-menu__credits-title">${en ? 'Credits' : 'Cr\u00e9ditos'}</p>`,
       `<p class="hub-user-menu__credits-line"><strong>${total}</strong> ${en ? 'available (shared balance)' : 'disponibles (saldo \u00fanico)'}</p>`,
-      `<p class="hub-user-menu__credits-hint">${en ? `${cost} credits per calc session` : `${cost} cr\u00e9ditos por sesi\u00f3n de c\u00e1lculo`}</p>`,
+      unlockN
+        ? `<p class="hub-user-menu__credits-hint">${en ? 'Unlocked calculators do not spend credits. Recharge for other tools.' : 'Las calculadoras desbloqueadas no gastan cr\u00e9ditos. Recargue para el resto.'}</p>`
+        : `<p class="hub-user-menu__credits-hint">${en ? `${cost} credits per calc session` : `${cost} cr\u00e9ditos por sesi\u00f3n de c\u00e1lculo`}</p>`,
+    );
+  } else if (!state?.unlimited && !state?.starter && !unlockEntries.length) {
+    parts.push(
+      `<p class="hub-user-menu__credits-title">${en ? 'Your plan' : 'Tu plan'}</p>`,
+      `<p class="hub-user-menu__credits-line">${en ? 'No active subscription or unlock.' : 'Sin suscripci\u00f3n ni desbloqueo activo.'}</p>`,
+      `<p class="hub-user-menu__credits-hint"><a href="${FEATURES.proCheckoutPagePath || 'checkout.html'}">${en ? 'View plans' : 'Ver planes'}</a></p>`,
     );
   }
+
+  parts.push(
+    `<button type="button" class="hub-user-menu__sync" data-hub-sync-billing>${en ? 'Refresh account status' : 'Actualizar estado de cuenta'}</button>`,
+  );
 
   host.innerHTML = parts.join('');
 }
 
-async function refreshMenuCredits(host) {
+async function refreshMenuCredits(host, { forceSync = false } = {}) {
   if (!isCreditsSystemEnabled() || !host) return;
   const cached = getCachedCreditsState();
   if (cached) renderCreditsInMenu(host, cached);
+  if (forceSync) await syncAccountBillingState().catch(() => {});
   const data = await fetchCreditsBalance().catch(() => null);
   if (data?.ok) renderCreditsInMenu(host, data);
 }
@@ -191,6 +209,21 @@ export function mountProfileMenu(slot) {
   wrap.appendChild(trigger);
   wrap.appendChild(panel);
   slot.appendChild(wrap);
+
+  const creditsHost = panel.querySelector('#hub-user-menu-credits');
+  if (creditsHost) {
+    creditsHost.hidden = false;
+    void refreshMenuCredits(creditsHost, { forceSync: true });
+    creditsHost.addEventListener('click', (ev) => {
+      const btn = ev.target instanceof Element ? ev.target.closest('[data-hub-sync-billing]') : null;
+      if (!btn) return;
+      ev.preventDefault();
+      btn.textContent = lang() === 'en' ? 'Updating…' : 'Actualizando…';
+      void refreshMenuCredits(creditsHost, { forceSync: true }).finally(() => {
+        renderCreditsInMenu(creditsHost, getCachedCreditsState());
+      });
+    });
+  }
 
   if (!window.__hubProfileMenuCreditsBound) {
     window.__hubProfileMenuCreditsBound = true;

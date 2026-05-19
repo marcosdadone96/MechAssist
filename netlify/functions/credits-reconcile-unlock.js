@@ -1,11 +1,15 @@
 /**
  * POST  Tras pago Lemon de desbloqueo 1 : aplica calc_slug si el webhook tard.
- * Requiere sesin y pedido reciente del producto desbloqueo en Blobs Pro.
  */
 const { getProStore } = require('./lib/blobStore.js');
 const { verifyAuthSession } = require('./lib/authSession.js');
-const { emailBlobKey, isCalcUnlockVariant, subscriptionRecordActive } = require('./lib/proEntitlementLogic.js');
-const { applyCalcUnlock, activeCalcUnlocks, loadRecord } = require('./lib/creditsLogic.js');
+const { emailBlobKey, isCalcUnlockVariant } = require('./lib/proEntitlementLogic.js');
+const {
+  applyCalcUnlock,
+  activeCalcUnlocks,
+  calcUnlockActive,
+  loadRecord,
+} = require('./lib/creditsLogic.js');
 const { isAllowedCalcUnlockSlug } = require('./lib/calcUnlockCatalog.js');
 
 function corsHeaders(event) {
@@ -64,15 +68,6 @@ exports.handler = async (event) => {
     body = {};
   }
 
-  const calcSlug = String(body.calcSlug || '').trim().slice(0, 80);
-  if (!calcSlug || !isAllowedCalcUnlockSlug(calcSlug)) {
-    return {
-      statusCode: 400,
-      headers: cors,
-      body: JSON.stringify({ error: 'invalid_calc_slug' }),
-    };
-  }
-
   const proKey = emailBlobKey(auth.email);
   let proRec = null;
   try {
@@ -81,25 +76,68 @@ exports.handler = async (event) => {
     proRec = null;
   }
 
+  const calcSlug = String(body.calcSlug || proRec?.lastCalcUnlockSlug || '')
+    .trim()
+    .slice(0, 80);
+  if (!calcSlug || !isAllowedCalcUnlockSlug(calcSlug)) {
+    return {
+      statusCode: 400,
+      headers: cors,
+      body: JSON.stringify({ error: 'invalid_calc_slug' }),
+    };
+  }
+
+  const { rec } = await loadRecord(store, auth.email);
+  if (calcUnlockActive(rec, calcSlug)) {
+    return {
+      statusCode: 200,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ok: true,
+        already: true,
+        calcSlug,
+        calcUnlocked: true,
+        unlockedCalcs: activeCalcUnlocks(rec),
+      }),
+    };
+  }
+
   const variantId = proRec?.variantId != null ? String(proRec.variantId) : '';
-  const paidUnlock =
-    proRec?.active === true &&
-    isCalcUnlockVariant(variantId) &&
-    String(proRec?.status || '').toLowerCase() === 'paid';
+  const unlockAt = proRec?.lastCalcUnlockAt || proRec?.updatedAt;
+  const unlockTs = unlockAt ? Date.parse(String(unlockAt)) : NaN;
+  const recentUnlock =
+    Number.isFinite(unlockTs) && Date.now() - unlockTs < 7 * 24 * 60 * 60 * 1000;
+  const unlockVariant = isCalcUnlockVariant(variantId);
+  const unlockPurchase =
+    proRec &&
+    recentUnlock &&
+    (unlockVariant || String(proRec.lastCalcUnlockSlug || '') === calcSlug);
 
-  const updatedAt = proRec?.updatedAt ? Date.parse(String(proRec.updatedAt)) : NaN;
-  const recent = Number.isFinite(updatedAt) && Date.now() - updatedAt < 3 * 60 * 60 * 1000;
-
-  if (!paidUnlock || !recent) {
+  if (!unlockPurchase) {
     return {
       statusCode: 403,
       headers: cors,
-      body: JSON.stringify({ error: 'no_recent_unlock_payment' }),
+      body: JSON.stringify({
+        error: 'no_recent_unlock_payment',
+        hint: 'complete_checkout_or_contact_support',
+      }),
     };
   }
 
   await applyCalcUnlock(store, auth.email, calcSlug);
-  const { rec } = await loadRecord(store, auth.email);
+  const after = await loadRecord(store, auth.email);
+
+  if (proRec?.lastCalcUnlockSlug !== calcSlug) {
+    try {
+      await store.setJSON(proKey, {
+        ...proRec,
+        lastCalcUnlockSlug: calcSlug,
+        lastCalcUnlockAt: new Date().toISOString(),
+      });
+    } catch (_) {
+      /* ignore */
+    }
+  }
 
   return {
     statusCode: 200,
@@ -108,7 +146,7 @@ exports.handler = async (event) => {
       ok: true,
       calcSlug,
       calcUnlocked: true,
-      unlockedCalcs: activeCalcUnlocks(rec),
+      unlockedCalcs: activeCalcUnlocks(after.rec),
     }),
   };
 };

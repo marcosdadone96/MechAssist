@@ -82,12 +82,19 @@ export function findCalcInputsRoot() {
     }
     return appMain;
   }
+  const labMain = document.querySelector('main.lab-main');
+  if (labMain instanceof HTMLElement) {
+    if (labMain.classList.contains('lab-main') && labMain.querySelector('#lab-hub-root')) {
+      return null;
+    }
+    return (
+      labMain.querySelector('.lab-calc-layout__inputs') ||
+      labMain.querySelector('.lab-grid') ||
+      null
+    );
+  }
   return (
-    document.querySelector('main.lab-main .lab-calc-layout__inputs') ||
-    document.querySelector('main.lab-main .lab-grid') ||
     document.querySelector('main.app-main .form-stack') ||
-    document.querySelector('main.app-main') ||
-    document.querySelector('main.lab-main') ||
-    document.querySelector('main')
+    null
   );
 }

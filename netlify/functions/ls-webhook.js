@@ -244,6 +244,9 @@ exports.handler = async (event) => {
   } else if (orderPaid && isUnlockProduct && calcSlug) {
     const applied = await applyCalcUnlock(store, rec.email, calcSlug);
     if (applied) {
+      stored.lastCalcUnlockSlug = calcSlug;
+      stored.lastCalcUnlockAt = new Date().toISOString();
+      await store.setJSON(key, stored);
       console.log(`ls-webhook: calc_unlock email=${rec.email} slug=${calcSlug}`);
     } else {
       console.warn(`ls-webhook: calc_unlock_rejected email=${rec.email} slug=${calcSlug}`);

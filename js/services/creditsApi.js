@@ -97,6 +97,7 @@ export async function consumeCredits(req) {
   if (handleAuthHttpResponse(res, data)) return { ok: false, error: 'session_revoked' };
   if (data.balance) {
     try {
+      const prev = getCachedCreditsState();
       localStorage.setItem(
         LS_BALANCE,
         JSON.stringify({
@@ -105,6 +106,10 @@ export async function consumeCredits(req) {
           unlimited: data.unlimited,
           starter: data.starter,
           calcUnlocked: data.calcUnlocked,
+          calcSlug: data.calcSlug || prev?.calcSlug,
+          unlockedCalcs: data.unlockedCalcs || prev?.unlockedCalcs,
+          subscriptionPlan: data.subscriptionPlan || prev?.subscriptionPlan,
+          subscriptionEndsAt: data.subscriptionEndsAt ?? prev?.subscriptionEndsAt,
         }),
       );
       localStorage.setItem(LS_BALANCE_AT, String(Date.now()));
@@ -148,7 +153,40 @@ export async function refreshCreditsAfterAuth() {
   if (!isCreditsSystemEnabled()) return;
   const u = getCurrentUser();
   if (!u?.email || !u?.serverAuth) return;
+  await syncAccountBillingState();
+}
+
+/**
+ * Refresca plan/saldo y reconcilia un desbloqueo 1 € pendiente (webhook lento).
+ */
+export async function syncAccountBillingState() {
+  if (!isCreditsSystemEnabled()) return;
+  const u = getCurrentUser();
+  if (!u?.email || !u?.serverAuth) return;
+
+  const pending = readPendingCalcUnlockSlug();
+  if (pending) {
+    await reconcileCalcUnlockAfterPayment(pending).catch(() => {});
+  }
   await fetchCreditsBalance().catch(() => {});
+}
+
+/** @param {ReturnType<typeof getCachedCreditsState>} [state] */
+export function countActiveCalcUnlocks(state = getCachedCreditsState()) {
+  const map = state?.unlockedCalcs;
+  if (!map || typeof map !== 'object') return 0;
+  const now = Date.now();
+  return Object.values(map).filter((until) => {
+    const t = Date.parse(String(until));
+    return Number.isFinite(t) && now < t;
+  }).length;
+}
+
+/** @param {ReturnType<typeof getCachedCreditsState>} [state] */
+export function hasActiveBillingEntitlement(state = getCachedCreditsState()) {
+  if (!state) return false;
+  if (state.unlimited || state.starter) return true;
+  return countActiveCalcUnlocks(state) > 0;
 }
 
 const SS_PENDING_UNLOCK = 'mdr-pending-unlock-slug';
@@ -197,6 +235,7 @@ export async function reconcileCalcUnlockAfterPayment(calcSlug) {
   const data = await res.json().catch(() => ({}));
   if (!res.ok || !data.ok) return { ok: false, error: data.error || 'reconcile' };
 
+  clearPendingCalcUnlockSlug();
   await fetchCreditsBalance(slug).catch(() => {});
   return { ok: true, data };
 }
