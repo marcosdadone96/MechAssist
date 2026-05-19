@@ -178,7 +178,8 @@ async function pushUserData() {
   } catch (_) {
     /* ignore */
   }
-  if (handleAuthHttpResponse(res, data)) return;
+  const authHdr = `Bearer ${getBearer()}`;
+  if (handleAuthHttpResponse(res, data, authHdr)) return;
   if (!res.ok || !data.updatedAt) return;
   const m = readMeta();
   m.lastSyncFromServerAt = data.updatedAt;
@@ -210,11 +211,12 @@ export function initUserCloudSync() {
 
     let doc;
     try {
+      const authHdr = `Bearer ${getBearer()}`;
       const res = await fetch(`${fnBase()}/user-data`, {
-        headers: { Authorization: `Bearer ${getBearer()}` },
+        headers: { Authorization: authHdr },
       });
       doc = await res.json().catch(() => null);
-      if (handleAuthHttpResponse(res, doc)) return;
+      if (handleAuthHttpResponse(res, doc, authHdr)) return;
       if (!res.ok) return;
     } catch (_) {
       return;

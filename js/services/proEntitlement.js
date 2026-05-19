@@ -81,7 +81,7 @@ export async function claimProToken(email) {
     body: JSON.stringify({ email: String(email || '').trim() }),
   });
   const data = await res.json().catch(() => ({}));
-  if (handleAuthHttpResponse(res, data)) {
+  if (handleAuthHttpResponse(res, data, headers.Authorization)) {
     return { ok: false, status: 401 };
   }
   if (!res.ok || !data.token) {

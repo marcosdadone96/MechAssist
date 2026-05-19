@@ -128,16 +128,17 @@ export async function syncSupabaseSessionFromNetlifyJwt() {
   if (!u?.serverAuth || !u.authToken) return { ok: false, reason: 'no_netlify_session' };
 
   try {
+    const authHeader = `Bearer ${u.authToken}`;
     const res = await fetch(`${window.location.origin}/.netlify/functions/supabase-session-mint`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${u.authToken}`,
+        Authorization: authHeader,
         'Content-Type': 'application/json',
       },
       body: '{}',
     });
     const data = await res.json().catch(() => ({}));
-    if (handleAuthHttpResponse(res, data)) {
+    if (handleAuthHttpResponse(res, data, authHeader)) {
       return { ok: false, reason: 'session_revoked' };
     }
     if (!res.ok) {

@@ -9,7 +9,7 @@ const { getProStore } = require('./lib/blobStore.js');
 const { normalizeEmail } = require('./lib/proEntitlementLogic.js');
 const { verifiedUserKey } = require('./lib/authBlobKeys.js');
 const { signJwt } = require('./lib/proJwt.js');
-const { bumpSessionVersion } = require('./lib/authSession.js');
+const { readSessionVersion } = require('./lib/authSession.js');
 const { checkRateLimit, resetRateLimit } = require('./lib/rateLimiter.js');
 
 function corsHeaders(event) {
@@ -103,7 +103,7 @@ exports.handler = async (event) => {
     return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'bad_credentials' }) };
   }
 
-  const sv = await bumpSessionVersion(store, email);
+  const sv = readSessionVersion(user);
 
   const now = Math.floor(Date.now() / 1000);
   const exp = now + 60 * 60 * 24 * 30;

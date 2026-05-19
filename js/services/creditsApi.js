@@ -41,12 +41,14 @@ export async function fetchCreditsBalance(calcSlug = '') {
   if (!u?.email || !u?.serverAuth) return { ok: false, error: 'auth' };
 
   const q = calcSlug ? `?calcSlug=${encodeURIComponent(calcSlug)}` : '';
+  const headers = authHeaders();
   const res = await fetch(`${functionsBase()}/credits-balance${q}`, {
     method: 'GET',
-    headers: authHeaders(),
+    headers,
   });
   const data = await res.json().catch(() => ({}));
-  if (handleAuthHttpResponse(res, data)) return { ok: false, error: 'session_revoked' };
+  const usedTok = headers.Authorization || '';
+  if (handleAuthHttpResponse(res, data, usedTok)) return { ok: false, error: 'session_revoked' };
   if (!res.ok || !data.ok) return { ok: false, error: data.error || 'balance' };
 
   if (calcSlug) data.calcSlug = calcSlug;
@@ -88,13 +90,15 @@ export async function consumeCredits(req) {
   const u = getCurrentUser();
   if (!u?.email || !u?.serverAuth) return { ok: false, error: 'auth' };
 
+  const headers = authHeaders();
   const res = await fetch(`${functionsBase()}/credits-consume`, {
     method: 'POST',
-    headers: authHeaders(),
+    headers,
     body: JSON.stringify(req),
   });
   const data = await res.json().catch(() => ({}));
-  if (handleAuthHttpResponse(res, data)) return { ok: false, error: 'session_revoked' };
+  const usedTok = headers.Authorization || '';
+  if (handleAuthHttpResponse(res, data, usedTok)) return { ok: false, error: 'session_revoked' };
   if (data.balance) {
     try {
       const prev = getCachedCreditsState();
@@ -181,12 +185,15 @@ export async function reconcileSubscriptionAfterPayment() {
   const u = getCurrentUser();
   if (!u?.email || !u?.serverAuth) return { ok: false, error: 'auth' };
 
+  const headers = authHeaders();
   const res = await fetch(`${functionsBase()}/credits-reconcile-subscription`, {
     method: 'POST',
-    headers: authHeaders(),
+    headers,
     body: JSON.stringify({}),
   });
   const data = await res.json().catch(() => ({}));
+  const usedTok = headers.Authorization || '';
+  if (handleAuthHttpResponse(res, data, usedTok)) return { ok: false, error: 'session_revoked' };
   if (res.status === 403) return { ok: false, error: data.error || 'no_subscription' };
   if (!res.ok || !data.ok) return { ok: false, error: data.error || 'reconcile' };
 
@@ -271,12 +278,15 @@ export async function reconcileCalcUnlockAfterPayment(calcSlug) {
   const u = getCurrentUser();
   if (!u?.email || !u?.serverAuth) return { ok: false, error: 'auth' };
 
+  const headers = authHeaders();
   const res = await fetch(`${functionsBase()}/credits-reconcile-unlock`, {
     method: 'POST',
-    headers: authHeaders(),
+    headers,
     body: JSON.stringify({ calcSlug: slug }),
   });
   const data = await res.json().catch(() => ({}));
+  const usedTok = headers.Authorization || '';
+  if (handleAuthHttpResponse(res, data, usedTok)) return { ok: false, error: 'session_revoked' };
   if (!res.ok || !data.ok) return { ok: false, error: data.error || 'reconcile' };
 
   clearPendingCalcUnlockSlug();

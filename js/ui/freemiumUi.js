@@ -62,6 +62,11 @@ async function finishAuthSuccess() {
   clearAuthFormError();
   closeModal();
   try {
+    sessionStorage.removeItem('mdr-session-ended');
+  } catch (_) {
+    /* ignore */
+  }
+  try {
     const { refreshCreditsAfterAuth } = await import('../services/creditsApi.js');
     await refreshCreditsAfterAuth();
   } catch (_) {

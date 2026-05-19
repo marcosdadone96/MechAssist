@@ -110,6 +110,7 @@ const TX = {
     loginHeading: 'Iniciar sesi\u00f3n',
     loginLead: 'Accede con el correo y la contrase\u00f1a de tu cuenta verificada.',
     loginSubmit: 'Entrar',
+    loginPwLabel: 'Contrase\u00f1a',
     forgotLink: '\u00bfOlvidaste tu contrase\u00f1a?',
     forgotHeading: 'Recuperar contrase\u00f1a',
     forgotLead:
@@ -213,6 +214,7 @@ const TX = {
     loginHeading: 'Sign in',
     loginLead: 'Use your verified email and password.',
     loginSubmit: 'Sign in',
+    loginPwLabel: 'Password',
     forgotLink: 'Forgot your password?',
     forgotHeading: 'Reset password',
     forgotLead: 'Enter your email and we\u2019ll send you a link to choose a new password.',
@@ -640,13 +642,26 @@ export function mountRegisterPage() {
     const password = document.getElementById('regLoginPassword')?.value ?? '';
     try {
       await loginAccount({ email, password }, { lang });
-      await refreshCreditsAfterAuth();
-      const nextPath = getRegisterNextPath();
-      if (nextPath && nextPath !== 'register.html') {
-        window.location.href = nextPath;
+      const u = getCurrentUser();
+      if (!u?.email || !u?.serverAuth) {
+        showError(
+          lang === 'en'
+            ? 'Sign-in did not complete. Try again.'
+            : 'No se complet\u00f3 el inicio de sesi\u00f3n. Int\u00e9ntelo de nuevo.',
+          'registerLoginError',
+        );
         return;
       }
-      window.location.href = 'index.html';
+      try {
+        sessionStorage.removeItem('mdr-session-ended');
+      } catch (_) {
+        /* ignore */
+      }
+      await refreshCreditsAfterAuth();
+      const nextPath = getRegisterNextPath();
+      const dest =
+        nextPath && nextPath !== 'register.html' ? nextPath : 'index.html';
+      window.location.replace(dest);
     } catch (e) {
       showError(String(e?.message || e), 'registerLoginError');
     }

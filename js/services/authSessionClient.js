@@ -45,14 +45,31 @@ export function handleAuthSessionEnded(reason = 'expired') {
   }
 }
 
+function bearerTokenUsed(tokenUsed) {
+  if (!tokenUsed) return '';
+  return String(tokenUsed).replace(/^Bearer\s+/i, '').trim();
+}
+
 /**
  * @param {Response} res
  * @param {unknown} [data]
+ * @param {string} [tokenUsed] JWT enviado en Authorization (evita borrar sesión nueva por peticiones antiguas)
  */
-export function handleAuthHttpResponse(res, data) {
+export function handleAuthHttpResponse(res, data, tokenUsed) {
   if (res?.status !== 401) return false;
   const parsed = data !== undefined ? data : null;
   if (!isSessionRevokedResponse(res, parsed)) return false;
+
+  try {
+    const raw = localStorage.getItem('mdr-local-user-v1');
+    const u = raw ? JSON.parse(raw) : null;
+    const current = u?.authToken ? String(u.authToken).trim() : '';
+    const used = bearerTokenUsed(tokenUsed);
+    if (used && current && used !== current) return false;
+  } catch (_) {
+    /* ignore */
+  }
+
   handleAuthSessionEnded('revoked');
   return true;
 }
