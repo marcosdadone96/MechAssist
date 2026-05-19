@@ -147,6 +147,22 @@ function applyChips(lang) {
 }
 
 /** @param {'es'|'en'} lang */
+function applyInputPlaceholders(lang) {
+  const en = lang === 'en';
+  for (const [id, labels] of Object.entries(INPUT_PLACEHOLDERS)) {
+    const el = document.getElementById(id);
+    if (el instanceof HTMLInputElement) {
+      el.placeholder = en ? labels.en : labels.es;
+    }
+  }
+  document.querySelectorAll('[data-be-placeholder-es][data-be-placeholder-en]').forEach((el) => {
+    if (!(el instanceof HTMLInputElement)) return;
+    const ph = el.getAttribute(en ? 'data-be-placeholder-en' : 'data-be-placeholder-es');
+    if (ph) el.placeholder = ph;
+  });
+}
+
+/** @param {'es'|'en'} lang */
 function applySelectOptions(lang) {
   const en = lang === 'en';
   const fluid = document.getElementById('beFluidity');

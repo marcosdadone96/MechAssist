@@ -23,7 +23,7 @@ const ALERT_ICONS = {
   ok: `<svg class="lab-alert__glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>`,
 };
 
-function isEnglishUi() {
+export function isEnglishUi() {
   return document?.documentElement?.lang?.toLowerCase().startsWith('en') || false;
 }
 
