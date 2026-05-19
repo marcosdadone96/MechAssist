@@ -3629,6 +3629,37 @@ html[data-conveyor-tool='bucket'] #beResults {
   max-height: min(72vh, 560px);
 }
 
+.be-aside-kpi {
+  margin-top: 0.65rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.be-aside-kpi__lead {
+  margin: 0 0 0.4rem;
+  color: #64748b;
+  font-size: 0.72rem;
+}
+
+.be-aside-kpi__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 0.5rem;
+}
+
+.be-aside-kpi__lbl {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
 .app-main--be {
   max-width: 1220px;
   grid-template-columns: 1fr minmax(220px, 280px) !important;

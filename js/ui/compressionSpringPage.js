@@ -16,6 +16,7 @@ import {
   metricHtml,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  runLabCalcBoot,
   uxCopy,
   wireLabCopyResultsButton,
   wireLabCopyLink,
@@ -931,6 +932,14 @@ function computeCore() {
 const resultsWrap = document.getElementById('springResultsWrap');
 const debounced = debounce(() => runCalcWithIndustrialFeedback(resultsWrap, computeCore), 55);
 
+function showSpringRuntimeError(err) {
+  const el = document.getElementById('runtimeError');
+  if (!(el instanceof HTMLElement)) return;
+  el.hidden = false;
+  el.textContent = err instanceof Error ? err.message : String(err);
+}
+
+try {
 injectLabUnitConverterIfNeeded();
 mountLabUnitConverter();
 mountCompactLabFieldHelp();
@@ -1032,7 +1041,7 @@ renderSpringDiagram(document.getElementById('springDiagram'), {
   sMax: 12,
 });
 
-runCalcWithIndustrialFeedback(resultsWrap, computeCore);
+runLabCalcBoot(resultsWrap, computeCore);
 
 wireLabCopyResultsButton('springCopyResults', {
   moduleTitle: uxCopy('Muelle helicoidal de compresi\u00f3n', 'Helical compression spring'),
@@ -1108,3 +1117,7 @@ watchLangAndApply(COMPRESSION_SPRING_EN, {
 window.addEventListener(LAB_LANG_EVENT, () => {
   runCalcWithIndustrialFeedback(resultsWrap, computeCore);
 });
+} catch (err) {
+  console.error('[compression spring]', err);
+  showSpringRuntimeError(err);
+}

@@ -37,14 +37,14 @@ import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { BUCKET_ELEVATOR_EN } from '../lab/i18n/pages/bucketElevatorEn.js';
+import { BUCKET_PRESET_BY_ID } from '../modules/machineHubPresets.js';
+import { incrementCalcCounter } from '../services/calcCounter.js';
 
 const BUCKET_PAGE_EN = {
   ...MACHINE_HUB_UX_EN,
   ...BUCKET_ELEVATOR_EN,
   ...getBucketElevatorBeStrings('en'),
 };
-import { BUCKET_PRESET_BY_ID } from '../modules/machineHubPresets.js';
-import { incrementCalcCounter } from '../services/calcCounter.js';
 
 let animPhase = 0;
 let animId = 0;
@@ -291,6 +291,39 @@ function applyBePresetFromId(presetId) {
   computeAndRender();
 }
 
+/**
+ * @param {ReturnType<typeof computeBucketElevator>} r
+ * @param {ReturnType<typeof buildParams>} p
+ * @param {ReturnType<typeof getDriveRequirements>} drive
+ * @param {'es'|'en'} lang
+ */
+function renderBeAsideKpi(r, p, drive, lang) {
+  const el = document.getElementById('beAsideKpi');
+  if (!el) return;
+  const en = lang === 'en';
+  const pw = r.power || {};
+  el.innerHTML = `
+    <p class="be-aside-kpi__lead">${en ? 'Live summary — open step 3 for full results' : 'Resumen en vivo — paso 3 para el detalle completo'}</p>
+    <div class="be-aside-kpi__grid">
+      <div>
+        <span class="be-aside-kpi__lbl">${en ? 'Motor power' : 'Potencia motor'}</span>
+        <strong>${drive.power_kW.toFixed(3)} kW</strong>
+      </div>
+      <div>
+        <span class="be-aside-kpi__lbl">${en ? 'Head drum torque' : 'Par tambor cabeza'}</span>
+        <strong>${drive.torque_Nm.toFixed(0)} N·m</strong>
+      </div>
+      <div>
+        <span class="be-aside-kpi__lbl">${en ? 'Belt speed' : 'Velocidad cinta'}</span>
+        <strong>${p.beltSpeed_m_s.toFixed(2)} m/s</strong>
+      </div>
+      <div>
+        <span class="be-aside-kpi__lbl">${en ? 'Shaft power (model)' : 'Potencia eje (modelo)'}</span>
+        <strong>${(pw.shaft_kW ?? 0).toFixed(3)} kW</strong>
+      </div>
+    </div>`;
+}
+
 function drawDiagramOnly() {
   const svg = document.getElementById('beDiagram');
   if (!(svg instanceof SVGSVGElement)) return;
@@ -358,6 +391,11 @@ function computeAndRenderCore() {
     console.error(e);
     drawDiagramOnly();
     mountBePdfExport();
+    const errEl = document.getElementById('runtimeError');
+    if (errEl instanceof HTMLElement) {
+      errEl.hidden = false;
+      errEl.textContent = e instanceof Error ? e.message : String(e);
+    }
     return;
   }
   lastP = p;
@@ -561,6 +599,12 @@ function computeAndRenderCore() {
     drawDiagramOnly();
   } catch (e) {
     console.error('Bucket elevator diagram:', e);
+  }
+
+  try {
+    renderBeAsideKpi(r, p, getDriveRequirements(), lang);
+  } catch (e) {
+    console.error('Bucket elevator aside KPI:', e);
   }
 
   const mb = document.getElementById('beMotorBlock');

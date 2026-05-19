@@ -61,10 +61,9 @@ async function bootMachineCalcViewInner(refresh) {
   if (machineViewBooted.has(refresh)) return;
   machineViewBooted.add(refresh);
 
-  if (!isCreditsSystemEnabled()) {
-    refresh.runPreview();
-    return;
-  }
+  refresh.runPreview();
+
+  if (!isCreditsSystemEnabled()) return;
 
   if (getCurrentUser()?.email && !getCachedCreditsState()) {
     const slug = calcSlugFromPath();
@@ -72,7 +71,6 @@ async function bootMachineCalcViewInner(refresh) {
   }
 
   if (shouldLockCalcInputsForCredits()) {
-    refresh.runPreview();
     syncNoCreditsInputLock();
     return;
   }

@@ -552,19 +552,29 @@ function runCalcFeedbackInner(wrap, fn) {
   });
 }
 
+/** Primera pintura (diagrama + resultados) sin cobrar sesión de créditos. */
+export function runLabCalcBoot(wrap, fn) {
+  runCalcFeedbackInner(wrap, fn);
+}
+
 export function runCalcWithIndustrialFeedback(wrap, fn) {
   if (!isCreditsSystemEnabled()) {
     runCalcFeedbackInner(wrap, fn);
     return;
   }
-  ensureCalcSessionCharged().then((gate) => {
-    if (!gate.allowed) {
-      if (gate.reason === 'no_credits') {
-        showNoCreditsModal();
-        import('./noCreditsLockMode.js').then((m) => m.syncNoCreditsInputLock());
+  ensureCalcSessionCharged()
+    .then((gate) => {
+      if (!gate.allowed) {
+        if (gate.reason === 'no_credits') {
+          showNoCreditsModal();
+          import('./noCreditsLockMode.js').then((m) => m.syncNoCreditsInputLock());
+        }
+        return;
       }
-      return;
-    }
-    runCalcFeedbackInner(wrap, fn);
-  });
+      runCalcFeedbackInner(wrap, fn);
+    })
+    .catch((err) => {
+      console.error('[lab calc] credit session', err);
+      runCalcFeedbackInner(wrap, fn);
+    });
 }
