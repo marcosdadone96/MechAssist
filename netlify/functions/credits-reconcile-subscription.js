@@ -1,16 +1,20 @@
 /**
- * POST  Tras pago Lemon de desbloqueo 1 : aplica calc_slug si el webhook tard.
+ * POST — Tras pago Lemon Starter/Ilimitado: sincroniza suscripción al ledger de créditos.
  */
 const { getProStore } = require('./lib/blobStore.js');
 const { verifyAuthSession } = require('./lib/authSession.js');
-const { emailBlobKey, isCalcUnlockVariant } = require('./lib/proEntitlementLogic.js');
 const {
-  applyCalcUnlock,
-  activeCalcUnlocks,
-  calcUnlockActive,
+  emailBlobKey,
+  subscriptionRecordActive,
+  tierFromVariant,
+} = require('./lib/proEntitlementLogic.js');
+const {
   loadRecord,
+  publicBalance,
+  subscriptionActive,
+  activeCalcUnlocks,
+  syncSubscriptionFromProRecord,
 } = require('./lib/creditsLogic.js');
-const { isAllowedCalcUnlockSlug } = require('./lib/calcUnlockCatalog.js');
 
 function corsHeaders(event) {
   const allowed = ['https://www.themechassist.com', 'https://themechassist.com'];
@@ -61,13 +65,6 @@ exports.handler = async (event) => {
     };
   }
 
-  let body = {};
-  try {
-    body = JSON.parse(event.body || '{}');
-  } catch (_) {
-    body = {};
-  }
-
   const proKey = emailBlobKey(auth.email);
   let proRec = null;
   try {
@@ -76,77 +73,65 @@ exports.handler = async (event) => {
     proRec = null;
   }
 
-  const calcSlug = String(body.calcSlug || proRec?.lastCalcUnlockSlug || '')
-    .trim()
-    .slice(0, 80);
-  if (!calcSlug || !isAllowedCalcUnlockSlug(calcSlug)) {
-    return {
-      statusCode: 400,
-      headers: cors,
-      body: JSON.stringify({ error: 'invalid_calc_slug' }),
-    };
-  }
-
-  const { rec } = await loadRecord(store, auth.email);
-  if (calcUnlockActive(rec, calcSlug)) {
-    return {
-      statusCode: 200,
-      headers: { ...cors, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ok: true,
-        already: true,
-        calcSlug,
-        calcUnlocked: true,
-        unlockedCalcs: activeCalcUnlocks(rec),
-      }),
-    };
-  }
-
-  const variantId = proRec?.variantId != null ? String(proRec.variantId) : '';
-  const unlockAt = proRec?.lastCalcUnlockAt || proRec?.updatedAt;
-  const unlockTs = unlockAt ? Date.parse(String(unlockAt)) : NaN;
-  const recentUnlock =
-    Number.isFinite(unlockTs) && Date.now() - unlockTs < 7 * 24 * 60 * 60 * 1000;
-  const unlockVariant = isCalcUnlockVariant(variantId);
-  const unlockPurchase =
-    proRec &&
-    recentUnlock &&
-    (unlockVariant || String(proRec.lastCalcUnlockSlug || '') === calcSlug);
-
-  if (!unlockPurchase) {
+  if (!subscriptionRecordActive(proRec)) {
     return {
       statusCode: 403,
       headers: cors,
       body: JSON.stringify({
-        error: 'no_recent_unlock_payment',
-        hint: 'complete_checkout_or_contact_support',
+        error: 'no_active_subscription',
+        hint: 'check_lemon_webhook_and_variant_ids',
       }),
     };
   }
 
-  await applyCalcUnlock(store, auth.email, calcSlug);
-  const after = await loadRecord(store, auth.email);
+  const tier = tierFromVariant(proRec.variantId);
+  if (tier !== 'starter' && tier !== 'unlimited') {
+    return {
+      statusCode: 403,
+      headers: cors,
+      body: JSON.stringify({ error: 'not_subscription_tier', variantId: proRec.variantId || null }),
+    };
+  }
 
-  if (proRec?.lastCalcUnlockSlug !== calcSlug) {
+  if (proRec.active === false) {
     try {
       await store.setJSON(proKey, {
         ...proRec,
-        lastCalcUnlockSlug: calcSlug,
-        lastCalcUnlockAt: new Date().toISOString(),
+        active: true,
+        updatedAt: new Date().toISOString(),
       });
     } catch (_) {
       /* ignore */
     }
   }
 
+  const synced = await syncSubscriptionFromProRecord(store, auth.email, proRec);
+  if (!synced.ok) {
+    return {
+      statusCode: 500,
+      headers: cors,
+      body: JSON.stringify({ error: synced.error || 'sync_failed' }),
+    };
+  }
+
+  const { rec } = await loadRecord(store, auth.email);
+  const subActive = subscriptionActive(rec);
+  let subscriptionPlan = null;
+  if (subActive && rec.subscription === 'unlimited') subscriptionPlan = 'unlimited';
+  else if (subActive && rec.subscription === 'starter') subscriptionPlan = 'starter';
+
   return {
     statusCode: 200,
     headers: { ...cors, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       ok: true,
-      calcSlug,
-      calcUnlocked: true,
-      unlockedCalcs: activeCalcUnlocks(after.rec),
+      tier: synced.tier,
+      balance: publicBalance(rec),
+      unlimited: subscriptionPlan === 'unlimited',
+      starter: subscriptionPlan === 'starter',
+      subscriptionPlan,
+      subscriptionEndsAt: subActive ? rec.subscriptionEndsAt || null : null,
+      unlockedCalcs: activeCalcUnlocks(rec),
     }),
   };
 };

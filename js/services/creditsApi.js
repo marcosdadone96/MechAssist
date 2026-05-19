@@ -164,11 +164,55 @@ export async function syncAccountBillingState() {
   const u = getCurrentUser();
   if (!u?.email || !u?.serverAuth) return;
 
+  await reconcileSubscriptionAfterPayment().catch(() => {});
+
   const pending = readPendingCalcUnlockSlug();
   if (pending) {
     await reconcileCalcUnlockAfterPayment(pending).catch(() => {});
   }
   await fetchCreditsBalance().catch(() => {});
+}
+
+/**
+ * Sincroniza suscripción Starter/Ilimitado desde Lemon (webhook tardío o variant mal configurada).
+ */
+export async function reconcileSubscriptionAfterPayment() {
+  if (!isCreditsSystemEnabled()) return { ok: false };
+  const u = getCurrentUser();
+  if (!u?.email || !u?.serverAuth) return { ok: false, error: 'auth' };
+
+  const res = await fetch(`${functionsBase()}/credits-reconcile-subscription`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({}),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 403) return { ok: false, error: data.error || 'no_subscription' };
+  if (!res.ok || !data.ok) return { ok: false, error: data.error || 'reconcile' };
+
+  try {
+    const prev = getCachedCreditsState();
+    localStorage.setItem(
+      LS_BALANCE,
+      JSON.stringify({
+        ok: true,
+        balance: data.balance,
+        unlimited: data.unlimited,
+        starter: data.starter,
+        calcUnlocked: prev?.calcUnlocked,
+        calcSlug: prev?.calcSlug,
+        unlockedCalcs: data.unlockedCalcs || prev?.unlockedCalcs,
+        subscriptionPlan: data.subscriptionPlan || prev?.subscriptionPlan,
+        subscriptionEndsAt: data.subscriptionEndsAt ?? prev?.subscriptionEndsAt,
+      }),
+    );
+    localStorage.setItem(LS_BALANCE_AT, String(Date.now()));
+    notifyCreditsChanged();
+  } catch (_) {
+    /* ignore */
+  }
+
+  return { ok: true, data };
 }
 
 /** @param {ReturnType<typeof getCachedCreditsState>} [state] */
@@ -251,6 +295,7 @@ export async function waitForCreditsAfterCheckout(preferredSlug = '', opts = {})
   const started = Date.now();
 
   while (Date.now() - started < maxMs) {
+    await reconcileSubscriptionAfterPayment().catch(() => {});
     if (slug) {
       await reconcileCalcUnlockAfterPayment(slug).catch(() => {});
     }

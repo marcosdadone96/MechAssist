@@ -3,7 +3,13 @@
  * Saldo ùnico compartido (lab, mùquinas e hidrùulica).
  */
 const crypto = require('crypto');
-const { normalizeEmail, emailBlobKey, isCalcUnlockVariant } = require('./proEntitlementLogic.js');
+const {
+  normalizeEmail,
+  emailBlobKey,
+  isCalcUnlockVariant,
+  tierFromVariant,
+  subscriptionRecordActive: proSubscriptionRecordActive,
+} = require('./proEntitlementLogic.js');
 const { isAllowedCalcUnlockSlug } = require('./calcUnlockCatalog.js');
 
 const WELCOME_TOTAL =
@@ -273,46 +279,55 @@ async function consumeCredits(store, email, req) {
 }
 
 /**
- * @param {string | number | null | undefined} variantId
- * @returns {'starter'|'unlimited'|'calc_unlock'|null}
- */
-function tierFromVariant(variantId) {
-  const id = variantId != null ? String(variantId).trim() : '';
-  if (!id) return null;
-  const unlimited = (process.env.LEMON_VARIANT_UNLIMITED_IDS || '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const starter = (process.env.LEMON_VARIANT_STARTER_IDS || process.env.LEMON_PRO_VARIANT_IDS || '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const unlock = (process.env.LEMON_VARIANT_CALC_UNLOCK_IDS || '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const unlockSet =
-    unlock.length > 0
-      ? unlock
-      : ['3e5a7c0f-4faf-47fd-aede-0a6488ef5f40'];
-  if (unlimited.includes(id)) return 'unlimited';
-  if (starter.includes(id)) return 'starter';
-  if (unlockSet.includes(id)) return 'calc_unlock';
-  if (isCalcUnlockVariant(id)) return 'calc_unlock';
-  return null;
-}
-
-/**
  * @param {import('@netlify/blobs').Store} store
  * @param {string} email
  * @param {{ tier: 'starter'|'unlimited', endsAt?: string | null }} sub
  */
 async function applySubscription(store, email, sub) {
   const { key, rec } = await loadRecord(store, email);
+  const wasActiveStarter =
+    rec.subscription === 'starter' && subscriptionActive(rec);
   rec.subscription = sub.tier;
   rec.subscriptionEndsAt = sub.endsAt || null;
+  const isActiveStarter =
+    sub.tier === 'starter' && subscriptionActive(rec);
+  if (isActiveStarter && !wasActiveStarter) {
+    rec.credits = WELCOME_TOTAL;
+    rec.welcomeGranted = true;
+  }
   await saveRecord(store, key, rec);
   return rec;
+}
+
+/**
+ * Sincroniza suscripciùn Lemon ? ledger de crùditos (tras pago o webhook tardùo).
+ * @param {import('@netlify/blobs').Store} store
+ * @param {string} email
+ * @param {Record<string, unknown> | null} proRec
+ */
+async function syncSubscriptionFromProRecord(store, email, proRec) {
+  if (!proRec || !proSubscriptionRecordActive(proRec)) {
+    return { ok: false, error: 'no_active_subscription' };
+  }
+  const tier = tierFromVariant(proRec.variantId);
+  if (tier !== 'starter' && tier !== 'unlimited') {
+    return { ok: false, error: 'not_subscription_tier' };
+  }
+  const endsAt = proRec.endsAt != null ? String(proRec.endsAt) : null;
+  let rec = await applySubscription(store, email, { tier, endsAt });
+  if (tier === 'starter' && subscriptionActive(rec) && rec.credits < COST_CALC) {
+    const proUpdated = proRec.updatedAt ? Date.parse(String(proRec.updatedAt)) : NaN;
+    const recentPro =
+      Number.isFinite(proUpdated) && Date.now() - proUpdated < 30 * 24 * 60 * 60 * 1000;
+    if (recentPro) {
+      const { key, rec: r2 } = await loadRecord(store, email);
+      r2.credits = WELCOME_TOTAL;
+      r2.welcomeGranted = true;
+      await saveRecord(store, key, r2);
+      rec = r2;
+    }
+  }
+  return { ok: true, tier, rec };
 }
 
 /**
@@ -417,6 +432,7 @@ module.exports = {
   calcUnlockActive,
   tierFromVariant,
   applySubscription,
+  syncSubscriptionFromProRecord,
   applyCalcUnlock,
   calcSlugFromCustomData,
   extractCalcSlugFromOrder,

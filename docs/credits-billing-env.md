@@ -16,7 +16,7 @@ Tras activar `publicFreeRelease: false` y `credits.enabled: true` en `js/config/
 
 | Variable | Descripción |
 |----------|-------------|
-| `LEMON_VARIANT_STARTER_IDS` | Plan ~9 €/mes (p. ej. `acd30d30-72e7-4434-827e-e51487e492ca`) |
+| `LEMON_VARIANT_STARTER_IDS` | Plan ~9 €/mes (`acd30d30-72e7-4434-827e-e51487e492ca` mensual, `bfd83e87-…` anual). **Incluidos por defecto en código** si la env falta. |
 | `LEMON_VARIANT_UNLIMITED_IDS` | Plan ~25 €/mes ilimitado |
 | `LEMON_VARIANT_CALC_UNLOCK_IDS` | Compra desbloqueo calculadora (~1 €) |
 | `LEMON_PRO_VARIANT_IDS` | Legacy; si Starter vacío, se usa como fallback Starter |

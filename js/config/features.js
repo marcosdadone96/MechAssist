@@ -4,7 +4,9 @@
  * CHECKLIST NETLIFY (antes de cobrar):
  * - PRO_JWT_SECRET: secreto largo (firma JWT pro-claim / pro-verify).
  * - LEMON_SQUEEZY_WEBHOOK_SECRET: signing secret del webhook en Lemon.
- * - LEMON_PRO_VARIANT_IDS: UUIDs variant TheMechAssist separados por coma (los mismos que /checkout/buy/{uuid}).
+ * - LEMON_PRO_VARIANT_IDS: UUIDs variant legacy (opcional si usa Starter/Ilimitado por env dedicada).
+ * - LEMON_VARIANT_STARTER_IDS: Starter 9 € (acd30d30-… mensual; bfd83e87-… anual). Hay defaults en código.
+ * - LEMON_VARIANT_UNLIMITED_IDS: Ilimitado 25 € (a8ac7a03-… / 85d69c29-…).
  * - Webhook URL en Lemon: https://SU-DOMINIO/.netlify/functions/ls-webhook (eventos order_* y subscription_*).
  * - URL exito checkout Lemon: https://SU-DOMINIO/checkout.html?paid=1
  * - publicSiteBaseUrl: URL del sitio sin barra final; luego `node scripts/generate-sitemap.mjs`
