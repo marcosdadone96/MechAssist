@@ -1,5 +1,6 @@
 /**
  * Convierte textos largos de ayuda en campos (.lab-field-help, .hint) en un botón "?" con tooltip al hover.
+ * La ayuda queda fuera del <label> (fila .lab-field__label-row) para no romper data-i18n / snapshots.
  */
 
 function buildFieldTooltipContent(hintEl, helpP) {
@@ -13,6 +14,12 @@ function buildFieldTooltipContent(hintEl, helpP) {
   return parts.join('');
 }
 
+function hideHelpSource(el) {
+  if (!(el instanceof HTMLElement)) return;
+  el.hidden = true;
+  el.setAttribute('aria-hidden', 'true');
+}
+
 /**
  * @param {ParentNode} [root]
  */
@@ -23,13 +30,23 @@ export function mountCompactLabFieldHelp(root = document) {
 
   root.querySelectorAll('.lab-calc-layout__inputs .lab-field').forEach((field) => {
     if (!(field instanceof HTMLElement)) return;
-    if (field.dataset.helpCompact === '1') return;
+    if (field.dataset.helpCompact === '1') {
+      const legacyLabel =
+        field.querySelector(':scope > label') || field.querySelector(':scope > .lab-field__label-row');
+      if (legacyLabel?.querySelector(':scope > .lab-help-hover')) {
+        delete field.dataset.helpCompact;
+      } else {
+        return;
+      }
+    }
 
     const helpP = field.querySelector(':scope > p.lab-field-help');
     const hintEl = field.querySelector(':scope > span.hint');
     if (!helpP && !hintEl) return;
 
-    const label = field.querySelector(':scope > label.lab-field__label-row') || field.querySelector(':scope > label');
+    const label =
+      field.querySelector(':scope > label.lab-field__label-row') ||
+      field.querySelector(':scope > label');
     if (!label) return;
 
     field.dataset.helpCompact = '1';
@@ -52,9 +69,36 @@ export function mountCompactLabFieldHelp(root = document) {
 
     wrap.appendChild(btn);
     wrap.appendChild(tip);
-    label.appendChild(wrap);
 
-    hintEl?.remove();
-    helpP?.remove();
+    if (label.classList.contains('lab-field__label-row')) {
+      label.appendChild(wrap);
+    } else {
+      const row = document.createElement('div');
+      row.className = 'lab-field__label-row';
+      label.parentNode?.insertBefore(row, label);
+      row.appendChild(label);
+      row.appendChild(wrap);
+    }
+
+    hideHelpSource(hintEl);
+    hideHelpSource(helpP);
+  });
+}
+
+/**
+ * Actualiza el HTML del globo tras applyModuleTranslations (hint/help siguen en DOM ocultos).
+ * @param {ParentNode} [root]
+ */
+export function refreshCompactLabFieldHelp(root = document) {
+  root.querySelectorAll('.lab-field[data-help-compact="1"]').forEach((field) => {
+    if (!(field instanceof HTMLElement)) return;
+    const tip = field.querySelector(':scope .lab-help-hover__tip');
+    if (!tip) return;
+    const helpP = field.querySelector(':scope > p.lab-field-help');
+    const hintEl = field.querySelector(':scope > span.hint');
+    tip.innerHTML = buildFieldTooltipContent(
+      hintEl instanceof HTMLElement ? hintEl : null,
+      helpP instanceof HTMLElement ? helpP : null,
+    );
   });
 }

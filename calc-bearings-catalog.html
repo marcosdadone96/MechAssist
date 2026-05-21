@@ -50,30 +50,44 @@
       <section class="lab-panel lab-panel--accent">
         <header class="lab-calc-page-head">
           <h2 data-i18n="bcat.h2">Rodamientos rígidos de bolas · series 6000 / 6200 / 6300 (catálogo demo)</h2>
-          <p class="lab-data-note">
+          <p class="lab-data-note" data-i18n="bcat.dataNoteHtml" data-i18n-html>
             <strong>Datos de muestra:</strong> series 62xx con C orientativo. Para selección final, consulta catálogo oficial SKF o FAG.
           </p>
-          <p class="lab-calc-hero-lead">
+          <p class="lab-calc-hero-lead" data-i18n="bcat.heroLead" data-i18n-html>
             Elija serie y designación con <strong>C</strong> demo; obtenga <strong>L<sub>10h</sub></strong> con <strong>P</strong> y <strong>n</strong>. Para solo validar vida con una <strong>C</strong> ya conocida, use el módulo L10 genérico.
           </p>
           <details class="lab-calc-seo">
             <summary data-i18n="bcat.seoSummary">Contexto ampliado y notas de uso</summary>
-            <p class="calc-seo-intro">
+            <p class="calc-seo-intro" data-i18n="bcat.calcSeoIntro">
           Con este asistente elige una designación comercial de las series 6000, 6200 o 6300 y obtiene la vida básica en horas L10h usando la carga dinámica C del catálogo de demostración, frente a la carga equivalente y la velocidad de trabajo. El enfoque sigue el planteamiento ISO 281 para rígidos de bolas en versión abreviada, útil para cribar tallas antes de abrir el catálogo completo del fabricante. Interesa a técnicos de mantenimiento y diseño que deben proponer un reemplazo rápido. Un escenario frecuente es comparar un 62xx frente a un 63xx más ancho cuando sube el empuje axial por un mal alineado.
             </p>
-            <p class="lab-small-print" style="margin: 0.65rem 0 0">
+            <p class="lab-small-print" style="margin: 0.65rem 0 0" data-i18n="bcat.seoHintHtml" data-i18n-html>
           Usa este módulo para seleccionar un rodamiento de las series 6000/6200/6300 directamente por designación. Si ya tienes el valor C del catálogo, usa el módulo L10 genérico.
             </p>
           </details>
           <details class="lab-calc-help">
             <summary class="lab-calc-help__summary" data-i18n="bcat.helpSummary">Metodología y límites del modelo</summary>
             <div class="lab-calc-help__body">
-              <p class="lab-lead lab-lead--in-help">
+              <p class="lab-lead lab-lead--in-help" data-i18n="bcat.methodLeadHtml" data-i18n-html>
                 Elija <strong>serie</strong> y <strong>designación</strong>; introduzca <strong>P</strong> equivalente y <strong>n</strong>. Se calcula <strong>L<sub>10h</sub></strong> con <code>L = (C/P)³</code> (bolas) frente a horas objetivo. Catálogo y <strong>C</strong> son demo; confirme siempre con el catálogo del fabricante.
               </p>
             </div>
           </details>
         </header>
+        <nav class="lab-next-steps" data-i18n="bcat.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="bcat.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="bcat.nextLi1Html" data-i18n-html>
+              <a href="calc-bearings.html">Rodamientos · L10</a> — cuando ya conoce la C de catálogo.
+            </li>
+            <li data-i18n="bcat.nextLi2Html" data-i18n-html>
+              <a href="calc-shaft.html">Eje · torsión</a> — asiento en el eje.
+            </li>
+            <li data-i18n="bcat.nextLi3Html" data-i18n-html>
+              <a href="calc-gears.html">Engranajes cilíndricos</a> — cargas que fijan la P equivalente.
+            </li>
+          </ul>
+        </nav>
         <div class="lab-presets-row">
           <span class="lab-presets-row__label" data-i18n="bcat.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="bcPresetsBar"></div>

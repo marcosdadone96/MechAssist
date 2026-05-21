@@ -274,4 +274,8 @@ wireLabCopyResultsButton('cpCopyResults', {
 if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
 else render();
 mountLabCloudSaveBar(bx('Acoplamientos', 'Couplings'));
-watchLangAndApply(COUPLINGS_EN, { onEnApplied: () => scheduleCouplingRender() });
+watchLangAndApply(COUPLINGS_EN, {
+  reloadOnEs: false,
+  onEnApplied: () => scheduleCouplingRender(),
+  onEsRestored: () => scheduleCouplingRender(),
+});

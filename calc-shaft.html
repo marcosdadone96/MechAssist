@@ -60,7 +60,7 @@
           </p>
           <details class="lab-calc-seo">
             <summary data-i18n="shaft.seoSummary">Contexto ampliado y notas de uso</summary>
-            <p class="calc-seo-intro">
+            <p class="calc-seo-intro" data-i18n="shaft.seoIntro">
               Este módulo estima el diámetro necesario de un eje macizo sometido primero a torsión pura y, en modo avanzado, a la combinación de momento flector y par torsor mediante tensión equivalente de Von Mises o Tresca con coeficientes de concentración orientativos. El resultado sirve como predimensionado previo a un análisis de fatiga detallado o a la normativa corporativa del proyecto. Lo usan ingenieros de diseño de máquinas y mantenimiento cuando hay que sustituir un eje o validar un aumento de potencia. Por ejemplo, puede dimensionar el eje de salida de un reductor antes de encargar el mecanizado cuando cambian la polea y la cinta arrastrada.
             </p>
           </details>
@@ -108,7 +108,7 @@
                   <option value="design" selected data-i18n="shaft.optDesign">Diseño — carga y material → diámetro mínimo</option>
                   <option value="diagnostic" data-i18n="shaft.optDiagnostic">Diagnóstico — diámetro instalado → tensión y aptitud</option>
                 </select>
-                <p class="lab-field-help" id="shCalcModeHelp">
+                <p class="lab-field-help" id="shCalcModeHelp" data-i18n="shaft.helpModeHtml" data-i18n-html>
                   En <strong>diseño</strong> se obtiene el diámetro mínimo y se compara con un diámetro comercial. En <strong>diagnóstico</strong> se fija el diámetro real del eje y se comprueba si soporta el par (y flexión si aplica).
                 </p>
               </div>
@@ -138,12 +138,12 @@
                   <span class="lab-field__label-text">τ adm (MPa)</span>
                 </label>
                 <input id="shTau" type="number" min="1" value="40" />
-                <p class="lab-field-help">Tensión tangencial <strong>admisible</strong> (MPa) según material, coeficientes de seguridad y criterio (ductilidad, fatiga). Típicamente tabulada en normas o manuales.</p>
+                <p class="lab-field-help" data-i18n="shaft.helpTauHtml" data-i18n-html>Tensión tangencial <strong>admisible</strong> (MPa) según material, coeficientes de seguridad y criterio (ductilidad, fatiga). Típicamente tabulada en normas o manuales.</p>
               </div>
               <div class="lab-field lab-field--wide lab-field--check">
                 <label class="lab-check">
                   <input id="shUseBending" type="checkbox" />
-                  <span>Incluir flexión (modo avanzado)</span>
+                  <span data-i18n="shaft.labelBending">Incluir flexión (modo avanzado)</span>
                 </label>
               </div>
               <div class="lab-field sh-advanced-row sh-advanced-row--hidden" id="shMRow">
@@ -168,8 +168,8 @@
                   <span class="lab-field__label-text">Criterio de combinación</span>
                 </label>
                 <select id="shCriterion">
-                  <option value="von_mises">Von Mises</option>
-                  <option value="tresca">Tresca</option>
+                  <option value="von_mises" data-i18n="shaft.optVonMises">Von Mises</option>
+                  <option value="tresca" data-i18n="shaft.optTresca">Tresca</option>
                 </select>
               </div>
               <div class="lab-field sh-advanced-row sh-advanced-row--hidden" id="shKtRow">
@@ -182,7 +182,7 @@
                   <span class="lab-field__label-text">Kt (concentración de tensiones)</span>
                 </label>
                 <input id="shKt" type="number" min="1" step="0.05" value="1.0" />
-                <p class="lab-field-help">Kt amplifica tensiones por entallas/chaveteros/cambios de sección. Si no hay detalle geométrico, use Kt = 1.0 como base conservadora inicial.</p>
+                <p class="lab-field-help" data-i18n="shaft.helpKtHtml">Kt amplifica tensiones por entallas/chaveteros/cambios de sección. Si no hay detalle geométrico, use Kt = 1.0 como base conservadora inicial.</p>
               </div>
               <div class="lab-field">
                 <label for="shAvailableD" class="lab-field__label-row">

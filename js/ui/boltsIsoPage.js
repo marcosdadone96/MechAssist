@@ -55,6 +55,14 @@ function syncBoltCalcModeUi() {
   const gSel = document.getElementById('blGrade');
   if (dSel instanceof HTMLSelectElement) dSel.disabled = design;
   if (gSel instanceof HTMLSelectElement) gSel.disabled = design;
+  const help = document.getElementById('blCalcModeHelp');
+  if (help instanceof HTMLElement) {
+    help.querySelectorAll('[data-bolt-mode]').forEach((el) => {
+      if (!(el instanceof HTMLElement)) return;
+      const on = el.getAttribute('data-bolt-mode') === (design ? 'design' : 'diagnostic');
+      el.classList.toggle('bolt-calc-mode-help__line--active', on);
+    });
+  }
 }
 
 const BL_PRESETS = [
@@ -247,4 +255,8 @@ wireLabCopyResultsButton('blCopyResults', {
 if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
 else render();
 mountLabCloudSaveBar(bx('Torniller\u00eda ISO 898', 'ISO 898 bolts'));
-watchLangAndApply(BOLTS_ISO_EN, { onEnApplied: () => scheduleBlRender() });
+watchLangAndApply(BOLTS_ISO_EN, {
+  reloadOnEs: false,
+  onEnApplied: () => scheduleBlRender(),
+  onEsRestored: () => scheduleBlRender(),
+});

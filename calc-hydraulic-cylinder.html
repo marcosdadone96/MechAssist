@@ -163,29 +163,6 @@
         margin-top: 0.12rem;
       }
       /* Móvil: esquema claro, sin solape */
-      @media (max-width: 479px) {
-        .lab-calc-layout--hc.lab-calc-layout--with-diag {
-          grid-template-columns: minmax(0, 1fr) !important;
-          grid-template-areas:
-            'diagram'
-            'inputs'
-            'out' !important;
-        }
-        .lab-calc-layout--hc .lab-calc-layout__diagram {
-          width: 100%;
-          max-width: 100%;
-          min-width: 0;
-        }
-        .lab-calc-layout--hc #hcDiagram {
-          width: 100%;
-          max-width: 100%;
-          height: auto;
-          display: block;
-        }
-        .lab-calc-layout--hc .lab-diagram-wrap {
-          max-width: 100%;
-        }
-      }
     </style>
   </head>
   <body class="lab-body">
@@ -253,7 +230,7 @@
           </ul>
         </nav>
         <div class="lab-presets-row">
-          <span class="lab-presets-row__label" data-i18n="hydCyl.presetsLabel">Ejemplos típicos:</span>
+          <span class="lab-presets-row__label" data-i18n="fluids.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="hcPresetsBar"></div>
         </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">

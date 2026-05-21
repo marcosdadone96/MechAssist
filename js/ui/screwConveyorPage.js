@@ -19,8 +19,11 @@ import { renderFullEngineeringAside } from './engineeringReport.js';
 import { renderScrewConveyorDiagram } from './diagramScrew.js';
 import { mountPremiumPdfExportBar, buildScrewPdfPayload } from '../services/reportPdfExport.js';
 import { readMountingPreferences } from '../modules/mountingPreferences.js';
-import { injectMountingConfigSection, MOUNTING_INPUT_IDS } from './mountingConfigSection.js';
-import { applyScrewConveyorPageLanguage, SCREW_LANG_EVENT } from './screwConveyorStaticI18n.js';
+import {
+  injectMountingConfigSection,
+  refreshMountingConfigSection,
+  MOUNTING_INPUT_IDS,
+} from './mountingConfigSection.js';
 import { openMotorsRecommendationsAndScroll } from './motorsCollapsible.js';
 import { applyMachinePremiumGates } from './machinePremiumGates.js';
 import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
@@ -34,8 +37,26 @@ import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { SCREW_CONVEYOR_EN } from '../lab/i18n/pages/screwConveyorEn.js';
 
 const SC_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...SCREW_CONVEYOR_EN };
+const SC_DOC_TITLE_ES = 'Tornillo sin fin \u2014 TheMechAssist';
 import { incrementCalcCounter } from '../services/calcCounter.js';
 import { SCREW_PRESET_BY_ID } from '../modules/machineHubPresets.js';
+
+function applyScrewDocumentChrome() {
+  const en = getCurrentLang() === 'en';
+  document.documentElement.lang = en ? 'en' : 'es';
+  document.title = en ? SC_PAGE_EN['scConv.docTitle'] : SC_DOC_TITLE_ES;
+}
+
+function onScrewLangChanged() {
+  applyScrewDocumentChrome();
+  refreshMountingConfigSection();
+  syncLoadDutyUi();
+  syncScrewInlineUnits();
+  initInfoChipPopovers(document.body);
+  refreshMotorVerificationManual(document.getElementById('screwVerifyPanel'), getDriveRequirements);
+  document.getElementById('screwVerifyBrand')?.dispatchEvent(new Event('change'));
+  refresh();
+}
 
 function syncScrewInlineUnits() {
   const capU = document.getElementById('screwCapUnit');
@@ -128,7 +149,7 @@ function readInputs() {
   };
 }
 
-/** Option text aligned with screwConveyorStaticI18n.applySelectOptions (SF shorthand). */
+/** Load-duty option labels (SF shorthand); duty hints come from LOAD_DUTY_OPTIONS*. */
 const SCREW_LOAD_DUTY_OPTION_COPY = Object.freeze({
   uniform: { es: 'Carga uniforme \u2014 SF \u2248 1,15', en: 'Uniform load \u2014 SF \u2248 1.15' },
   moderate: { es: 'Choque moderado \u2014 SF \u2248 1,35', en: 'Moderate shock \u2014 SF \u2248 1.35' },
@@ -779,14 +800,6 @@ bindScrewRangeSlider('screwMuR', 'screwMu', 0.1, 0.75, 0.01);
 
 syncScrewInlineUnits();
 
-window.addEventListener(SCREW_LANG_EVENT, () => {
-  syncLoadDutyUi();
-  syncScrewInlineUnits();
-  refreshMotorVerificationManual(document.getElementById('screwVerifyPanel'), getDriveRequirements);
-  document.getElementById('screwVerifyBrand')?.dispatchEvent(new Event('change'));
-  refresh();
-});
-
 wireMachineRfqExport({
   getPayload: () => {
     const raw = readInputs();
@@ -798,13 +811,11 @@ wireMachineRfqExport({
   toastErrEn: MACHINE_HUB_UX_EN['machineHub.toastRfqErr'],
 });
 
+applyScrewDocumentChrome();
 watchLangAndApply(SC_PAGE_EN, {
-  onEnApplied: () => {
-    applyScrewConveyorPageLanguage();
-    syncLoadDutyUi();
-    initInfoChipPopovers(document.body);
-    refresh();
-  },
+  reloadOnEs: false,
+  onEnApplied: onScrewLangChanged,
+  onEsRestored: onScrewLangChanged,
 });
 
 document.querySelector('.flat-sidebar')?.addEventListener('click', (e) => {

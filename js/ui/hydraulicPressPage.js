@@ -1,13 +1,18 @@
 import { bindInputValidation, mountLabPresetsBar } from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
-import { mountCompactLabFieldHelp } from './labHelpCompact.js';
+import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { HYDRAULIC_PRESS_EN } from '../lab/i18n/pages/hydraulicPressEn.js';
 import { FLUIDS_HUB_UX_EN } from '../lab/i18n/pages/fluidsHubUxEn.js';
-import { applyHydraulicPressPageLanguage } from './hydraulicPressStaticI18n.js';
+const PRESS_PAGE_I18N = { ...HYDRAULIC_PRESS_EN, ...FLUIDS_HUB_UX_EN };
+
+function applyHydraulicPressDocumentChrome() {
+  const en = getCurrentLang() === 'en';
+  document.documentElement.lang = en ? 'en' : 'es';
+}
 
 const HPP_PRESETS = [
   {
@@ -813,12 +818,19 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMount'), {
   },
 });
 
-applyHydraulicPressPageLanguage();
+applyHydraulicPressDocumentChrome();
 
-watchLangAndApply({ ...HYDRAULIC_PRESS_EN, ...FLUIDS_HUB_UX_EN }, {
+watchLangAndApply(PRESS_PAGE_I18N, {
   reloadOnEs: false,
   onEnApplied: () => {
-    applyHydraulicPressPageLanguage();
+    applyHydraulicPressDocumentChrome();
+    refreshCompactLabFieldHelp();
+    syncModeUi();
+    computeAndRender();
+  },
+  onEsRestored: () => {
+    applyHydraulicPressDocumentChrome();
+    refreshCompactLabFieldHelp();
     syncModeUi();
     computeAndRender();
   },

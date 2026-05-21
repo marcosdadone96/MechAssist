@@ -3,169 +3,9 @@
  */
 
 import { getCurrentLang, setCurrentLang } from '../config/locales.js';
-import { chipHelpAriaLabel } from './infoChipPopover.js';
 import { refreshMountingConfigSection } from './mountingConfigSection.js';
 
 export const TRACTION_LANG_EVENT = 'mdr-home-lang-changed';
-
-/** @type {Record<string, { es: { title: string; aria: string }; en: { title: string; aria: string } }>} */
-const CHIPS = {
-  q: {
-    es: {
-      title:
-        'Carga \u00fatil nominal en kg. Determina SF y carga total sobre el sistema de tracci\u00f3n.',
-      aria: 'carga \u00fatil',
-    },
-    en: {
-      title: 'Rated payload Q (kg). Drives imbalance and traction demand.',
-      aria: 'useful load',
-    },
-  },
-  mc: {
-    es: {
-      title: 'Masa propia de cabina sin carga. Junto con Q fija masas en cada rama.',
-      aria: 'peso cabina',
-    },
-    en: {
-      title: 'Cabin mass Mc (kg). Sum with Q gives the loaded car mass.',
-      aria: 'empty car weight',
-    },
-  },
-  h: {
-    es: {
-      title: 'Recorrido vertical \u00fatil. Entra en energ\u00eda de ciclo y representaci\u00f3n del hueco.',
-      aria: 'altura de viaje',
-    },
-    en: {
-      title: 'Travel height H (m). Drives duty cycle and rope length.',
-      aria: 'travel height',
-    },
-  },
-  v: {
-    es: {
-      title: 'Velocidad lineal cabina. Condiciona rpm de polea y potencia de tracci\u00f3n.',
-      aria: 'velocidad nominal',
-    },
-    en: {
-      title: 'Rated speed v (m/s). Affects motor power and traction sheave rpm.',
-      aria: 'rated speed',
-    },
-  },
-  duty: {
-    es: {
-      title: 'Define factor de seguridad de selecci\u00f3n demo: carga ~10, personas ~12.',
-      aria: 'tipo de servicio',
-    },
-    en: {
-      title: 'Service type (passenger / freight). Sets minimum safety factor for rope selection.',
-      aria: 'duty type',
-    },
-  },
-  reeving: {
-    es: {
-      title: '1:1 o 2:1. Cambia relaci\u00f3n de movimiento, esfuerzos y rpm en polea.',
-      aria: 'arrollamiento',
-    },
-    en: {
-      title: 'Roping ratio: 1:1 = direct; 2:1 = rope doubles at car and counterweight.',
-      aria: 'reeving',
-    },
-  },
-  kcw: {
-    es: {
-      title:
-        'Fracci\u00f3n de la carga \u00fatil Q que el contrapeso equilibra (no es el peso total del contrapeso). Rango t\u00edpico 0,40\u20130,50; EN 81: \u2265 0,40. F\u00f3rmula orientativa: Mcp \u2248 Mc + k\u00b7Q. Con k=0,45 y Q=2000 kg, se suma 900 kg a Mc.',
-      aria: 'fracci\u00f3n de Q compensada por contrapeso',
-    },
-    en: {
-      title:
-        'Fraction of useful load Q balanced by the counterweight (not total counterweight mass). Typical 0.40\u20130.50; EN 81: \u2265 0.40. Indicative: Mcp \u2248 Mc + k\u00b7Q. With k=0.45 and Q=2000 kg, add 900 kg to Mc.',
-      aria: 'counterweight Q fraction k',
-    },
-  },
-  mcpManual: {
-    es: {
-      title: 'Use valor manual si ya existe dise\u00f1o de contrapeso; si no, mantenga el \u00f3ptimo autom\u00e1tico.',
-      aria: 'masa contrapeso manual',
-    },
-    en: {
-      title: 'Enable to fix counterweight mass manually (overrides the optimal formula).',
-      aria: 'manual counterweight mass',
-    },
-  },
-  d: {
-    es: {
-      title: 'Di\u00e1metro primitivo de polea (m). Influye en rpm, par y curvatura del cable.',
-      aria: 'di\u00e1metro polea tractora',
-    },
-    en: {
-      title: 'Traction sheave pitch diameter D (m). Sets rope speed and sheave rpm.',
-      aria: 'traction sheave diameter',
-    },
-  },
-  alpha: {
-    es: {
-      title: '\u00c1ngulo de contacto cable-polea. Mayor \u03b1 mejora l\u00edmite e^(\u03bc\u03b1).',
-      aria: '\u00e1ngulo de abrazamiento',
-    },
-    en: {
-      title: 'Rope wrap angle on the sheave (rad). Affects Euler\u2013Eytelwein traction.',
-      aria: 'wrap angle',
-    },
-  },
-  mu: {
-    es: {
-      title:
-        'Coeficiente efectivo de fricci\u00f3n cable\u2013canal (polea tractora). \u03bc \u2248 0,09\u20130,13 para ranura semicircular (U); \u03bc \u2248 0,20\u20130,25 para ranura tallada (V). Consulte el cat\u00e1logo de la polea tractora.',
-      aria: 'coeficiente de fricci\u00f3n cable canal',
-    },
-    en: {
-      title:
-        'Effective rope\u2013groove friction \u03bc on the traction sheave. \u2248 0.09\u20130.13 for semicircular (U) groove; \u2248 0.20\u20130.25 for undercut (V) groove. Check the traction sheave manufacturer catalog.',
-      aria: 'rope-groove friction coefficient',
-    },
-  },
-  maxN: {
-    es: {
-      title: 'Tope de dise\u00f1o para selecci\u00f3n demo de cables. Si se supera, revise di\u00e1metro/cargas.',
-      aria: 'm\u00e1ximo de cables',
-    },
-    en: {
-      title: 'Design cap for demo rope selection. If exceeded, review diameter/loads.',
-      aria: 'maximum rope strands',
-    },
-  },
-  vBrand: {
-    es: {
-      title: 'Marca del cat\u00e1logo de ejemplo. No cambia los datos del ascensor; filtra modelos antes de comparar.',
-      aria: 'marca comprobador',
-    },
-    en: {
-      title: 'Sample catalog brand. Does not change elevator inputs; filters models before comparison.',
-      aria: 'verifier brand',
-    },
-  },
-  vSearch: {
-    es: {
-      title: 'B\u00fasqueda por c\u00f3digo o texto para acotar modelos disponibles.',
-      aria: 'filtro de modelo',
-    },
-    en: {
-      title: 'Text/code search to narrow available models.',
-      aria: 'model filter',
-    },
-  },
-  vModel: {
-    es: {
-      title: 'Modelo del cat\u00e1logo demo. Comprobar contrasta potencia, par y rpm con la polea calculada (no modifica el formulario).',
-      aria: 'modelo cat\u00e1logo',
-    },
-    en: {
-      title: 'Demo catalog model. Check compares power, torque and rpm with the calculated sheave duty (does not change the form).',
-      aria: 'catalog model',
-    },
-  },
-};
 
 const TE_REC = {
   q: { es: '630\u20133200 kg montacargas habituales', en: '630\u20133200 kg typical freight' },
@@ -219,39 +59,6 @@ const LBL = {
   lblVSearch: { es: 'Filtrar modelo (texto)', en: 'Filter model (text)' },
   lblVModel: { es: 'Modelo del cat\u00e1logo ejemplo', en: 'Sample catalog model' },
 };
-
-/** Maps data-te-chip keys to LBL keys for accessible names. */
-const CHIP_LABEL_KEY = {
-  q: 'lblQ',
-  mc: 'lblMc',
-  h: 'lblH',
-  v: 'lblV',
-  duty: 'lblDuty',
-  reeving: 'lblReeving',
-  kcw: 'lblKcw',
-  mcpManual: 'lblMcpManual',
-  d: 'lblD',
-  alpha: 'lblAlpha',
-  mu: 'lblMu',
-  maxN: 'lblMaxN',
-  vBrand: 'lblVBrand',
-  vSearch: 'lblVSearch',
-  vModel: 'lblVModel',
-};
-
-/** @param {'es'|'en'} lang */
-function applyChips(lang) {
-  const tKey = lang === 'en' ? 'en' : 'es';
-  document.querySelectorAll('[data-te-chip]').forEach((el) => {
-    const k = el.getAttribute('data-te-chip');
-    if (!k || !CHIPS[k]) return;
-    const hints = CHIPS[k][tKey];
-    el.setAttribute('title', hints.title);
-    const lk = CHIP_LABEL_KEY[k];
-    const fieldName = lk && LBL[lk] ? LBL[lk][tKey] : hints.aria;
-    el.setAttribute('aria-label', chipHelpAriaLabel(fieldName, lang));
-  });
-}
 
 /** @param {'es'|'en'} lang */
 function applyLabels(lang) {
@@ -415,7 +222,6 @@ export function applyTractionElevatorStaticI18n(lang = getCurrentLang()) {
   applyNav(lang);
   applyLabels(lang);
   applySelectsAndHints(lang);
-  applyChips(lang);
   applyRecommendHintsTe(lang);
   applyBlocks(lang);
 

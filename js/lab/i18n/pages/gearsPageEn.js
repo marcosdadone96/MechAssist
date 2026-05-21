@@ -32,6 +32,10 @@ export const GEARS_PAGE_EN = {
   'gear.labelCalcMode': 'Working mode',
   'gear.optDesign': 'Design \u2014 load target \u2192 adjust module, width and geometry',
   'gear.optDiagnostic': 'Diagnostic \u2014 installed gears \u2192 check with torque/power',
+  'gear.helpCalcModeDesignHtml':
+    '<strong>Design:</strong> enter z\u2081, z\u2082 and module (and pinion torque or power) \u2192 get centre distance and geometry; iterate <strong>m</strong> and <strong>b</strong> until material usage is acceptable.',
+  'gear.helpCalcModeDiagnosticHtml':
+    '<strong>Diagnostic:</strong> enter installed geometry (z\u2081, z\u2082, m\u2099, b, \u03b2) and service load \u2192 check whether sizing is adequate (model SF/SH margins).',
   'gear.icoZ1': 'Pinion tooth count',
   'gear.labelZ1': 'z\u2081 (driver) \u00b7 teeth',
   'gear.helpZ1Html':

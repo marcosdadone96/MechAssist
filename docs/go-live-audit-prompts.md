@@ -2,7 +2,9 @@
 
 Documento para Cursor / agente. Basado en auditoría de código (mayo 2026) comparando con **cinta plana** (`flat-conveyor.html`) y **engranajes** (`calc-gears.html`).
 
-**Orden recomendado:** G ? H ? I ? J. Verificar en navegador (ES + EN, consola sin errores) tras cada bloque antes de continuar.
+**Mapa completo (26 calculadoras + matriz + visión usuario):** ver [`audit-maestro-calculadoras-2026.md`](./audit-maestro-calculadoras-2026.md) — fases **K ? O**.
+
+**Orden recomendado (legacy):** G ? H ? I ? J, o el nuevo **K ? L ? M ? N ? O** del maestro. Verificar en navegador (ES + EN, consola sin errores) tras cada bloque antes de continuar.
 
 **Patrones obligatorios:**
 - Labels con chip: `data-i18n-html` en `<label>` (no solo `data-i18n` — borra el chip).

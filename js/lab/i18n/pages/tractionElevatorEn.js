@@ -49,4 +49,32 @@ export const TRACTION_ELEVATOR_EN = {
   'teConv.engHint': 'Collapsed by default \u2014 traction ratio, strategies and model steps',
   'teConv.motorsTitle': 'Gearmotors (sample catalog \u00b7 SEW, Siemens, Nord\u2026)',
   'teConv.motorsHint': 'Collapsed by default \u2014 brand cards and verifier',
+  'teConv.sfGuideSummary': 'Indicative minimum safety factors',
+  'teConv.sfGuideThService': 'Service',
+  'teConv.sfGuideThSf': 'Indicative min. SF',
+  'teConv.sfGuideRowFreight': 'Goods lift / freight',
+  'teConv.sfGuideRowPersons': 'Passenger lift',
+  'teConv.reevingVisualAria': 'Visual roping ratio selector',
+
+  'teConv.tipQ': 'Rated payload Q (kg). Drives imbalance and traction demand.',
+  'teConv.tipMc': 'Cabin mass Mc (kg). Sum with Q gives the loaded car mass.',
+  'teConv.tipH': 'Travel height H (m). Drives duty cycle and rope length.',
+  'teConv.tipV': 'Rated speed v (m/s). Affects motor power and traction sheave rpm.',
+  'teConv.tipDuty':
+    'Service type (passenger / freight). Sets minimum safety factor for rope selection.',
+  'teConv.tipReeving':
+    'Roping ratio: 1:1 = direct; 2:1 = rope doubles at car and counterweight.',
+  'teConv.tipKcw':
+    'Fraction of useful load Q balanced by the counterweight (not total counterweight mass). Typical 0.40\u20130.50; EN 81: \u2265 0.40. Indicative: Mcp \u2248 Mc + k\u00b7Q. With k=0.45 and Q=2000 kg, add 900 kg to Mc.',
+  'teConv.tipMcpManual': 'Enable to fix counterweight mass manually (overrides the optimal formula).',
+  'teConv.tipD': 'Traction sheave pitch diameter D (m). Sets rope speed and sheave rpm.',
+  'teConv.tipAlpha': 'Rope wrap angle on the sheave (rad). Affects Euler\u2013Eytelwein traction.',
+  'teConv.tipMu':
+    'Effective rope\u2013groove friction \u03bc on the traction sheave. \u2248 0.09\u20130.13 for semicircular (U) groove; \u2248 0.20\u20130.25 for undercut (V) groove. Check the traction sheave manufacturer catalog.',
+  'teConv.tipMaxN': 'Design cap for demo rope selection. If exceeded, review diameter/loads.',
+  'teConv.tipVBrand':
+    'Sample catalog brand. Does not change elevator inputs; filters models before comparison.',
+  'teConv.tipVSearch': 'Text/code search to narrow available models.',
+  'teConv.tipVModel':
+    'Demo catalog model. Check compares power, torque and rpm with the calculated sheave duty (does not change the form).',
 };

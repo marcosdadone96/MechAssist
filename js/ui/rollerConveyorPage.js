@@ -19,17 +19,23 @@ import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { mountMachineConfigBar } from './machineConfigMount.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
-import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
+import { getCurrentLang } from '../config/locales.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
 import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { incrementCalcCounter } from '../services/calcCounter.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { ROLLER_CONVEYOR_EN } from '../lab/i18n/pages/rollerConveyorEn.js';
-import { applyRollerConveyorPageLanguage } from './rollerConveyorStaticI18n.js';
 import { ROLLER_PRESET_BY_ID } from '../modules/machineHubPresets.js';
 
 const ROLLER_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...ROLLER_CONVEYOR_EN };
+const ROLLER_DOC_TITLE_ES = 'Transportador de rodillos \u2014 TheMechAssist';
+
+function applyRollerDocumentChrome() {
+  const en = getCurrentLang() === 'en';
+  document.documentElement.lang = en ? 'en' : 'es';
+  document.title = en ? ROLLER_PAGE_EN['rollerConv.docTitle'] : ROLLER_DOC_TITLE_ES;
+}
 
 const inputIds = [
   'length',
@@ -304,10 +310,6 @@ function syncLoadDutyUi() {
   if (!(dutyEl instanceof HTMLSelectElement) || !(sfIn instanceof HTMLInputElement)) return;
   const lang = getCurrentLang();
   const en = lang === 'en';
-  LOAD_DUTY_OPTIONS.forEach((optRow) => {
-    const opt = dutyEl.querySelector(`option[value="${optRow.id}"]`);
-    if (opt) opt.textContent = en ? LOAD_DUTY_OPTIONS_EN[optRow.id].label : optRow.label;
-  });
   const row = LOAD_DUTY_OPTIONS.find((o) => o.id === dutyEl.value);
   if (hint && row) hint.textContent = en ? LOAD_DUTY_OPTIONS_EN[row.id].hint : row.hint;
   if (dutyEl.value === 'custom') {
@@ -326,40 +328,6 @@ function syncLoadSupportUi() {
   const uBlock = document.getElementById('supportUniformBlock');
   const pBlock = document.getElementById('supportPalletBlock');
   const customDims = document.getElementById('palletCustomDims');
-  const en = getCurrentLang() === 'en';
-  if (modeEl instanceof HTMLSelectElement) {
-    const ou = modeEl.querySelector('option[value="uniform"]');
-    const op = modeEl.querySelector('option[value="pallet"]');
-    if (ou)
-      ou.textContent = en ? 'Uniform distribution along length L' : 'Reparto uniforme en el tramo L';
-    if (op)
-      op.textContent = en
-        ? 'Standard pallet / dimensions'
-        : 'Paleta estándar / dimensiones';
-  }
-  if (presetEl instanceof HTMLSelectElement) {
-    const map = {
-      eur1: en ? 'EUR 1 (800×1200 mm)' : 'EUR 1 (800×1200 mm)',
-      eur2: en ? 'EUR 2 (1200×1000 mm)' : 'EUR 2 (1200×1000 mm)',
-      eur6: en ? 'Half-pallet EUR (800×600 mm)' : 'Media EUR (800×600 mm)',
-      ind1000: en ? 'Industrial (1000×1200 mm)' : 'Industrial (1000×1200 mm)',
-      us48x40: en ? 'US 48×40" (1219×1016 mm)' : 'US 48×40" (1219×1016 mm)',
-      custom: en ? 'Custom (L×W mm)' : 'Personalizado (L×W mm)',
-    };
-    presetEl.querySelectorAll('option').forEach((opt) => {
-      const v = opt.value;
-      if (map[v]) opt.textContent = map[v];
-    });
-    const orientEl = document.getElementById('palletOrientation');
-    if (orientEl instanceof HTMLSelectElement) {
-      const lo = orientEl.querySelector('option[value="long_along_transport"]');
-      const so = orientEl.querySelector('option[value="short_along_transport"]');
-      if (lo)
-        lo.textContent = en ? 'Long side along transport' : 'Lado largo según transporte';
-      if (so)
-        so.textContent = en ? 'Short side along transport' : 'Lado corto según transporte';
-    }
-  }
   const mode = modeEl instanceof HTMLSelectElement ? modeEl.value : 'uniform';
   const preset = presetEl instanceof HTMLSelectElement ? presetEl.value : 'eur1';
   if (uBlock) uBlock.hidden = mode !== 'uniform';
@@ -494,126 +462,6 @@ function getDriveRequirements() {
     drum_rpm: r.drumRpm,
     ...readMountingPreferences(),
   };
-}
-
-function localizeRollerStaticContent() {
-  const lang = getCurrentLang();
-  if (lang !== 'en') return;
-  document.documentElement.lang = 'en';
-  document.title = 'Roller Conveyor - TheMechAssist';
-  const setText = (sel, t) => {
-    const el = document.querySelector(sel);
-    if (el) el.textContent = t;
-  };
-  const setHtml = (sel, h) => {
-    const el = document.querySelector(sel);
-    if (el) el.innerHTML = h;
-  };
-  setText('.flat-sidebar__title', 'Motorized roller line');
-  setText('details.flat-sidebar-intro .flat-sidebar-intro__summary', 'Calculator description and scope');
-  setText(
-    'details.flat-sidebar-intro .flat-sidebar__lead',
-    'Horizontal line with rolling resistance and extra drag. Same workflow as flat belt: results panel and schematic on the right.',
-  );
-  setText('.help-details.flat-help > summary', 'Quick guide');
-  setHtml(
-    '.help-details.flat-help .help-details__body',
-    `<p class="help-details__lead muted">
-      Almost every label has a <span class="info-chip info-chip--static" aria-hidden="true">?</span>: on desktop hover; on touch <strong>tap</strong> for help.
-    </p>
-    <ul>
-      <li><strong>L</strong> and <strong>m</strong>: useful length and total load; mass flow ≈ (m/L)·v assumes mass spread along L.</li>
-      <li><strong>Pitch and pallet:</strong> roller center distance and, if applicable, pallet type and orientation; the app estimates rollers under the footprint (indicative). Force remains F = C<sub>rr</sub>·m·g total unless you change other inputs.</li>
-      <li><strong>C<sub>rr</sub>:</strong> lumped value (rollers + bearings + contact); use the slider guide or the ? chip for typical ranges.</li>
-      <li><strong>v, D</strong>: line speed and drive roller diameter (torque T = F·R, R = D/2).</li>
-      <li><strong>Standard:</strong> simplified ISO 5048 here; CEMA adds +6% on steady traction only.</li>
-      <li><strong>Advanced:</strong> extra resistance (N), acceleration time and inertia for startup peak.</li>
-    </ul>`,
-  );
-  setText('.flat-accordion:nth-of-type(1) .flat-accordion__label', 'Standard and service factor');
-  setText('.flat-accordion:nth-of-type(2) .flat-accordion__label', 'Geometry and kinematics');
-  setText('.flat-accordion:nth-of-type(3) .flat-accordion__label', 'Load support and roller pitch');
-  setText('.flat-accordion:nth-of-type(4) .flat-accordion__label', 'Rolling resistance and efficiency');
-  const isoOpt = document.querySelector('#designStandard option[value="ISO5048"]');
-  const cemaOpt = document.querySelector('#designStandard option[value="CEMA"]');
-  if (isoOpt) isoOpt.textContent = 'ISO 5048 / DIN 22101 — analytic approach (default)';
-  if (cemaOpt) cemaOpt.textContent = 'CEMA — +6 % margin over steady traction';
-  const cemaHint = document.querySelector('#designStandard')?.closest('.field')?.querySelector('.field-hint');
-  if (cemaHint) {
-    cemaHint.textContent =
-      'CEMA applies ×1.06 to steady traction only (horizontal traction as modeled).';
-  }
-  setText('#btnCalcular', 'View suggested gearmotors');
-  setHtml(
-    '.flat-calc-hint',
-    'Results and the diagram <strong>update automatically</strong>. This button expands suggested gearmotors.',
-  );
-  setText('.flat-dashboard__title', 'Sizing dashboard');
-  setHtml(
-    '.flat-dashboard__lead',
-    'Design torque = max(steady, startup) × SF. Power <strong>(T<sub>design</sub> × ω) / η</strong>. <a href="#roller-conveyor-assumptions">Assumptions</a> · hover the schematic chips.',
-  );
-  const dia = document.getElementById('diagramRoller');
-  if (dia) dia.setAttribute('aria-label', 'Roller conveyor diagram');
-  setHtml(
-    '.diagram-schematic-note',
-    `<strong>Quick read:</strong> at the top, <strong>steady</strong> (no SF) vs <strong>design</strong> (× SF and η). <strong>L</strong> is useful length and <strong>D</strong> the drive roller diameter (your inputs); the drawing is qualitative. Schematic boxes repeat steady and motor-sizing numbers, aligned with <strong>Final results</strong>.`,
-  );
-  const refImg = document.querySelector('.flat-visual__photo-block img');
-  if (refImg) refImg.setAttribute('alt', 'Roller conveyor reference photo');
-  setHtml(
-    '.flat-visual__photo-block figcaption',
-    `Roller conveyor on site.
-    <a href="https://commons.wikimedia.org/wiki/File:Conveyor_belt_(2).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.`,
-  );
-  const pdfH2 = document.querySelector('#premiumPdfExportMount')?.closest('section.panel')?.querySelector('h2');
-  if (pdfH2) {
-    const proFlag = isPremiumEffective() ? '<span class="premium-flag">Pro</span> ' : '';
-    pdfH2.innerHTML = `${proFlag}<span class="panel-icon">PDF</span> Export report`;
-  }
-  setHtml(
-    '#verifyPanel h2',
-    '<span class="panel-icon">\u2713</span> Check a gearmotor I already have',
-  );
-  setHtml(
-    '#verifyPanel .panel-lead',
-    '<strong>Two ways:</strong> (1) Brand and model from the <strong>sample catalog</strong> below and <em>Check for this machine</em>. (2) If your unit is not listed, open <em>Or enter my gearmotor manually</em>, fill nameplate data and run the check. Both compare motor power, output rated torque and output rpm with the calculated duty point.',
-  );
-  setText('[for="verifyBrand"]', 'Brand');
-  setText('[for="verifySearch"]', 'Filter model');
-  setText('[for="verifyModel"]', 'Catalog model');
-  setText('#verifyPanel [data-verify-run]', 'Check for this machine');
-  setText('#section-motores .motors-details__title', 'Gearmotors (sample catalog)');
-  setText('#section-motores .motors-details__hint', 'Recommendations, export, verification');
-  const eng = document.querySelector('#engineeringReport')?.closest('.panel');
-  if (eng) {
-    const t = eng.querySelector('.motors-details__title');
-    const h = eng.querySelector('.motors-details__hint');
-    const lead = eng.querySelector('.panel-lead');
-    if (t) t.textContent = 'Engineering breakdown';
-    if (h) h.textContent = 'Collapsed by default — expand for intermediate math and rationale';
-    if (lead) {
-      lead.textContent =
-        'Intermediate calculations, motor strategies and design-point reasoning at the drive roller.';
-    }
-  }
-  if (location.protocol === 'file:') {
-    const fpw = document.getElementById('fileProtoWarn');
-    if (fpw) {
-      fpw.textContent =
-        'Recommendation: use a local HTTP server (npx --yes serve .). With file:// the browser may block JS modules and hide diagrams and results.';
-    }
-  }
-  setHtml(
-    '.flat-model-scope',
-    '<strong>Model:</strong> horizontal · rolling · simplified startup. <a href="#roller-conveyor-assumptions">Assumptions and exclusions</a>',
-  );
-  const advSum = document.querySelector('.adv-details > summary');
-  if (advSum) {
-    advSum.innerHTML =
-      'Drag and startup <span class="field-badge field-badge--optional">Advanced</span>';
-  }
-  syncLoadSupportUi();
 }
 
 function refreshCore() {
@@ -928,7 +776,7 @@ bindRollerRangeSlider('rollingResistanceR', 'rollingResistance', 0.01, 0.12, 0.0
 bindRollerRangeSlider('efficiencyR', 'efficiency', 70, 99, 0.5);
 bindRollerRangeSlider('rollerPitchR', 'rollerPitch', 50, 250, 1);
 
-localizeRollerStaticContent();
+applyRollerDocumentChrome();
 bootMachineCalcView(refresh);
 
 wireMachineRfqExport({
@@ -943,10 +791,17 @@ wireMachineRfqExport({
 });
 
 watchLangAndApply(ROLLER_PAGE_EN, {
+  reloadOnEs: false,
   onEnApplied: () => {
-    document.documentElement.lang = 'en';
-    applyRollerConveyorPageLanguage();
-    localizeRollerStaticContent();
+    applyRollerDocumentChrome();
+    syncLoadDutyUi();
+    syncLoadSupportUi();
+    syncRollersSuggestion();
+    initInfoChipPopovers(document.body);
+    refresh();
+  },
+  onEsRestored: () => {
+    applyRollerDocumentChrome();
     syncLoadDutyUi();
     syncLoadSupportUi();
     syncRollersSuggestion();
@@ -963,9 +818,4 @@ document.querySelector('.flat-sidebar')?.addEventListener('click', (e) => {
 });
 
 mountMachineConfigBar();
-
-window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
-  location.reload();
-});
-
 

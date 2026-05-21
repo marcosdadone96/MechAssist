@@ -1154,6 +1154,7 @@ export function mountPremiumPdfExportBar(el, opts) {
           beltStrength: 'Belt strength (N)',
           logo: 'Company logo (PNG/JPG)',
           download: 'Download PDF',
+          downloadAria: 'Download engineering PDF report',
         }
       : {
           title: 'Exportar informe PDF',
@@ -1171,6 +1172,7 @@ export function mountPremiumPdfExportBar(el, opts) {
           beltStrength: 'Resistencia banda (N)',
           logo: 'Logo empresa (PNG/JPG)',
           download: 'Descargar PDF',
+          downloadAria: 'Descargar informe PDF de ingeniería',
         };
     el.innerHTML = `
       <div class="premium-export premium-export--active">
@@ -1195,7 +1197,7 @@ export function mountPremiumPdfExportBar(el, opts) {
             <label style="display:grid; gap:0.2rem; font-size:0.8rem; grid-column:1 / -1">${copy.logo}<input data-report-logo type="file" accept="image/*" /></label>
           </div>
         </details>
-        <button type="button" class="premium-export__btn" data-pdf-export>${copy.download}</button>
+        <button type="button" class="premium-export__btn" data-pdf-export aria-label="${copy.downloadAria}">${copy.download}</button>
       </div>`;
     el.hidden = false;
     const readCfgFromDom = () => {

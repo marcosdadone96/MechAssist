@@ -28,6 +28,12 @@ export const SHAFT_PAGE_EN = {
   'shaft.labelMode': 'Working mode',
   'shaft.optDesign': 'Design \u2014 load and material \u2192 minimum diameter',
   'shaft.optDiagnostic': 'Diagnostic \u2014 installed diameter \u2192 stress and suitability',
+  'shaft.helpModeHtml':
+    'In <strong>design</strong> mode you get the minimum diameter and compare with a commercial size. In <strong>diagnostic</strong> mode you fix the actual shaft diameter and check whether it carries the torque (and bending if applicable).',
+  'shaft.helpTauHtml':
+    '<strong>Allowable shear stress</strong> (MPa) per material, safety factors and criterion (ductility, fatigue). Typically tabulated in standards or handbooks.',
+  'shaft.helpKtHtml':
+    'Kt amplifies stress at notches/keyways/section changes. Without detailed geometry, use Kt = 1.0 as a conservative initial base.',
   'shaft.labelT': 'Torque T (N\u00b7m)',
   'shaft.labelTau': 'Allowable shear \u03c4 (MPa)',
   'shaft.labelBending': 'Include bending (advanced)',

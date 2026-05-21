@@ -1,0 +1,81 @@
+# Fase O — QA manual antes de deploy
+
+Automatizado: `node scripts/check-go-live-o.mjs` (i18n, máquinas, fluidos, billing tiers, catálogo, assets).
+
+Marque cada ítem tras probar en **Chrome/Edge** con servidor local (`npx serve` o Netlify dev). Consola F12 abierta.
+
+## Por cada calculadora (27 URLs del catálogo)
+
+Abrir `https://…/<slug>` (o local). Repetir **muestra** en 3 slugs si el tiempo es corto: 1 lab (`calc-gears.html`), 1 máquina (`flat-conveyor.html`), 1 fluido (`calc-hydraulic-cylinder.html`).
+
+| Check | ES | EN |
+|-------|----|----|
+| Abre sin error consola | ? | ? |
+| Preset / ejemplo típico ? recalcula | ? | ? |
+| Resultado numérico plausible (no NaN, no 0 absurdo) | ? | ? |
+| Toggle EN: labels, chips `?`, ayudas en inglés | — | ? |
+| Volver ES **sin recargar página** (F5 no necesario) | — | ? |
+| Chip `?`: tooltip en idioma activo | ? | ? |
+| `<select>` opciones traducidas en EN | — | ? |
+| SVG diagrama: `aria-label` en inglés (inspector) | — | ? |
+
+## Hubs
+
+| Página | Navegación + idioma | Créditos badge (si login) |
+|--------|---------------------|---------------------------|
+| `index.html` | ? | ? |
+| `transmission-lab.html` | ? | ? |
+| `machines-hub.html` | ? | ? |
+| `fluids-hub.html` | ? | ? |
+
+## Modo invitado (logout / ventana privada)
+
+1. Abrir `calc-gears.html` y `flat-conveyor.html` sin sesión.
+2. ? Banner «solo lectura» visible.
+3. ? Inputs deshabilitados; foco muestra aviso registro.
+4. ? Resultados/diagrama siguen visibles (vista previa).
+
+## Usuario con créditos agotados (si `features.js` créditos ON)
+
+1. Cuenta test con saldo 0 en el hub de la calc.
+2. ? Banner sin créditos; inputs bloqueados (`data-no-credits-lock`).
+3. ? Barra de créditos coherente.
+
+## Usuario Pro / Starter / Ilimitado (staging Lemon)
+
+Solo si desplegáis billing en el entorno de prueba. Ver también `docs/go-live-billing-checklist.md`.
+
+| Caso | Esperado | ? |
+|------|----------|---|
+| Compra **25 €** | Plan Ilimitado, no Starter | |
+| Compra **9 €** | Starter | |
+| Desbloqueo **1 €** + `calc_slug` | Solo esa URL desbloqueada | |
+| Sub de prueba expirada | Créditos 0, solo lectura | |
+| Webhook `ls-webhook` | Sin 4xx en Netlify log | |
+
+## RFQ / PDF (máquina con panel)
+
+En `flat-conveyor.html` (o rodillos):
+
+| Acción | ? |
+|--------|---|
+| Copiar texto RFQ ? portapapeles OK | |
+| Copiar CSV RFQ ? portapapeles OK | |
+| Botones con `aria-label` sensato en EN | |
+| PDF Pro: botón descarga con `aria-label` (si Pro activo) | |
+
+## Regresión visual rápida
+
+| Asset | ? |
+|-------|---|
+| `assets/conveyor-belt-reference.png` carga en cinta plana | |
+| `logo-themechassist.svg` en nav | |
+
+## Firma
+
+- Fecha: ___________
+- Entorno: local / staging / prod
+- Navegador: ___________
+- Responsable: ___________
+
+Cuando todo esté marcado y `node scripts/check-go-live-o.mjs` pase ? **listo para deploy**.

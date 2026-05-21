@@ -179,29 +179,6 @@
         color: #0f172a;
         font-weight: 800;
       }
-      @media (max-width: 479px) {
-        .lab-calc-layout--hc.lab-calc-layout--with-diag {
-          grid-template-columns: minmax(0, 1fr) !important;
-          grid-template-areas:
-            'diagram'
-            'inputs'
-            'out' !important;
-        }
-        .lab-calc-layout--hc .lab-calc-layout__diagram {
-          width: 100%;
-          max-width: 100%;
-          min-width: 0;
-        }
-        .lab-calc-layout--hc #pcDiagram {
-          width: 100%;
-          max-width: 100%;
-          height: auto;
-          display: block;
-        }
-        .lab-calc-layout--hc .lab-diagram-wrap {
-          max-width: 100%;
-        }
-      }
     </style>
   </head>
   <body class="lab-body">
@@ -270,7 +247,7 @@
           </ul>
         </nav>
         <div class="lab-presets-row">
-          <span class="lab-presets-row__label" data-i18n="pneuCyl.presetsLabel">Ejemplos típicos:</span>
+          <span class="lab-presets-row__label" data-i18n="fluids.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="pcPresetsBar"></div>
         </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">
@@ -291,8 +268,8 @@
                   <option value="single_extend" data-i18n="pneuCyl.optSingleExtend">Simple efecto — retorno por muelle (presión en avance)</option>
                   <option value="single_retract" data-i18n="pneuCyl.optSingleRetract">Simple efecto — avance por muelle (presión en retroceso)</option>
                 </select>
-                <span class="hint">Define áreas útiles y consumo de aire por ciclo</span>
-                <p class="lab-field-help">
+                <span class="hint" data-i18n="pneuCyl.hintCylType">Define áreas útiles y consumo de aire por ciclo</span>
+                <p class="lab-field-help" data-i18n="pneuCyl.helpCylType">
                   En simple efecto solo una carrera usa aire comprimido; la opuesta la realiza un muelle (no se modela la fuerza del muelle aquí).
                 </p>
               </div>
@@ -302,8 +279,8 @@
                   <option value="design" selected data-i18n="pneuCyl.optDesign">Diseñar nueva máquina</option>
                   <option value="diagnostic" data-i18n="pneuCyl.optDiagnostic">Diagnosticar máquina existente</option>
                 </select>
-                <span class="hint">Cambia entre diseño y diagnóstico</span>
-                <p class="lab-field-help">El diagnóstico calcula la fuerza real a partir del diámetro y la presión de la máquina instalada.</p>
+                <span class="hint" data-i18n="pneuCyl.hintCalcMode">Cambia entre diseño y diagnóstico</span>
+                <p class="lab-field-help" data-i18n="pneuCyl.helpCalcMode">El diagnóstico calcula la fuerza real a partir del diámetro y la presión de la máquina instalada.</p>
               </div>
               <div class="lab-field lab-field--wide">
                 <label for="pcLabTier" data-i18n="pneuCyl.labelTier">Nivel de detalle memoria</label>
@@ -311,7 +288,7 @@
                   <option value="basic" selected data-i18n="pneuCyl.optBasic">Aula (básico)</option>
                   <option value="project" data-i18n="pneuCyl.optProject">Proyecto (Patm + Euler + nota)</option>
                 </select>
-                <span class="hint">Memoria ampliada y PDF</span>
+                <span class="hint" data-i18n="pneuCyl.hintMemPdf">Memoria ampliada y PDF</span>
                 <p class="lab-field-help" data-i18n="pneuCyl.helpProjectTier">Proyecto permite Patm distinta de 1 bar para Nl, factor de longitud efectiva en pandeo y nota de método.</p>
               </div>
               <div class="lab-field lab-field--wide" id="pcProjectPanel" hidden>
@@ -319,37 +296,37 @@
                   <div class="lab-field">
                     <label for="pcPatmBar" data-i18n="pneuCyl.labelPatm">Presión atmosférica local (bar abs)</label>
                     <input id="pcPatmBar" type="number" step="any" value="1.013" />
-                    <span class="hint">Para conversión a aire libre Nl</span>
+                    <span class="hint" data-i18n="pneuCyl.hintPatm">Para conversión a aire libre Nl</span>
                   </div>
                   <div class="lab-field">
                     <label for="pcEulerLengthFactor" data-i18n="pneuCyl.labelEulerFactor">Factor longitud efectiva pandeo (× carrera)</label>
                     <select id="pcEulerLengthFactor">
-                      <option value="1">1,0 — apoyos ideales cortos</option>
-                      <option value="1.2" selected>1,2 — valor por defecto previo</option>
-                      <option value="1.5">1,5 — guías intermedias débiles</option>
-                      <option value="2">2,0 — vástago muy libre</option>
+                      <option value="1" data-i18n="pneuCyl.optEuler10">1,0 — apoyos ideales cortos</option>
+                      <option value="1.2" selected data-i18n="pneuCyl.optEuler12">1,2 — valor por defecto previo</option>
+                      <option value="1.5" data-i18n="pneuCyl.optEuler15">1,5 — guías intermedias débiles</option>
+                      <option value="2" data-i18n="pneuCyl.optEuler20">2,0 — vástago muy libre</option>
                     </select>
                   </div>
                   <div class="lab-field lab-field--wide">
                     <label for="pcMethodNote" data-i18n="pneuCyl.labelMethodNote">Nota de método / supuestos (opcional)</label>
-                    <input id="pcMethodNote" type="text" maxlength="200" placeholder="Ej. ISO 15552, montaje con guía…" />
-                    <span class="hint">Aparece en memoria y PDF</span>
+                    <input id="pcMethodNote" type="text" maxlength="200" data-i18n="pneuCyl.placeholderMethodNote" data-i18n-attr="placeholder" placeholder="Ej. ISO 15552, montaje con guía…" />
+                    <span class="hint" data-i18n="pneuCyl.hintMethodNote">Aparece en memoria y PDF</span>
                   </div>
                 </div>
               </div>
               <div class="lab-field lab-field--wide">
-                <label for="pcDiameterMode">Modo de diámetros</label>
+                <label for="pcDiameterMode" data-i18n="pneuCyl.labelDiameterMode">Modo de diámetros</label>
                 <select id="pcDiameterMode">
-                  <option value="iso" selected>Estándar ISO (15552/6432)</option>
-                  <option value="manual">Manual</option>
+                  <option value="iso" selected data-i18n="pneuCyl.optIsoMode">Estándar ISO (15552/6432)</option>
+                  <option value="manual" data-i18n="pneuCyl.optManualMode">Manual</option>
                 </select>
-                <span class="hint">ISO reduce coste y plazo de entrega</span>
-                <p class="lab-field-help">En modo ISO se usan medidas comerciales normalizadas. En modo manual se permite valor libre con aviso de cercanía a estándar.</p>
+                <span class="hint" data-i18n="pneuCyl.hintDiameterMode">ISO reduce coste y plazo de entrega</span>
+                <p class="lab-field-help" data-i18n="pneuCyl.helpDiameterMode">En modo ISO se usan medidas comerciales normalizadas. En modo manual se permite valor libre con aviso de cercanía a estándar.</p>
               </div>
               <div class="lab-field">
                 <label for="pcPressureBar" data-i18n="pneuCyl.labelPressure">Presión de red (bar)</label>
                 <input id="pcPressureBar" type="number" min="1" step="any" value="6" />
-                <span class="hint">Presión manométrica de alimentación</span>
+                <span class="hint" data-i18n="pneuCyl.hintPressureSupply">Presión manométrica de alimentación</span>
                 <p class="lab-field-help" data-i18n="pneuCyl.helpPressure">Valor disponible en la red neumática en condiciones reales de operación, sin caídas locales severas.</p>
                 <table class="pc-mini-table" data-i18n="pneuCyl.pressureTableAria" data-i18n-attr="aria-label" aria-label="Presión de red típica por aplicación">
                   <thead>
@@ -359,10 +336,10 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td>Automatización ligera / packaging</td><td>4 – 6 bar</td></tr>
-                    <tr><td>Industrial general / manipulación</td><td>6 – 8 bar</td></tr>
-                    <tr><td>Aplicaciones de fuerza / prensado</td><td>8 – 10 bar</td></tr>
-                    <tr><td>Sistemas especiales (alta fuerza)</td><td>10 – 16 bar</td></tr>
+                    <tr><td data-i18n="pneuCyl.pressureRow1">Automatización ligera / packaging</td><td data-i18n="pneuCyl.pressureRow1t">4 – 6 bar</td></tr>
+                    <tr><td data-i18n="pneuCyl.pressureRow2">Industrial general / manipulación</td><td data-i18n="pneuCyl.pressureRow2t">6 – 8 bar</td></tr>
+                    <tr><td data-i18n="pneuCyl.pressureRow3">Aplicaciones de fuerza / prensado</td><td data-i18n="pneuCyl.pressureRow3t">8 – 10 bar</td></tr>
+                    <tr><td data-i18n="pneuCyl.pressureRow4">Sistemas especiales (alta fuerza)</td><td data-i18n="pneuCyl.pressureRow4t">10 – 16 bar</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -381,31 +358,31 @@
                   <option value="250">250</option>
                   <option value="320">320</option>
                 </select>
-                <span class="hint">Define área activa principal</span>
+                <span class="hint" data-i18n="pneuCyl.hintBore">Define área activa principal</span>
                 <p class="lab-field-help" data-i18n="pneuCyl.helpBore">Área de avance A = π×D²/4. A mayor D, mayor fuerza disponible a igual presión. Al cambiar el émbolo, el vástago se ajusta al ISO por defecto (editable).</p>
               </div>
               <div class="lab-field">
                 <label for="pcRodIso" data-i18n="pneuCyl.labelRod">Diámetro de vástago ISO (mm)</label>
                 <select id="pcRodIso"></select>
-                <span class="hint">Afecta retroceso y pandeo</span>
+                <span class="hint" data-i18n="pneuCyl.hintRod">Afecta retroceso y pandeo</span>
                 <p class="lab-field-help" data-i18n="pneuCyl.helpRod">Reduce el área efectiva en retroceso y determina rigidez frente al pandeo.</p>
               </div>
               <div class="lab-field pc-manual-field" id="pcBoreManualField" hidden>
-                <label for="pcBoreManual">Diámetro de émbolo manual (mm)</label>
+                <label for="pcBoreManual" data-i18n="pneuCyl.labelBoreManual">Diámetro de émbolo manual (mm)</label>
                 <input id="pcBoreManual" type="number" min="8" step="any" value="63" />
-                <span class="hint">Solo para caso no estándar</span>
-                <p class="lab-field-help">Si el valor no coincide con ISO, el asesor propone el diámetro normalizado más cercano.</p>
+                <span class="hint" data-i18n="pneuCyl.hintBoreManual">Solo para caso no estándar</span>
+                <p class="lab-field-help" data-i18n="pneuCyl.helpBoreManual">Si el valor no coincide con ISO, el asesor propone el diámetro normalizado más cercano.</p>
               </div>
               <div class="lab-field pc-manual-field" id="pcRodManualField" hidden>
-                <label for="pcRodManual">Diámetro de vástago manual (mm)</label>
+                <label for="pcRodManual" data-i18n="pneuCyl.labelRodManual">Diámetro de vástago manual (mm)</label>
                 <input id="pcRodManual" type="number" min="4" step="any" value="20" />
-                <span class="hint">Validar disponibilidad comercial</span>
-                <p class="lab-field-help">Los vástagos fuera de serie ISO pueden aumentar coste y plazo de suministro.</p>
+                <span class="hint" data-i18n="pneuCyl.hintRodManual">Validar disponibilidad comercial</span>
+                <p class="lab-field-help" data-i18n="pneuCyl.helpRodManual">Los vástagos fuera de serie ISO pueden aumentar coste y plazo de suministro.</p>
               </div>
               <div class="lab-field">
                 <label for="pcStrokeMm" data-i18n="pneuCyl.labelStroke">Carrera (mm)</label>
                 <input id="pcStrokeMm" type="number" min="10" step="any" value="500" />
-                <span class="hint">Longitud útil de desplazamiento</span>
+                <span class="hint" data-i18n="pneuCyl.hintStroke">Longitud útil de desplazamiento</span>
                 <p class="lab-field-help" data-i18n="pneuCyl.helpStroke">Carreras largas incrementan riesgo de pandeo y consumo por ciclo.</p>
               </div>
               <div class="pc-flow-wrap">
@@ -414,17 +391,17 @@
                     <div class="lab-field">
                       <label for="pcLoadKg" data-i18n="pneuCyl.labelLoad">Carga a mover (kg)</label>
                       <input id="pcLoadKg" type="number" min="0.1" step="any" value="120" />
-                      <span class="hint">Carga externa equivalente</span>
+                      <span class="hint" data-i18n="pneuCyl.hintLoad">Carga externa equivalente</span>
                       <p class="lab-field-help" data-i18n="pneuCyl.helpLoad">Se convierte a fuerza en N (F = m×g) para comparar con la fuerza real del cilindro.</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="lab-field">
-                <label for="pcCyclesMin">Ciclos por minuto (cpm)</label>
+                <label for="pcCyclesMin" data-i18n="pneuCyl.labelCycles">Ciclos por minuto (cpm)</label>
                 <input id="pcCyclesMin" type="number" min="0.1" step="any" value="12" />
-                <span class="hint">Frecuencia de operación</span>
-                <p class="lab-field-help">Permite calcular el consumo en Nl/min para dimensionar compresor y acumulación.</p>
+                <span class="hint" data-i18n="pneuCyl.hintCycles">Frecuencia de operación</span>
+                <p class="lab-field-help" data-i18n="pneuCyl.helpCycles">Permite calcular el consumo en Nl/min para dimensionar compresor y acumulación.</p>
               </div>
               <div class="lab-field lab-field--wide">
                 <label for="pcMotionType" data-i18n="pneuCyl.labelMotion">Tipo de movimiento</label>
@@ -432,8 +409,8 @@
                   <option value="horizontal" selected data-i18n="pneuCyl.optMotionHoriz">Horizontal</option>
                   <option value="vertical" data-i18n="pneuCyl.optMotionVertUp">Vertical (elevación)</option>
                 </select>
-                <span class="hint">Ajusta el criterio del factor de seguridad</span>
-                <p class="lab-field-help">Para elevación vertical se recomienda margen de fuerza mayor (habitualmente superior a 2,0×).</p>
+                <span class="hint" data-i18n="pneuCyl.hintMotion">Ajusta el criterio del factor de seguridad</span>
+                <p class="lab-field-help" data-i18n="pneuCyl.helpMotionVert">Para elevación vertical se recomienda margen de fuerza mayor (habitualmente superior a 2,0×).</p>
                 <p class="pc-fs-note" data-i18n="pneuCyl.fsNoteHtml" data-i18n-html>
                   Para movimiento horizontal: <strong>FS ≥ 1,5</strong>. Para elevación vertical: <strong>FS ≥ 2,0</strong>.
                   Para aplicaciones de seguridad (sujeción de personas, piezas sobre operario): <strong>FS ≥ 3,0</strong> y verificar con la normativa de seguridad aplicable.
@@ -450,7 +427,7 @@
             <div id="pcResults" class="lab-results"></div>
             <div id="pcAdvisor" class="lab-alerts"></div>
             <p id="pcRodThreadInfo" class="lab-small-print"></p>
-            <p id="pcVerdict" class="lab-verdict lab-verdict--ok">SISTEMA APTO</p>
+            <p id="pcVerdict" class="lab-verdict lab-verdict--ok" data-i18n="pneuCyl.verdictOk">SISTEMA APTO</p>
             <div id="pcVerdictSummary" class="pc-verdict-summary" aria-live="polite"></div>
             <div id="labFluidPdfMountPc" class="premium-pdf-mount"></div>
           </div>

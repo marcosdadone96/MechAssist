@@ -51,4 +51,12 @@ export const COUPLINGS_EN = {
     'Educational <strong>jaw-type</strong> schematic: torque <strong>T</strong> is transmitted through the elastomer; in the catalogue always compare <strong>T<sub>design</sub> \u2264 T<sub>nom</sub></strong>.',
   'coup.footnoteMisalign':
     'Indicative allowable misalignment: jaw couplings often allow angular \u2264 1\u00b0 and radial \u2264 0.1\u20130.3 mm. For larger misalignment, consider disc or universal joint couplings.',
+  'coup.nextStepsAria': 'Typical next step',
+  'coup.nextStepsTitle': 'Typical next step',
+  'coup.nextLi1Html':
+    '<a href="calc-gearmotor-inertia.html">Gearmotor inertia</a> \u2014 motor and load inertia before sizing.',
+  'coup.nextLi2Html':
+    '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 bore and keyway on the driven shaft.',
+  'coup.nextLi3Html':
+    '<a href="calc-bearings.html">Bearings \u00b7 L10</a> \u2014 supports at coupling spans.',
 };

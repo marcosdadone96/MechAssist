@@ -6,28 +6,41 @@ import { shouldLockCalcInputsForCredits } from '../services/creditSession.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { showNoCreditsModal } from './creditsUi.js';
 import { findCalcInputsRoot, lockCalcInputs, unlockCalcInputs } from './calcInputLock.js';
+import { getCurrentLang } from '../config/locales.js';
+import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 
 const CREDITS_CHANGED = 'mdr-credits-changed';
 let focusWired = false;
 
-function langEn() {
-  return document.documentElement.lang?.toLowerCase().startsWith('en');
+const NO_CREDITS_ES = {
+  bannerHtml:
+    '<p><strong>Sin créditos.</strong> Puede ver todos los campos y resultados; los datos están en solo lectura. Recargue créditos para volver a editar. <a href="{checkoutUrl}">Ver planes</a></p>',
+};
+
+function noCreditsBannerHtml() {
+  const en = getCurrentLang() === 'en';
+  const tpl = en ? MACHINE_HUB_UX_EN['machineHub.noCreditsBannerHtml'] : NO_CREDITS_ES.bannerHtml;
+  return tpl.replace('{checkoutUrl}', 'checkout.html');
+}
+
+function refreshNoCreditsBanner() {
+  const bar = document.getElementById('no-credits-lock-banner');
+  if (bar) bar.innerHTML = noCreditsBannerHtml();
 }
 
 /**
  * @param {HTMLElement} root
  */
 function mountNoCreditsBanner(root) {
-  if (document.getElementById('no-credits-lock-banner')) return;
-  const en = langEn();
-  const checkout = 'checkout.html';
+  if (document.getElementById('no-credits-lock-banner')) {
+    refreshNoCreditsBanner();
+    return;
+  }
   const bar = document.createElement('div');
   bar.id = 'no-credits-lock-banner';
   bar.className = 'no-credits-lock-banner';
   bar.setAttribute('role', 'status');
-  bar.innerHTML = en
-    ? `<p><strong>No credits left.</strong> You can still view all fields and results; inputs are read-only. Recharge credits to edit again. <a href="${checkout}">View plans</a></p>`
-    : `<p><strong>Sin cr\u00e9ditos.</strong> Puede ver todos los campos y resultados; los datos est\u00e1n en solo lectura. Recargue cr\u00e9ditos para volver a editar. <a href="${checkout}">Ver planes</a></p>`;
+  bar.innerHTML = noCreditsBannerHtml();
   const head = root.querySelector('.lab-calc-page-head, .flat-sidebar__head, section.panel h2, .lab-calc-layout__inputs');
   if (head instanceof HTMLElement && head.parentElement) {
     head.parentElement.insertBefore(bar, head.nextSibling);
@@ -124,4 +137,10 @@ export function initNoCreditsLockWatch() {
   if (window.__mdrNoCreditsLockWatch) return;
   window.__mdrNoCreditsLockWatch = true;
   window.addEventListener(CREDITS_CHANGED, () => syncNoCreditsInputLock());
+  if (!document.documentElement.dataset.noCreditsLangWired) {
+    document.documentElement.dataset.noCreditsLangWired = '1';
+    const onLang = () => refreshNoCreditsBanner();
+    window.addEventListener('lab-language-changed', onLang);
+    window.addEventListener('home-language-changed', onLang);
+  }
 }

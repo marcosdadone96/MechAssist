@@ -473,7 +473,11 @@ wireLabCopyResultsButton('cCopyResults', {
 });
 runCalcWithIndustrialFeedback(wrap, refreshCore);
 mountLabCloudSaveBar(chainsRuntimeStrings(getLabLang()).moduleLabel);
-watchLangAndApply(CHAINS_EN, { onEnApplied: () => scheduleChainRecalc() });
+watchLangAndApply(CHAINS_EN, {
+  reloadOnEs: false,
+  onEnApplied: () => scheduleChainRecalc(),
+  onEsRestored: () => scheduleChainRecalc(),
+});
 window.addEventListener(LAB_LANG_EVENT, () => {
   bootSmartDashboardIfEnabled(chainsRuntimeStrings(getLabLang()).dashboardBoot);
   scheduleChainRecalc();

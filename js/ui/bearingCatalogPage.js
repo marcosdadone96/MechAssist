@@ -250,4 +250,8 @@ wireLabCopyResultsButton('bcCopyResults', {
 if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
 else render();
 mountLabCloudSaveBar(bx('Cat\u00e1logo rodamientos', 'Bearing catalogue'));
-watchLangAndApply(BEARING_CATALOG_EN, { onEnApplied: () => scheduleBcRender() });
+watchLangAndApply(BEARING_CATALOG_EN, {
+  reloadOnEs: false,
+  onEnApplied: () => scheduleBcRender(),
+  onEsRestored: () => scheduleBcRender(),
+});

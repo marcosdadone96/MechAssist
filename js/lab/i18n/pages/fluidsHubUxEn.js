@@ -5,6 +5,19 @@
 export const FLUIDS_HUB_UX_EN = {
   'fluids.presetsLabel': 'Typical examples:',
 
+  'fluids.hubNextStepsAria': 'Suggested calculation workflow',
+  'fluids.hubNextStepsTitle': 'Suggested workflow',
+  'fluids.hubNextStepsLead':
+    'Typical order when sizing a new oleohydraulic line: actuator, pump, press (if applicable), then pneumatic peripherals.',
+  'fluids.hubNextStepsLi1Html':
+    '<a href="calc-hydraulic-cylinder.html">Hydraulic cylinder</a> \u2014 force, flow and rod buckling at the actuator.',
+  'fluids.hubNextStepsLi2Html':
+    '<a href="calc-hydraulic-pump.html">Hydraulic pump</a> \u2014 flow, power and line losses for the circuit.',
+  'fluids.hubNextStepsLi3Html':
+    '<a href="calc-hydraulic-press.html">Hydraulic press</a> \u2014 tonnage, cycle time and pump demand.',
+  'fluids.hubNextStepsLi4Html':
+    '<a href="calc-pneumatic-cylinder.html">Pneumatic cylinder</a> \u2014 air consumption for auxiliary axes.',
+
   'fluids.nextStepsAria': 'Usual next step',
   'fluids.nextStepsTitle': 'Usual next step',
 

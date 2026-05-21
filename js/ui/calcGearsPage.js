@@ -187,8 +187,6 @@ function syncGearCalcModeUi() {
   const design = document.getElementById('gCalcMode')?.value === 'design';
   const help = document.getElementById('gCalcModeHelp');
   if (!(help instanceof HTMLElement)) return;
-  const t = gearsRuntimeStrings(getLabLang());
-  help.innerHTML = t.calcModeHelpBothHtml;
   help.querySelectorAll('[data-gear-mode]').forEach((el) => {
     if (!(el instanceof HTMLElement)) return;
     const on = el.getAttribute('data-gear-mode') === (design ? 'design' : 'diagnostic');
@@ -553,7 +551,13 @@ document.getElementById('gCalcMode')?.addEventListener('change', () => {
 applyGearsHelpI18n();
 
 watchLangAndApply(GEARS_PAGE_EN, {
+  reloadOnEs: false,
   onEnApplied: () => {
+    applyGearsHelpI18n();
+    syncGearCalcModeUi();
+    scheduleGearRecalc();
+  },
+  onEsRestored: () => {
     applyGearsHelpI18n();
     syncGearCalcModeUi();
     scheduleGearRecalc();

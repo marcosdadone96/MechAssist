@@ -88,11 +88,9 @@ function syncShCalcModeUi() {
   const lbl = document.getElementById('shAvailableDLabel');
   const dh = document.getElementById('shAvailableDHelp');
   const th = document.getElementById('shTHelp');
-  const modeHelp = document.getElementById('shCalcModeHelp');
   if (lbl) lbl.textContent = diag ? t.labelDDiag : t.labelDDesign;
   if (dh) dh.textContent = diag ? t.helpDDiag : t.helpDDesign;
   if (th) th.textContent = diag ? t.helpTDiag : t.helpTDesign;
-  if (modeHelp) modeHelp.innerHTML = t.modeHelpDesign;
 }
 
 const SHAFT_PRESETS = [
@@ -469,7 +467,13 @@ runCalcWithIndustrialFeedback(wrap, refreshCore);
 mountLabCloudSaveBar(shaftRuntimeStrings(getLabLang()).moduleLabel);
 
 watchLangAndApply(SHAFT_PAGE_EN, {
+  reloadOnEs: false,
   onEnApplied: () => {
+    syncShCalcModeUi();
+    syncAdvancedUi();
+    scheduleShaftRecalc();
+  },
+  onEsRestored: () => {
     syncShCalcModeUi();
     syncAdvancedUi();
     scheduleShaftRecalc();

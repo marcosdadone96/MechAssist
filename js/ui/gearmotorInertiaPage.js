@@ -289,4 +289,8 @@ wireLabCopyLink('gmCopyLinkBtn', 'gmCopyToast');
 
 scheduleGmRender();
 mountLabCloudSaveBar(bx('Inercia motor / carga', 'Motor / load inertia'));
-watchLangAndApply(GEARMOTOR_INERTIA_EN, { onEnApplied: () => scheduleGmRender() });
+watchLangAndApply(GEARMOTOR_INERTIA_EN, {
+  reloadOnEs: false,
+  onEnApplied: () => scheduleGmRender(),
+  onEsRestored: () => scheduleGmRender(),
+});

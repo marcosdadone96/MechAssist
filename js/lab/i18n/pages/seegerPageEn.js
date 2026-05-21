@@ -10,6 +10,10 @@ export const SEEGER_PAGE_EN = {
   'seeger.labelSizePreset': 'Standard size (quick)',
   'seeger.optSizeManual': 'Manual (use d1)',
   'seeger.sizeHelp': 'Quick alternative to load common sizes.',
+  'seeger.helpSizeD1Html':
+    'Diameter is the catalogue nominal <strong>d1</strong> tied to the preset ring size.',
+  'seeger.matHelp':
+    'Warehouse codes often add <strong>INOX</strong> for stainless; confirm with your supplier.',
   'seeger.labelApp': 'Application',
   'seeger.d1Help':
     'Shaft: diameter where the assembly sits before the groove. Bore: nominal housing diameter.',

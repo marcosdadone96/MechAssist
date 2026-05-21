@@ -624,7 +624,13 @@ wireMachineRfqExport({
 });
 
 watchLangAndApply(TRACTION_PAGE_EN, {
+  reloadOnEs: false,
   onEnApplied: () => {
+    applyTractionElevatorPageLanguage();
+    initInfoChipPopovers(document.body);
+    computeAndRender();
+  },
+  onEsRestored: () => {
     applyTractionElevatorPageLanguage();
     initInfoChipPopovers(document.body);
     computeAndRender();

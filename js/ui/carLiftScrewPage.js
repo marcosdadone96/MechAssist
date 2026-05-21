@@ -14,19 +14,25 @@ import { isPremiumEffective } from '../services/accessTier.js';
 import { mountPremiumPdfExportBar, buildCarLiftPdfPayload } from '../services/reportPdfExport.js';
 import { renderFullEngineeringAside } from './engineeringReport.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
-import { getI18nLabels, getCurrentLang } from '../config/i18nLabels.js';
-import { HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
+import { getI18nLabels } from '../config/i18nLabels.js';
+import { getCurrentLang } from '../config/locales.js';
 import { FEATURES } from '../config/features.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
 import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { CAR_LIFT_EN } from '../lab/i18n/pages/carLiftEn.js';
-import { applyCarLiftScrewPageLanguage } from './carLiftScrewStaticI18n.js';
 import { CAR_LIFT_PRESET_BY_ID } from '../modules/machineHubPresets.js';
+import { incrementCalcCounter } from '../services/calcCounter.js';
 
 const CAR_LIFT_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...CAR_LIFT_EN };
-import { incrementCalcCounter } from '../services/calcCounter.js';
+const CAR_DOC_TITLE_ES = 'Elevador de veh\u00edculos \u2014 TheMechAssist';
+
+function applyCarLiftDocumentChrome() {
+  const en = getCurrentLang() === 'en';
+  document.documentElement.lang = en ? 'en' : 'es';
+  document.title = en ? CAR_LIFT_PAGE_EN['carConv.docTitle'] : CAR_DOC_TITLE_ES;
+}
 
 function recoCopyCarLift(en) {
   return en
@@ -311,8 +317,8 @@ function syncThreadPresetUi() {
     wasCustomThread = true;
     if (hint) {
       hint.textContent = en
-        ? 'Custom mode: enter screw diameter and lead manually'
-        : 'modo personalizado: puede introducir d y paso manualmente';
+        ? CAR_LIFT_PAGE_EN['carConv.threadPresetHintCustom']
+        : 'Modo personalizado: puede introducir d y paso manualmente';
     }
     return;
   }
@@ -333,9 +339,10 @@ function syncThreadPresetUi() {
   if (dLock instanceof HTMLElement) dLock.hidden = false;
   wasCustomThread = false;
   if (hint) {
+    const lockedTpl = CAR_LIFT_PAGE_EN['carConv.threadPresetHintLocked'];
     hint.textContent = en
-      ? `${preset.label}: diameter and lead locked to this standard`
-      : `${preset.label}: d y paso fijados segun estandar`;
+      ? String(lockedTpl || '{label}: locked').replace('{label}', preset.label)
+      : `${preset.label}: d y paso fijados seg\u00fan est\u00e1ndar`;
   }
 }
 
@@ -417,208 +424,6 @@ function getDriveRequirements() {
     drum_rpm: Math.max(0.01, r.drive.screw_rpm),
     ...readMountingPreferences(),
   };
-}
-
-function localizeCarLiftStaticContent() {
-  const lang = getCurrentLang();
-  if (lang !== 'en') return;
-  document.documentElement.lang = 'en';
-  document.title = 'Screw Car Lift - TheMechAssist';
-  const setText = (sel, t) => {
-    const el = document.querySelector(sel);
-    if (el) el.textContent = t;
-  };
-  const setHtml = (sel, h) => {
-    const el = document.querySelector(sel);
-    if (el) el.innerHTML = h;
-  };
-  setText('.flat-sidebar__title', 'Screw-type car lift');
-  setText('details.flat-sidebar-intro .flat-sidebar-intro__summary', 'Calculator description and scope');
-  setText(
-    'details.flat-sidebar-intro .flat-sidebar__lead',
-    'Two columns, power screw and bronze nut. Torque, power, nut pressure and self-locking (lambda < phi) — same workflow as belt tools: form on the left, schematic and results on the right.',
-  );
-  setText('.help-details.flat-help > summary', 'Quick guide');
-  setHtml(
-    '.help-details.flat-help .help-details__body',
-    `<p class="help-details__lead muted">
-      Several labels have a <span class="info-chip info-chip--static" aria-hidden="true">?</span>: hover on desktop; on touch, <strong>tap</strong> for help.
-    </p>
-    <ul>
-      <li><strong>m, H, t:</strong> mass lifted, useful stroke and target time; set screw rpm via pitch and turns.</li>
-      <li><strong>p, d:</strong> lead (single start) and nominal diameter; define helix angle and torque.</li>
-      <li><strong>Nut:</strong> bearing length and steel–bronze mu; pressure is indicative.</li>
-      <li><strong>Self-locking:</strong> if lambda &ge; phi, the model flags an error; real installs need brake and safety nut.</li>
-    </ul>`,
-  );
-  setText('#carLiftAccStandards .flat-accordion__label', 'Standards and power-screw safety');
-  setText('#carLiftAccGeometry .flat-accordion__label', 'Geometry and kinematics');
-  setText('#carLiftAccNut .flat-accordion__label', 'Nut, friction and service factor');
-  setHtml(
-    '#carLiftAccStandards .flat-accordion__body',
-    `<p class="muted" style="margin: 0 0 0.8rem; line-height: 1.45">
-      <strong>ISO metric trapezoidal thread family:</strong> <strong>ISO 2901, 2902, 2903 and 2904</strong> define the basic profile, tolerances, gauging and designation for screw–nut interchangeability. In industrial design they give a reproducible geometry before validating load, wear and life with the manufacturer.
-    </p>
-    <p class="muted" style="margin: 0 0 0.8rem; line-height: 1.45">
-      <strong>Irreversibility (safety):</strong> to prevent back-driving under gravity, helix angle <strong>alpha</strong> must stay below the friction angle. Compact form: <strong>alpha &lt; arctan(mu)</strong>. If not, the screw can be overhauling and needs brake, anti-backdrive and redundant safety elements.
-    </p>
-    <div style="overflow-x: auto; margin: 0.8rem 0">
-      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem">
-        <thead>
-          <tr>
-            <th style="text-align: left; border-bottom: 1px solid #d7dee7; padding: 0.45rem 0.4rem">Designation (Tr d x P)</th>
-            <th style="text-align: left; border-bottom: 1px solid #d7dee7; padding: 0.45rem 0.4rem">Nominal diameter</th>
-            <th style="text-align: left; border-bottom: 1px solid #d7dee7; padding: 0.45rem 0.4rem">Pitch</th>
-            <th style="text-align: left; border-bottom: 1px solid #d7dee7; padding: 0.45rem 0.4rem">Core area (approx.)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem"><strong>Tr 32 x 6</strong></td>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">32 mm</td>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">6 mm</td>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">~505 mm²</td>
-          </tr>
-          <tr>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem"><strong>Tr 40 x 7</strong></td>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">40 mm</td>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">7 mm</td>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">~855 mm²</td>
-          </tr>
-          <tr>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem"><strong>Tr 45 x 7</strong></td>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">45 mm</td>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">7 mm</td>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">~1,134 mm²</td>
-          </tr>
-          <tr>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem"><strong>Tr 50 x 8</strong></td>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">50 mm</td>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">8 mm</td>
-            <td style="border-bottom: 1px solid #edf1f5; padding: 0.45rem 0.4rem">~1,385 mm²</td>
-          </tr>
-          <tr>
-            <td style="padding: 0.45rem 0.4rem"><strong>Tr 55 x 9</strong></td>
-            <td style="padding: 0.45rem 0.4rem">55 mm</td>
-            <td style="padding: 0.45rem 0.4rem">9 mm</td>
-            <td style="padding: 0.45rem 0.4rem">~1,630 mm²</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="muted" style="margin: 0 0 0.8rem; line-height: 1.45">
-      <strong>Materials and wear:</strong> typical industrial lift pairing: <strong>carbon steel screw (e.g. C45)</strong> + <strong>bronze nut (e.g. CuSn12)</strong>. Goal: reduce galling and concentrate wear in the replaceable nut.
-      Typical bronze nut life: <strong>500–2000 h</strong> depending on load and lubrication; plan periodic clearance and wear inspections.
-    </p>
-    <div style="margin-top: 0.8rem; padding: 0.7rem 0.8rem; border: 1px solid rgba(2, 132, 199, 0.35); background: rgba(14, 165, 233, 0.08); border-radius: 8px">
-      <p style="margin: 0; font-size: 0.9rem; line-height: 1.45">
-        <strong>Engineering note:</strong> keep a <strong>periodic lubrication</strong> plan. If lubrication fails, effective friction drifts from design: torque, temperature, wear and self-lock margin all change.
-      </p>
-    </div>`,
-  );
-  const tp = document.getElementById('clThreadPreset');
-  if (tp) {
-    const o32 = tp.querySelector('option[value="tr32x6"]');
-    const o40 = tp.querySelector('option[value="tr40x7"]');
-    const o45 = tp.querySelector('option[value="tr45x7"]');
-    const o50 = tp.querySelector('option[value="tr50x8"]');
-    const o55 = tp.querySelector('option[value="tr55x9"]');
-    const oc = tp.querySelector('option[value="custom"]');
-    if (o32) o32.textContent = 'Tr 32 x 6 (standard)';
-    if (o40) o40.textContent = 'Tr 40 x 7 (standard)';
-    if (o45) o45.textContent = 'Tr 45 x 7 (standard)';
-    if (o50) o50.textContent = 'Tr 50 x 8 (standard)';
-    if (o55) o55.textContent = 'Tr 55 x 9 (standard)';
-    if (oc) oc.textContent = 'Custom (manual entry)';
-  }
-  const mp = document.getElementById('clMotorPos');
-  if (mp) {
-    const ot = mp.querySelector('option[value="top"]');
-    const ob = mp.querySelector('option[value="base"]');
-    if (ot) ot.textContent = 'Top';
-    if (ob) ob.textContent = 'Base / bottom';
-  }
-  setHtml(
-    '.flat-model-scope',
-    '<strong>Model:</strong> educational, 2 columns, simplified power screw. <a href="#car-lift-assumptions">Assumptions and exclusions</a>',
-  );
-  setText('#btnCarLiftCalc', 'View suggested gearmotors');
-  setHtml(
-    '.flat-calc-hint',
-    'Results and the diagram <strong>update when inputs change</strong>. This button expands the gearmotor block.',
-  );
-  setText('.flat-dashboard__title', 'Sizing dashboard');
-  setHtml(
-    '.flat-dashboard__lead',
-    'Torque and power at the <strong>screw</strong> (design includes service factor). Check <strong>self-locking</strong> and <strong>nut pressure</strong> alerts. <a href="#car-lift-assumptions">Assumptions</a> - indicative model, not a full code check.',
-  );
-  setHtml(
-    '.diagram-schematic-note',
-    '<strong>Quick read:</strong> qualitative <strong>two-post</strong> layout, screw, load and safety nuts, motor position (top or bottom per your selection). <strong>H</strong>, <strong>p</strong> and <strong>d</strong> are your form values; always validate with the lift OEM.',
-  );
-  const dia = document.getElementById('clDiagram');
-  if (dia) dia.setAttribute('aria-label', 'Screw car lift diagram');
-  const img = document.querySelector('.flat-visual__photo-block img');
-  if (img) img.setAttribute('alt', 'Two-post car lift in a workshop');
-  const cap = document.querySelector('.flat-visual__photo-block figcaption');
-  if (cap) {
-    cap.innerHTML =
-      'Reference: workshop application (example). <a href="https://commons.wikimedia.org/wiki/File:Two-post_lift.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.';
-  }
-  setHtml(
-    '#carLiftVerifyPanel h2',
-    '<span class="panel-icon">&#10003;</span> Check a gearmotor I already have',
-  );
-  setHtml(
-    '#carLiftVerifyPanel .panel-lead',
-    '<strong>Two ways:</strong> (1) Brand and model from the <strong>sample catalog</strong> and <em>Check for this lift</em>. (2) <em>Or enter my gearmotor manually</em>, nameplate data and run the check. Motor power, torque and <strong>output rpm vs. screw</strong> are compared to the calculated duty.',
-  );
-  setText('[for="carLiftVerifyBrand"]', 'Brand');
-  setText('[for="carLiftVerifySearch"]', 'Filter model');
-  setText('[for="carLiftVerifyModel"]', 'Catalog model');
-  setText('#carLiftVerifyPanel [data-verify-run]', 'Check for this lift');
-  setText('#carLiftEngDetailsTitle', 'Engineering breakdown');
-  setText(
-    '#carLiftEngDetailsHint',
-    'Collapsed by default — gearbox, motor strategies and power-screw steps',
-  );
-  setText(
-    '#carLiftEngDetailsLead',
-    'Screw torque, kinematics, nut pressure and indicative gearmotor approaches.',
-  );
-  setText('#carLiftMotorsDetailsTitle', 'Gearmotors (sample catalog)');
-  setText(
-    '#carLiftMotorsDetailsHint',
-    'Collapsed by default — recommendations, export and verification',
-  );
-  setText('#carLiftAssumptionsTitle', 'Model assumptions');
-  setText('#carLiftAssumptionsHint', 'Educational limits (not a certified lift calculation)');
-  document.getElementById('carLiftDiagramDuo')?.setAttribute('aria-label', 'Schematic and reference photo');
-  const pdfH2 = document.querySelector('#premiumPdfExportMount')?.closest('section.panel')?.querySelector('h2');
-  if (pdfH2) pdfH2.innerHTML = '<span class="panel-icon">PDF</span> Export report';
-  if (location.protocol === 'file:') {
-    const fpw = document.getElementById('fileProtoWarn');
-    if (fpw) {
-      fpw.textContent =
-        'Recommendation: use a local HTTP server (npx --yes serve .). With file:// the browser may block modules and hide results.';
-    }
-  }
-  const setLabelKeepChip = (forId, plainText) => {
-    const lab = document.querySelector(`label[for="${forId}"]`);
-    if (!lab) return;
-    const chip = lab.querySelector('.info-chip');
-    const chipHtml = chip ? chip.outerHTML : '';
-    lab.innerHTML = chipHtml ? `${plainText}\n                ${chipHtml}` : plainText;
-  };
-  setLabelKeepChip('clThreadPreset', 'Trapezoidal screw (ISO)');
-  setLabelKeepChip('clD', 'Screw diameter d');
-  setLabelKeepChip('clMotorPos', 'Motor position');
-  setLabelKeepChip('clNutL', 'Effective nut length');
-  setLabelKeepChip('clMu', 'Friction mu (thread)');
-  setLabelKeepChip('clPallow', 'Allowable bronze pressure');
-  setLabelKeepChip('clSF', 'Service factor');
-
-  syncThreadPresetUi();
 }
 
 function refreshCore() {
@@ -907,10 +712,10 @@ bindCarLiftRangeSlider('clMuR', 'clMu', 0.06, 0.22, 0.01);
 bindCarLiftRangeSlider('clPallowR', 'clPallow', 5, 22, 0.5);
 bindCarLiftRangeSlider('clSFR', 'clSF', 1, 2.2, 0.05);
 
+applyCarLiftDocumentChrome();
 initInfoChipPopovers(document.body);
 syncThreadPresetUi();
 
-localizeCarLiftStaticContent();
 try {
   initMotorVerification(document.getElementById('carLiftVerifyPanel'), getDriveRequirements);
 } catch (e) {
@@ -948,10 +753,15 @@ wireMachineRfqExport({
 });
 
 watchLangAndApply(CAR_LIFT_PAGE_EN, {
+  reloadOnEs: false,
   onEnApplied: () => {
-    document.documentElement.lang = 'en';
-    applyCarLiftScrewPageLanguage();
-    localizeCarLiftStaticContent();
+    applyCarLiftDocumentChrome();
+    syncThreadPresetUi();
+    initInfoChipPopovers(document.body);
+    refresh();
+  },
+  onEsRestored: () => {
+    applyCarLiftDocumentChrome();
     syncThreadPresetUi();
     initInfoChipPopovers(document.body);
     refresh();
@@ -963,9 +773,5 @@ document.querySelector('.flat-sidebar')?.addEventListener('click', (e) => {
   if (!(t instanceof HTMLButtonElement)) return;
   const id = t.getAttribute('data-cl-preset');
   if (id) applyCarLiftPresetFromId(id);
-});
-
-window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
-  location.reload();
 });
 

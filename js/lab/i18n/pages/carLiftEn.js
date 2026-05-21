@@ -1,5 +1,6 @@
 /** English strings for car-lift-screw.html (`carConv.*`). ASCII-safe. */
 export const CAR_LIFT_EN = {
+  'carConv.docTitle': 'Screw car lift \u2014 TheMechAssist',
   'carConv.h2': 'Screw-type car lift',
   'carConv.calcSeoIntro':
     'This calculator links lifted mass, stroke and target time to ISO trapezoidal screw lead and diameter for advance speed, resisting torque and motor power, plus indicative bronze nut pressure and friction-angle self-locking behavior. It helps lift OEMs and body shops validate an existing screw before extending the platform. A practical case is checking whether a higher rated load forces a larger thread or longer nut bearing length.',
@@ -18,14 +19,72 @@ export const CAR_LIFT_EN = {
       <li><strong>Self-locking:</strong> if lambda &ge; phi, the model flags an error; real installs need brake and safety nut.</li>
     </ul>`,
   'carConv.accStandards': 'Standards and power-screw safety',
+  'carConv.tipCapacity':
+    'Nominal mass lifted by the equipment (vehicle + operational margin you assign). 50/50 split between two columns in the model.',
+  'carConv.tipH': 'Useful vertical stroke. Drives screw turns = H/p.',
+  'carConv.tipT': 'Target time to travel H. Shorter time means higher screw rpm and more power.',
+  'carConv.tipThreadPreset':
+    'Pick a standard size to lock d and lead automatically, or Custom to enter non-standard values.',
+  'carConv.tipPitch':
+    'Axial advance per revolution (single start). Larger lead tends to increase lambda and affect self-locking.',
+  'carConv.tipD':
+    'Nominal outside diameter. The model uses mean diameter dm for helix angle and pressure.',
+  'carConv.tipMotorPos': 'Affects only the qualitative schematic (motor above or below the screw).',
+  'carConv.tipNutL':
+    'Approximate bearing length in the bronze nut; longer L reduces modeled contact pressure.',
+  'carConv.tipMu':
+    'Effective steel\u2013bronze friction in the thread. Higher mu increases torque and phi, often helps self-locking but raises power.',
+  'carConv.tipPallow':
+    'Indicative limit to compare with modeled p; depends on alloy and manufacturer.',
+  'carConv.tipSF': 'Margin on gearmotor torque and power (dynamics, starts).',
+  'carConv.tipVerifyBrand': 'Demo catalogue manufacturer.',
+  'carConv.tipVerifySearch': 'Search by code or text.',
+  'carConv.tipVerifyModel':
+    'Check uses the same design point (torque, power, screw rpm) as the dashboard.',
   'carConv.labelCapacityHtml':
-    'Capacity (total mass) <span class="info-chip" title="Nominal mass lifted by the equipment (vehicle + operational margin you assign). 50/50 split between two columns in the model." aria-label="Help capacity.">?</span>',
+    'Capacity (total mass) <span class="info-chip" data-i18n-attrs="title=carConv.tipCapacity" title="Nominal lifted mass." aria-label="Help capacity.">?</span>',
   'carConv.labelHHtml':
-    'Lift height H <span class="info-chip" title="Useful vertical stroke. Drives screw turns = H/p." aria-label="Help height.">?</span>',
+    'Lift height H <span class="info-chip" data-i18n-attrs="title=carConv.tipH" title="Useful stroke." aria-label="Help height.">?</span>',
   'carConv.labelTHtml':
-    'Lift time <span class="info-chip" title="Target time to travel H. Shorter time means higher screw rpm and more power." aria-label="Help time.">?</span>',
+    'Lift time <span class="info-chip" data-i18n-attrs="title=carConv.tipT" title="Target lift time." aria-label="Help time.">?</span>',
+  'carConv.labelThreadPresetHtml':
+    'ISO trapezoidal screw <span class="info-chip" data-i18n-attrs="title=carConv.tipThreadPreset" title="Standard or custom thread." aria-label="Help screw preset.">?</span>',
   'carConv.labelPitchHtml':
-    'Screw pitch (lead) <span class="field-lock-icon" id="clPitchLock" aria-label="Field locked by standard">🔒</span> <span class="info-chip" title="Axial advance per revolution (single start). Larger lead tends to increase lambda and affect self-locking." aria-label="Help lead.">?</span>',
+    'Screw pitch (lead) <span class="field-lock-icon" id="clPitchLock" data-i18n="carConv.lockFieldAria" data-i18n-attr="aria-label" aria-label="Field locked by standard">🔒</span> <span class="info-chip" data-i18n-attrs="title=carConv.tipPitch" title="Lead." aria-label="Help lead.">?</span>',
+  'carConv.labelDHtml':
+    'Screw diameter d <span class="field-lock-icon" id="clDLock" data-i18n="carConv.lockFieldAria" data-i18n-attr="aria-label" aria-label="Field locked by standard">🔒</span> <span class="info-chip" data-i18n-attrs="title=carConv.tipD" title="Nominal d." aria-label="Help diameter.">?</span>',
+  'carConv.labelMotorPosHtml':
+    'Motor position <span class="info-chip" data-i18n-attrs="title=carConv.tipMotorPos" title="Schematic only." aria-label="Help motor position.">?</span>',
+  'carConv.labelNutLHtml':
+    'Effective nut length <span class="info-chip" data-i18n-attrs="title=carConv.tipNutL" title="Nut bearing length." aria-label="Help nut length.">?</span>',
+  'carConv.labelMuHtml':
+    'Friction \u03bc (thread) <span class="info-chip" data-i18n-attrs="title=carConv.tipMu" title="Steel\u2013bronze mu." aria-label="Help friction.">?</span>',
+  'carConv.labelPallowHtml':
+    'Allowable bronze pressure <span class="info-chip" data-i18n-attrs="title=carConv.tipPallow" title="Allowable p." aria-label="Help pressure.">?</span>',
+  'carConv.labelSFHtml':
+    'Service factor <span class="info-chip" data-i18n-attrs="title=carConv.tipSF" title="Service factor." aria-label="Help service factor.">?</span>',
+  'carConv.labelVerifyBrandHtml':
+    'Brand <span class="info-chip" data-i18n-attrs="title=carConv.tipVerifyBrand" title="Brand." aria-label="Help brand.">?</span>',
+  'carConv.labelVerifySearchHtml':
+    'Filter model <span class="info-chip" data-i18n-attrs="title=carConv.tipVerifySearch" title="Filter." aria-label="Help filter.">?</span>',
+  'carConv.labelVerifyModelHtml':
+    'Catalogue model <span class="info-chip" data-i18n-attrs="title=carConv.tipVerifyModel" title="Model." aria-label="Help model.">?</span>',
+  'carConv.optThreadTr32': 'Tr 32 x 6 (standard)',
+  'carConv.optThreadTr40': 'Tr 40 x 7 (standard)',
+  'carConv.optThreadTr45': 'Tr 45 x 7 (standard)',
+  'carConv.optThreadTr50': 'Tr 50 x 8 (standard)',
+  'carConv.optThreadTr55': 'Tr 55 x 9 (standard)',
+  'carConv.optThreadCustom': 'Custom (manual entry)',
+  'carConv.optMotorTop': 'Top',
+  'carConv.optMotorBase': 'Base / bottom',
+  'carConv.lockFieldAria': 'Field locked by standard',
+  'carConv.presetsGroupAria': 'Car lift screw presets',
+  'carConv.presetLightBtn': 'Workshop · light',
+  'carConv.presetHeavyBtn': 'Workshop · heavy',
+  'carConv.presetShowroomBtn': 'Workshop · standard',
+  'carConv.visualSectionAria': 'Schematic and reference photo',
+  'carConv.diagramSvgAria': 'Screw-type car lift schematic',
+  'carConv.threadPresetHintLocked': '{label}: diameter and lead locked to this standard',
   'carConv.hintCapacity': 'Typ. 2000–5000 kg (vehicle + workshop load)',
   'carConv.hintH': 'Typ. 1.5–2.2 m useful stroke in workshop',
   'carConv.hintT': 'Typ. 40–90 s (comfort / local rules)',
@@ -114,8 +173,7 @@ export const CAR_LIFT_EN = {
   'carConv.assumptionsTitle': 'Model assumptions',
   'carConv.assumptionsHint': 'Educational limits (not a certified lift calculation)',
   'carConv.pdfExportH2Html': '<span class="panel-icon">PDF</span> Export report',
-  'carConv.threadPresetHintLocked': 'd and lead locked to the selected standard',
-  'carConv.threadPresetHintCustom': 'Enter d and lead manually',
+  'carConv.threadPresetHintCustom': 'Custom mode: enter d and lead manually',
   'carConv.presetLightTooltip': '2800 kg, H 1.65 m, 55 s, Tr 32\u00d76 screw.',
   'carConv.presetHeavyTooltip': '4200 kg, H 2.1 m, 62 s, Tr 45\u00d77 screw.',
   'carConv.presetShowroomTooltip': '3500 kg, H 1.85 m, 58 s, Tr 40\u00d77 screw.',

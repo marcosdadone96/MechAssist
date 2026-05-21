@@ -16,6 +16,7 @@ import {
 import {
   injectMountingConfigSection,
   MOUNTING_INPUT_IDS,
+  refreshMountingConfigSection,
 } from './mountingConfigSection.js';
 import { openMotorsRecommendationsAndScroll } from './motorsCollapsible.js';
 import { renderBucketElevatorDiagram } from './diagramBucketElevator.js';
@@ -27,11 +28,6 @@ import { renderFullEngineeringAside } from './engineeringReport.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
-import {
-  applyBucketElevatorPageLanguage,
-  BUCKET_ELEVATOR_LANG_EVENT,
-  getBucketElevatorBeStrings,
-} from './bucketElevatorStaticI18n.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
 import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
@@ -40,11 +36,22 @@ import { BUCKET_ELEVATOR_EN } from '../lab/i18n/pages/bucketElevatorEn.js';
 import { BUCKET_PRESET_BY_ID } from '../modules/machineHubPresets.js';
 import { incrementCalcCounter } from '../services/calcCounter.js';
 
-const BUCKET_PAGE_EN = {
-  ...MACHINE_HUB_UX_EN,
-  ...BUCKET_ELEVATOR_EN,
-  ...getBucketElevatorBeStrings('en'),
-};
+const BUCKET_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...BUCKET_ELEVATOR_EN };
+const BE_DOC_TITLE_ES = 'Elevador de cangilones \u2014 TheMechAssist';
+
+function applyBucketDocumentChrome() {
+  const en = getCurrentLang() === 'en';
+  document.documentElement.lang = en ? 'en' : 'es';
+  document.title = en ? BUCKET_PAGE_EN['beConv.docTitle'] : BE_DOC_TITLE_ES;
+}
+
+function onBucketLangChanged() {
+  refreshMountingConfigSection();
+  fillBucketSelect();
+  refreshMotorVerificationManual(document.getElementById('beVerifyPanel'), getDriveRequirements);
+  document.getElementById('beVerifyBrand')?.dispatchEvent(new Event('change'));
+  computeAndRender();
+}
 
 let animPhase = 0;
 let animId = 0;
@@ -654,7 +661,7 @@ function openBeAccordionByLabelKey(panelRoot, labelKey) {
   panelRoot.querySelectorAll('details.flat-accordion').forEach((d) => {
     if (d instanceof HTMLDetailsElement) d.open = false;
   });
-  const label = panelRoot.querySelector(`[data-be-i18n="${labelKey}"]`);
+  const label = panelRoot.querySelector(`[data-i18n="${labelKey}"]`);
   const details = label?.closest('details.flat-accordion');
   if (details instanceof HTMLDetailsElement) details.open = true;
 }
@@ -748,13 +755,6 @@ function onMountingHostInput(ev) {
 document.getElementById('mountingConfigHost')?.addEventListener('input', onMountingHostInput);
 document.getElementById('mountingConfigHost')?.addEventListener('change', onMountingHostInput);
 
-window.addEventListener(BUCKET_ELEVATOR_LANG_EVENT, () => {
-  fillBucketSelect();
-  refreshMotorVerificationManual(document.getElementById('beVerifyPanel'), getDriveRequirements);
-  document.getElementById('beVerifyBrand')?.dispatchEvent(new Event('change'));
-  computeAndRender();
-});
-
 try {
   initMotorVerification(document.getElementById('beVerifyPanel'), getDriveRequirements);
 } catch (e) {
@@ -762,6 +762,7 @@ try {
 }
 
 setStep(1);
+applyBucketDocumentChrome();
 bootMachineCalcView(computeAndRender);
 computeAndRender.runPreview();
 initInfoChipPopovers(document.body);
@@ -800,11 +801,16 @@ wireMachineRfqExport({
 });
 
 watchLangAndApply(BUCKET_PAGE_EN, {
+  reloadOnEs: false,
   onEnApplied: () => {
-    applyBucketElevatorPageLanguage();
-    fillBucketSelect();
+    applyBucketDocumentChrome();
     initInfoChipPopovers(document.body);
-    computeAndRender();
+    onBucketLangChanged();
+  },
+  onEsRestored: () => {
+    applyBucketDocumentChrome();
+    initInfoChipPopovers(document.body);
+    onBucketLangChanged();
   },
 });
 

@@ -281,4 +281,6 @@ export const FLAT_CONVEYOR_EN = {
     'Demo catalogue brand. Filters the available models in the list below.',
   'flatConv.tipFilterModel':
     'Search by code or text in the designation; narrows the model dropdown.',
+  'flatConv.tipVerifyModel':
+    'Expanded demo list in code. Verification uses the same design point (torque, power, drum rpm) as Final results.',
 };

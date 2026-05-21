@@ -12,6 +12,8 @@ export const KEYS_DIN_EN = {
   'keys.optC45': 'Steel C45',
   'keys.optInox': 'Stainless (AISI 304 approx.)',
   'keys.seoSummary': 'Extended context and usage notes',
+  'keys.seoIntro':
+    'This tool proposes normalized parallel key width and height from shaft diameter per DIN 6885-1 type tables and checks contact and crushing pressures for the transmitted torque and chosen effective length. Useful for machining orders and to see whether to lengthen the key or use two elements before manufacturing. Common for machine-tool designers and fitters reviewing an installed pinion. For example, when replacing a pump motor you can check whether the existing key is still adequate if the new assembly nominal torque rises.',
   'keys.presetsLabel': 'Typical examples:',
   'keys.preset1': 'Shaft \u00d832 \u00b7 C45',
   'keys.preset2': 'Shaft \u00d850 \u00b7 high torque',

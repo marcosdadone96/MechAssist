@@ -845,7 +845,11 @@ document.getElementById('bBeltType')?.addEventListener('change', () => {
   document.getElementById(id)?.addEventListener('change', scheduleBeltRecalc);
 });
 
-watchLangAndApply(BELTS_PAGE_EN, { onEnApplied: () => scheduleBeltRecalc() });
+watchLangAndApply(BELTS_PAGE_EN, {
+  reloadOnEs: false,
+  onEnApplied: () => scheduleBeltRecalc(),
+  onEsRestored: () => scheduleBeltRecalc(),
+});
 
 wireLabCopyLink('bCopyLinkBtn', 'bCopyToast');
 wireLabCopyResultsButton('bCopyResults', {

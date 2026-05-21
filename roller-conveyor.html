@@ -118,7 +118,7 @@
           <p class="flat-ux-panel__lead muted" data-i18n="machineHub.uxPresetsLead">
             Rellena parámetros coherentes por sector; puede ajustar después.
           </p>
-          <div class="flat-ux-preset-row" role="group" aria-label="Presets rodillos">
+          <div class="flat-ux-preset-row" role="group" data-i18n="rollerConv.presetsGroupAria" data-i18n-attr="aria-label" aria-label="Presets rodillos">
             <button
               type="button"
               class="btn-flat-preset"
@@ -126,7 +126,7 @@
               data-i18n-attrs="title=rollerConv.presetEcommerceTooltip"
               title="Línea corta, cajas ligeras, Crr bajo"
             >
-              <span class="btn-flat-preset__name">E-commerce · ligera</span>
+              <span class="btn-flat-preset__name" data-i18n="rollerConv.presetEcommerceBtn">E-commerce · ligera</span>
             </button>
             <button
               type="button"
@@ -135,7 +135,7 @@
               data-i18n-attrs="title=rollerConv.presetPalletTooltip"
               title="Paleta EUR, recorrido medio"
             >
-              <span class="btn-flat-preset__name">Distribución · paleta</span>
+              <span class="btn-flat-preset__name" data-i18n="rollerConv.presetPalletBtn">Distribución · paleta</span>
             </button>
             <button
               type="button"
@@ -144,7 +144,7 @@
               data-i18n-attrs="title=rollerConv.presetHeavyTooltip"
               title="Carga pesada, Crr más alto"
             >
-              <span class="btn-flat-preset__name">Paleta · pesada</span>
+              <span class="btn-flat-preset__name" data-i18n="rollerConv.presetHeavyBtn">Paleta · pesada</span>
             </button>
           </div>
         </section>
@@ -157,13 +157,7 @@
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field">
               <label for="designStandard" data-i18n="rollerConv.labelStandardHtml" data-i18n-html
-                >Norma de referencia
-                <span
-                  class="info-chip"
-                  title="Marco declarado en informes. ISO 5048: modelo anal&iacute;tico simplificado aqu&iacute; (no memoria DIN 22101 completa). CEMA: +6 % solo sobre la tracci&oacute;n de r&eacute;gimen; no sustituye el manual CEMA completo."
-                  aria-label="Ayuda norma ISO y CEMA: margen solo sobre r&eacute;gimen."
-                  >?</span
-                ></label
+                >Norma de referencia <span class="info-chip" data-i18n-attrs="title=rollerConv.tipDesignStandard" title="Marco declarado en informes. ISO 5048: modelo analítico simplificado aquí. CEMA: +6 % solo sobre tracción de régimen." aria-label="Ayuda norma ISO y CEMA.">?</span></label
               >
               <select id="designStandard">
                 <option value="ISO5048" selected data-i18n="rollerConv.optIso5048">ISO 5048 / DIN 22101 — enfoque anal&iacute;tico (predeterminado)</option>
@@ -175,13 +169,7 @@
             </div>
             <div class="field">
               <label for="loadDuty" data-i18n="rollerConv.labelLoadDutyHtml" data-i18n-html
-                >Tipo de carga (fija el SF)
-                <span
-                  class="info-chip"
-                  title="Clase de servicio orientativa. Fija el factor num&eacute;rico salvo &laquo;Personalizada&raquo;, donde puede editarlo abajo."
-                  aria-label="Ayuda tipo de carga y factor de servicio."
-                  >?</span
-                ></label
+                >Tipo de carga (fija el SF) <span class="info-chip" data-i18n-attrs="title=rollerConv.tipLoadDuty" title="Clase de servicio orientativa. Fija el factor numérico salvo Personalizado." aria-label="Ayuda tipo de carga y factor de servicio.">?</span></label
               >
               <select id="loadDuty">
                 <option value="uniform" data-i18n="rollerConv.optDutyUniform">Carga uniforme — SF &asymp; 1,15</option>
@@ -193,13 +181,7 @@
             </div>
             <div class="field">
               <label for="serviceFactor" data-i18n="rollerConv.labelSfHtml" data-i18n-html
-                >Factor de servicio (n&uacute;mero)
-                <span
-                  class="info-chip"
-                  title="Sincronizado con Tipo de carga (solo lectura salvo modo Personalizado)."
-                  aria-label="Ayuda factor de servicio sincronizado."
-                  >?</span
-                ></label
+                >Factor de servicio (n&uacute;mero) <span class="info-chip" data-i18n-attrs="title=rollerConv.tipServiceFactor" title="Sincronizado con Tipo de carga (solo lectura salvo modo Personalizado)." aria-label="Ayuda factor de servicio sincronizado.">?</span></label
               >
               <input id="serviceFactor" type="number" min="1.0" step="0.05" value="1.35" readonly class="input-synced" />
             </div>
@@ -213,14 +195,8 @@
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
-              <label for="length"
-                >Longitud &uacute;til L
-                <span
-                  class="info-chip"
-                  title="Tramo en el que se modela la carga. El caudal m&aacute;sico (m/L)&middot;v supone masa repartida en L; valide si su carga est&aacute; agrupada."
-                  aria-label="Ayuda longitud util y caudal masico."
-                  >?</span
-                ></label
+              <label for="length" data-i18n="rollerConv.labelLengthHtml" data-i18n-html
+                >Longitud &uacute;til L <span class="info-chip" data-i18n-attrs="title=rollerConv.tipLength" title="Tramo en el que se modela la carga." aria-label="Ayuda longitud útil.">?</span></label
               >
               <input type="range" id="lengthR" class="flat-slider" min="0.5" max="80" step="0.1" value="5" aria-label="Longitud" />
               <div class="flat-field__num">
@@ -230,14 +206,8 @@
               <p class="field-context muted">Típ. 3–25 m (embalaje / picking)</p>
             </div>
             <div class="field flat-field--slider">
-              <label for="loadMass"
-                >Carga total m
-                <span
-                  class="info-chip"
-                  title="Masa nominal en el tramo L; el modelo usa N = m&middot;g sobre rodillos."
-                  aria-label="Ayuda masa total."
-                  >?</span
-                ></label
+              <label for="loadMass" data-i18n="rollerConv.labelLoadMassHtml" data-i18n-html
+                >Carga total m <span class="info-chip" data-i18n-attrs="title=rollerConv.tipLoadMass" title="Masa nominal en el tramo L." aria-label="Ayuda masa total.">?</span></label
               >
               <input type="range" id="loadMassR" class="flat-slider" min="1" max="8000" step="1" value="350" aria-label="Masa" />
               <div class="flat-field__num">
@@ -247,14 +217,8 @@
               <p class="field-context muted">Típ. 100–3000 kg en paletas / carga puntual</p>
             </div>
             <div class="field flat-field--slider">
-              <label for="speed"
-                >Velocidad lineal v
-                <span
-                  class="info-chip"
-                  title="Velocidad de la superficie de rodillos en r&eacute;gimen. Entra en potencia (F&middot;v) y en rpm del rodillo motriz v&iacute;a v y D."
-                  aria-label="Ayuda velocidad lineal."
-                  >?</span
-                ></label
+              <label for="speed" data-i18n="rollerConv.labelSpeedHtml" data-i18n-html
+                >Velocidad lineal v <span class="info-chip" data-i18n-attrs="title=rollerConv.tipSpeed" title="Velocidad de rodillos en régimen." aria-label="Ayuda velocidad lineal.">?</span></label
               >
               <input type="range" id="speedR" class="flat-slider" min="0.05" max="3" step="0.01" value="0.35" aria-label="v" />
               <div class="flat-field__num">
@@ -264,14 +228,8 @@
               <p class="field-context muted">Típ. 0,15–0,5 m/s (logística); hasta ~1 m/s en líneas rápidas</p>
             </div>
             <div class="field flat-field--slider">
-              <label for="rollerD"
-                >Di&aacute;metro rodillo motriz D
-                <span
-                  class="info-chip"
-                  title="Di&aacute;metro del rodillo de tracci&oacute;n: par T = F&middot;R con R = D/2. Valide con el fabricante del transportador."
-                  aria-label="Ayuda diametro rodillo motriz."
-                  >?</span
-                ></label
+              <label for="rollerD" data-i18n="rollerConv.labelRollerDHtml" data-i18n-html
+                >Di&aacute;metro rodillo motriz D <span class="info-chip" data-i18n-attrs="title=rollerConv.tipRollerD" title="Diámetro del rodillo de tracción: T = F·R, R = D/2." aria-label="Ayuda diámetro rodillo motriz.">?</span></label
               >
               <input type="range" id="rollerDR" class="flat-slider" min="40" max="400" step="1" value="89" aria-label="D" />
               <div class="flat-field__num">
@@ -289,18 +247,12 @@
             <span class="flat-accordion__label" data-i18n="rollerConv.accSupport">Apoyo de carga y paso de rodillos</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
-            <p class="muted field-hint" style="grid-column: 1 / -1; margin: 0">
+            <p class="muted field-hint" style="grid-column: 1 / -1; margin: 0" data-i18n="rollerConv.supportLead">
               Use esta sección si necesita documentar la geometría del apoyo o detectar situaciones con pocos rodillos bajo la carga. No afecta al cálculo de potencia.
             </p>
             <div class="field flat-field--slider">
-              <label for="rollerPitch"
-                >Paso entre rodillos (ejes)
-                <span
-                  class="info-chip"
-                  title="Distancia entre ejes de rodillos consecutivos. Sirve para estimar cu&aacute;ntos rodillos quedan bajo la huella (paleta) o en el tramo L (reparto uniforme). No entra en F_roll = C_rr&middot;m&middot;g; documenta y valida el caso."
-                  aria-label="Ayuda paso entre rodillos."
-                  >?</span
-                ></label
+              <label for="rollerPitch" data-i18n="rollerConv.labelPitchHtml" data-i18n-html
+                >Paso entre rodillos (ejes) <span class="info-chip" data-i18n-attrs="title=rollerConv.tipPitch" title="Distancia entre ejes de rodillos consecutivos." aria-label="Ayuda paso entre rodillos.">?</span></label
               >
               <input type="range" id="rollerPitchR" class="flat-slider" min="50" max="250" step="1" value="125" aria-label="Paso rodillos" />
               <div class="flat-field__num">
@@ -309,30 +261,18 @@
               </div>
             </div>
             <div class="field" style="grid-column: 1 / -1">
-              <label for="loadSupportMode"
-                >C&oacute;mo documentar el apoyo
-                <span
-                  class="info-chip"
-                  title="Uniforme: la carga se trata repartida en la longitud L; puede fijar un n&uacute;mero orientativo de rodillos. Paleta: elija tipo y orientaci&oacute;n; el programa estima rodillos bajo la huella en direcci&oacute;n de transporte."
-                  aria-label="Ayuda modo de apoyo."
-                  >?</span
-                ></label
+              <label for="loadSupportMode" data-i18n="rollerConv.labelSupportModeHtml" data-i18n-html
+                >C&oacute;mo documentar el apoyo <span class="info-chip" data-i18n-attrs="title=rollerConv.tipSupportMode" title="Uniforme o paleta estándar." aria-label="Ayuda modo de apoyo.">?</span></label
               >
               <select id="loadSupportMode">
-                <option value="uniform" selected>Reparto uniforme en el tramo L</option>
-                <option value="pallet">Paleta est&aacute;ndar / dimensiones</option>
+                <option value="uniform" selected data-i18n="rollerConv.optUniform">Reparto uniforme en el tramo L</option>
+                <option value="pallet" data-i18n="rollerConv.optPallet">Paleta est&aacute;ndar / dimensiones</option>
               </select>
             </div>
             <div id="supportUniformBlock" class="field-grid" style="grid-column: 1 / -1">
               <div class="field">
-                <label for="uniformRollersOverride"
-                  >Rodillos bajo la carga (opcional)
-                  <span
-                    class="info-chip"
-                    title="Si lo deja vac&iacute;o, se estima con L y el paso. Si rellena un n&uacute;mero, se usa solo para informe y hip&oacute;tesis (el modelo de fuerza sigue siendo N = m&middot;g total)."
-                    aria-label="Ayuda rodillos bajo carga manual."
-                    >?</span
-                  ></label
+                <label for="uniformRollersOverride" data-i18n="rollerConv.labelUniformRollersHtml" data-i18n-html
+                  >Rodillos bajo la carga (opcional) <span class="info-chip" data-i18n-attrs="title=rollerConv.tipUniformRollers" title="Opcional; estima con L y paso si vacío." aria-label="Ayuda rodillos bajo carga.">?</span></label
                 >
                 <input id="uniformRollersOverride" type="number" min="1" step="1" placeholder="Auto (L y paso)" />
                 <span class="field-hint">n&deg;</span>
@@ -341,43 +281,37 @@
             </div>
             <div id="supportPalletBlock" class="field-grid" hidden style="grid-column: 1 / -1">
               <div class="field">
-                <label for="palletPreset">Tipo de paleta</label>
+                <label for="palletPreset" data-i18n="rollerConv.labelPalletTypeHtml">Tipo de paleta</label>
                 <select id="palletPreset">
-                  <option value="eur1">EUR 1 (800&times;1200 mm)</option>
-                  <option value="eur2">EUR 2 (1200&times;1000 mm)</option>
-                  <option value="eur6">Media EUR (800&times;600 mm)</option>
-                  <option value="ind1000">Industrial (1000&times;1200 mm)</option>
-                  <option value="us48x40">US 48&times;40&quot; (1219&times;1016 mm)</option>
-                  <option value="custom">Personalizado (L&times;W mm)</option>
+                  <option value="eur1" data-i18n="rollerConv.optPalletEur1">EUR 1 (800&times;1200 mm)</option>
+                  <option value="eur2" data-i18n="rollerConv.optPalletEur2">EUR 2 (1200&times;1000 mm)</option>
+                  <option value="eur6" data-i18n="rollerConv.optPalletEur6">Media EUR (800&times;600 mm)</option>
+                  <option value="ind1000" data-i18n="rollerConv.optPalletInd1000">Industrial (1000&times;1200 mm)</option>
+                  <option value="us48x40" data-i18n="rollerConv.optPalletUs4840">US 48&times;40&quot; (1219&times;1016 mm)</option>
+                  <option value="custom" data-i18n="rollerConv.optPalletCustom">Personalizado (L&times;W mm)</option>
                 </select>
               </div>
               <div class="field">
-                <label for="palletOrientation"
-                  >Lado en direcci&oacute;n de transporte
-                  <span
-                    class="info-chip"
-                    title="Qu&eacute; dimensi&oacute;n de la paleta va paralela al sentido de marcha de la l&iacute;nea. Determina la huella en mm que cuenta para contar rodillos bajo la carga."
-                    aria-label="Ayuda orientacion paleta."
-                    >?</span
-                  ></label
+                <label for="palletOrientation" data-i18n="rollerConv.labelPalletOrientHtml" data-i18n-html
+                  >Lado en direcci&oacute;n de transporte <span class="info-chip" data-i18n-attrs="title=rollerConv.tipPalletOrient" title="Dimensión paralela al transporte." aria-label="Ayuda orientación paleta.">?</span></label
                 >
                 <select id="palletOrientation">
-                  <option value="long_along_transport" selected>Lado largo seg&uacute;n transporte</option>
-                  <option value="short_along_transport">Lado corto seg&uacute;n transporte</option>
+                  <option value="long_along_transport" selected data-i18n="rollerConv.optPalletLong">Lado largo seg&uacute;n transporte</option>
+                  <option value="short_along_transport" data-i18n="rollerConv.optPalletShort">Lado corto seg&uacute;n transporte</option>
                 </select>
               </div>
               <div id="palletCustomDims" class="field-grid" style="grid-column: 1 / -1" hidden>
                 <div class="field">
-                  <label for="palletCustomL">Largo paleta (mm)</label>
+                  <label for="palletCustomL" data-i18n="rollerConv.labelPalletCustomL">Largo paleta (mm)</label>
                   <input id="palletCustomL" type="number" min="100" step="1" value="1200" />
                 </div>
                 <div class="field">
-                  <label for="palletCustomW">Ancho paleta (mm)</label>
+                  <label for="palletCustomW" data-i18n="rollerConv.labelPalletCustomW">Ancho paleta (mm)</label>
                   <input id="palletCustomW" type="number" min="100" step="1" value="800" />
                 </div>
               </div>
             </div>
-            <p class="muted field-hint" style="grid-column: 1 / -1; margin: 0">
+            <p class="muted field-hint" style="grid-column: 1 / -1; margin: 0" data-i18n="rollerConv.supportNoteHtml" data-i18n-html>
               La fuerza de rodadura del simulador sigue siendo <strong>F = C<sub>rr</sub>&middot;m&middot;g</strong> sobre el total de la carga; el paso y la paleta sirven para <strong>documentar</strong> el apoyo y detectar geometr&iacute;as raras (pocos rodillos, huella mayor que L).
             </p>
           </div>
@@ -390,14 +324,8 @@
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
-              <label for="rollingResistance"
-                >Coef. rodadura Crr
-                <span
-                  class="info-chip"
-                  title="Coeficiente adimensional agregado (no es solo rodamiento del eje). Orientaci&oacute;n t&iacute;pica: 0,01&ndash;0,02 l&iacute;nea limpia y rodillos en buen estado; 0,02&ndash;0,04 montaje industrial habitual; 0,05&ndash;0,08 suciedad, impactos o arrastre; por encima de ~0,08 valide con fabricante o pruebas. Suba el valor si hay mantenimiento deficiente o gu&iacute;as que rocen."
-                  aria-label="Ayuda coeficiente Crr orientativo."
-                  >?</span
-                ></label
+              <label for="rollingResistance" data-i18n="rollerConv.labelCrrHtml" data-i18n-html
+                >Coef. rodadura C<sub>rr</sub> <span class="info-chip" data-i18n-attrs="title=rollerConv.tipCrr" title="Coeficiente agregado rodillos, rodamientos y contacto." aria-label="Ayuda coeficiente Crr.">?</span></label
               >
               <input type="range" id="rollingResistanceR" class="flat-slider" min="0.01" max="0.12" step="0.001" value="0.03" aria-label="Crr" />
               <div class="flat-field__num">
@@ -452,14 +380,8 @@
               </p>
             </div>
             <div class="field flat-field--slider">
-              <label for="efficiency"
-                >Rendimiento &#951;
-                <span
-                  class="info-chip"
-                  title="De la potencia del motor el&eacute;ctrico al eje del rodillo motriz: motorreductor, acople y p&eacute;rdidas hasta el eje, en un solo valor. No descontar otra vez el rendimiento del motor."
-                  aria-label="Ayuda rendimiento eta."
-                  >?</span
-                ></label
+              <label for="efficiency" data-i18n="rollerConv.labelEfficiencyHtml" data-i18n-html
+                >Rendimiento &#951; <span class="info-chip" data-i18n-attrs="title=rollerConv.tipEfficiency" title="De potencia eléctrica al eje del rodillo motriz." aria-label="Ayuda rendimiento eta.">?</span></label
               >
               <input type="range" id="efficiencyR" class="flat-slider" min="70" max="99" step="0.5" value="90" aria-label="Rendimiento" />
               <div class="flat-field__num">
@@ -483,40 +405,22 @@
           <div class="adv-details__body">
             <div class="field-grid">
               <div class="field">
-                <label for="additionalResistance"
-                  >Resistencia adicional
-                  <span
-                    class="info-chip"
-                    title="Suma de fuerzas resistentes en N no incluidas en Crr: topes, gu&iacute;as, elementos de limpieza, etc."
-                    aria-label="Ayuda resistencia adicional."
-                    >?</span
-                  ></label
+                <label for="additionalResistance" data-i18n="rollerConv.labelAddResistanceHtml" data-i18n-html
+                  >Resistencia adicional <span class="info-chip" data-i18n-attrs="title=rollerConv.tipAddResistance" title="Fuerzas extra en N no incluidas en Crr." aria-label="Ayuda resistencia adicional.">?</span></label
                 >
                 <input id="additionalResistance" type="number" min="0" step="10" value="0" />
                 <span class="field-hint">N</span>
               </div>
               <div class="field">
-                <label for="accelTime"
-                  >Tiempo aceleraci&oacute;n
-                  <span
-                    class="info-chip"
-                    title="Tiempo para alcanzar la velocidad v desde parado. M&aacute;s corto implica mayor fuerza de aceleraci&oacute;n sobre la masa."
-                    aria-label="Ayuda tiempo de aceleracion."
-                    >?</span
-                  ></label
+                <label for="accelTime" data-i18n="rollerConv.labelAccelTimeHtml" data-i18n-html
+                  >Tiempo aceleraci&oacute;n <span class="info-chip" data-i18n-attrs="title=rollerConv.tipAccelTime" title="Tiempo para alcanzar v desde parado." aria-label="Ayuda tiempo de aceleración.">?</span></label
                 >
                 <input id="accelTime" type="number" min="0.2" step="0.1" value="2.5" />
                 <span class="field-hint">s</span>
               </div>
               <div class="field">
-                <label for="inertiaFactor"
-                  >Factor inercia arranque
-                  <span
-                    class="info-chip"
-                    title="Mayor o igual que 1 ampl&iacute;a la fuerza de arranque m&aacute;s all&aacute; de m&middot;a: incluye de forma simplificada masas rotativas (tambor, acoplamientos)."
-                    aria-label="Ayuda factor de inercia."
-                    >?</span
-                  ></label
+                <label for="inertiaFactor" data-i18n="rollerConv.labelInertiaFactorHtml" data-i18n-html
+                  >Factor inercia arranque <span class="info-chip" data-i18n-attrs="title=rollerConv.tipInertiaFactor" title="Factor ≥ 1 para masas rotativas." aria-label="Ayuda factor de inercia.">?</span></label
                 >
                 <input id="inertiaFactor" type="number" min="1" step="0.05" value="1.10" />
               </div>
@@ -587,7 +491,7 @@
           </section>
         </section>
 
-        <section class="flat-visual flat-visual--integrated" aria-label="Esquema y referencia fotogr&aacute;fica">
+        <section class="flat-visual flat-visual--integrated" data-i18n="rollerConv.visualSectionAria" data-i18n-attr="aria-label" aria-label="Esquema y referencia fotogr&aacute;fica">
           <div class="flat-visual__workbench">
             <div class="diagram-duo__schematic flat-visual__diagram-col">
               <svg id="diagramRoller" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama transportador de rodillos" data-i18n="rollerConv.diagramSvgAria" data-i18n-attr="aria-label" aria-label="Esquema transportador de rodillos"></svg>
@@ -617,8 +521,8 @@
             </p>
             <div class="verify-grid">
               <div class="field">
-                <label for="verifyBrand"
-                  >Marca <span class="info-chip" title="Fabricante del cat&aacute;logo de demostraci&oacute;n. Filtra los modelos disponibles en la lista." aria-label="Ayuda marca comprobador.">?</span></label
+                <label for="verifyBrand" data-i18n="rollerConv.labelVerifyBrandHtml" data-i18n-html
+                  >Marca <span class="info-chip" data-i18n-attrs="title=rollerConv.tipVerifyBrand" title="Fabricante del catálogo de demostración." aria-label="Ayuda marca comprobador.">?</span></label
                 >
                 <select id="verifyBrand" data-verify-brand>
                   <option value="sew">SEW-Eurodrive</option>
@@ -630,15 +534,15 @@
                 <span class="field-hint">&mdash;</span>
               </div>
               <div class="field">
-                <label for="verifySearch"
-                  >Filtrar modelo <span class="info-chip" title="B&uacute;squeda por c&oacute;digo o texto en la designaci&oacute;n; reduce el desplegable de modelos." aria-label="Ayuda filtro modelo.">?</span></label
+                <label for="verifySearch" data-i18n="rollerConv.labelVerifySearchHtml" data-i18n-html
+                  >Filtrar modelo <span class="info-chip" data-i18n-attrs="title=rollerConv.tipVerifySearch" title="Búsqueda por código o texto." aria-label="Ayuda filtro modelo.">?</span></label
                 >
                 <input id="verifySearch" type="search" placeholder="ej. R47, H 083&hellip;" data-verify-search autocomplete="off" />
                 <span class="field-hint">&mdash;</span>
               </div>
               <div class="field" style="grid-column: 1 / -1">
-                <label for="verifyModel"
-                  >Modelo del cat&aacute;logo <span class="info-chip" title="Lista de ejemplo ampliada en c&oacute;digo. La comprobaci&oacute;n usa el mismo punto de dise&ntilde;o (par, potencia, rpm tambor) que Resultados finales." aria-label="Ayuda modelo cat&aacute;logo.">?</span></label
+                <label for="verifyModel" data-i18n="rollerConv.labelVerifyModelHtml" data-i18n-html
+                  >Modelo del cat&aacute;logo <span class="info-chip" data-i18n-attrs="title=rollerConv.tipVerifyModel" title="Lista de ejemplo; mismo punto de diseño que Resultados finales." aria-label="Ayuda modelo catálogo.">?</span></label
                 >
                 <select id="verifyModel" data-verify-model size="1"></select>
                 <span class="field-hint">&mdash;</span>
@@ -661,7 +565,7 @@
               </span>
             </summary>
             <div class="motors-details__body">
-              <p class="muted panel-lead">
+              <p class="muted panel-lead" data-i18n="rollerConv.engLead">
                 C&aacute;lculos intermedios, comparaci&oacute;n de enfoques de motor y razonamiento del punto de dise&ntilde;o en el rodillo motriz.
               </p>
               <div id="engineeringReport" class="eng-report"></div>
@@ -704,7 +608,7 @@
         </section>
 
         <section class="panel">
-          <h2><span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Exportar informe</h2>
+          <h2 data-i18n="rollerConv.pdfExportH2Html" data-i18n-html><span class="premium-flag">Pro</span> <span class="panel-icon">PDF</span> Exportar informe</h2>
           <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
         </section>
 

@@ -18,7 +18,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Prensa hidráulica — TheMechAssist" />
 
-    <title>Prensa hidráulica — TheMechAssist</title>
+    <title data-i18n="hpress.docTitle">Prensa hidráulica — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
@@ -208,29 +208,6 @@
         font-weight: 600;
         color: #334155;
       }
-      @media (max-width: 479px) {
-        .lab-calc-layout--hc.lab-calc-layout--with-diag {
-          grid-template-columns: minmax(0, 1fr) !important;
-          grid-template-areas:
-            'diagram'
-            'inputs'
-            'out' !important;
-        }
-        .lab-calc-layout--hc .lab-calc-layout__diagram {
-          width: 100%;
-          max-width: 100%;
-          min-width: 0;
-        }
-        .lab-calc-layout--hc #hpPressDiagram {
-          width: 100%;
-          max-width: 100%;
-          height: auto;
-          display: block;
-        }
-        .lab-calc-layout--hc .lab-diagram-wrap {
-          max-width: 100%;
-        }
-      }
     </style>
   </head>
   <body class="lab-body">
@@ -299,7 +276,7 @@
           </ul>
         </nav>
         <div class="lab-presets-row">
-          <span class="lab-presets-row__label" data-i18n="hpress.presetsLabel">Ejemplos típicos:</span>
+          <span class="lab-presets-row__label" data-i18n="fluids.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="hppPresetsBar"></div>
         </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">
@@ -319,16 +296,16 @@
                   <option value="basic" selected data-i18n="hpress.optBasic">Aula (básico)</option>
                   <option value="project" data-i18n="hpress.optProject">Proyecto (detallado + pandeo columnas)</option>
                 </select>
-                <span class="hint">Fórmulas y campos extra</span>
-                <p class="lab-field-help">Proyecto activa pandeo Euler en columnas (longitud libre + K) y amplía la memoria de cálculo y el PDF.</p>
+                <span class="hint" data-i18n="hpress.hintExtraFields">Fórmulas y campos extra</span>
+                <p class="lab-field-help" data-i18n="hpress.helpProjectTier">Proyecto activa pandeo Euler en columnas (longitud libre + K) y amplía la memoria de cálculo y el PDF.</p>
               </div>
               <div class="lab-field lab-field--wide" id="hppProjectPanel" hidden>
-                <p class="lab-field-help" style="margin:0 0 0.5rem;font-weight:700;color:#0f766e">Columnas — pandeo (Euler)</p>
+                <p class="lab-field-help" style="margin:0 0 0.5rem;font-weight:700;color:#0f766e" data-i18n="hpress.columnsEulerTitle">Columnas — pandeo (Euler)</p>
                 <div class="lab-grid lab-grid--2" style="gap:0.65rem">
                   <div class="lab-field">
                     <label for="hppColLengthMm" data-i18n="hpress.labelColLength">Longitud libre columna L (mm)</label>
                     <input id="hppColLengthMm" type="number" min="200" step="any" value="2200" />
-                    <span class="hint">Entre guías / longitud no arriostrada</span>
+                    <span class="hint" data-i18n="hpress.hintColLength">Entre guías / longitud no arriostrada</span>
                   </div>
                   <div class="lab-field">
                     <label for="hppColK" data-i18n="hpress.labelColK">Coeficiente K (longitud efectiva)</label>
@@ -345,106 +322,106 @@
                     </p>
                   </div>
                   <div class="lab-field">
-                    <label for="hppEGpa">Módulo E columnas (GPa)</label>
+                    <label for="hppEGpa" data-i18n="hpress.labelColE">Módulo E columnas (GPa)</label>
                     <input id="hppEGpa" type="number" min="70" max="220" step="any" value="210" />
-                    <span class="hint">Acero típico 200–210</span>
+                    <span class="hint" data-i18n="hpress.hintColE">Acero típico 200–210</span>
                   </div>
                 </div>
               </div>
               <div class="lab-field lab-field--wide">
-                <label for="hppMode">¿Qué quieres calcular?</label>
+                <label for="hppMode" data-i18n="hpress.labelMode">¿Qué quieres calcular?</label>
                 <select id="hppMode">
-                  <option value="design" selected>Diseñar nueva máquina</option>
-                  <option value="diagnostic">Diagnosticar máquina existente</option>
+                  <option value="design" selected data-i18n="hpress.optDesign">Diseñar nueva máquina</option>
+                  <option value="diagnostic" data-i18n="hpress.optDiagnostic">Diagnosticar máquina existente</option>
                 </select>
-                <span class="hint">Cambia el flujo de cálculo</span>
-                <p class="lab-field-help">Diseño: fuerza objetivo → se sugiere diámetro/presión. Diagnóstico: diámetro + presión → tonelaje real.</p>
+                <span class="hint" data-i18n="hpress.hintMode">Cambia el flujo de cálculo</span>
+                <p class="lab-field-help" data-i18n="hpress.helpMode">Diseño: fuerza objetivo → se sugiere diámetro/presión. Diagnóstico: diámetro + presión → tonelaje real.</p>
               </div>
               <div class="lab-field">
                 <label for="hppForceTon" data-i18n="hpress.labelForce">Fuerza de prensado requerida (t)</label>
                 <input id="hppForceTon" type="number" min="1" step="any" value="120" />
-                <span class="hint">Carga de trabajo objetivo</span>
+                <span class="hint" data-i18n="hpress.hintForce">Carga de trabajo objetivo</span>
                 <p class="lab-field-help" data-i18n="hpress.helpForce">Toneladas requeridas en el punto de prensado real.</p>
-                <table class="hpp-mini-table" aria-label="Tonelajes típicos por aplicación industrial">
+                <table class="hpp-mini-table" data-i18n="hpress.tonnageTableAria" data-i18n-attr="aria-label" aria-label="Tonelajes típicos por aplicación industrial">
                   <thead>
                     <tr>
-                      <th>Aplicación</th>
-                      <th>Tonelaje típico</th>
+                      <th data-i18n="hpress.tableApp">Aplicación</th>
+                      <th data-i18n="hpress.tableTonnage">Tonelaje típico</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td>Embutición chapa fina (&lt; 2 mm)</td><td>10 – 50 t</td></tr>
-                    <tr><td>Conformado / estampación media</td><td>50 – 200 t</td></tr>
-                    <tr><td>Forja en frío / sinterizado</td><td>200 – 500 t</td></tr>
-                    <tr><td>Forja en caliente / grandes piezas</td><td>500 – 2000 t</td></tr>
+                    <tr><td data-i18n="hpress.tonnageRow1">Embutición chapa fina (&lt; 2 mm)</td><td data-i18n="hpress.tonnageRow1t">10 – 50 t</td></tr>
+                    <tr><td data-i18n="hpress.tonnageRow2">Conformado / estampación media</td><td data-i18n="hpress.tonnageRow2t">50 – 200 t</td></tr>
+                    <tr><td data-i18n="hpress.tonnageRow3">Forja en frío / sinterizado</td><td data-i18n="hpress.tonnageRow3t">200 – 500 t</td></tr>
+                    <tr><td data-i18n="hpress.tonnageRow4">Forja en caliente / grandes piezas</td><td data-i18n="hpress.tonnageRow4t">500 – 2000 t</td></tr>
                   </tbody>
                 </table>
               </div>
               <div class="lab-field" id="hppDiagPistonField" hidden>
-                <label for="hppDiagPistonMm">Diámetro pistón existente (mm)</label>
+                <label for="hppDiagPistonMm" data-i18n="hpress.labelDiagPiston">Diámetro pistón existente (mm)</label>
                 <input id="hppDiagPistonMm" type="number" min="20" step="any" value="250" />
-                <span class="hint">Dato real de máquina instalada</span>
-                <p class="lab-field-help">En diagnóstico se usa junto con la presión para calcular la fuerza/tonelaje real disponible.</p>
+                <span class="hint" data-i18n="hpress.hintDiagPiston">Dato real de máquina instalada</span>
+                <p class="lab-field-help" data-i18n="hpress.helpDiagPiston">En diagnóstico se usa junto con la presión para calcular la fuerza/tonelaje real disponible.</p>
               </div>
               <div class="lab-field">
                 <label for="hppPressureBar" data-i18n="hpress.labelPressure">Presión máxima del sistema (bar)</label>
                 <input id="hppPressureBar" type="number" min="50" step="any" value="210" />
-                <span class="hint">Límite hidráulico nominal</span>
+                <span class="hint" data-i18n="hpress.hintPressure">Límite hidráulico nominal</span>
                 <p class="lab-field-help" data-i18n="hpress.helpPressure">La combinación fuerza–presión define el diámetro mínimo del pistón.</p>
               </div>
               <div class="lab-field">
                 <label for="hppStrokeMm" data-i18n="hpress.labelStroke">Carrera del cilindro (mm)</label>
                 <input id="hppStrokeMm" type="number" min="20" step="any" value="450" />
-                <span class="hint">Recorrido útil vertical</span>
-                <p class="lab-field-help">Influye en tiempo, caudal y volumen total desplazado.</p>
+                <span class="hint" data-i18n="hpress.hintStroke">Recorrido útil vertical</span>
+                <p class="lab-field-help" data-i18n="hpress.helpStroke">Influye en tiempo, caudal y volumen total desplazado.</p>
               </div>
               <div class="lab-field">
                 <label for="hppCycleS" data-i18n="hpress.labelCycleTime">Tiempo de ciclo deseado (s)</label>
                 <input id="hppCycleS" type="number" min="1" step="any" value="12" />
-                <span class="hint">Objetivo de productividad</span>
+                <span class="hint" data-i18n="hpress.hintCycle">Objetivo de productividad</span>
                 <p class="lab-field-help" data-i18n="hpress.helpCycleTime">Tiempo total aproximado por ciclo completo.</p>
               </div>
               <div class="lab-field">
-                <label for="hppApproachFactor">Factor velocidad aproximación</label>
+                <label for="hppApproachFactor" data-i18n="hpress.labelApproach">Factor velocidad aproximación</label>
                 <input id="hppApproachFactor" type="number" min="1" max="6" step="any" value="2.5" />
-                <span class="hint">Aproximación más rápida que prensado</span>
-                <p class="lab-field-help">
+                <span class="hint" data-i18n="hpress.hintApproach">Aproximación más rápida que prensado</span>
+                <p class="lab-field-help" data-i18n="hpress.helpApproachFactor">
                   Relación entre la velocidad de bajada en vacío y la velocidad de prensado bajo carga. Valores mayores mejoran productividad, pero exigen más caudal instantáneo y más potencia hidráulica.
                 </p>
                 <p id="hppApproachDynamicNote" class="hpp-approach-note" aria-live="polite"></p>
               </div>
               <div class="lab-field">
-                <label for="hppPumpFlowLmin">Caudal de bomba actual (L/min)</label>
+                <label for="hppPumpFlowLmin" data-i18n="hpress.labelPumpFlow">Caudal de bomba actual (L/min)</label>
                 <input id="hppPumpFlowLmin" type="number" min="1" step="any" value="120" />
-                <span class="hint">Para comparar contra requerido</span>
-                <p class="lab-field-help">Si es insuficiente, el asesor sugiere el caudal mínimo necesario.</p>
+                <span class="hint" data-i18n="hpress.hintPumpFlow">Para comparar contra requerido</span>
+                <p class="lab-field-help" data-i18n="hpress.helpPumpFlow">Si es insuficiente, el asesor sugiere el caudal mínimo necesario.</p>
               </div>
               <div class="lab-field">
-                <label for="hppColumns">Número de columnas</label>
+                <label for="hppColumns" data-i18n="hpress.labelColumns">Número de columnas</label>
                 <select id="hppColumns">
-                  <option value="4" selected>4 columnas</option>
-                  <option value="2">2 columnas</option>
+                  <option value="4" selected data-i18n="hpress.optCols4">4 columnas</option>
+                  <option value="2" data-i18n="hpress.optCols2">2 columnas</option>
                 </select>
-                <span class="hint">Modelo estructural simplificado</span>
-                <p class="lab-field-help">Se reparte carga por columna para estimar diámetro mínimo elástico.</p>
+                <span class="hint" data-i18n="hpress.hintColumns">Modelo estructural simplificado</span>
+                <p class="lab-field-help" data-i18n="hpress.helpColumnsLoad">Se reparte carga por columna para estimar diámetro mínimo elástico.</p>
               </div>
               <div class="lab-field">
-                <label for="hppSteelMpa">Tensión admisible columna (MPa)</label>
+                <label for="hppSteelMpa" data-i18n="hpress.labelColStress">Tensión admisible columna (MPa)</label>
                 <input id="hppSteelMpa" type="number" min="80" step="any" value="160" />
-                <span class="hint">Depende del acero y factor de diseño</span>
-                <p class="lab-field-help">Valor conservador para chequeo básico de sección en columnas.</p>
+                <span class="hint" data-i18n="hpress.hintColStress">Depende del acero y factor de diseño</span>
+                <p class="lab-field-help" data-i18n="hpress.helpColStress">Valor conservador para chequeo básico de sección en columnas.</p>
               </div>
               <div class="lab-field">
-                <label for="hppUserColumnMm">Diámetro de columna disponible (mm)</label>
-                <input id="hppUserColumnMm" type="number" min="20" step="any" value="" placeholder="Opcional" />
-                <span class="hint">Si lo indica, se compara con el mínimo calculado</span>
-                <p class="lab-field-help">Verificación adicional frente al diámetro mínimo orientativo por tensión axial (×1,2).</p>
+                <label for="hppUserColumnMm" data-i18n="hpress.labelUserCol">Diámetro de columna disponible (mm)</label>
+                <input id="hppUserColumnMm" type="number" min="20" step="any" value="" data-i18n="hpress.placeholderOptional" data-i18n-attr="placeholder" placeholder="Opcional" />
+                <span class="hint" data-i18n="hpress.hintUserCol">Si lo indica, se compara con el mínimo calculado</span>
+                <p class="lab-field-help" data-i18n="hpress.helpUserCol">Verificación adicional frente al diámetro mínimo orientativo por tensión axial (×1,2).</p>
               </div>
               <div class="lab-field" id="hppDiagColField" hidden>
-                <label for="hppDiagColumnMm">Diámetro real de columnas (mm)</label>
+                <label for="hppDiagColumnMm" data-i18n="hpress.labelDiagCol">Diámetro real de columnas (mm)</label>
                 <input id="hppDiagColumnMm" type="number" min="20" step="any" value="110" />
-                <span class="hint">Para veredicto estructural en diagnóstico</span>
-                <p class="lab-field-help">Permite estimar el máximo tonelaje soportado por sus columnas actuales antes de deformación elástica.</p>
+                <span class="hint" data-i18n="hpress.hintDiagCol">Para veredicto estructural en diagnóstico</span>
+                <p class="lab-field-help" data-i18n="hpress.helpDiagCol">Permite estimar el máximo tonelaje soportado por sus columnas actuales antes de deformación elástica.</p>
               </div>
             </div>
           </div>

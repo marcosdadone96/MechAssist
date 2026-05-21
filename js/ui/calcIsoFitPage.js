@@ -509,7 +509,13 @@ wireLabCopyResultsButton('isoCopyResults', {
 runCalcWithIndustrialFeedback(wrap, refreshCore);
 mountLabCloudSaveBar(bx('Ajustes ISO 286', 'ISO 286 fits'));
 watchLangAndApply(ISO_FIT_PAGE_EN, {
+  reloadOnEs: false,
   onEnApplied: () => {
+    mountAppPresetSelect();
+    renderRecommendationTable();
+    scheduleIsoRecalc();
+  },
+  onEsRestored: () => {
     mountAppPresetSelect();
     renderRecommendationTable();
     scheduleIsoRecalc();

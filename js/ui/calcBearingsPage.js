@@ -558,7 +558,11 @@ wireLabCopyLink('brgCopyLinkBtn', 'brgCopyToast');
 wireLabCopyResultsButton('brgCopyResults', {
   moduleTitle: uxCopy('Rodamientos (ISO 281)', 'Bearings (ISO 281)'),
 });
-watchLangAndApply(BEARINGS_PAGE_EN, { onEnApplied: () => scheduleBrgRecalc() });
+watchLangAndApply(BEARINGS_PAGE_EN, {
+  reloadOnEs: false,
+  onEnApplied: () => scheduleBrgRecalc(),
+  onEsRestored: () => scheduleBrgRecalc(),
+});
 runCalcWithIndustrialFeedback(wrap, refreshCore);
 mountLabCloudSaveBar(bx('Rodamientos (ISO 281)', 'Bearings (ISO 281)'));
 

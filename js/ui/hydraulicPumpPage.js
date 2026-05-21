@@ -6,7 +6,7 @@
  */
 import { bindInputValidation, mountLabPresetsBar } from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
-import { mountCompactLabFieldHelp } from './labHelpCompact.js';
+import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
@@ -137,142 +137,27 @@ function tr(k, vars = {}) {
   return s.replace(/\{(\w+)\}/g, (_, kk) => (vars[kk] ?? `{${kk}}`));
 }
 
-function applyStaticI18n() {
-  document.documentElement.setAttribute('lang', getLang());
-  if (getLang() !== 'en') return;
-  document.title = 'Hydraulic Pump — TheMechAssist';
-  const map = {
-    Inicio: 'Home',
-    Laboratorio: 'Laboratory',
-    'Lienzo Pro': 'Pro canvas',
-    'Bomba Hidráulica · Potencia y conducciones oleohidráulicas': 'Hydraulic pump · Power and oleohydraulic piping',
-    'Desplazamiento, caudal, potencia y pérdidas en tuberías (Darcy simplificado); modos diseño/diagnóstico y alertas orientativas (cavitación, NPSH en modo proyecto).':
-      'Displacement, flow, power and pipe losses (simplified Darcy); design/diagnostic modes and guidance alerts (cavitation, NPSH in project mode).',
-    'Cómo obtener datos clave:': 'How to obtain key data:',
-    '1) Bomba hidráulica — corte esquemático': '1) Hydraulic pump — schematic cross-section',
-    '2) Conducciones — mapa de pérdida de carga': '2) Piping — head loss map',
-    'Nivel de detalle memoria': 'Memory detail level',
-    'Aula (básico)': 'Classroom (basic)',
-    'Proyecto (NPSH + cota depósito)': 'Project (NPSH + tank elevation)',
-    'Pro · Avanzado': 'Pro · Advanced',
-    'Memoria y PDF ampliados en modo Proyecto': 'Expanded memory and PDF in Project mode',
-    'Proyecto incluye cota del depósito sobre la bomba, NPSHr de placa y trazabilidad de NPSHa indicativa.':
-      'Project mode includes tank elevation above the pump, nameplate NPSHr and indicative NPSHa traceability.',
-    '¿Qué quiere calcular?': 'What do you want to calculate?',
-    'Diseñar nueva máquina': 'Design new machine',
-    'Diagnosticar máquina existente': 'Diagnose existing machine',
-    'Modo objetivo del cálculo': 'Calculation objective mode',
-    'Diseño: objetivo de rendimiento y verificación integral. Diagnóstico: se calcula caudal real desde desplazamiento y RPM.':
-      'Design: performance target and full verification. Diagnostic: real flow from displacement and RPM.',
-    '① Bomba hidráulica': '① Hydraulic pump',
-    'Presión de trabajo, RPM, desplazamiento, tipo de bomba y diámetro de succión a la bomba.':
-      'Working pressure, RPM, displacement, pump type and suction diameter at the pump.',
-    'Tipo de bomba': 'Pump type',
-    'Engranajes': 'Gear',
-    Paletas: 'Vane',
-    Pistones: 'Piston',
-    'Define rendimiento y límite de presión': 'Sets efficiency and pressure limit',
-    'Cada tecnología tiene eficiencia volumétrica y mecánica y rango de presión distintos para la evaluación de seguridad.':
-      'Each technology has distinct volumetric and mechanical efficiency and pressure range for safety evaluation.',
-    'Unidad de presión': 'Pressure unit',
-    'Presión de trabajo': 'Working pressure',
-    'Presión efectiva de operación': 'Effective operating pressure',
-    'Indicador respecto al rango típico del tipo de bomba seleccionado (orientativo).':
-      'Indicator vs typical range for the selected pump type (guidance only).',
-    'Se usa para potencia hidráulica, potencia absorbida y validación contra límites típicos de la tecnología seleccionada.':
-      'Used for hydraulic power, absorbed power and checks against typical limits of the selected technology.',
-    'RPM motor': 'Motor RPM',
-    'Velocidad del eje primario': 'Primary shaft speed',
-    'Con el desplazamiento define el caudal teórico de bomba y el par requerido en el eje.':
-      'Together with displacement, defines theoretical pump flow and required shaft torque.',
-    'Desplazamiento (cm³/rev)': 'Displacement (cm³/rev)',
-    'Volumen por vuelta': 'Volume per revolution',
-    'Determina el caudal teórico Qteo = D×n; el caudal real incorpora eficiencia volumétrica.':
-      'Defines theoretical flow Qₜₑₒ = D×n; real flow includes volumetric efficiency.',
-    'Diámetro de succión a bomba': 'Suction diameter at pump',
-    pulgadas: 'inches',
-    'Crítico para cavitación en succión': 'Critical for suction cavitation',
-    'El mismo selector de unidad aplica al diámetro de tubería en el bloque de conducciones.':
-      'The same unit selector applies to line diameter in the piping block.',
-    'Actualizar bomba y resultados': 'Update pump and results',
-    '② Conducciones — mapa de pérdida de carga': '② Piping — head loss map',
-    'Tipo de línea, caudal en conducción, viscosidad, longitud, diámetro interior, codos y válvulas.':
-      'Line type, line flow, viscosity, length, inner diameter, elbows and valves.',
-    'Tipo de línea': 'Line type',
-    Succión: 'Suction',
-    Presión: 'Pressure',
-    Retorno: 'Return',
-    'Cambia rango recomendado de velocidad': 'Changes recommended speed range',
-    'Seleccione el tramo que dimensiona. Umbrales de alerta: succión ≤ 1 m/s (cavitación), presión ≤ 4 m/s (ISO 4413), retorno 2–4 m/s.':
-      'Select the line being sized. Alert thresholds: suction ≤ 1 m/s (cavitation), pressure ≤ 4 m/s (ISO 4413), return 2–4 m/s.',
-    'Diámetro interior del tramo indicado en «Tipo de línea». Orientación ISO 4413: presión ≤ 4 m/s; succión ≤ 1 m/s (cavitación); retorno 2–4 m/s. Las alertas aplican el umbral del tipo elegido.':
-      'Inner bore for the selected line type. ISO 4413 guidance: pressure ≤ 4 m/s; suction ≤ 1 m/s to limit cavitation; return typically 2–4 m/s.',
-    'Cambia rango recomendado de velocidad y umbrales de alerta':
-      'Updates recommended velocity band and alert thresholds',
-    'Caudal (L/min)': 'Flow (L/min)',
-    'Caudal en conducción': 'Flow in line',
-    'Con diámetro interior permite obtener velocidad de fluido y número de Reynolds para la clasificación del flujo.':
-      'With inner diameter, yields fluid velocity and Reynolds number for flow classification.',
-    'Viscosidad cinemática (cSt)': 'Kinematic viscosity (cSt)',
-    'Afecta Reynolds y fricción': 'Affects Reynolds and friction',
-    'Se convierte a m²/s para calcular Reynolds y el factor de fricción en Darcy-Weisbach.':
-      'Converted to m²/s to compute Reynolds and the Darcy–Weisbach friction factor.',
-    'Aceite ISO VG': 'ISO VG oil',
-    'ν a 40 °C (cSt)': 'ν at 40 °C (cSt)',
-    'Uso típico': 'Typical use',
-    'Sistemas de alta velocidad': 'High-speed systems',
-    'Uso general industrial': 'General industrial use',
-    'Sistemas de alta presión': 'High-pressure systems',
-    'Temperatura elevada / exterior': 'High temperature / outdoor',
-    'Longitud de línea (m)': 'Line length (m)',
-    'Pérdida lineal principal': 'Main linear head loss',
-    'Incrementa la pérdida de carga proporcionalmente en el término f·(L/D) de Darcy-Weisbach.':
-      'Increases head loss proportionally in the Darcy–Weisbach f·(L/D) term.',
-    'Diámetro interior actual': 'Current inner diameter',
-    'Variable clave de optimización': 'Key optimization variable',
-    'Use nomenclatura hidráulica en pulgadas nominales; con el conmutador mm se muestran equivalentes comunes.':
-      'Use nominal hydraulic inches; the mm switch shows common metric equivalents.',
-    'Número de codos': 'Number of elbows',
-    'Pérdidas menores por cambios de dirección': 'Minor losses from direction changes',
-    'Cada codo añade pérdidas singulares al balance de energía, aumentando la caída de presión total.':
-      'Each elbow adds singular losses to the energy balance, increasing total pressure drop.',
-    'Número de válvulas': 'Number of valves',
-    'Pérdidas menores localizadas': 'Localized minor losses',
-    'Se suman como coeficientes K para calcular pérdida localizada adicional en la línea.':
-      'Summed as K coefficients for additional localized line loss.',
-    'Actualizar conducciones y resultados': 'Update piping and results',
-    'Memoria de cálculo, fórmulas y supuestos': 'Calculation memory, formulas and assumptions',
-    'SISTEMA APTO': 'SYSTEM SUITABLE',
-    'Cota líquido sobre entrada bomba z (m)': 'Liquid level above pump inlet z (m)',
-    'Positivo si el nivel está por encima': 'Positive if level is above',
-    'NPSHr bomba (m) — placa': 'Pump NPSHr (m) — nameplate',
-    '0 si no se conoce': '0 if unknown',
-    'Temperatura aceite (°C)': 'Oil temperature (°C)',
-    'Modo proyecto: rho y Pv(T) aproximados para NPSHa; no sustituyen ficha ISO VG del aceite.':
-      'Project mode: approximate rho and Pv(T) for NPSHa; they do not replace the oil ISO VG datasheet.',
+/** @param {string} key @param {Record<string, string|number>} [vars] */
+function hpVs(key, vars = {}) {
+  const en = getCurrentLang() === 'en';
+  const s = (en ? HYDRAULIC_PUMP_EN[key] : key) || key;
+  if (en) return s.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? `{${k}}`));
+  const esDefaults = {
+    'hpump.vsTitle': 'Resumen de comprobaciones',
+    'hpump.vsCavitation': 'Cavitaci\u00f3n / entrada',
+    'hpump.vsCavitationOk': 'Margen de entrada aceptable para este modelo.',
+    'hpump.vsCavitationBad': 'Riesgo alto de cavitaci\u00f3n \u2014 revise succi\u00f3n y NPSH.',
+    'hpump.vsPressure': 'Presi\u00f3n de trabajo',
+    'hpump.vsPressureOk': 'Dentro del l\u00edmite orientativo del tipo de bomba.',
+    'hpump.vsPressureBad': 'Presi\u00f3n supera el l\u00edmite orientativo de la tecnolog\u00eda.',
+    'hpump.vsVelocity': 'Velocidad de l\u00ednea',
+    'hpump.vsVelocityOk': 'Velocidad dentro de la banda recomendada.',
+    'hpump.vsVelocityBad': 'Velocidad fuera de rango \u2014 redimensione el di\u00e1metro.',
+    'hpump.vsMotor': 'Potencia de motor',
+    'hpump.vsMotorSub': 'Recomendada {rec} kW (normalizada {std} kW).',
   };
-  document.querySelectorAll(
-    'label, span.hint, p.lab-field-help, p.lab-diagram-wrap__title, h2, p.lab-lead, h3, p.hp-block__sub, nav a, option, #hpVerdict, .hp-vg-table th, .hp-vg-table td, summary, button.hp-dia-unit__btn',
-  ).forEach((el) => {
-    const raw = (el.textContent || '').trim();
-    if (map[raw]) el.textContent = map[raw];
-  });
-  const infoBody = document.querySelector('.lab-alert--info .lab-alert__body');
-  if (infoBody) {
-    infoBody.innerHTML =
-      '<strong>How to obtain key data:</strong> <strong>Kinematic viscosity (cSt)</strong> comes from the oil datasheet (typically at 40 °C and 100 °C, ISO VG), and '
-      + '<strong>displacement (cm³/rev)</strong> is on the pump nameplate or datasheet. If missing, estimate with <strong>D = (Q×1000)/n</strong>.';
-  }
-  const hpDiag = document.getElementById('hpDiagram');
-  if (hpDiag) hpDiag.setAttribute('aria-label', 'Hydraulic pump schematic cross-section by pump type');
-  const pipeDiag = document.getElementById('hpPipeDiagram');
-  if (pipeDiag) pipeDiag.setAttribute('aria-label', 'Piping diagram with head-loss gradient');
-  const hpMeth = document.getElementById('hpMethodologyLead');
-  if (hpMeth) {
-    hpMeth.innerHTML =
-      'Advanced module for pump and hydraulic line analysis, with <strong>rule-based alerts</strong> for cavitation, head loss and an indicative safety and efficiency verdict. '
-      + 'Standard fluid: mineral hydraulic oil ISO VG 32–68; kinematic viscosity ν is entered manually (VG table). In <strong>project mode</strong>, ρ and Pv use an indicative trend vs. temperature for that oil only. For other fluids, choose Other and enter ρ and ν. NPSHa is <strong>indicative</strong> — confirm with pump and fluid datasheets.';
-  }
+  const raw = esDefaults[key] || key;
+  return raw.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? `{${k}}`));
 }
 
 const RHO_OIL = 860; // kg/m3
@@ -627,27 +512,23 @@ function syncDiametersSuggestion() {
 function renderHpVerdictSummary(opts) {
   const el = document.getElementById('hpVerdictSummary');
   if (!(el instanceof HTMLElement)) return;
-  const en = getLang() === 'en';
   const row = (ok, label, sub) =>
     `<div class="hc-vs-item ${ok ? 'hc-vs-item--ok' : 'hc-vs-item--bad'}">
       <span class="hc-vs-ico" aria-hidden="true">${ok ? '\u2713' : '\u2717'}</span>
       <div><div class="hc-vs-label">${label}</div><div class="hc-vs-sub">${sub}</div></div>
     </div>`;
-  const title = en ? HYDRAULIC_PUMP_EN['hpump.vsTitle'] : 'Resumen de comprobaciones';
-  const cavL = en ? HYDRAULIC_PUMP_EN['hpump.vsCavitation'] : 'Cavitaci\u00f3n / entrada';
-  const cavOk = en ? HYDRAULIC_PUMP_EN['hpump.vsCavitationOk'] : 'Margen de entrada aceptable para este modelo.';
-  const cavBad = en ? HYDRAULIC_PUMP_EN['hpump.vsCavitationBad'] : 'Riesgo alto de cavitaci\u00f3n \u2014 revise succi\u00f3n y NPSH.';
-  const presL = en ? HYDRAULIC_PUMP_EN['hpump.vsPressure'] : 'Presi\u00f3n de trabajo';
-  const presOk = en ? HYDRAULIC_PUMP_EN['hpump.vsPressureOk'] : 'Dentro del l\u00edmite orientativo del tipo de bomba.';
-  const presBad = en ? HYDRAULIC_PUMP_EN['hpump.vsPressureBad'] : 'Presi\u00f3n supera el l\u00edmite orientativo de la tecnolog\u00eda.';
-  const velL = en ? HYDRAULIC_PUMP_EN['hpump.vsVelocity'] : 'Velocidad de l\u00ednea';
-  const velOk = en ? HYDRAULIC_PUMP_EN['hpump.vsVelocityOk'] : 'Velocidad dentro de la banda recomendada.';
-  const velBad = en ? HYDRAULIC_PUMP_EN['hpump.vsVelocityBad'] : 'Velocidad fuera de rango \u2014 redimensione el di\u00e1metro.';
-  const motL = en ? HYDRAULIC_PUMP_EN['hpump.vsMotor'] : 'Potencia de motor';
-  const motSubTpl = en ? HYDRAULIC_PUMP_EN['hpump.vsMotorSub'] : 'Recomendada {rec} kW (normalizada {std} kW).';
-  const motSub = motSubTpl
-    .replace('{rec}', fmt(opts.motorRec, 2))
-    .replace('{std}', fmt(opts.motorStd, 1));
+  const title = hpVs('hpump.vsTitle');
+  const cavL = hpVs('hpump.vsCavitation');
+  const cavOk = hpVs('hpump.vsCavitationOk');
+  const cavBad = hpVs('hpump.vsCavitationBad');
+  const presL = hpVs('hpump.vsPressure');
+  const presOk = hpVs('hpump.vsPressureOk');
+  const presBad = hpVs('hpump.vsPressureBad');
+  const velL = hpVs('hpump.vsVelocity');
+  const velOk = hpVs('hpump.vsVelocityOk');
+  const velBad = hpVs('hpump.vsVelocityBad');
+  const motL = hpVs('hpump.vsMotor');
+  const motSub = hpVs('hpump.vsMotorSub', { rec: fmt(opts.motorRec, 2), std: fmt(opts.motorStd, 1) });
   el.innerHTML = `
     <div class="hc-verdict-summary__title">${title}</div>
     ${row(opts.cavitationOk, cavL, opts.cavitationOk ? cavOk : cavBad)}
@@ -1099,8 +980,14 @@ syncHpLabTierUi();
 syncHpFluidFieldsUi();
 syncPumpModeUi();
 mountHpDiaUnitToggle();
-applyStaticI18n();
 mountCompactLabFieldHelp();
+
+function applyHydraulicPumpDocumentChrome() {
+  const en = getCurrentLang() === 'en';
+  document.documentElement.lang = en ? 'en' : 'es';
+}
+
+applyHydraulicPumpDocumentChrome();
 
 bindInputValidation([
   { id: 'hpTankZ_m', min: -500, max: 500, label: 'z tanque' },
@@ -1138,7 +1025,21 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountHp'), {
 watchLangAndApply({ ...HYDRAULIC_PUMP_EN, ...FLUIDS_HUB_UX_EN }, {
   reloadOnEs: false,
   onEnApplied: () => {
-    applyStaticI18n();
+    applyHydraulicPumpDocumentChrome();
+    refreshCompactLabFieldHelp();
+    syncHpLabTierUi();
+    syncHpFluidFieldsUi();
+    syncPumpModeUi();
+    syncDiametersSuggestion();
+    computeAndRender();
+  },
+  onEsRestored: () => {
+    applyHydraulicPumpDocumentChrome();
+    refreshCompactLabFieldHelp();
+    syncHpLabTierUi();
+    syncHpFluidFieldsUi();
+    syncPumpModeUi();
+    syncDiametersSuggestion();
     computeAndRender();
   },
 });

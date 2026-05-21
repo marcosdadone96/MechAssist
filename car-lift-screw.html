@@ -209,7 +209,7 @@
           <p class="flat-ux-panel__lead muted" data-i18n="machineHub.uxPresetsLead">
             Rellena un taller típico; puede ajustar después.
           </p>
-          <div class="flat-ux-preset-row" role="group" aria-label="Presets elevador husillo">
+          <div class="flat-ux-preset-row" role="group" data-i18n="carConv.presetsGroupAria" data-i18n-attr="aria-label" aria-label="Presets elevador husillo">
             <button
               type="button"
               class="btn-flat-preset"
@@ -217,7 +217,7 @@
               data-i18n-attrs="title=carConv.presetLightTooltip"
               title="2800 kg, H 1,65 m, 55 s, husillo Tr 32×6."
             >
-              <span class="btn-flat-preset__name">Taller · ligero</span>
+              <span class="btn-flat-preset__name" data-i18n="carConv.presetLightBtn">Taller · ligero</span>
             </button>
             <button
               type="button"
@@ -226,7 +226,7 @@
               data-i18n-attrs="title=carConv.presetHeavyTooltip"
               title="4200 kg, H 2,1 m, 62 s, husillo Tr 45×7."
             >
-              <span class="btn-flat-preset__name">Taller · pesado</span>
+              <span class="btn-flat-preset__name" data-i18n="carConv.presetHeavyBtn">Taller · pesado</span>
             </button>
             <button
               type="button"
@@ -235,7 +235,7 @@
               data-i18n-attrs="title=carConv.presetShowroomTooltip"
               title="3500 kg, H 1,85 m, 58 s, husillo Tr 40×7."
             >
-              <span class="btn-flat-preset__name">Taller · estándar</span>
+              <span class="btn-flat-preset__name" data-i18n="carConv.presetShowroomBtn">Taller · estándar</span>
             </button>
           </div>
         </section>
@@ -248,13 +248,7 @@
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
               <label for="clCapacity" data-i18n="carConv.labelCapacityHtml" data-i18n-html
-                >Capacidad (masa total)
-                <span
-                  class="info-chip"
-                  title="Masa nominal elevada por el equipo (veh&iacute;culo + margen operativo que usted asigne). Reparto 50/50 entre dos columnas en el modelo."
-                  aria-label="Ayuda capacidad."
-                  >?</span
-                ></label
+                >Capacidad (masa total) <span class="info-chip" data-i18n-attrs="title=carConv.tipCapacity" title="Masa nominal elevada por el equipo." aria-label="Ayuda capacidad.">?</span></label
               >
               <input type="range" id="clCapacityR" class="flat-slider" min="800" max="6000" step="50" value="3500" aria-label="Capacidad" />
               <div class="flat-field__num">
@@ -265,8 +259,7 @@
             </div>
             <div class="field flat-field--slider">
               <label for="clH" data-i18n="carConv.labelHHtml" data-i18n-html
-                >Altura de elevaci&oacute;n H
-                <span class="info-chip" title="Carrera &uacute;til vertical. Entra en n&uacute;mero de vueltas del husillo = H/p." aria-label="Ayuda altura.">?</span></label
+                >Altura de elevaci&oacute;n H <span class="info-chip" data-i18n-attrs="title=carConv.tipH" title="Carrera útil vertical." aria-label="Ayuda altura.">?</span></label
               >
               <input type="range" id="clHR" class="flat-slider" min="1.2" max="4.5" step="0.05" value="1.8" aria-label="Altura" />
               <div class="flat-field__num">
@@ -277,8 +270,7 @@
             </div>
             <div class="field flat-field--slider">
               <label for="clT" data-i18n="carConv.labelTHtml" data-i18n-html
-                >Tiempo de elevaci&oacute;n
-                <span class="info-chip" title="Tiempo deseado para recorrer H. M&aacute;s corto implica m&aacute;s rpm del husillo y m&aacute;s potencia." aria-label="Ayuda tiempo.">?</span></label
+                >Tiempo de elevaci&oacute;n <span class="info-chip" data-i18n-attrs="title=carConv.tipT" title="Tiempo deseado para recorrer H." aria-label="Ayuda tiempo.">?</span></label
               >
               <input type="range" id="clTR" class="flat-slider" min="15" max="120" step="1" value="45" aria-label="Tiempo" />
               <div class="flat-field__num">
@@ -288,25 +280,22 @@
               <p class="field-context muted" data-i18n="carConv.hintT">Típ. 40–90 s (comodidad / normativa local)</p>
             </div>
             <div class="field" style="grid-column: 1 / -1">
-              <label for="clThreadPreset"
-                >Husillo trapecial (ISO) 
-                <span class="info-chip" title="Seleccione una medida est&aacute;ndar para fijar d y p autom&aacute;ticamente, o use modo personalizado para escribir valores no est&aacute;ndar." aria-label="Ayuda husillo estandar o personalizado.">?</span></label
+              <label for="clThreadPreset" data-i18n="carConv.labelThreadPresetHtml" data-i18n-html
+                >Husillo trapecial (ISO) <span class="info-chip" data-i18n-attrs="title=carConv.tipThreadPreset" title="Medida estándar o personalizado." aria-label="Ayuda husillo estándar o personalizado.">?</span></label
               >
               <select id="clThreadPreset">
-                <option value="tr32x6">Tr 32 x 6 (est&aacute;ndar)</option>
-                <option value="tr40x7">Tr 40 x 7 (est&aacute;ndar)</option>
-                <option value="tr45x7" selected>Tr 45 x 7 (est&aacute;ndar)</option>
-                <option value="tr50x8">Tr 50 x 8 (est&aacute;ndar)</option>
-                <option value="tr55x9">Tr 55 x 9 (est&aacute;ndar)</option>
-                <option value="custom">Personalizado (introducci&oacute;n manual)</option>
+                <option value="tr32x6" data-i18n="carConv.optThreadTr32">Tr 32 x 6 (est&aacute;ndar)</option>
+                <option value="tr40x7" data-i18n="carConv.optThreadTr40">Tr 40 x 7 (est&aacute;ndar)</option>
+                <option value="tr45x7" selected data-i18n="carConv.optThreadTr45">Tr 45 x 7 (est&aacute;ndar)</option>
+                <option value="tr50x8" data-i18n="carConv.optThreadTr50">Tr 50 x 8 (est&aacute;ndar)</option>
+                <option value="tr55x9" data-i18n="carConv.optThreadTr55">Tr 55 x 9 (est&aacute;ndar)</option>
+                <option value="custom" data-i18n="carConv.optThreadCustom">Personalizado (introducci&oacute;n manual)</option>
               </select>
-              <span class="field-hint" id="clThreadPresetHint">d y paso bloqueados al est&aacute;ndar seleccionado</span>
+              <span class="field-hint" id="clThreadPresetHint" data-i18n="carConv.threadPresetHintLocked">d y paso bloqueados al est&aacute;ndar seleccionado</span>
             </div>
             <div class="field flat-field--slider">
               <label for="clPitch" data-i18n="carConv.labelPitchHtml" data-i18n-html
-                >Paso del husillo (lead)
-                <span class="field-lock-icon" id="clPitchLock" aria-label="Campo bloqueado por estándar">🔒</span>
-                <span class="info-chip" title="Avance axial por vuelta (una entrada). M&aacute;s paso suele aumentar &lambda; y afectar al autofrenado." aria-label="Ayuda paso.">?</span></label
+                >Paso del husillo (lead) <span class="field-lock-icon" id="clPitchLock" data-i18n="carConv.lockFieldAria" data-i18n-attr="aria-label" aria-label="Campo bloqueado por estándar">🔒</span> <span class="info-chip" data-i18n-attrs="title=carConv.tipPitch" title="Avance axial por vuelta." aria-label="Ayuda paso.">?</span></label
               >
               <input type="range" id="clPitchR" class="flat-slider" min="4" max="20" step="0.5" value="7" aria-label="Paso" />
               <div class="flat-field__num">
@@ -315,10 +304,8 @@
               </div>
             </div>
             <div class="field flat-field--slider">
-              <label for="clD"
-                >Di&aacute;metro husillo d
-                <span class="field-lock-icon" id="clDLock" aria-label="Campo bloqueado por estándar">🔒</span>
-                <span class="info-chip" title="Di&aacute;metro nominal exterior. El modelo usa di&aacute;metro medio dm para &aacute;ngulo y presi&oacute;n." aria-label="Ayuda diametro.">?</span></label
+              <label for="clD" data-i18n="carConv.labelDHtml" data-i18n-html
+                >Di&aacute;metro husillo d <span class="field-lock-icon" id="clDLock" data-i18n="carConv.lockFieldAria" data-i18n-attr="aria-label" aria-label="Campo bloqueado por estándar">🔒</span> <span class="info-chip" data-i18n-attrs="title=carConv.tipD" title="Diámetro nominal exterior." aria-label="Ayuda diámetro.">?</span></label
               >
               <input type="range" id="clDR" class="flat-slider" min="30" max="90" step="1" value="45" aria-label="Diametro" />
               <div class="flat-field__num">
@@ -327,13 +314,12 @@
               </div>
             </div>
             <div class="field">
-              <label for="clMotorPos"
-                >Posici&oacute;n del motor
-                <span class="info-chip" title="Solo afecta al esquema cualitativo (arriba o abajo del husillo)." aria-label="Ayuda motor.">?</span></label
+              <label for="clMotorPos" data-i18n="carConv.labelMotorPosHtml" data-i18n-html
+                >Posici&oacute;n del motor <span class="info-chip" data-i18n-attrs="title=carConv.tipMotorPos" title="Solo afecta al esquema." aria-label="Ayuda motor.">?</span></label
               >
               <select id="clMotorPos">
-                <option value="top" selected>Parte superior</option>
-                <option value="base">Base / inferior</option>
+                <option value="top" selected data-i18n="carConv.optMotorTop">Parte superior</option>
+                <option value="base" data-i18n="carConv.optMotorBase">Base / inferior</option>
               </select>
             </div>
           </div>
@@ -346,9 +332,8 @@
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
-              <label for="clNutL"
-                >Longitud efectiva tuerca
-                <span class="info-chip" title="Zona portante aproximada en la tuerca de bronce; mayor L reduce presi&oacute;n de contacto modelada." aria-label="Ayuda longitud tuerca.">?</span></label
+              <label for="clNutL" data-i18n="carConv.labelNutLHtml" data-i18n-html
+                >Longitud efectiva tuerca <span class="info-chip" data-i18n-attrs="title=carConv.tipNutL" title="Zona portante en la tuerca de bronce." aria-label="Ayuda longitud tuerca.">?</span></label
               >
               <input type="range" id="clNutLR" class="flat-slider" min="40" max="200" step="5" value="90" aria-label="Longitud tuerca" />
               <div class="flat-field__num">
@@ -358,9 +343,8 @@
               <p class="field-context muted">Típ. 60–120 mm longitud portante de tuerca</p>
             </div>
             <div class="field flat-field--slider">
-              <label for="clMu"
-                >Rozamiento &mu; (rosca)
-                <span class="info-chip" title="Coeficiente efectivo acero&ndash;bronce en rosca. M&aacute;s alto aumenta par y &phi;, suele ayudar al autofrenado pero sube potencia." aria-label="Ayuda mu.">?</span></label
+              <label for="clMu" data-i18n="carConv.labelMuHtml" data-i18n-html
+                >Rozamiento &mu; (rosca) <span class="info-chip" data-i18n-attrs="title=carConv.tipMu" title="Coeficiente acero–bronce en rosca." aria-label="Ayuda mu.">?</span></label
               >
               <input type="range" id="clMuR" class="flat-slider" min="0.06" max="0.22" step="0.01" value="0.12" aria-label="Mu" />
               <div class="flat-field__num">
@@ -372,9 +356,8 @@
               </p>
             </div>
             <div class="field flat-field--slider">
-              <label for="clPallow"
-                >Presi&oacute;n admisible bronce
-                <span class="info-chip" title="L&iacute;mite orientativo para comparar con p modelada; depende de aleaci&oacute;n y fabricante." aria-label="Ayuda presion.">?</span></label
+              <label for="clPallow" data-i18n="carConv.labelPallowHtml" data-i18n-html
+                >Presi&oacute;n admisible bronce <span class="info-chip" data-i18n-attrs="title=carConv.tipPallow" title="Límite orientativo de presión." aria-label="Ayuda presión.">?</span></label
               >
               <input type="range" id="clPallowR" class="flat-slider" min="5" max="22" step="0.5" value="10" aria-label="P allow" />
               <div class="flat-field__num">
@@ -384,9 +367,8 @@
               <p class="field-context muted">Orientativo 8–14 MPa según aleación; valide con fabricante</p>
             </div>
             <div class="field flat-field--slider">
-              <label for="clSF"
-                >Factor de servicio
-                <span class="info-chip" title="Margen sobre par y potencia del motorreductor (din&aacute;mica, arranques)." aria-label="Ayuda factor servicio.">?</span></label
+              <label for="clSF" data-i18n="carConv.labelSFHtml" data-i18n-html
+                >Factor de servicio <span class="info-chip" data-i18n-attrs="title=carConv.tipSF" title="Margen sobre par y potencia." aria-label="Ayuda factor servicio.">?</span></label
               >
               <input type="range" id="clSFR" class="flat-slider" min="1" max="2.2" step="0.05" value="1.35" aria-label="SF" />
               <div class="flat-field__num">
@@ -472,10 +454,10 @@
           <p id="clDisclaimer" class="muted" style="margin-top: 0.75rem; font-size: 0.82rem"></p>
         </section>
 
-        <section class="flat-visual flat-visual--integrated" id="carLiftDiagramDuo" aria-label="Esquema y referencia fotogr&aacute;fica">
+        <section class="flat-visual flat-visual--integrated" id="carLiftDiagramDuo" data-i18n="carConv.visualSectionAria" data-i18n-attr="aria-label" aria-label="Esquema y referencia fotogr&aacute;fica">
           <div class="flat-visual__workbench">
             <div class="diagram-duo__schematic flat-visual__diagram-col">
-              <svg id="clDiagram" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama elevador por husillo"></svg>
+              <svg id="clDiagram" xmlns="http://www.w3.org/2000/svg" role="img" data-i18n="carConv.diagramSvgAria" data-i18n-attr="aria-label" aria-label="Diagrama elevador por husillo"></svg>
               <p class="diagram-schematic-note muted" data-i18n="carConv.diagramNoteHtml" data-i18n-html>
                 <strong>Lectura r&aacute;pida:</strong> vista cualitativa de <strong>dos columnas</strong>, husillo, tuerca de carga y de seguridad, y posici&oacute;n del motor (arriba o abajo seg&uacute;n su selecci&oacute;n). <strong>H</strong>, <strong>p</strong> y <strong>d</strong> son los valores del formulario; valide siempre con el fabricante del elevador.
               </p>
@@ -509,8 +491,8 @@
             </p>
             <div class="verify-grid">
               <div class="field">
-                <label for="carLiftVerifyBrand"
-                  >Marca <span class="info-chip" title="Fabricante del cat&aacute;logo de demostraci&oacute;n." aria-label="Ayuda marca.">?</span></label
+                <label for="carLiftVerifyBrand" data-i18n="carConv.labelVerifyBrandHtml" data-i18n-html
+                  >Marca <span class="info-chip" data-i18n-attrs="title=carConv.tipVerifyBrand" title="Fabricante del catálogo." aria-label="Ayuda marca.">?</span></label
                 >
                 <select id="carLiftVerifyBrand" data-verify-brand>
                   <option value="sew">SEW-Eurodrive</option>
@@ -522,15 +504,15 @@
                 <span class="field-hint">&mdash;</span>
               </div>
               <div class="field">
-                <label for="carLiftVerifySearch"
-                  >Filtrar modelo <span class="info-chip" title="B&uacute;squeda por c&oacute;digo o texto." aria-label="Ayuda filtro.">?</span></label
+                <label for="carLiftVerifySearch" data-i18n="carConv.labelVerifySearchHtml" data-i18n-html
+                  >Filtrar modelo <span class="info-chip" data-i18n-attrs="title=carConv.tipVerifySearch" title="Búsqueda por código o texto." aria-label="Ayuda filtro.">?</span></label
                 >
                 <input id="carLiftVerifySearch" type="search" placeholder="ej. R47, H 083&hellip;" data-verify-search autocomplete="off" />
                 <span class="field-hint">&mdash;</span>
               </div>
               <div class="field" style="grid-column: 1 / -1">
-                <label for="carLiftVerifyModel"
-                  >Modelo del cat&aacute;logo <span class="info-chip" title="La comprobaci&oacute;n usa el mismo punto de dise&ntilde;o (par, potencia, rpm husillo) que el dashboard." aria-label="Ayuda modelo.">?</span></label
+                <label for="carLiftVerifyModel" data-i18n="carConv.labelVerifyModelHtml" data-i18n-html
+                  >Modelo del cat&aacute;logo <span class="info-chip" data-i18n-attrs="title=carConv.tipVerifyModel" title="Mismo punto de diseño que el dashboard." aria-label="Ayuda modelo.">?</span></label
                 >
                 <select id="carLiftVerifyModel" data-verify-model size="1"></select>
                 <span class="field-hint">&mdash;</span>
@@ -598,7 +580,7 @@
         <div id="premiumOptBlock"></div>
 
         <section class="panel">
-          <h2><span class="panel-icon">PDF</span> Exportar informe</h2>
+          <h2 data-i18n="carConv.pdfExportH2Html" data-i18n-html><span class="panel-icon">PDF</span> Exportar informe</h2>
           <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
         </section>
       </div>

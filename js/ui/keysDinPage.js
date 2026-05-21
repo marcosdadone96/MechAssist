@@ -210,4 +210,8 @@ wireLabCopyResultsButton('kyCopyResults', {
 if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
 else render();
 mountLabCloudSaveBar(bx('Chavetas paralelas DIN 6885', 'Parallel keys DIN 6885'));
-watchLangAndApply(KEYS_DIN_EN, { onEnApplied: () => scheduleKyRender() });
+watchLangAndApply(KEYS_DIN_EN, {
+  reloadOnEs: false,
+  onEnApplied: () => scheduleKyRender(),
+  onEsRestored: () => scheduleKyRender(),
+});

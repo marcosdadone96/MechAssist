@@ -19,21 +19,25 @@ import { applyMachinePremiumGates } from './machinePremiumGates.js';
 import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
-import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
+import { getCurrentLang } from '../config/locales.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
 import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { incrementCalcCounter } from '../services/calcCounter.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { INCLINED_CONVEYOR_EN } from '../lab/i18n/pages/inclinedConveyorEn.js';
-import {
-  applyInclinedConveyorPageLanguage,
-  applyInclinedConveyorStaticI18n,
-} from './inclinedConveyorStaticI18n.js';
 
 import { INCLINED_PRESET_BY_ID } from '../modules/machineHubPresets.js';
+import { incQualityStrings } from '../lab/i18n/runtime/incQualityRuntime.js';
 
 const INC_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...INCLINED_CONVEYOR_EN };
+const INC_DOC_TITLE_ES = 'Cinta inclinada \u2014 TheMechAssist';
+
+function applyInclinedDocumentChrome() {
+  const en = getCurrentLang() === 'en';
+  document.documentElement.lang = en ? 'en' : 'es';
+  document.title = en ? INC_PAGE_EN['incConv.docTitle'] : INC_DOC_TITLE_ES;
+}
 
 /** Ángulos máximos típicos por material (orientativo, no normativa). */
 const MAX_ANGLE_BY_MATERIAL = {
@@ -158,10 +162,6 @@ function syncIncLoadDutyUi() {
 
   const lang = getCurrentLang();
   const en = lang === 'en';
-  LOAD_DUTY_OPTIONS.forEach((optRow) => {
-    const opt = dutyEl.querySelector(`option[value="${optRow.id}"]`);
-    if (opt) opt.textContent = en ? LOAD_DUTY_OPTIONS_EN[optRow.id].label : optRow.label;
-  });
 
   const duty = dutyEl.value;
   const row = LOAD_DUTY_OPTIONS.find((o) => o.id === duty);
@@ -200,133 +200,54 @@ function getEls() {
 }
 
 function buildQualityChecklist(raw, r, lang) {
-  const en = lang === 'en';
+  const t = incQualityStrings(lang === 'en' ? 'en' : 'es');
   const checks = [];
   const d = r.detail || {};
   const gravityN = (d.F_g_load_N ?? 0) + (d.F_g_belt_N ?? 0);
   const frictionN = (d.F_mu_load_N ?? 0) + (d.F_mu_belt_N ?? 0);
   const startRatio = r.torqueAtDrum_Nm > 0 ? r.torqueStart_Nm / r.torqueAtDrum_Nm : 1;
   const specificPower = raw.loadMass_kg > 0 ? (r.requiredMotorPower_kW * 1000) / raw.loadMass_kg : 0;
+  const sfUsed = r.serviceFactorUsed ?? raw.serviceFactor;
 
   checks.push(
     r.efficiency_pct_raw > 100
       ? {
           level: 'error',
-          text: en
-            ? `Efficiency eta=${formatNum(r.efficiency_pct_raw, 1)}% invalid (>100). Calculation uses safe cap ${formatNum(r.efficiency_pct_effective, 1)}%.`
-            : `Rendimiento η=${formatNum(r.efficiency_pct_raw, 1)} % inválido (>100). El cálculo usa límite seguro de ${formatNum(
-                r.efficiency_pct_effective,
-                1,
-              )} %.`,
+          text: t.efficiencyError(r.efficiency_pct_raw, r.efficiency_pct_effective),
         }
       : r.efficiency_pct_effective < 70
-        ? {
-            level: 'warn',
-            text: en
-              ? `Efficiency eta=${formatNum(r.efficiency_pct_effective, 1)}% is low for motor+transmission; review mechanical losses.`
-              : `Rendimiento η=${formatNum(
-                  r.efficiency_pct_effective,
-                  1,
-                )} % bajo para conjunto motor+transmisión; revise pérdidas mecánicas.`,
-          }
-        : {
-            level: 'info',
-            text: en
-              ? `Efficiency eta=${formatNum(r.efficiency_pct_effective, 1)}% in a reasonable range for pre-sizing.`
-              : `Rendimiento η=${formatNum(r.efficiency_pct_effective, 1)} % dentro de rango razonable para predimensionado.`,
-          },
+        ? { level: 'warn', text: t.efficiencyWarn(r.efficiency_pct_effective) }
+        : { level: 'info', text: t.efficiencyOk(r.efficiency_pct_effective) },
   );
 
   checks.push(
     raw.frictionCoeff < 0.2 || raw.frictionCoeff > 0.65
-      ? {
-          level: 'warn',
-          text: en
-            ? `mu=${formatNum(raw.frictionCoeff, 2)} outside typical range (0.20-0.65). Verify belt/roller conditions.`
-            : `μ=${formatNum(raw.frictionCoeff, 2)} fuera del rango típico (0.20–0.65). Verifique condición real de banda/rodillos.`,
-        }
-      : {
-          level: 'info',
-          text: en
-            ? `mu=${formatNum(raw.frictionCoeff, 2)} in indicative range.`
-            : `μ=${formatNum(raw.frictionCoeff, 2)} en rango orientativo.`,
-        },
+      ? { level: 'warn', text: t.frictionWarn(raw.frictionCoeff) }
+      : { level: 'info', text: t.frictionOk(raw.frictionCoeff) },
   );
 
   checks.push(
     startRatio > 1.45
-      ? {
-          level: 'warn',
-          text: en
-            ? `High startup peak (T_start/T_steady ~ ${formatNum(startRatio, 2)}). Consider longer ramp, VFD, or inertia tuning.`
-            : `Pico de arranque alto (Tarranque/Trégimen ≈ ${formatNum(
-                startRatio,
-                2,
-              )}). Considere rampa mayor, variador o ajuste de inercia.`,
-        }
-      : {
-          level: 'info',
-          text: en
-            ? `Controlled startup ratio (T_start/T_steady ~ ${formatNum(startRatio, 2)}).`
-            : `Relación de arranque controlada (Tarranque/Trégimen ≈ ${formatNum(startRatio, 2)}).`,
-        },
+      ? { level: 'warn', text: t.startWarn(startRatio) }
+      : { level: 'info', text: t.startOk(startRatio) },
   );
 
   checks.push(
     raw.loadDuty === 'custom' && raw.serviceFactor < 1.15
-      ? {
-          level: 'warn',
-          text: en
-            ? `Manual service factor low (SF=${formatNum(raw.serviceFactor, 2)}). Industrial conveyors often use >= 1.15.`
-            : `Factor de servicio manual bajo (SF=${formatNum(raw.serviceFactor, 2)}). Para transporte industrial suele usarse >= 1.15.`,
-        }
-      : {
-          level: 'info',
-          text: en
-            ? `Service factor applied: SF=${formatNum(r.serviceFactorUsed ?? raw.serviceFactor, 2)}.`
-            : `Factor de servicio aplicado: SF=${formatNum(r.serviceFactorUsed ?? raw.serviceFactor, 2)}.`,
-        },
+      ? { level: 'warn', text: t.sfWarn(raw.serviceFactor) }
+      : { level: 'info', text: t.sfOk(sfUsed) },
   );
 
   checks.push(
     specificPower > 18
-      ? {
-          level: 'warn',
-          text: en
-            ? `High specific power (${formatNum(specificPower, 1)} W/kg load). Review geometry, mu, and safety margin.`
-            : `Potencia específica elevada (${formatNum(
-                specificPower,
-                1,
-              )} W/kg de carga). Revise geometría, μ y sobredimensionado de seguridad.`,
-        }
-      : {
-          level: 'info',
-          text: en
-            ? `Specific power in a typical belt range (${formatNum(specificPower, 1)} W/kg load).`
-            : `Potencia específica en banda normal (${formatNum(specificPower, 1)} W/kg de carga).`,
-        },
+      ? { level: 'warn', text: t.powerWarn(specificPower) }
+      : { level: 'info', text: t.powerOk(specificPower) },
   );
 
   checks.push(
     gravityN > frictionN
-      ? {
-          level: 'info',
-          text: en
-            ? `Gravity dominates resistance (${formatNum(gravityN, 0)} N > ${formatNum(frictionN, 0)} N).`
-            : `Predomina gravedad en la resistencia (${formatNum(gravityN, 0)} N > ${formatNum(
-                frictionN,
-                0,
-              )} N).`,
-        }
-      : {
-          level: 'info',
-          text: en
-            ? `Friction dominates resistance (${formatNum(frictionN, 0)} N >= ${formatNum(gravityN, 0)} N).`
-            : `Predomina rozamiento en la resistencia (${formatNum(frictionN, 0)} N >= ${formatNum(
-                gravityN,
-                0,
-              )} N).`,
-        },
+      ? { level: 'info', text: t.gravityDom(gravityN, frictionN) }
+      : { level: 'info', text: t.frictionDom(frictionN, gravityN) },
   );
 
   return checks;
@@ -1114,8 +1035,8 @@ MOUNTING_INPUT_IDS.forEach((id) => {
 });
 
 applyPhysicalLimitsToInputs();
+applyInclinedDocumentChrome();
 syncIncLoadDutyUi();
-localizeInclinedStaticContent();
 initInfoChipPopovers(document.body);
 initInclinedReferenceFallback();
 
@@ -1140,9 +1061,15 @@ wireMachineRfqExport({
 });
 
 watchLangAndApply(INC_PAGE_EN, {
+  reloadOnEs: false,
   onEnApplied: () => {
-    applyInclinedConveyorPageLanguage();
-    localizeInclinedStaticContent();
+    applyInclinedDocumentChrome();
+    syncIncLoadDutyUi();
+    initInfoChipPopovers(document.body);
+    refresh();
+  },
+  onEsRestored: () => {
+    applyInclinedDocumentChrome();
     syncIncLoadDutyUi();
     initInfoChipPopovers(document.body);
     refresh();
@@ -1154,9 +1081,5 @@ document.querySelector('.flat-sidebar')?.addEventListener('click', (e) => {
   if (!(t instanceof HTMLButtonElement)) return;
   const id = t.getAttribute('data-inc-preset');
   if (id) applyIncPresetFromId(id);
-});
-
-window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
-  location.reload();
 });
 

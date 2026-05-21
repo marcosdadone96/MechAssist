@@ -394,4 +394,8 @@ wireLabCopyResultsButton('sgCopyResults', {
 });
 runCalcWithIndustrialFeedback(wrap, refreshCore);
 mountLabCloudSaveBar(bx('Anillos el\u00e1sticos (Seeger)', 'Seeger retaining rings'));
-watchLangAndApply(SEEGER_PAGE_EN, { onEnApplied: () => scheduleSgRecalc() });
+watchLangAndApply(SEEGER_PAGE_EN, {
+  reloadOnEs: false,
+  onEnApplied: () => scheduleSgRecalc(),
+  onEsRestored: () => scheduleSgRecalc(),
+});

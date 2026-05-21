@@ -31,23 +31,6 @@
       .hp-re-laminar { color: #047857; }
       .hp-re-transitional { color: #a16207; }
       .hp-re-turbulent { color: #b91c1c; }
-      .hp-diagrams-row {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.75rem;
-      }
-      .hp-diagrams-row .lab-diagram-wrap {
-        margin: 0;
-      }
-      .hp-diagrams-row .lab-diagram-wrap svg {
-        min-height: 140px;
-        max-height: 170px;
-      }
-      @media (max-width: 980px) {
-        .hp-diagrams-row {
-          grid-template-columns: 1fr;
-        }
-      }
       .lab-field--auto input,
       .lab-field--auto select {
         background: #f1f5f9;
@@ -258,30 +241,6 @@
       .hp-vg-table tr:last-child td {
         border-bottom: 0;
       }
-      @media (max-width: 479px) {
-        .lab-calc-layout--hc.lab-calc-layout--with-diag {
-          grid-template-columns: minmax(0, 1fr) !important;
-          grid-template-areas:
-            'diagram'
-            'inputs'
-            'out' !important;
-        }
-        .lab-calc-layout--hc .lab-calc-layout__diagram {
-          width: 100%;
-          max-width: 100%;
-          min-width: 0;
-        }
-        .lab-calc-layout--hc #hpDiagram,
-        .lab-calc-layout--hc #hpPipeDiagram {
-          width: 100%;
-          max-width: 100%;
-          height: auto;
-          display: block;
-        }
-        .lab-calc-layout--hc .lab-diagram-wrap {
-          max-width: 100%;
-        }
-      }
     </style>
   </head>
   <body class="lab-body">
@@ -334,7 +293,7 @@
           </details>
         </header>
         <div class="lab-alert lab-alert--info" style="margin-bottom: 0.7rem">
-          <div class="lab-alert__body">
+          <div class="lab-alert__body" data-i18n="hpump.infoKeyDataHtml" data-i18n-html>
             <strong>Cómo obtener datos clave:</strong> la <strong>viscosidad cinemática (cSt)</strong> sale de la ficha del aceite (normalmente a 40 °C y 100 °C, ISO VG), y el
             <strong>desplazamiento (cm³/rev)</strong> aparece en la placa o ficha de la bomba. Si no lo tiene, puede estimarse con <strong>D = (Q×1000)/n</strong>.
           </div>
@@ -354,7 +313,7 @@
           </ul>
         </nav>
         <div class="lab-presets-row">
-          <span class="lab-presets-row__label" data-i18n="hpump.presetsLabel">Ejemplos típicos:</span>
+          <span class="lab-presets-row__label" data-i18n="fluids.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="hpPresetsBar"></div>
         </div>
         <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">
@@ -392,27 +351,27 @@
                     <option value="basic" selected data-i18n="hpump.optBasic">Aula (básico)</option>
                     <option value="project" data-i18n="hpump.optProject">Proyecto (NPSH + cota depósito)</option>
                   </select>
-                  <span class="hp-tier-badge" id="hpProjectBadge" title="Incluye NPSHa indicativa, cota del depósito y trazabilidad ampliada en memoria/PDF">Pro · Avanzado</span>
+                  <span class="hp-tier-badge" id="hpProjectBadge" data-i18n="hpump.projectBadgeTitle" data-i18n-attr="title" title="Incluye NPSHa indicativa, cota del depósito y trazabilidad ampliada en memoria/PDF">Pro · Avanzado</span>
                 </div>
-                <span class="hint">Memoria y PDF ampliados en modo Proyecto</span>
-                <p class="lab-field-help">Proyecto incluye cota del depósito sobre la bomba, NPSHr de placa y trazabilidad de NPSHa indicativa.</p>
+                <span class="hint" data-i18n="hpump.hintMemPdf">Memoria y PDF ampliados en modo Proyecto</span>
+                <p class="lab-field-help" data-i18n="hpump.helpProjectTier">Proyecto incluye cota del depósito sobre la bomba, NPSHr de placa y trazabilidad de NPSHa indicativa.</p>
               </div>
               <div class="lab-field lab-field--wide" id="hpProjectPanel" hidden>
                 <div class="lab-grid lab-grid--2" style="gap:0.65rem">
                   <div class="lab-field">
                     <label for="hpTankZ_m" data-i18n="hpump.labelTankZ">Cota líquido sobre entrada bomba z (m)</label>
                     <input id="hpTankZ_m" type="number" step="any" value="0" />
-                    <span class="hint">Positivo si el nivel está por encima</span>
+                    <span class="hint" data-i18n="hpump.hintTankZ">Positivo si el nivel está por encima</span>
                   </div>
                   <div class="lab-field">
                     <label for="hpNPSHr_m" data-i18n="hpump.labelNPSHr">NPSHr bomba (m) — placa</label>
                     <input id="hpNPSHr_m" type="number" min="0" step="any" value="0" />
-                    <span class="hint">0 si no se conoce</span>
+                    <span class="hint" data-i18n="hpump.hintNPSHr">0 si no se conoce</span>
                   </div>
                   <div class="lab-field">
                     <label for="hpOilTempC" data-i18n="hpump.labelOilTemp">Temperatura aceite (°C)</label>
                     <input id="hpOilTempC" type="number" step="any" value="46" />
-                    <span class="hint">Solo fluido estándar en modo proyecto</span>
+                    <span class="hint" data-i18n="hpump.hintOilTemp">Solo fluido estándar en modo proyecto</span>
                     <p class="lab-field-help" data-i18n="hpump.helpOilTemp">Con aceite mineral ISO VG, modo proyecto aplica ρ(T) y Pv(T) orientativos para NPSHa. No corrige ν del tramo automáticamente.</p>
                   </div>
                 </div>
@@ -423,8 +382,8 @@
                   <option value="design" selected data-i18n="hpump.optDesign">Diseñar nueva máquina</option>
                   <option value="diagnostic" data-i18n="hpump.optDiagnostic">Diagnosticar máquina existente</option>
                 </select>
-                <span class="hint">Modo objetivo del cálculo</span>
-                <p class="lab-field-help">Diseño: objetivo de rendimiento y verificación integral. Diagnóstico: se calcula caudal real desde desplazamiento y RPM.</p>
+                <span class="hint" data-i18n="hpump.hintCalcMode">Modo objetivo del cálculo</span>
+                <p class="lab-field-help" data-i18n="hpump.helpMode">Diseño: objetivo de rendimiento y verificación integral. Diagnóstico: se calcula caudal real desde desplazamiento y RPM.</p>
               </div>
 
               <div class="hp-block hp-block--pump">
@@ -440,8 +399,8 @@
                       <option value="vane" data-i18n="hpump.optPumpVane">Paletas</option>
                       <option value="piston" data-i18n="hpump.optPumpPiston">Pistones</option>
                     </select>
-                    <span class="hint">Define rendimiento y límite de presión</span>
-                    <p class="lab-field-help">Cada tecnología tiene eficiencia volumétrica y mecánica y rango de presión distintos para la evaluación de seguridad.</p>
+                    <span class="hint" data-i18n="hpump.hintPumpType">Define rendimiento y límite de presión</span>
+                    <p class="lab-field-help" data-i18n="hpump.helpPumpType">Cada tecnología tiene eficiencia volumétrica y mecánica y rango de presión distintos para la evaluación de seguridad.</p>
                   </div>
                   <div class="lab-field">
                     <label for="hpPressureUnit" data-i18n="hpump.labelPressureUnit">Unidad de presión</label>
@@ -449,30 +408,30 @@
                       <option value="bar">bar</option>
                       <option value="psi">PSI</option>
                     </select>
-                    <span class="hint">Conversor automático interno</span>
-                    <p class="lab-field-help">Puede introducir presión en bar o PSI; el cálculo se unifica en bar para las ecuaciones del módulo.</p>
+                    <span class="hint" data-i18n="hpump.hintPressureUnit">Conversor automático interno</span>
+                    <p class="lab-field-help" data-i18n="hpump.helpPressureUnit">Puede introducir presión en bar o PSI; el cálculo se unifica en bar para las ecuaciones del módulo.</p>
                   </div>
                   <div class="lab-field">
                     <label for="hpPressure" data-i18n="hpump.labelPressure">Presión de trabajo</label>
                     <input id="hpPressure" type="number" min="1" step="any" value="180" />
-                    <span class="hint">Presión efectiva de operación</span>
+                    <span class="hint" data-i18n="hpump.hintPressure">Presión efectiva de operación</span>
                     <div id="hpPressureZone" class="hp-pressure-zone hp-pressure-zone--green" aria-live="polite"></div>
                     <p class="lab-field-help" data-i18n="hpump.helpPressure">Indicador respecto al rango típico del tipo de bomba seleccionado (orientativo).</p>
                   </div>
                   <div class="lab-field">
                     <label for="hpRpm" data-i18n="hpump.labelSpeed">RPM motor</label>
                     <input id="hpRpm" type="number" min="100" step="any" value="1450" />
-                    <span class="hint">Velocidad del eje primario</span>
+                    <span class="hint" data-i18n="hpump.hintSpeed">Velocidad del eje primario</span>
                     <p class="lab-field-help" data-i18n="hpump.helpSpeed">Con el desplazamiento define el caudal teórico de bomba y el par requerido en el eje.</p>
                   </div>
                   <div class="lab-field">
                     <label for="hpDispCm3Rev" data-i18n="hpump.labelDisplacement">Desplazamiento (cm³/rev)</label>
                     <input id="hpDispCm3Rev" type="number" min="0.1" step="any" value="32" />
-                    <span class="hint">Volumen por vuelta</span>
+                    <span class="hint" data-i18n="hpump.hintDisplacement">Volumen por vuelta</span>
                     <p class="lab-field-help" data-i18n="hpump.helpDisplacement">Determina el caudal teórico Q<sub>teo</sub> = D×n; el caudal real incorpora eficiencia volumétrica.</p>
                   </div>
                   <div class="lab-field lab-field--wide">
-                    <label for="hpSuctionIn">Diámetro de succión a bomba</label>
+                    <label for="hpSuctionIn" data-i18n="hpump.labelSuctionDiam">Diámetro de succión a bomba</label>
                     <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;margin-bottom:0.25rem">
                       <select id="hpSuctionIn" class="hp-dia-select" style="flex:1;min-width:10rem">
                         <option value="0.125">1/8"</option>
@@ -498,24 +457,24 @@
                         <option value="5">5"</option>
                         <option value="6">6"</option>
                       </select>
-                      <div class="hp-dia-unit" role="group" aria-label="Unidad de diámetro">
-                        <button type="button" class="hp-dia-unit__btn hp-dia-unit__btn--active" data-dia-unit="in" id="hpDiaUnitIn">pulgadas</button>
-                        <button type="button" class="hp-dia-unit__btn" data-dia-unit="mm" id="hpDiaUnitMm">mm</button>
+                      <div class="hp-dia-unit" role="group" data-i18n="hpump.diaUnitAria" data-i18n-attr="aria-label" aria-label="Unidad de diámetro">
+                        <button type="button" class="hp-dia-unit__btn hp-dia-unit__btn--active" data-dia-unit="in" id="hpDiaUnitIn" data-i18n="hpump.diaUnitIn">pulgadas</button>
+                        <button type="button" class="hp-dia-unit__btn" data-dia-unit="mm" id="hpDiaUnitMm" data-i18n="hpump.diaUnitMm">mm</button>
                       </div>
                     </div>
-                    <span class="hint">Crítico para cavitación en succión</span>
-                    <p class="lab-field-help">El mismo selector de unidad aplica al diámetro de tubería en el bloque de conducciones.</p>
+                    <span class="hint" data-i18n="hpump.hintSuction">Crítico para cavitación en succión</span>
+                    <p class="lab-field-help" data-i18n="hpump.helpSuctionUnit">El mismo selector de unidad aplica al diámetro de tubería en el bloque de conducciones.</p>
                   </div>
                 </div>
                 <div class="hp-block__actions">
-                  <button type="button" class="lab-btn" id="hpBtnCalcPump">Actualizar bomba y resultados</button>
+                  <button type="button" class="lab-btn" id="hpBtnCalcPump" data-i18n="hpump.btnCalcPump">Actualizar bomba y resultados</button>
                 </div>
               </div>
 
               <div class="hp-block hp-block--pipes">
                 <div class="hp-block__head">
                   <h3 class="hp-block__title" data-i18n="hpump.sectionPipe">② Conducciones — mapa de pérdida de carga</h3>
-                  <p class="hp-block__sub">Tipo de línea, caudal en conducción, viscosidad, longitud, diámetro interior, codos y válvulas.</p>
+                  <p class="hp-block__sub" data-i18n="hpump.blockPipeSub">Tipo de línea, caudal en conducción, viscosidad, longitud, diámetro interior, codos y válvulas.</p>
                 </div>
                 <div class="lab-grid lab-grid--2">
                   <div class="lab-field">
@@ -542,38 +501,38 @@
                     <p class="lab-field-help" data-i18n="hpump.helpDensity">Densidad del fluido a temperatura de servicio (ficha o medición). Se usa en pérdidas de carga y NPSHa.</p>
                   </div>
                   <div class="lab-field" id="pipeFlowField">
-                    <label for="pipeFlowLmin">Caudal (L/min)</label>
+                    <label for="pipeFlowLmin" data-i18n="hpump.labelFlow">Caudal (L/min)</label>
                     <input id="pipeFlowLmin" type="number" min="0.1" step="any" value="42" />
-                    <span class="hint">Caudal en conducción</span>
-                    <p class="lab-field-help">Con diámetro interior permite obtener velocidad de fluido y número de Reynolds para la clasificación del flujo.</p>
+                    <span class="hint" data-i18n="hpump.hintFlow">Caudal en conducción</span>
+                    <p class="lab-field-help" data-i18n="hpump.helpFlow">Con diámetro interior permite obtener velocidad de fluido y número de Reynolds para la clasificación del flujo.</p>
                   </div>
                   <div class="lab-field lab-field--wide">
-                    <label for="pipeViscCst">Viscosidad cinemática (cSt)</label>
+                    <label for="pipeViscCst" data-i18n="hpump.labelViscosity">Viscosidad cinemática (cSt)</label>
                     <input id="pipeViscCst" type="number" min="1" step="any" value="46" />
-                    <span class="hint">Afecta Reynolds y fricción</span>
+                    <span class="hint" data-i18n="hpump.hintViscosity">Afecta Reynolds y fricción</span>
                     <p class="lab-field-help" data-i18n="hpump.helpViscosity">Introduzca ν (cSt) a la temperatura de servicio (ficha o tabla VG). El modelo no ajusta ν con T automáticamente.</p>
                     <p class="lab-field-help muted hp-fluid-model-note" data-i18n="hpump.fluidModelFootnote">Modelo de viscosidad orientado a aceite mineral ISO VG 32–68. Para agua-glicol, biológicos, emulsiones u otros fluidos, seleccione «Otro» e introduzca densidad ρ y viscosidad ν manualmente.</p>
-                    <table class="hp-vg-table" aria-label="Orientación ISO VG a 40 °C">
+                    <table class="hp-vg-table" data-i18n="hpump.vgTableAria" data-i18n-attr="aria-label" aria-label="Orientación ISO VG a 40 °C">
                       <thead>
                         <tr>
-                          <th>Aceite ISO VG</th>
-                          <th>ν a 40 °C (cSt)</th>
-                          <th>Uso típico</th>
+                          <th data-i18n="hpump.vgThOil">Aceite ISO VG</th>
+                          <th data-i18n="hpump.vgThNu">ν a 40 °C (cSt)</th>
+                          <th data-i18n="hpump.vgThUse">Uso típico</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr><td>VG 32</td><td>~32</td><td>Sistemas de alta velocidad</td></tr>
-                        <tr><td>VG 46</td><td>~46</td><td>Uso general industrial</td></tr>
-                        <tr><td>VG 68</td><td>~68</td><td>Sistemas de alta presión</td></tr>
-                        <tr><td>VG 100</td><td>~100</td><td>Temperatura elevada / exterior</td></tr>
+                        <tr><td>VG 32</td><td>~32</td><td data-i18n="hpump.vgUse32">Sistemas de alta velocidad</td></tr>
+                        <tr><td>VG 46</td><td>~46</td><td data-i18n="hpump.vgUse46">Uso general industrial</td></tr>
+                        <tr><td>VG 68</td><td>~68</td><td data-i18n="hpump.vgUse68">Sistemas de alta presión</td></tr>
+                        <tr><td>VG 100</td><td>~100</td><td data-i18n="hpump.vgUse100">Temperatura elevada / exterior</td></tr>
                       </tbody>
                     </table>
                   </div>
                   <div class="lab-field">
                     <label for="pipeLengthM" data-i18n="hpump.labelPipeLen">Longitud de línea (m)</label>
                     <input id="pipeLengthM" type="number" min="0.5" step="any" value="12" />
-                    <span class="hint">Pérdida lineal principal</span>
-                    <p class="lab-field-help">Incrementa la pérdida de carga proporcionalmente en el término f·(L/D) de Darcy-Weisbach.</p>
+                    <span class="hint" data-i18n="hpump.hintPipeLen">Pérdida lineal principal</span>
+                    <p class="lab-field-help" data-i18n="hpump.helpPipeLen">Incrementa la pérdida de carga proporcionalmente en el término f·(L/D) de Darcy-Weisbach.</p>
                   </div>
                   <div class="lab-field">
                     <label for="pipeDiaIn" data-i18n="hpump.labelPipeDiam">Diámetro interior actual</label>
@@ -601,24 +560,24 @@
                       <option value="5">5"</option>
                       <option value="6">6"</option>
                     </select>
-                    <span class="hint">Variable clave de optimización</span>
+                    <span class="hint" data-i18n="hpump.hintPipeDiam">Variable clave de optimización</span>
                     <p class="lab-field-help" data-i18n="hpump.helpPipeDiam">Diámetro interior del tramo indicado en «Tipo de línea». Orientación ISO 4413: presión ≤ 4 m/s; succión ≤ 1 m/s (cavitación); retorno 2–4 m/s. Las alertas aplican el umbral del tipo elegido.</p>
                   </div>
                   <div class="lab-field">
                     <label for="pipeElbows" data-i18n="hpump.labelElbows">Número de codos</label>
                     <input id="pipeElbows" type="number" min="0" step="1" value="4" />
-                    <span class="hint">Pérdidas menores por cambios de dirección</span>
-                    <p class="lab-field-help">Cada codo añade pérdidas singulares al balance de energía, aumentando la caída de presión total.</p>
+                    <span class="hint" data-i18n="hpump.hintElbows">Pérdidas menores por cambios de dirección</span>
+                    <p class="lab-field-help" data-i18n="hpump.helpElbows">Cada codo añade pérdidas singulares al balance de energía, aumentando la caída de presión total.</p>
                   </div>
                   <div class="lab-field">
                     <label for="pipeValves" data-i18n="hpump.labelValves">Número de válvulas</label>
                     <input id="pipeValves" type="number" min="0" step="1" value="2" />
-                    <span class="hint">Pérdidas menores localizadas</span>
-                    <p class="lab-field-help">Se suman como coeficientes K para calcular pérdida localizada adicional en la línea.</p>
+                    <span class="hint" data-i18n="hpump.hintValves">Pérdidas menores localizadas</span>
+                    <p class="lab-field-help" data-i18n="hpump.helpValves">Se suman como coeficientes K para calcular pérdida localizada adicional en la línea.</p>
                   </div>
                 </div>
                 <div class="hp-block__actions">
-                  <button type="button" class="lab-btn" id="hpBtnCalcPipes">Actualizar conducciones y resultados</button>
+                  <button type="button" class="lab-btn" id="hpBtnCalcPipes" data-i18n="hpump.btnCalcPipes">Actualizar conducciones y resultados</button>
                 </div>
               </div>
             </div>
@@ -626,7 +585,7 @@
 
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
             <details class="lab-fluid-formulas" id="hpFormulasBlock">
-              <summary>Memoria de cálculo, fórmulas y supuestos</summary>
+              <summary data-i18n="hpump.formulasSummary">Memoria de cálculo, fórmulas y supuestos</summary>
               <div id="hpFormulaBody" class="lab-fluid-formulas__body"></div>
             </details>
             <div id="hpResults" class="lab-results"></div>

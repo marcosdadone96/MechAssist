@@ -110,4 +110,62 @@ export const HYDRAULIC_PUMP_EN = {
   'hpump.preset1': 'Gear pump \u00b7 32 cm\u00b3/rev',
   'hpump.preset2': 'High flow \u00b7 55 cm\u00b3/rev',
   'hpump.preset3': 'Project \u00b7 NPSH check',
+  'hpump.hintMemPdf': 'Expanded memory and PDF in Project mode',
+  'hpump.helpProjectTier':
+    'Project mode includes tank elevation above the pump, nameplate NPSHr and indicative NPSHa traceability.',
+  'hpump.projectBadgeTitle': 'Includes indicative NPSHa, tank elevation and expanded memory/PDF traceability',
+  'hpump.hintTankZ': 'Positive if level is above',
+  'hpump.hintNPSHr': '0 if unknown',
+  'hpump.hintOilTemp': 'Standard fluid only in project mode',
+  'hpump.hintCalcMode': 'Calculation objective mode',
+  'hpump.helpMode':
+    'Design: performance target and full verification. Diagnostic: real flow from displacement and RPM.',
+  'hpump.hintPumpType': 'Sets efficiency and pressure limit',
+  'hpump.helpPumpType':
+    'Each technology has distinct volumetric and mechanical efficiency and pressure range for safety evaluation.',
+  'hpump.hintPressureUnit': 'Automatic internal conversion',
+  'hpump.helpPressureUnit':
+    'You may enter pressure in bar or PSI; calculations are unified in bar.',
+  'hpump.hintPressure': 'Effective operating pressure',
+  'hpump.hintSpeed': 'Primary shaft speed',
+  'hpump.hintDisplacement': 'Volume per revolution',
+  'hpump.labelSuctionDiam': 'Suction diameter at pump',
+  'hpump.hintSuction': 'Critical for suction cavitation',
+  'hpump.helpSuctionUnit':
+    'The same unit selector applies to line diameter in the piping block.',
+  'hpump.diaUnitAria': 'Diameter unit',
+  'hpump.diaUnitIn': 'inches',
+  'hpump.diaUnitMm': 'mm',
+  'hpump.btnCalcPump': 'Update pump and results',
+  'hpump.blockPipeSub':
+    'Line type, line flow, viscosity, length, inner diameter, elbows and valves.',
+  'hpump.labelFlow': 'Flow (L/min)',
+  'hpump.hintFlow': 'Flow in line',
+  'hpump.helpFlow':
+    'With inner diameter, yields fluid velocity and Reynolds number for flow classification.',
+  'hpump.labelViscosity': 'Kinematic viscosity (cSt)',
+  'hpump.hintViscosity': 'Affects Reynolds and friction',
+  'hpump.hintPipeLen': 'Main linear head loss',
+  'hpump.helpPipeLen':
+    'Increases head loss proportionally in the Darcy\u2013Weisbach f\u00b7(L/D) term.',
+  'hpump.hintPipeDiam': 'Key optimization variable',
+  'hpump.hintElbows': 'Minor losses from direction changes',
+  'hpump.helpElbows':
+    'Each elbow adds singular losses to the energy balance, increasing total pressure drop.',
+  'hpump.hintValves': 'Localized minor losses',
+  'hpump.helpValves':
+    'Summed as K coefficients for additional localized line loss.',
+  'hpump.btnCalcPipes': 'Update piping and results',
+  'hpump.formulasSummary': 'Calculation memory, formulas and assumptions',
+  'hpump.infoKeyDataHtml':
+    '<strong>How to obtain key data:</strong> <strong>Kinematic viscosity (cSt)</strong> comes from the oil datasheet (typically at 40 \u00b0C and 100 \u00b0C, ISO VG), and '
+    + '<strong>displacement (cm\u00b3/rev)</strong> is on the pump nameplate or datasheet. If missing, estimate with <strong>D = (Q\u00d71000)/n</strong>.',
+  'hpump.vgTableAria': 'ISO VG oil guidance at 40 \u00b0C',
+  'hpump.vgThOil': 'ISO VG oil',
+  'hpump.vgThNu': '\u03bd at 40 \u00b0C (cSt)',
+  'hpump.vgThUse': 'Typical use',
+  'hpump.vgUse32': 'High-speed systems',
+  'hpump.vgUse46': 'General industrial use',
+  'hpump.vgUse68': 'High-pressure systems',
+  'hpump.vgUse100': 'High temperature / outdoor',
 };

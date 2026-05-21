@@ -98,10 +98,10 @@
                   <option value="design" data-i18n="bolt.optDesign">Diseño — fuerza de cálculo → propuesta M y grado mínimos</option>
                   <option value="diagnostic" selected data-i18n="bolt.optDiagnostic">Diagnóstico — tornillo instalado → comprobación frente a F</option>
                 </select>
-                <p class="lab-field-help" id="blCalcModeHelp">
-                  <strong>Diseño:</strong> indique la tracción que debe soportar la unión; el asistente propone la combinación métrica/grado más pequeña que cumple (catálogo interno).
-                  <strong>Diagnóstico:</strong> elija M y grado reales y compruebe F y precarga.
-                </p>
+                <div class="lab-field-help lab-field-help--bolt-modes" id="blCalcModeHelp">
+                  <p class="bolt-calc-mode-help__line" data-bolt-mode="design" data-i18n="bolt.helpCalcModeDesignHtml" data-i18n-html><strong>Diseño:</strong> indique la tracción que debe soportar la unión; el asistente propone la combinación métrica/grado más pequeña que cumple (catálogo interno).</p>
+                  <p class="bolt-calc-mode-help__line bolt-calc-mode-help__line--active" data-bolt-mode="diagnostic" data-i18n="bolt.helpCalcModeDiagnosticHtml" data-i18n-html><strong>Diagnóstico:</strong> elija M y grado reales y compruebe F y precarga.</p>
+                </div>
               </div>
               <div class="lab-field" id="blFieldD">
                 <label for="blD" data-i18n="bolt.labelD">Diámetro</label>

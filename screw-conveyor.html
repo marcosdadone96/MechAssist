@@ -117,7 +117,7 @@
           <p class="flat-ux-panel__lead muted" data-i18n="machineHub.uxPresetsLead">
             Rellena parámetros coherentes por sector; puede ajustar después. El diagrama y el dashboard se actualizan al instante.
           </p>
-          <div class="flat-ux-preset-row" role="group" aria-label="Presets tornillo">
+          <div class="flat-ux-preset-row" role="group" data-i18n="scConv.presetPresetsAria" data-i18n-attr="aria-label" aria-label="Presets tornillo">
             <button
               type="button"
               class="btn-flat-preset"
@@ -125,7 +125,7 @@
               data-i18n-attrs="title=scConv.presetFoodTooltip"
               title="Polvo fino, Ø250 mm, 18 m³/h, pendiente 5°."
             >
-              <span class="btn-flat-preset__name">Polvo · alimentación</span>
+              <span class="btn-flat-preset__name" data-i18n="scConv.presetFoodBtn">Polvo · alimentación</span>
             </button>
             <button
               type="button"
@@ -134,7 +134,7 @@
               data-i18n-attrs="title=scConv.presetBiomassTooltip"
               title="Astilla biomasa Ø400 mm, 12° inclinación, 45 m³/h."
             >
-              <span class="btn-flat-preset__name">Astilla · biomasa</span>
+              <span class="btn-flat-preset__name" data-i18n="scConv.presetBiomassBtn">Astilla · biomasa</span>
             </button>
             <button
               type="button"
@@ -143,7 +143,7 @@
               data-i18n-attrs="title=scConv.presetCementTooltip"
               title="Mineral denso Ø500 mm, 35 t/h, pendiente 18°, abrasivo."
             >
-              <span class="btn-flat-preset__name">Mineral · denso</span>
+              <span class="btn-flat-preset__name" data-i18n="scConv.presetCementBtn">Mineral · denso</span>
             </button>
           </div>
         </section>
@@ -151,75 +151,75 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label" data-sc-for="accGeom" data-i18n="scConv.accGeom">Geometría y cinemática</span>
+            <span class="flat-accordion__label" data-i18n="scConv.accGeom">Geometría y cinemática</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
-              <label for="screwCap"><span data-sc-for="lblCap" data-i18n="scConv.lblCap">Capacidad Q</span> <span class="info-chip" data-sc-chip="cap">?</span></label>
-              <input type="range" id="screwCapR" class="flat-slider" min="5" max="250" step="0.5" value="45" data-sc-aria-for="capR" aria-label="Capacidad" />
+              <label for="screwCap"><span data-i18n="scConv.lblCap">Capacidad Q</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipCap" title="Caudal objetivo de la instalación. Si trabaja con t/h, se convierte con la densidad aparente del bloque Material." tabindex="0" role="button" aria-label="Ayuda capacidad requerida del tornillo.">?</span></label>
+              <input type="range" id="screwCapR" class="flat-slider" min="5" max="250" step="0.5" value="45" data-i18n="scConv.ariaCap" data-i18n-attr="aria-label" aria-label="Capacidad" />
               <div class="flat-field__num">
                 <input id="screwCap" type="number" step="any" min="0.01" value="45" placeholder="ej. 18–120" />
                 <span class="field-hint" id="screwCapInlineUnit">m³/h</span>
               </div>
-              <p class="field-context muted"><span data-sc-rec="cap"></span></p>
+              <p class="field-context muted"><span data-i18n="scConv.recCap"></span></p>
             </div>
             <div class="field">
-              <label for="screwCapUnit"><span data-sc-for="lblCapUnit" data-i18n="scConv.lblCapUnit">Unidad de caudal (m³/h o t/h)</span> <span class="info-chip" data-sc-chip="capUnit">?</span></label>
+              <label for="screwCapUnit"><span data-i18n="scConv.lblCapUnit">Unidad de caudal (m³/h o t/h)</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipCapUnit" title="m³/h para caudal volumétrico o t/h para caudal másico. En t/h la densidad afecta directamente al cálculo." tabindex="0" role="button" aria-label="Ayuda unidad de capacidad.">?</span></label>
               <select id="screwCapUnit" name="screwCapUnit">
                 <option value="m3h" selected>m³/h</option>
                 <option value="th">t/h</option>
               </select>
-              <span class="field-hint">t/h usa densidad del bloque Material.</span>
+              <span class="field-hint" data-i18n="scConv.capUnitHint">t/h usa densidad del bloque Material.</span>
             </div>
             <div class="field flat-field--slider">
-              <label for="screwDiam"><span data-sc-for="lblDiam" data-i18n="scConv.lblDiam">Diámetro helicoide D</span> <span class="info-chip" data-sc-chip="diam">?</span></label>
-              <input type="range" id="screwDiamR" class="flat-slider" min="80" max="900" step="1" value="315" data-sc-aria-for="diamR" aria-label="Ø tornillo" />
+              <label for="screwDiam"><span data-i18n="scConv.lblDiam">Diámetro helicoide D</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipDiam" title="Ø exterior del tornillo. Referencia típica industrial: 150–600 mm. Diámetros mayores suelen requerir RPM menores." tabindex="0" role="button" aria-label="Ayuda diámetro de tornillo.">?</span></label>
+              <input type="range" id="screwDiamR" class="flat-slider" min="80" max="900" step="1" value="315" data-i18n="scConv.ariaDiam" data-i18n-attr="aria-label" aria-label="Ø tornillo" />
               <div class="flat-field__num">
                 <input id="screwDiam" type="number" step="any" min="1" value="315" placeholder="ej. 250–400" />
                 <span class="field-hint" id="screwDiamInlineUnit">mm</span>
               </div>
-              <p class="field-context muted"><span data-sc-rec="diam"></span></p>
+              <p class="field-context muted"><span data-i18n="scConv.recDiam"></span></p>
             </div>
             <div class="field">
-              <label for="screwDiamUnit"><span data-sc-for="lblDiamUnit" data-i18n="scConv.lblDiamUnit">Unidad de D</span> <span class="info-chip" data-sc-chip="diamUnit">?</span></label>
+              <label for="screwDiamUnit"><span data-i18n="scConv.lblDiamUnit">Unidad de D</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipDiamUnit" title="Puede introducir diámetro en mm o pulgadas; el cálculo interno se normaliza en metros." tabindex="0" role="button" aria-label="Ayuda unidad de diámetro.">?</span></label>
               <select id="screwDiamUnit" name="screwDiamUnit">
                 <option value="mm" selected>mm</option>
                 <option value="in">pulgadas</option>
               </select>
             </div>
             <div class="field flat-field--slider">
-              <label for="screwPitch"><span data-sc-for="lblPitch" data-i18n="scConv.lblPitch">Paso del helicoide p</span> <span class="info-chip" data-sc-chip="pitch">?</span></label>
-              <input type="range" id="screwPitchR" class="flat-slider" min="50" max="800" step="1" value="280" data-sc-aria-for="pitchR" aria-label="Paso" />
+              <label for="screwPitch"><span data-i18n="scConv.lblPitch">Paso del helicoide p</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipPitch" title="Avance axial por vuelta. Regla rápida: p≈D en muchos diseños generales; p menor para materiales difíciles." tabindex="0" role="button" aria-label="Ayuda paso de tornillo.">?</span></label>
+              <input type="range" id="screwPitchR" class="flat-slider" min="50" max="800" step="1" value="280" data-i18n="scConv.ariaPitch" data-i18n-attr="aria-label" aria-label="Paso" />
               <div class="flat-field__num">
                 <input id="screwPitch" type="number" step="any" min="1" value="280" placeholder="ej. 0,8·D" />
                 <span class="field-hint" id="screwPitchInlineUnit">mm</span>
               </div>
-              <p class="field-context muted"><span data-sc-rec="pitch"></span></p>
+              <p class="field-context muted"><span data-i18n="scConv.recPitch"></span></p>
             </div>
             <div class="field">
-              <label for="screwPitchUnit"><span data-sc-for="lblPitchUnit" data-i18n="scConv.lblPitchUnit">Unidad de p</span> <span class="info-chip" data-sc-chip="pitchUnit">?</span></label>
+              <label for="screwPitchUnit"><span data-i18n="scConv.lblPitchUnit">Unidad de p</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipPitchUnit" title="Unidad del paso (mm o pulgadas). Se convierte automáticamente para las fórmulas internas." tabindex="0" role="button" aria-label="Ayuda unidad de paso.">?</span></label>
               <select id="screwPitchUnit" name="screwPitchUnit">
                 <option value="mm" selected>mm</option>
-                <option value="in">pulgadas</option>
+                <option value="in" data-i18n="scConv.optInches">pulgadas</option>
               </select>
             </div>
             <div class="field flat-field--slider">
-              <label for="screwLength"><span data-sc-for="lblLength" data-i18n="scConv.lblLength">Longitud del transportador L</span> <span class="info-chip" data-sc-chip="length">?</span></label>
-              <input type="range" id="screwLengthR" class="flat-slider" min="0.5" max="50" step="0.1" value="12" data-sc-aria-for="lengthR" aria-label="Longitud L" />
+              <label for="screwLength"><span data-i18n="scConv.lblLength">Longitud del transportador L</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipLength" title="Longitud efectiva de transporte en metros. A mayor longitud, mayor resistencia equivalente y potencia requerida." tabindex="0" role="button" aria-label="Ayuda longitud de transporte.">?</span></label>
+              <input type="range" id="screwLengthR" class="flat-slider" min="0.5" max="50" step="0.1" value="12" data-i18n="scConv.ariaLength" data-i18n-attr="aria-label" aria-label="Longitud L" />
               <div class="flat-field__num">
                 <input id="screwLength" type="number" step="0.1" min="0.5" value="12" placeholder="ej. 8–25 m" />
                 <span class="field-hint">m</span>
               </div>
-              <p class="field-context muted"><span data-sc-rec="length"></span></p>
+              <p class="field-context muted"><span data-i18n="scConv.recLength"></span></p>
             </div>
             <div class="field flat-field--slider">
-              <label for="screwAngle"><span data-sc-for="lblAngle" data-i18n="scConv.lblAngle">Ángulo de inclinación θ</span> <span class="info-chip" data-sc-chip="angle">?</span></label>
-              <input type="range" id="screwAngleR" class="flat-slider" min="0" max="45" step="0.5" value="8" data-sc-aria-for="angleR" aria-label="Ángulo θ" />
+              <label for="screwAngle"><span data-i18n="scConv.lblAngle">Ángulo de inclinación θ</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipAngle" title="Ángulo respecto a horizontal. En inclinaciones altas el rendimiento real puede caer; valide con fabricante para θ elevados." tabindex="0" role="button" aria-label="Ayuda inclinación del tornillo.">?</span></label>
+              <input type="range" id="screwAngleR" class="flat-slider" min="0" max="45" step="0.5" value="8" data-i18n="scConv.ariaAngle" data-i18n-attr="aria-label" aria-label="Ángulo θ" />
               <div class="flat-field__num">
                 <input id="screwAngle" type="number" step="0.5" min="0" max="90" value="8" placeholder="ej. 0–18°" />
                 <span class="field-hint">°</span>
               </div>
-              <p class="field-context muted"><span data-sc-rec="angle"></span></p>
+              <p class="field-context muted"><span data-i18n="scConv.recAngle"></span></p>
             </div>
           </div>
         </details>
@@ -227,65 +227,65 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label" data-sc-for="accMat" data-i18n="scConv.accMat">Material y llenado</span>
+            <span class="flat-accordion__label" data-i18n="scConv.accMat">Material y llenado</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
-              <label for="screwRho"><span data-sc-for="lblRho" data-i18n="scConv.lblRho">Densidad del material ρ (kg/m³)</span> <span class="info-chip" data-sc-chip="rho">?</span></label>
-              <input type="range" id="screwRhoR" class="flat-slider" min="200" max="2200" step="10" value="750" data-sc-aria-for="rhoR" aria-label="Densidad ρ" />
+              <label for="screwRho"><span data-i18n="scConv.lblRho">Densidad del material ρ (kg/m³)</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipRho" title="Densidad bulk del material (kg/m³). Valores orientativos: 500–900 granos/piensos, 900–1500 minerales finos." tabindex="0" role="button" aria-label="Ayuda densidad aparente.">?</span></label>
+              <input type="range" id="screwRhoR" class="flat-slider" min="200" max="2200" step="10" value="750" data-i18n="scConv.ariaRho" data-i18n-attr="aria-label" aria-label="Densidad ρ" />
               <div class="flat-field__num">
                 <input id="screwRho" type="number" step="1" min="100" value="750" placeholder="ej. 550–1450" />
                 <span class="field-hint">kg/m³</span>
               </div>
-              <p class="field-context muted"><span data-sc-rec="rho"></span></p>
+              <p class="field-context muted"><span data-i18n="scConv.recRho"></span></p>
             </div>
             <div class="field">
-              <label for="screwTroughLoad"><span data-sc-for="lblTrough" data-i18n="scConv.lblTrough">Factor de llenado del trough φ (%)</span> <span class="info-chip" data-sc-chip="trough">?</span></label>
+              <label for="screwTroughLoad"><span data-i18n="scConv.lblTrough">Factor de llenado del trough φ (%)</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipTrough" title="Porcentaje de llenado de la sección del canal. 15% para fluidos, 30% uso general, 45% materiales más difíciles." tabindex="0" role="button" aria-label="Ayuda porcentaje de llenado del canal.">?</span></label>
               <select id="screwTroughLoad" name="screwTroughLoad">
-                <option value="15">15 % — fluidos</option>
-                <option value="30" selected>30 % — uso general</option>
-                <option value="45">45 % — difíciles</option>
+                <option value="15" data-i18n="scConv.optTrough15">15 % — fluidos</option>
+                <option value="30" selected data-i18n="scConv.optTrough30">30 % — uso general</option>
+                <option value="45" data-i18n="scConv.optTrough45">45 % — difíciles</option>
               </select>
             </div>
             <div class="field">
-              <label for="screwAbrasive"><span data-sc-for="lblAbrasive" data-i18n="scConv.lblAbrasive">Abrasividad</span> <span class="info-chip" data-sc-chip="abrasive">?</span></label>
+              <label for="screwAbrasive"><span data-i18n="scConv.lblAbrasive">Abrasividad</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipAbrasive" title="Ajusta margen por desgaste y límite orientativo de RPM. Materiales abrasivos requieren más margen y menor régimen." tabindex="0" role="button" aria-label="Ayuda abrasividad.">?</span></label>
               <select id="screwAbrasive" name="screwAbrasive">
-                <option value="low" selected>Baja</option>
-                <option value="medium">Media</option>
-                <option value="high">Alta</option>
+                <option value="low" selected data-i18n="scConv.wearLow">Baja</option>
+                <option value="medium" data-i18n="scConv.wearMed">Media</option>
+                <option value="high" data-i18n="scConv.wearHigh">Alta</option>
               </select>
             </div>
             <div class="field">
-              <label for="screwCorrosive"><span data-sc-for="lblCorrosive" data-i18n="scConv.lblCorrosive">Corrosividad</span> <span class="info-chip" data-sc-chip="corrosive">?</span></label>
+              <label for="screwCorrosive"><span data-i18n="scConv.lblCorrosive">Corrosividad</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipCorrosive" title="Ajusta margen de diseño por entorno/material corrosivo. Niveles altos recomiendan materiales/recubrimientos específicos." tabindex="0" role="button" aria-label="Ayuda corrosividad.">?</span></label>
               <select id="screwCorrosive" name="screwCorrosive">
-                <option value="low" selected>Baja</option>
-                <option value="medium">Media</option>
-                <option value="high">Alta</option>
+                <option value="low" selected data-i18n="scConv.wearLow">Baja</option>
+                <option value="medium" data-i18n="scConv.wearMed">Media</option>
+                <option value="high" data-i18n="scConv.wearHigh">Alta</option>
               </select>
             </div>
             <div class="field" style="grid-column: 1 / -1">
               <details class="friction-guide">
-                <summary>Tabla orientativa de llenado del trough</summary>
+                <summary data-i18n="scConv.troughGuideSummary">Tabla orientativa de llenado del trough</summary>
                 <div class="friction-guide__body">
                   <table>
                     <thead>
                       <tr>
-                        <th>Tipo de material</th>
-                        <th>Llenado recomendado</th>
+                        <th data-i18n="scConv.troughGuideThMaterial">Tipo de material</th>
+                        <th data-i18n="scConv.troughGuideThFill">Llenado recomendado</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
-                        <td>Fluidos / polvos finos secos</td>
-                        <td>45%</td>
+                        <td data-i18n="scConv.troughGuideR1c1">Fluidos / polvos finos secos</td>
+                        <td data-i18n="scConv.troughGuideR1c2">45%</td>
                       </tr>
                       <tr>
-                        <td>Uso general industrial</td>
-                        <td>30%</td>
+                        <td data-i18n="scConv.troughGuideR2c1">Uso general industrial</td>
+                        <td data-i18n="scConv.troughGuideR2c2">30%</td>
                       </tr>
                       <tr>
-                        <td>Materiales abrasivos o difíciles</td>
-                        <td>15%</td>
+                        <td data-i18n="scConv.troughGuideR3c1">Materiales abrasivos o difíciles</td>
+                        <td data-i18n="scConv.troughGuideR3c2">15%</td>
                       </tr>
                     </tbody>
                   </table>
@@ -298,28 +298,28 @@
         <details class="flat-accordion">
           <summary class="flat-accordion__summary">
             <span class="flat-accordion__icon" aria-hidden="true">◇</span>
-            <span class="flat-accordion__label" data-sc-for="accFriction" data-i18n="scConv.accFriction">Rozamiento y servicio</span>
+            <span class="flat-accordion__label" data-i18n="scConv.accFriction">Rozamiento y servicio</span>
           </summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field flat-field--slider">
-              <label for="screwMu"><span data-sc-for="lblMu" data-i18n="scConv.lblMu">Coeficiente de rozamiento μ</span> <span class="info-chip" data-sc-chip="mu">?</span></label>
-              <input type="range" id="screwMuR" class="flat-slider" min="0.1" max="0.75" step="0.01" value="0.38" data-sc-aria-for="muR" aria-label="Coeficiente μ" />
+              <label for="screwMu"><span data-i18n="scConv.lblMu">Coeficiente de rozamiento μ</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipMu" title="Coeficiente de rozamiento equivalente en canal. Orientativo: 0,20–0,35 materiales más fluidos; 0,35–0,60 más difíciles." tabindex="0" role="button" aria-label="Ayuda coeficiente de rozamiento.">?</span></label>
+              <input type="range" id="screwMuR" class="flat-slider" min="0.1" max="0.75" step="0.01" value="0.38" data-i18n="scConv.ariaMu" data-i18n-attr="aria-label" aria-label="Coeficiente μ" />
               <div class="flat-field__num">
                 <input id="screwMu" type="number" step="0.01" min="0.05" max="0.9" value="0.38" placeholder="ej. 0,30–0,45" />
                 <span class="field-hint">—</span>
               </div>
-              <p class="field-context muted"><span data-sc-rec="mu"></span></p>
+              <p class="field-context muted"><span data-i18n="scConv.recMu"></span></p>
             </div>
             <div class="field">
-              <label for="screwBearingEta"><span data-sc-for="lblBearingEta" data-i18n="scConv.lblBearingEta">Rendimiento del accionamiento η (%)</span> <span class="info-chip" data-sc-chip="bearingEta">?</span></label>
+              <label for="screwBearingEta"><span data-i18n="scConv.lblBearingEta">Rendimiento del accionamiento η (%)</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipBearingEta" title="Rendimiento agregado de apoyos/transmisión mecánica. Valor típico de partida: 90–95 %." tabindex="0" role="button" aria-label="Ayuda rendimiento mecánico.">?</span></label>
               <div class="flat-field__num">
                 <input id="screwBearingEta" type="number" step="0.5" min="70" max="99" value="92" placeholder="ej. 88–94" />
                 <span class="field-hint">%</span>
               </div>
-              <p class="field-context muted"><span data-sc-rec="bearingEta"></span></p>
+              <p class="field-context muted"><span data-i18n="scConv.recBearingEta"></span></p>
             </div>
             <div class="field">
-              <label for="screwLoadDuty"><span data-sc-for="lblLoadDuty" data-i18n="scConv.lblLoadDuty">Tipo de carga</span> <span class="info-chip" data-sc-chip="loadDuty">?</span></label>
+              <label for="screwLoadDuty"><span data-i18n="scConv.lblLoadDuty">Tipo de carga</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipLoadDuty" title="Selecciona factor de servicio base según severidad (uniforme, moderada, pesada) o permite valor personalizado." tabindex="0" role="button" aria-label="Ayuda tipo de carga.">?</span></label>
               <select id="screwLoadDuty" name="screwLoadDuty">
                 <option value="uniform">Carga uniforme — SF ≈ 1,15</option>
                 <option value="moderate" selected>Choque moderado — SF ≈ 1,35</option>
@@ -329,14 +329,14 @@
               <p class="field-hint" id="screwLoadDutyHint"></p>
             </div>
             <div class="field">
-              <label for="screwServiceFactor"><span data-sc-for="lblSf" data-i18n="scConv.lblSf">Factor de servicio SF</span> <span class="info-chip" data-sc-chip="sf">?</span></label>
+              <label for="screwServiceFactor"><span data-i18n="scConv.lblSf">Factor de servicio SF</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipSf" title="Margen de dimensionamiento sobre par/potencia. Referencia común: 1,15–1,35 moderado, hasta 1,75 o más en cargas severas." tabindex="0" role="button" aria-label="Ayuda factor de servicio.">?</span></label>
               <input id="screwServiceFactor" type="number" step="0.05" min="1" max="3" value="1.35" readonly class="input-synced" />
-              <span class="field-hint">Se combina con abrasividad/corrosividad.</span>
+              <span class="field-hint" data-i18n="scConv.sfCombinedHint">Se combina con abrasividad/corrosividad.</span>
             </div>
           </div>
         </details>
 
-        <p class="muted form-model-scope flat-model-scope">
+        <p class="muted form-model-scope flat-model-scope" data-i18n="scConv.modelScopeHtml" data-i18n-html>
           <strong>Modelo:</strong> sólido a granel · potencia orientativa en eje.
           <a href="#screw-conveyor-assumptions">Hipótesis y exclusiones</a>
         </p>
@@ -354,8 +354,8 @@
       <div class="flat-stage layout-right">
         <section class="panel flat-dashboard">
           <header class="flat-dashboard__head">
-            <h2 class="flat-dashboard__title">Dashboard de dimensionamiento</h2>
-            <p class="flat-dashboard__lead muted">Par, potencia y régimen del tornillo; revise el aviso de RPM si aparece.</p>
+            <h2 class="flat-dashboard__title" data-i18n="scConv.dashboardTitle">Dashboard de dimensionamiento</h2>
+            <p class="flat-dashboard__lead muted" data-i18n="scConv.dashboardLead">Par, potencia y régimen del tornillo; revise el aviso de RPM si aparece.</p>
           </header>
 
           <section class="flat-scope-panel" aria-labelledby="screwScopeTitle">
@@ -408,7 +408,7 @@
           </section>
         </section>
 
-        <section class="flat-visual flat-visual--integrated" aria-label="Esquema tornillo">
+        <section class="flat-visual flat-visual--integrated" data-i18n="scConv.visualSectionAria" data-i18n-attr="aria-label" aria-label="Esquema tornillo">
           <div class="flat-visual__workbench">
             <div class="diagram-duo__schematic flat-visual__diagram-col">
               <svg id="diagramScrew" xmlns="http://www.w3.org/2000/svg" aria-label="Esquema tornillo" data-i18n="scConv.diagramSvgAria" data-i18n-attr="aria-label" aria-label="Esquema tornillo sin fin"></svg>
@@ -421,13 +421,15 @@
                 <img
                   src="assets/screw-conveyor-reference.png"
                   alt="Transportador de tornillo en planta (referencia)"
+                  data-i18n="scConv.photoAlt"
+                  data-i18n-attr="alt"
                   width="800"
                   height="520"
                   loading="lazy"
                   decoding="async"
                 />
               </div>
-              <figcaption class="flat-visual__caption">
+              <figcaption class="flat-visual__caption" data-i18n="scConv.photoCaptionHtml" data-i18n-html>
                 Referencia: tornillo (ejemplo visual).
                 <a href="https://commons.wikimedia.org/wiki/File:Archimedes_screw_at_Kinderdijk.jpg" target="_blank" rel="noopener">Wikimedia</a>
               </figcaption>
@@ -437,29 +439,29 @@
 
         <section class="panel flat-panel--verify">
           <div class="verify-panel" id="screwVerifyPanel">
-            <h2><span class="panel-icon">✓</span> Comprobar motorreductor</h2>
+            <h2 data-i18n="scConv.verifyH2Html" data-i18n-html><span class="panel-icon">✓</span> Comprobar motorreductor</h2>
             <p class="muted verify-panel__catalog-lead" style="margin: -0.5rem 0 1rem; font-size: 0.84rem" data-i18n="machineHub.verifyCatalogLead">Selecciona un motorreductor de catálogo para comparar su potencia y par con los resultados calculados. No modifica los datos del formulario. Los datos son orientativos según especificaciones publicadas por el fabricante.</p>
             <div class="verify-grid">
               <div class="field">
-                <label for="screwVerifyBrand"><span data-sc-for="lblVBrand" data-i18n="scConv.lblVBrand">Marca</span> <span class="info-chip" data-sc-chip="vBrand">?</span></label>
+                <label for="screwVerifyBrand"><span data-i18n="scConv.lblVBrand">Marca</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipVBrand" title="Fabricante del catálogo de demostración para comprobar disponibilidad de modelos." tabindex="0" role="button" aria-label="Ayuda marca en comprobador.">?</span></label>
                 <select id="screwVerifyBrand" data-verify-brand>
-                  <option value="sew">SEW-Eurodrive</option>
-                  <option value="siemens">Siemens (Simogear)</option>
-                  <option value="nord">Nord Drivesystems</option>
-                  <option value="bonfiglioli">Bonfiglioli</option>
-                  <option value="motovario">Motovario</option>
+                  <option value="sew" data-i18n="machineHub.verifyBrandSew">SEW-Eurodrive</option>
+                  <option value="siemens" data-i18n="machineHub.verifyBrandSiemens">Siemens (Simogear)</option>
+                  <option value="nord" data-i18n="machineHub.verifyBrandNord">Nord Drivesystems</option>
+                  <option value="bonfiglioli" data-i18n="machineHub.verifyBrandBonfiglioli">Bonfiglioli</option>
+                  <option value="motovario" data-i18n="machineHub.verifyBrandMotovario">Motovario</option>
                 </select>
               </div>
               <div class="field">
-                <label for="screwVerifySearch"><span data-sc-for="lblVSearch" data-i18n="scConv.lblVSearch">Filtrar modelo</span> <span class="info-chip" data-sc-chip="vSearch">?</span></label>
+                <label for="screwVerifySearch"><span data-i18n="scConv.lblVSearch">Filtrar modelo</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipVSearch" title="Búsqueda por texto/código para reducir el listado de modelos del catálogo." tabindex="0" role="button" aria-label="Ayuda filtro de modelo.">?</span></label>
                 <input id="screwVerifySearch" type="search" data-verify-search autocomplete="off" />
               </div>
               <div class="field" style="grid-column: 1 / -1">
-                <label for="screwVerifyModel"><span data-sc-for="lblVModel" data-i18n="scConv.lblVModel">Modelo</span> <span class="info-chip" data-sc-chip="vModel">?</span></label>
+                <label for="screwVerifyModel"><span data-i18n="scConv.lblVModel">Modelo</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipVModel" title="Se compara contra potencia, par y RPM calculados para este tornillo helicoidal." tabindex="0" role="button" aria-label="Ayuda modelo en comprobador.">?</span></label>
                 <select id="screwVerifyModel" data-verify-model size="1"></select>
               </div>
             </div>
-            <button type="button" data-verify-run style="margin-top: 1rem; width: 100%">Comprobar para este tornillo</button>
+            <button type="button" data-verify-run style="margin-top: 1rem; width: 100%" data-i18n="scConv.verifyRunBtn">Comprobar para este tornillo</button>
             <div data-verify-out></div>
           </div>
         </section>
@@ -516,7 +518,7 @@
         </section>
 
         <section class="panel">
-          <h2><span class="panel-icon">PDF</span> Exportar informe</h2>
+          <h2 data-i18n="scConv.pdfExportH2Html" data-i18n-html><span class="panel-icon">PDF</span> Exportar informe</h2>
           <div id="premiumPdfExportMount" class="premium-pdf-mount"></div>
         </section>
       </div>

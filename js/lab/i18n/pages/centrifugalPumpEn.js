@@ -87,6 +87,9 @@ export const CENTRIFUGAL_PUMP_EN = {
   'cPump.optDirect': 'Direct motor\u2013pump (same shaft / ~1:1)',
   'cPump.optGearmotor': 'Geared motor (gearbox between motor and pump)',
   'cPump.btnCalc': 'Calculate and show gearmotor',
+  'cPump.btnCalcTitle': 'Refresh results and scroll to gearmotor suggestions',
+  'cPump.visualSectionAria': 'Centrifugal pump schematic',
+  'cPump.photoAlt': 'Centrifugal pump installed in a pumping station',
   'cPump.btnResults': 'View results',
   'cPump.btnMotors': 'Go to gearmotors',
   'cPump.calcHint': 'Values update when you change enabled fields. Use an HTTP server, not file://.',
@@ -108,9 +111,80 @@ export const CENTRIFUGAL_PUMP_EN = {
   'cPump.assumptionsHint': 'Assumptions and limits used in the calculation',
   'cPump.pdfExportH2Html': '<span class="panel-icon">PDF</span> Export report',
   'cPump.proTeaserHtml':
-    'Enable <strong>Pro</strong> to enter suction, line and daily hours; you get <strong>installation alerts</strong> and a more realistic <strong>service factor</strong> for continuous duty.',
+    'Enable <strong>Pro</strong> to enter suction, line and daily hours; you get <strong>installation alerts</strong> and a more realistic <strong>service factor</strong> for continuous duty. <a class="pro-install-teaser__cta" href="checkout.html">Enable Pro</a>',
   'cPump.proTeaserCta': 'Enable Pro',
   'cPump.presetChilledTooltip': 'Water, Q 120 m\u00b3/h, H 32 m, \u03b7 76 %.',
   'cPump.presetProcessTooltip': 'Brine, Q 65 m\u00b3/h, H 48 m, \u03b7 72 %.',
   'cPump.presetViscousTooltip': 'Hot oil, Q 28 m\u00b3/h, H 22 m, \u03b7 62 %.',
+  'cPump.tipCoupling':
+    'Direct drive or geared motor. Changes how the suggested drive is interpreted.',
+  'cPump.tipVoltage': 'Supply voltage for documentation. Demo catalog does not filter by voltage.',
+  'cPump.tipFreq': 'Mains frequency (Hz). Useful for consistency with motor nominal speed.',
+  'cPump.tipVerifyBrand': 'Demo catalogue manufacturer.',
+  'cPump.tipVerifySearch': 'Search by code or text in the model list.',
+  'cPump.tipVerifyModel': 'Compare catalog model with calculated power, torque and pump shaft rpm.',
+  'cPump.labelFlowHtml':
+    'Flow Q <span class="info-chip" data-i18n-attrs="title=cPump.tipFlow" title="Volumetric flow at duty point." aria-label="Help flow.">?</span>',
+  'cPump.labelFlowUnitHtml':
+    'Flow unit <span class="info-chip" data-i18n-attrs="title=cPump.tipFlowUnit" title="m\u00b3/h or L/min." aria-label="Help flow unit.">?</span>',
+  'cPump.labelHeadHtml':
+    'Total head H <span class="info-chip" data-i18n-attrs="title=cPump.tipHead" title="Total equivalent head." aria-label="Help head.">?</span>',
+  'cPump.labelPumpEffHtml':
+    'Pump efficiency \u03b7 <span class="info-chip" data-i18n-attrs="title=cPump.tipEta" title="Efficiency at (Q, H)." aria-label="Help pump efficiency.">?</span>',
+  'cPump.labelFluidTypeHtml':
+    'Fluid <span class="info-chip" data-i18n-attrs="title=cPump.tipFluidType" title="Fluid presets." aria-label="Help fluid.">?</span>',
+  'cPump.labelDensityHtml':
+    'Density \u03c1 <span class="info-chip" data-i18n-attrs="title=cPump.tipDensity" title="kg/m\u00b3." aria-label="Help density.">?</span>',
+  'cPump.labelViscosityHtml':
+    'Kinematic viscosity <span class="info-chip" data-i18n-attrs="title=cPump.tipViscosity" title="cSt." aria-label="Help viscosity.">?</span>',
+  'cPump.labelTempHtml':
+    'Operating temperature <span class="info-chip" data-i18n-attrs="title=cPump.tipTemp" title="Fluid temperature." aria-label="Help temperature.">?</span>',
+  'cPump.labelSuctionHtml':
+    'Suction gauge pressure <span class="info-chip" data-i18n-attrs="title=cPump.tipSuction" title="Gauge kPa at suction." aria-label="Help suction pressure.">?</span>',
+  'cPump.labelPipeDiamHtml':
+    'Pipe ID (discharge) <span class="info-chip" data-i18n-attrs="title=cPump.tipPipeDiam" title="Inner diameter for line velocity." aria-label="Help pipe diameter.">?</span>',
+  'cPump.labelDailyHoursHtml':
+    'Hours per day <span class="info-chip" data-i18n-attrs="title=cPump.tipDailyHours" title="Daily run time." aria-label="Help daily hours.">?</span>',
+  'cPump.labelLoadDutyHtml':
+    'Load class \u2192 service factor <span class="info-chip" data-i18n-attrs="title=cPump.tipLoadDuty" title="Drive severity class." aria-label="Help load duty.">?</span>',
+  'cPump.labelServiceFactorHtml':
+    'Service factor SF <span class="info-chip" data-i18n-attrs="title=cPump.tipServiceFactor" title="Design margin." aria-label="Help service factor.">?</span>',
+  'cPump.labelShaftSpeedHtml':
+    'Nominal pump shaft speed <span class="info-chip" data-i18n-attrs="title=cPump.tipShaftSpeed" title="Shaft rpm for torque." aria-label="Help shaft speed.">?</span>',
+  'cPump.labelCouplingHtml':
+    'Coupling type <span class="info-chip" data-i18n-attrs="title=cPump.tipCoupling" title="Direct or geared." aria-label="Help coupling.">?</span>',
+  'cPump.labelVoltageHtml':
+    'Nominal voltage <span class="info-chip" data-i18n-attrs="title=cPump.tipVoltage" title="Supply voltage." aria-label="Help voltage.">?</span>',
+  'cPump.labelFreqHtml':
+    'Frequency <span class="info-chip" data-i18n-attrs="title=cPump.tipFreq" title="Mains Hz." aria-label="Help frequency.">?</span>',
+  'cPump.labelVerifyBrandHtml':
+    'Brand <span class="info-chip" data-i18n-attrs="title=cPump.tipVerifyBrand" title="Brand." aria-label="Help brand.">?</span>',
+  'cPump.labelVerifySearchHtml':
+    'Filter model <span class="info-chip" data-i18n-attrs="title=cPump.tipVerifySearch" title="Filter." aria-label="Help filter.">?</span>',
+  'cPump.labelVerifyModelHtml':
+    'Model <span class="info-chip" data-i18n-attrs="title=cPump.tipVerifyModel" title="Catalog model." aria-label="Help model.">?</span>',
+  'cPump.optFlowM3h': 'm\u00b3/h',
+  'cPump.optFlowLmin': 'L/min',
+  'cPump.optDutyUniform': 'Uniform load \u2014 SF \u2248 1.15',
+  'cPump.optDutyModerate': 'Moderate shock \u2014 SF \u2248 1.35',
+  'cPump.optDutyHeavy': 'Heavy shock \u2014 SF \u2248 1.75',
+  'cPump.optDutyCustom': 'Custom',
+  'cPump.presetsGroupAria': 'Centrifugal pump presets',
+  'cPump.presetChilledBtn': 'HVAC \u00b7 water',
+  'cPump.presetProcessBtn': 'Process \u00b7 brine',
+  'cPump.presetViscousBtn': 'Oil \u00b7 viscous',
+  'cPump.alertEtaHigh':
+    'Efficiency \u03b7 very high for a single point: confirm on the manufacturer curve (\u03b7 usually varies with Q).',
+  'cPump.alertEtaLow':
+    'Low efficiency: check if the point is extrapolated or if there is wear / recirculation.',
+  'cPump.alertExtendedDuty':
+    'Extended duty ({hours} h/day): service factor was hardened vs. the base duty class.',
+  'cPump.alertDiagUnderDesign':
+    'Diagnostic: nameplate {Pmot} kW is below design power {Pdes} kW (shaft \u00d7 SF). Risk of overload or trip.',
+  'cPump.alertDiagUnderShaft':
+    'Diagnostic: nameplate {Pmot} kW is below shaft power {Pshaft} kW at this duty point.',
+  'cPump.alertDiagMargins':
+    'Diagnostic: nameplate / shaft = \u00d7{ratioShaft}; nameplate / design = \u00d7{ratioDes} (indicative margins).',
+  'cPump.alertDiagEnterNameplate':
+    'Diagnostic: enter nameplate motor power (kW) to compare against computed shaft and design power.',
 };

@@ -1,6 +1,6 @@
 import { bindInputValidation, mountLabPresetsBar } from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
-import { mountCompactLabFieldHelp } from './labHelpCompact.js';
+import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
@@ -83,6 +83,10 @@ const ISO_3320_RODS_BY_BORE = {
 };
 function getLang() {
   return getCurrentLang();
+}
+
+function applyHydraulicCylinderDocumentChrome() {
+  document.documentElement.lang = getCurrentLang() === 'en' ? 'en' : 'es';
 }
 const I18N = {
   es: {
@@ -268,142 +272,6 @@ function t(key, vars = {}) {
   const lg = getLang();
   const str = (I18N[lg] && I18N[lg][key]) || (I18N.es[key] || key);
   return str.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? `{${k}}`));
-}
-
-function applyStaticI18n() {
-  document.documentElement.setAttribute('lang', getLang());
-  document.title = t('pageTitle');
-  const h2 = document.querySelector('.lab-panel h2');
-  const verdict = document.getElementById('hcVerdict');
-  const mapEn = {
-    Inicio: 'Home',
-    Laboratorio: 'Laboratory',
-    'Lienzo Pro': 'Pro canvas',
-    'Nivel de detalle memoria': 'Memory detail level',
-    'Aula (básico)': 'Classroom (basic)',
-    'Proyecto (Euler + temperatura aceite)': 'Project (Euler + oil temperature)',
-    'Memoria ampliada y PDF': 'Expanded memory and PDF',
-    'Proyecto permite ajustar longitud efectiva de pandeo del vástago y registrar temperatura de aceite (supuestos).':
-      'Project mode lets you adjust effective buckling length factor and record oil temperature (assumptions).',
-    'Factor longitud efectiva pandeo (× carrera)': 'Effective buckling length factor (× stroke)',
-    '1,0 — apoyos ideales cortos': '1.0 — short ideal supports',
-    '1,2 — valor por defecto previo': '1.2 — previous default value',
-    '1,5 — guías intermedias débiles': '1.5 — weak intermediate guides',
-    '2,0 — vástago muy libre': '2.0 — very free rod',
-    'Temperatura aceite (°C) — nota': 'Oil temperature (°C) — note',
-    'Para trazabilidad; viscosidad no recalculada aquí': 'For traceability; viscosity not recalculated here',
-    '¿Qué quieres calcular?': 'What do you want to calculate?',
-    'Diseñar nueva máquina': 'Design new machine',
-    'Diagnosticar máquina existente': 'Diagnose existing machine',
-    'Diseño o flujo inverso': 'Design or inverse sizing',
-    'Diseño: carga objetivo y dimensionado. Diagnóstico: presión y diámetro reales para obtener fuerza/tonelaje disponible.':
-      'Design: target load and sizing. Diagnostic: real pressure and diameter to get available force/tonnage.',
-    'Corte de cilindro hidráulico (doble efecto, alta presión)': 'Hydraulic cylinder cross-section (double acting, high pressure)',
-    'Corte de cilindro hidraulico (doble efecto, alta presion)': 'Hydraulic cylinder cross-section (double acting, high pressure)',
-    'Puertos A/B de aceite, sellos de alta presión, guía de vástago y zonas de empuje/tracción.':
-      'Oil ports A/B, high-pressure seals, rod guide, and push/pull zones.',
-    'Puertos A/B de aceite, sellos de alta presion, guia de vastago y zonas de empuje/traccion.':
-      'Oil ports A/B, high-pressure seals, rod guide, and push/pull zones.',
-    'Presión de trabajo (bar)': 'Working pressure (bar)',
-    'Presion de trabajo (bar)': 'Working pressure (bar)',
-    'Presión hidráulica efectiva': 'Effective hydraulic pressure',
-    'Presion hidraulica efectiva': 'Effective hydraulic pressure',
-    'Usada para calcular fuerza real del cilindro y para el chequeo estructural del tubo.':
-      'Used to calculate real cylinder force and tube structural check.',
-    Aplicación: 'Application',
-    'Presión típica': 'Typical pressure',
-    'Maquinaria agrícola': 'Agricultural machinery',
-    'Máquina herramienta': 'Machine tool',
-    'Prensas industriales': 'Industrial presses',
-    'Ingeniería civil / móvil': 'Civil / mobile machinery',
-    'Diámetro pistón (mm)': 'Piston diameter (mm)',
-    'Diametro piston (mm)': 'Piston diameter (mm)',
-    'Define área de empuje': 'Defines push area',
-    'Define area de empuje': 'Defines push area',
-    'A mayor diámetro, mayor fuerza de avance para la misma presión.':
-      'Larger diameter means higher extension force at same pressure.',
-    'A mayor diametro, mayor fuerza de avance para la misma presion.':
-      'Larger diameter means higher extension force at same pressure.',
-    'Diámetro vástago (mm)': 'Rod diameter (mm)',
-    'Diametro vastago (mm)': 'Rod diameter (mm)',
-    'Afecta tracción y pandeo': 'Affects pull force and buckling',
-    'Afecta traccion y pandeo': 'Affects pull force and buckling',
-    'Un vástago mayor mejora estabilidad al pandeo y reduce riesgo de flexión.':
-      'Larger rod improves buckling stability and reduces bending risk.',
-    'Un vastago mayor mejora estabilidad al pandeo y reduce riesgo de flexion.':
-      'Larger rod improves buckling stability and reduces bending risk.',
-    'Carrera (mm)': 'Stroke (mm)',
-    'Longitud útil de desplazamiento': 'Useful travel length',
-    'Longitud util de desplazamiento': 'Useful travel length',
-    'Carreras largas aumentan la carga crítica del chequeo Euler.':
-      'Long strokes increase critical load in Euler check.',
-    'Carreras largas aumentan la carga critica del chequeo Euler.':
-      'Long strokes increase critical load in Euler check.',
-    'Carga de trabajo (kg)': 'Working load (kg)',
-    'Carga mecánica externa': 'External mechanical load',
-    'Carga mecanica externa': 'External mechanical load',
-    'Se convierte a N para comparar con fuerza disponible y factor de seguridad. El pandeo Euler usa esta carga como compresión axial en el vástago; si en su instalación solo una fracción del peso comprime el vástago, interprete el FS con margen o ajuste la carga.':
-      'Converted to N to compare against available force and safety factor. Euler buckling uses this value as axial compression on the rod; if only part of the weight compresses the rod in your setup, treat the FS as conservative or adjust the load.',
-    'Velocidad objetivo (m/s)': 'Target speed (m/s)',
-    'Define caudal requerido': 'Defines required flow',
-    'Con el área de pistón permite dimensionar el caudal que debe entregar la bomba.':
-      'Together with piston area, it defines required pump flow.',
-    'Con area de piston permite dimensionar el caudal que debe entregar la bomba.':
-      'Together with piston area, it defines required pump flow.',
-    'Caudal disponible bomba (L/min)': 'Available pump flow (L/min)',
-    'Para estimar velocidad real': 'To estimate real speed',
-    'Permite calcular la velocidad real del cilindro según el flujo disponible.':
-      'Allows estimating real cylinder speed based on available flow.',
-    'Permite calcular la velocidad real del cilindro segun el flujo disponible.':
-      'Allows estimating real cylinder speed based on available flow.',
-    'Diámetro interno de puertos (mm)': 'Port inner diameter (mm)',
-    'Diametro interno de puertos (mm)': 'Port inner diameter (mm)',
-    'Control de velocidad del aceite': 'Oil speed control',
-    'Si la velocidad en puertos es alta, aumenta calentamiento y pérdidas.':
-      'High port velocity increases heating and losses.',
-    'Si la velocidad en puertos es alta, aumenta calentamiento y perdidas.':
-      'High port velocity increases heating and losses.',
-    'Espesor comercial del tubo (mm)': 'Commercial tube wall thickness (mm)',
-    'Espesor real del tubo (mm)': 'Commercial tube wall thickness (mm)',
-    'Presión máxima orientativa por fila según diámetro pistón': 'Indicative max pressure per row for selected bore',
-    'Chequeo estructural del cuerpo': 'Body structural check',
-    'Valores comerciales habituales; se compara con el espesor mínimo calculado para la presión de trabajo.':
-      'Common commercial sizes; compared to minimum calculated thickness for working pressure.',
-    'Se compara con espesor minimo calculado y con serie comercial estandar (3, 4, 5, 6, 8, 10, 12 mm, etc.) para evitar valores poco fabricables.':
-      'Compared against calculated minimum and standard commercial wall series (3, 4, 5, 6, 8, 10, 12 mm, etc.) to avoid non-manufacturable values.',
-    'Material kit de juntas': 'Seal kit material',
-    'NBR (uso general)': 'NBR (general use)',
-    'PU (alta abrasión)': 'PU (high abrasion)',
-    'PU (alta abrasion)': 'PU (high abrasion)',
-    'FKM / Viton (alta temperatura)': 'FKM / Viton (high temperature)',
-    'Define nomenclatura del kit': 'Defines kit nomenclature',
-    'La referencia del kit cambia según el material elastomérico seleccionado para compatibilidad con fluido y temperatura.':
-      'Kit reference changes with selected elastomer for fluid and temperature compatibility.',
-    'La referencia de kit cambia segun material elastomerico seleccionado para compatibilidad con fluido y temperatura.':
-      'Kit reference changes with selected elastomer for fluid and temperature compatibility.',
-    Material: 'Material',
-    'Fluido compatible': 'Compatible fluid',
-    'T máx.': 'T max.',
-    'Aceite mineral HLP': 'Mineral oil HLP',
-    'Aceite mineral, emulsiones': 'Mineral oil, emulsions',
-    'Aceite mineral, sintético': 'Mineral, synthetic oil',
-    'Memoria de cálculo, fórmulas y supuestos': 'Calculation memory, formulas and assumptions',
-    'SISTEMA APTO': 'SYSTEM SUITABLE',
-  };
-  if (getLang() === 'en') {
-    document.querySelectorAll(
-      'label, span.hint, p.lab-field-help, p.lab-diagram-wrap__title, p.lab-diagram-caption, option, #hcVerdict, .hc-mini-table th, .hc-mini-table td, summary',
-    ).forEach((el) => {
-      const k = (el.textContent || '').trim();
-      if (mapEn[k]) el.textContent = mapEn[k];
-    });
-  }
-  document.querySelector('.site-nav__center')?.setAttribute(
-    'aria-label',
-    getLang() === 'en' ? 'Main navigation' : 'Navegaci\u00f3n principal',
-  );
-  if (h2) h2.textContent = t('title');
-  if (verdict) verdict.textContent = t('verdictOk');
 }
 
 function fmt(n, d = 2) {
@@ -982,7 +850,7 @@ document.getElementById('hcBoreMm')?.addEventListener('change', () => {
   setRodOptionsForBore(boreVal, Math.round(r.ok ? r.value : 36));
   syncHcWallSelectOptions(boreVal);
 })();
-applyStaticI18n();
+applyHydraulicCylinderDocumentChrome();
 syncHcLabTierUi();
 syncModeUi();
 mountCompactLabFieldHelp();
@@ -1002,8 +870,17 @@ mountLabPresetsBar('hcPresetsBar', HC_PRESETS, computeAndRender);
 computeAndRender();
 
 watchLangAndApply({ ...HYDRAULIC_CYLINDER_EN, ...FLUIDS_HUB_UX_EN }, {
+  reloadOnEs: false,
   onEnApplied: () => {
-    applyStaticI18n();
+    applyHydraulicCylinderDocumentChrome();
+    refreshCompactLabFieldHelp();
+    syncHcLabTierUi();
+    syncModeUi();
+    computeAndRender();
+  },
+  onEsRestored: () => {
+    applyHydraulicCylinderDocumentChrome();
+    refreshCompactLabFieldHelp();
     syncHcLabTierUi();
     syncModeUi();
     computeAndRender();

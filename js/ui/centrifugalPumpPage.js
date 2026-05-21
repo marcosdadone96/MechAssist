@@ -17,7 +17,7 @@ import { renderCentrifugalPumpDiagram } from './diagramPump.js';
 import { mountPremiumPdfExportBar, buildPumpPdfPayload } from '../services/reportPdfExport.js';
 import { readMountingPreferences } from '../modules/mountingPreferences.js';
 import { injectMountingConfigSection, MOUNTING_INPUT_IDS, refreshMountingConfigSection } from './mountingConfigSection.js';
-import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
+import { getCurrentLang } from '../config/locales.js';
 import { openMotorsRecommendationsAndScroll } from './motorsCollapsible.js';
 import { applyMachinePremiumGates } from './machinePremiumGates.js';
 import { foldAllMachineDetailsOncePerPageLoad } from './machineDetailsFold.js';
@@ -28,14 +28,34 @@ import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { CENTRIFUGAL_PUMP_EN } from '../lab/i18n/pages/centrifugalPumpEn.js';
-import {
-  applyCentrifugalPumpPageLanguage,
-  applyCentrifugalPumpStaticI18n,
-} from './centrifugalPumpStaticI18n.js';
-
-const PUMP_PAGE_I18N_EN = { ...MACHINE_HUB_UX_EN, ...CENTRIFUGAL_PUMP_EN };
 import { incrementCalcCounter } from '../services/calcCounter.js';
 import { PUMP_PRESET_BY_ID } from '../modules/machineHubPresets.js';
+
+const PUMP_PAGE_I18N_EN = { ...MACHINE_HUB_UX_EN, ...CENTRIFUGAL_PUMP_EN };
+const PUMP_DOC_TITLE_ES = 'Bomba centr\u00edfuga \u2014 TheMechAssist';
+
+function applyPumpDocumentChrome() {
+  const en = getCurrentLang() === 'en';
+  document.documentElement.lang = en ? 'en' : 'es';
+  document.title = en ? PUMP_PAGE_I18N_EN['cPump.docTitle'] : PUMP_DOC_TITLE_ES;
+}
+
+/**
+ * @param {string} key
+ * @param {Record<string, string | number>} [vars]
+ * @param {string} esFallback
+ */
+function pumpPageStr(key, vars, esFallback) {
+  if (getCurrentLang() !== 'en') return esFallback;
+  let s = PUMP_PAGE_I18N_EN[key];
+  if (typeof s !== 'string') return esFallback;
+  if (vars) {
+    for (const [k, v] of Object.entries(vars)) {
+      s = s.replaceAll(`{${k}}`, String(v));
+    }
+  }
+  return s;
+}
 
 const pumpInputIds = [
   'pumpNameplateKw',
@@ -129,17 +149,6 @@ function readInputs() {
   };
 }
 
-function syncPumpDutySelectLabelsEn() {
-  const dutyEl = document.getElementById('pumpLoadDuty');
-  if (!(dutyEl instanceof HTMLSelectElement)) return;
-  LOAD_DUTY_OPTIONS.forEach((o) => {
-    const opt = dutyEl.querySelector(`option[value="${o.id}"]`);
-    if (!(opt instanceof HTMLOptionElement)) return;
-    const L = LOAD_DUTY_OPTIONS_EN[o.id];
-    opt.textContent = o.sf != null ? `${L.label} \u2014 SF \u2248 ${o.sf}` : L.label;
-  });
-}
-
 function syncLoadDutyUi() {
   const dutyEl = document.getElementById('pumpLoadDuty');
   const sfIn = document.getElementById('pumpServiceFactor');
@@ -198,11 +207,6 @@ function patchProInstallTeaserCheckoutLink() {
   if (!isPremiumViaQueryProUiAllowed()) {
     a.href = buildRegisterUrlWithNextCheckout();
   }
-  if (getCurrentLang() === 'en') {
-    a.textContent = 'Enable Pro';
-  } else {
-    a.textContent = 'Activar Pro';
-  }
 }
 
 function syncProInstallUi() {
@@ -260,216 +264,6 @@ function normalizePhysicalInputs() {
     const v = Math.min(lim.max, Math.max(lim.min, raw));
     if (v !== raw) el.value = String(v);
   });
-}
-
-function localizePumpStaticContent() {
-  if (getCurrentLang() !== 'en') return;
-  applyCentrifugalPumpStaticI18n('en');
-  document.documentElement.lang = 'en';
-  document.title = 'Centrifugal pump — TheMechAssist';
-  const fp = document.getElementById('fileProtoWarn');
-  if (fp) {
-    fp.textContent =
-      'Open this site over HTTP (not by double-clicking the file). From the project folder run: npx --yes serve .';
-  }
-  const setText = (sel, t) => {
-    const el = document.querySelector(sel);
-    if (el) el.textContent = t;
-  };
-  const setHtml = (sel, h) => {
-    const el = document.querySelector(sel);
-    if (el) el.innerHTML = h;
-  };
-  document.querySelector('.site-nav__center')?.setAttribute('aria-label', 'Main navigation');
-  setText('.flat-sidebar__title', 'Centrifugal pump');
-  setText('details.flat-sidebar-intro .flat-sidebar-intro__summary', 'Calculator description and scope');
-  setText(
-    'details.flat-sidebar-intro .flat-sidebar__lead',
-    'Duty point Q–H, efficiency, fluid and drive. Results, schematic and gearmotor checker are on the right.',
-  );
-  setText('.flat-accordion:nth-of-type(1) .flat-accordion__label', 'Operating parameters');
-  setText('.flat-accordion:nth-of-type(2) .flat-accordion__label', 'Fluid properties');
-  const ctaHref = isPremiumViaQueryProUiAllowed() ? '?pro=1' : buildRegisterUrlWithNextCheckout();
-  setHtml(
-    '#proInstallTeaser',
-    `Enable <strong>Pro</strong> to enter suction, line and daily hours; you get <strong>installation alerts</strong> and a more realistic <strong>service factor</strong> for continuous duty.
-            <a class="pro-install-teaser__cta" href="${ctaHref}">Enable Pro</a>`,
-  );
-  setHtml(
-    '.flat-accordion:nth-of-type(3) .flat-accordion__label',
-    '<span class="premium-flag">Pro</span> Installation layout',
-  );
-  setText('.flat-accordion:nth-of-type(4) .flat-accordion__label', 'Drive duty and electrical data');
-  setHtml(
-    'label[for="pumpFlow"]',
-    `Flow Q <span class="info-chip" title="Volumetric flow at the duty point. Must match the same condition used for H and \u03b7." aria-label="Help: flow.">?</span>`,
-  );
-  setHtml(
-    'label[for="pumpFlowUnit"]',
-    `Flow unit <span class="info-chip" title="Choose m\u00b3/h or L/min; converted internally to m\u00b3/s." aria-label="Help: flow unit.">?</span>`,
-  );
-  setText('.field:has(#pumpFlowUnit) .field-hint', 'Converted to m\u00b3/s in the calculation.');
-  setHtml(
-    'label[for="pumpHead"]',
-    `Total head H <span class="info-chip" title="Total equivalent head (static + losses per your definition). Linear impact on power." aria-label="Help: head.">?</span>`,
-  );
-  setText('.field:has(#pumpHead) .field-hint', 'm fluid column (static + losses already in your definition).');
-  setHtml(
-    'label[for="pumpEta"]',
-    `Pump efficiency \u03b7 <span class="info-chip" title="Pump efficiency at (Q, H). Typical 60\u201385%." aria-label="Help: efficiency.">?</span>`,
-  );
-  setText('.field:has(#pumpEta) .field-hint', '% at (Q, H); typically ~60\u201385 depending on machine.');
-  setHtml(
-    'label[for="fluidType"]',
-    `Fluid type <span class="info-chip" title="Sets indicative density and viscosity presets; you can override below." aria-label="Help: fluid type.">?</span>`,
-  );
-  setText('.field:has(#fluidType) .field-hint', 'Adjusts default density and viscosity; you can edit below.');
-  const ft = document.getElementById('fluidType');
-  if (ft) {
-    const m = { water: 'Water', oil: 'Oil', brine: 'Brine', slurry: 'Slurry / pulp' };
-    Object.entries(m).forEach(([v, lab]) => {
-      const o = ft.querySelector(`option[value="${v}"]`);
-      if (o) o.textContent = lab;
-    });
-  }
-  setHtml(
-    'label[for="rho"]',
-    `Density \u03c1 <span class="info-chip" title="Fluid density in kg/m\u00b3. Higher \u03c1 increases hydraulic power for the same Q and H." aria-label="Help: density.">?</span>`,
-  );
-  setHtml(
-    'label[for="viscosity"]',
-    `Kinematic viscosity <span class="info-chip" title="mm\u00b2/s (cSt). Used for an indicative power correction." aria-label="Help: viscosity.">?</span>`,
-  );
-  setText('.field:has(#viscosity) .field-hint', 'mm\u00b2/s (cSt). Indicative power correction.');
-  setHtml(
-    'label[for="tempC"]',
-    `Operating temperature <span class="info-chip" title="For documentation and NPSH risk (alerts with Pro suction data)." aria-label="Help: temperature.">?</span>`,
-  );
-  setText('.field:has(#tempC) .field-hint', '\u00b0C \u2014 documentation and NPSH risk (Pro suction alerts).');
-  setHtml(
-    'label[for="suctionKpa"]',
-    `Suction gauge pressure <span class="info-chip" title="kPa gauge at suction. Negative values mean vacuum." aria-label="Help: suction pressure.">?</span>`,
-  );
-  setText('.field:has(#suctionKpa) .field-hint', 'kPa \u2014 negative = vacuum (lift).');
-  setHtml(
-    'label[for="pipeDiamMm"]',
-    `Pipe ID (discharge) <span class="info-chip" title="Internal diameter used to estimate line velocity." aria-label="Help: pipe diameter.">?</span>`,
-  );
-  setText('.field:has(#pipeDiamMm) .field-hint', 'mm \u2014 to estimate velocity and high/low warnings.');
-  setHtml(
-    'label[for="dailyHours"]',
-    `Hours per day <span class="info-chip" title="Estimated daily use. Long runtimes can harden the service factor." aria-label="Help: daily hours.">?</span>`,
-  );
-  setText('.field:has(#dailyHours) .field-hint', '24/7 duty hardens service factor (indicative).');
-  setHtml(
-    'label[for="pumpLoadDuty"]',
-    `Load class \u2192 service factor <span class="info-chip" title="Duty class for base SF suggestion." aria-label="Help: load duty.">?</span>`,
-  );
-  setHtml(
-    'label[for="pumpServiceFactor"]',
-    `Service factor SF <span class="info-chip" title="Design margin on torque/power for drive selection." aria-label="Help: service factor.">?</span>`,
-  );
-  setHtml(
-    'label[for="pumpSpeedRpm"]',
-    `Nominal pump shaft speed <span class="info-chip" title="Pump shaft rpm for torque T = P/\u03c9." aria-label="Help: pump speed.">?</span>`,
-  );
-  setText('.field:has(#pumpSpeedRpm) .field-hint', 'min\u207b\u00b9 \u2014 direct coupling or gearbox output.');
-  setHtml(
-    'label[for="couplingType"]',
-    `Coupling type <span class="info-chip" title="Direct or geared motor. Changes how the suggested drive is read." aria-label="Help: coupling.">?</span>`,
-  );
-  const cp = document.getElementById('couplingType');
-  if (cp) {
-    const d = cp.querySelector('option[value="direct"]');
-    const g = cp.querySelector('option[value="gearmotor"]');
-    if (d) d.textContent = 'Direct motor\u2013pump (same shaft / ~1:1)';
-    if (g) g.textContent = 'Geared motor (gearbox between motor and pump)';
-  }
-  setHtml(
-    'label[for="pumpVoltage"]',
-    `Nominal voltage <span class="info-chip" title="Supply data for documentation. Demo catalog does not filter by voltage." aria-label="Help: voltage.">?</span>`,
-  );
-  setText('.field:has(#pumpVoltage) .field-hint', 'V \u2014 documentation; demo catalog does not filter by supply.');
-  setHtml(
-    'label[for="pumpFreq"]',
-    `Frequency <span class="info-chip" title="Mains frequency (Hz). For consistency with nominal motor speed." aria-label="Help: frequency.">?</span>`,
-  );
-  syncPumpDutySelectLabelsEn();
-  refreshMountingConfigSection();
-  document.getElementById('btnPumpCalc')?.setAttribute(
-    'title',
-    'Refresh results and scroll to gearmotor suggestions',
-  );
-  setText('#btnPumpCalc', 'Calculate and show gearmotor');
-  setText(
-    '.calc-hint',
-    'Values update when you change enabled fields. Use an HTTP server, not file://.',
-  );
-  const resultsPanel = document.querySelector('.layout-right > section.panel:first-of-type');
-  const resultsH2 = resultsPanel?.querySelector('h2');
-  if (resultsH2) {
-    resultsH2.innerHTML = '<span class="panel-icon">\u2211</span> Results (hydraulics and shaft)';
-  }
-  const resultsLead = resultsPanel?.querySelector(':scope > p.muted');
-  if (resultsLead) {
-    resultsLead.textContent =
-      'Hydraulic power, shaft power and design quantities with service factor.';
-  }
-  const duo = document.querySelector('.flat-visual.flat-visual--integrated');
-  if (duo) duo.setAttribute('aria-label', 'Centrifugal pump schematic');
-  const img = document.querySelector('.flat-visual__photo-block img');
-  if (img) img.alt = 'Centrifugal pump installed in a pumping station';
-  setHtml(
-    '.flat-visual__photo-block figcaption',
-    `Centrifugal pump at a pumping station.
-              <a href="https://commons.wikimedia.org/wiki/File:Pump_station.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>.`,
-  );
-  setHtml(
-    '#pumpVerifyPanel h2',
-    '<span class="panel-icon">\u2713</span> Check a gearmotor I already have',
-  );
-  setText(
-    '#pumpVerifyPanel > p.muted',
-    'Same check as belt tools: power, output torque and speed vs. pump duty.',
-  );
-  setHtml(
-    'label[for="pumpVerifyBrand"]',
-    `Brand <span class="info-chip" title="Demo catalog manufacturer for quick verification." aria-label="Help: verify brand.">?</span>`,
-  );
-  setHtml(
-    'label[for="pumpVerifySearch"]',
-    `Filter model <span class="info-chip" title="Text search on the catalog list." aria-label="Help: verify filter.">?</span>`,
-  );
-  setHtml(
-    'label[for="pumpVerifyModel"]',
-    `Model <span class="info-chip" title="Catalog model compared to required power, torque and rpm." aria-label="Help: verify model.">?</span>`,
-  );
-  const vrun = document.querySelector('#pumpVerifyPanel button[data-verify-run]');
-  if (vrun) vrun.textContent = 'Check for this pump';
-  setText('.motors-details:has(#pumpEngineeringReport) .motors-details__title', 'Engineering breakdown');
-  setText(
-    '.motors-details:has(#pumpEngineeringReport) .motors-details__hint',
-    'Collapsed by default \u2014 open for gearbox, strategies and steps',
-  );
-  setText(
-    '.motors-details:has(#pumpEngineeringReport) .motors-details__body > p.muted',
-    'Indicative gearbox, motor strategies and model steps.',
-  );
-  setText('#motoresRecommendations .motors-details__title', 'Geared motors (demo catalog)');
-  setText(
-    '#motoresRecommendations .motors-details__hint',
-    'Collapsed by default \u2014 open for recommendations, export and checker',
-  );
-  setText(
-    '.motors-details:has(#pumpAssumptionsList) .motors-details__title',
-    'Model assumptions',
-  );
-  setText(
-    '.motors-details:has(#pumpAssumptionsList) .motors-details__hint',
-    'Assumptions and limits used in the calculation',
-  );
-  const pdfH2 = document.getElementById('premiumPdfExportMount')?.closest('section.panel')?.querySelector('h2');
-  if (pdfH2) pdfH2.innerHTML = '<span class="panel-icon">PDF</span> Export report';
 }
 
 function buildQualityChecklist(raw, r, en) {
@@ -841,17 +635,21 @@ function refreshCore() {
       if (η > 92) {
         alerts.push({
           level: /** @type {const} */ ('warn'),
-          text: en
-            ? 'Efficiency \u03b7 very high for a single point: confirm on the manufacturer curve (\u03b7 usually varies with Q).'
-            : 'Rendimiento η muy alto para un punto único: confirme en la curva del fabricante (η suele variar con Q).',
+          text: pumpPageStr(
+            'cPump.alertEtaHigh',
+            undefined,
+            'Rendimiento η muy alto para un punto único: confirme en la curva del fabricante (η suele variar con Q).',
+          ),
         });
       }
       if (η < 35) {
         alerts.push({
           level: /** @type {const} */ ('warn'),
-          text: en
-            ? 'Low efficiency: check if the point is extrapolated or if there is wear / recirculation.'
-            : 'Rendimiento bajo: revise si el punto es extrapolado o si hay desgaste / recirculación.',
+          text: pumpPageStr(
+            'cPump.alertEtaLow',
+            undefined,
+            'Rendimiento bajo: revise si el punto es extrapolado o si hay desgaste / recirculación.',
+          ),
         });
       }
       if (raw.installationProActive) {
@@ -870,9 +668,11 @@ function refreshCore() {
       if (FEATURES.safetyOptimization && raw.installationProActive && raw.dailyRunHours != null && raw.dailyRunHours >= 20) {
         alerts.push({
           level: 'info',
-          text: en
-            ? `Extended duty (${raw.dailyRunHours} h/day): service factor was hardened vs. the base duty class.`
-            : `Servicio prolongado (${raw.dailyRunHours} h/día): se ha endurecido el factor de servicio respecto al valor base del tipo de carga.`,
+          text: pumpPageStr(
+            'cPump.alertExtendedDuty',
+            { hours: raw.dailyRunHours },
+            `Servicio prolongado (${raw.dailyRunHours} h/día): se ha endurecido el factor de servicio respecto al valor base del tipo de carga.`,
+          ),
         });
       }
       if (raw.pumpCalcMode === 'diagnostic' && raw.nameplatePower_kW > 0) {
@@ -884,31 +684,39 @@ function refreshCore() {
         if (ratioDes < 1) {
           alerts.push({
             level: 'warn',
-            text: en
-              ? `Diagnostic: nameplate ${formatNum(Pmot, 2)} kW is below design power ${formatNum(Pdes, 2)} kW (shaft × SF). Risk of overload or trip.`
-              : `Diagnóstico: la placa ${formatNum(Pmot, 2)} kW queda por debajo de la potencia de diseño ${formatNum(Pdes, 2)} kW (eje × SF). Riesgo de sobrecarga o disparos.`,
+            text: pumpPageStr(
+              'cPump.alertDiagUnderDesign',
+              { Pmot: formatNum(Pmot, 2), Pdes: formatNum(Pdes, 2) },
+              `Diagnóstico: la placa ${formatNum(Pmot, 2)} kW queda por debajo de la potencia de diseño ${formatNum(Pdes, 2)} kW (eje × SF). Riesgo de sobrecarga o disparos.`,
+            ),
           });
         } else if (ratioShaft < 1) {
           alerts.push({
             level: 'warn',
-            text: en
-              ? `Diagnostic: nameplate ${formatNum(Pmot, 2)} kW is below shaft power ${formatNum(Pshaft, 2)} kW at this duty point.`
-              : `Diagnóstico: la placa ${formatNum(Pmot, 2)} kW es inferior a la potencia de eje ${formatNum(Pshaft, 2)} kW en este punto (Q, H, η).`,
+            text: pumpPageStr(
+              'cPump.alertDiagUnderShaft',
+              { Pmot: formatNum(Pmot, 2), Pshaft: formatNum(Pshaft, 2) },
+              `Diagnóstico: la placa ${formatNum(Pmot, 2)} kW es inferior a la potencia de eje ${formatNum(Pshaft, 2)} kW en este punto (Q, H, η).`,
+            ),
           });
         } else {
           alerts.push({
             level: 'info',
-            text: en
-              ? `Diagnostic: nameplate / shaft = ×${formatNum(ratioShaft, 2)}; nameplate / design = ×${formatNum(ratioDes, 2)} (indicative margins).`
-              : `Diagnóstico: placa / P<sub>eje</sub> = ×${formatNum(ratioShaft, 2)}; placa / P<sub>diseño</sub> = ×${formatNum(ratioDes, 2)} (márgenes orientativos).`,
+            text: pumpPageStr(
+              'cPump.alertDiagMargins',
+              { ratioShaft: formatNum(ratioShaft, 2), ratioDes: formatNum(ratioDes, 2) },
+              `Diagnóstico: placa / P<sub>eje</sub> = ×${formatNum(ratioShaft, 2)}; placa / P<sub>diseño</sub> = ×${formatNum(ratioDes, 2)} (márgenes orientativos).`,
+            ),
           });
         }
       } else if (raw.pumpCalcMode === 'diagnostic') {
         alerts.push({
           level: 'info',
-          text: en
-            ? 'Diagnostic: enter nameplate motor power (kW) to compare against computed shaft and design power.'
-            : 'Diagnóstico: introduzca la potencia de placa del motor (kW) para comparar con P<sub>eje</sub> y P<sub>diseño</sub>.',
+          text: pumpPageStr(
+            'cPump.alertDiagEnterNameplate',
+            undefined,
+            'Diagnóstico: introduzca la potencia de placa del motor (kW) para comparar con P<sub>eje</sub> y P<sub>diseño</sub>.',
+          ),
         });
       }
       els.designAlerts.innerHTML = alerts
@@ -1160,7 +968,7 @@ MOUNTING_INPUT_IDS.forEach((id) => {
 
 syncProInstallUi();
 applyPhysicalLimitsToInputs();
-localizePumpStaticContent();
+applyPumpDocumentChrome();
 patchProInstallTeaserCheckoutLink();
 syncLoadDutyUi();
 syncPumpCalcModeUi();
@@ -1180,10 +988,18 @@ wireMachineRfqExport({
 });
 
 watchLangAndApply(PUMP_PAGE_I18N_EN, {
+  reloadOnEs: false,
   onEnApplied: () => {
-    document.documentElement.lang = 'en';
-    applyCentrifugalPumpPageLanguage();
-    localizePumpStaticContent();
+    applyPumpDocumentChrome();
+    patchProInstallTeaserCheckoutLink();
+    syncLoadDutyUi();
+    syncPumpCalcModeUi();
+    refreshMountingConfigSection();
+    initInfoChipPopovers(document.body);
+    refresh();
+  },
+  onEsRestored: () => {
+    applyPumpDocumentChrome();
     patchProInstallTeaserCheckoutLink();
     syncLoadDutyUi();
     syncPumpCalcModeUi();
@@ -1199,9 +1015,4 @@ document.querySelector('.flat-sidebar')?.addEventListener('click', (e) => {
   const id = t.getAttribute('data-pump-preset');
   if (id) applyPumpPresetFromId(id);
 });
-
-window.addEventListener(HOME_LANG_CHANGED_EVENT, () => {
-  location.reload();
-});
-
 

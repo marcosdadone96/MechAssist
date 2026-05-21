@@ -1112,7 +1112,9 @@ mountLabCloudSaveBar('compression_spring', {
   },
 });
 watchLangAndApply(COMPRESSION_SPRING_EN, {
+  reloadOnEs: false,
   onEnApplied: () => runCalcWithIndustrialFeedback(resultsWrap, computeCore),
+  onEsRestored: () => runCalcWithIndustrialFeedback(resultsWrap, computeCore),
 });
 window.addEventListener(LAB_LANG_EVENT, () => {
   runCalcWithIndustrialFeedback(resultsWrap, computeCore);

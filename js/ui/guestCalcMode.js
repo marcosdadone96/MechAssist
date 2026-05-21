@@ -1,13 +1,35 @@
 /**
- * Visitantes sin cuenta: solo lectura en calculadoras (lab, m\u00e1quinas, hidr\u00e1ulica).
+ * Visitantes sin cuenta: solo lectura en calculadoras (lab, máquinas, hidráulica).
  */
 import { isPromoEmbed } from '../util/promoMode.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { showCreditsModal } from './creditsUi.js';
 import { findCalcInputsRoot, lockCalcInputs } from './calcInputLock.js';
+import { getCurrentLang } from '../config/locales.js';
+import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 
-function langEn() {
-  return document.documentElement.lang?.toLowerCase().startsWith('en');
+const GUEST_ES = {
+  bannerHtml:
+    '<p><strong>Solo lectura.</strong> Puede ver campos y resultados. <a href="{registerUrl}">Inicie sesión o regístrese</a> para editar, guardar y exportar PDF.</p>',
+  modalTitle: 'Inicie sesión para editar',
+  modalBody:
+    'Esta calculadora es solo lectura para visitantes. Cree una cuenta gratuita o inicie sesión para cambiar valores y guardar.',
+  modalPrimary: 'Entrar / Registrarse',
+  modalSecondary: 'Seguir viendo',
+};
+
+function hubCopy() {
+  const en = getCurrentLang() === 'en';
+  return {
+    bannerHtml: (en ? MACHINE_HUB_UX_EN['machineHub.guestBannerHtml'] : GUEST_ES.bannerHtml).replace(
+      '{registerUrl}',
+      registerUrl(),
+    ),
+    modalTitle: en ? MACHINE_HUB_UX_EN['machineHub.guestModalTitle'] : GUEST_ES.modalTitle,
+    modalBody: en ? MACHINE_HUB_UX_EN['machineHub.guestModalBody'] : GUEST_ES.modalBody,
+    modalPrimary: en ? MACHINE_HUB_UX_EN['machineHub.guestModalPrimary'] : GUEST_ES.modalPrimary,
+    modalSecondary: en ? MACHINE_HUB_UX_EN['machineHub.guestModalSecondary'] : GUEST_ES.modalSecondary,
+  };
 }
 
 function registerUrl() {
@@ -20,19 +42,25 @@ export function isGuestCalcModeActive() {
   return document.documentElement.hasAttribute('data-guest-calc');
 }
 
+function refreshGuestBanner() {
+  const bar = document.getElementById('guest-calc-banner');
+  if (!bar) return;
+  bar.innerHTML = hubCopy().bannerHtml;
+}
+
 /**
  * @param {HTMLElement} root
  */
 function mountGuestBanner(root) {
-  if (document.getElementById('guest-calc-banner')) return;
-  const en = langEn();
+  if (document.getElementById('guest-calc-banner')) {
+    refreshGuestBanner();
+    return;
+  }
   const bar = document.createElement('div');
   bar.id = 'guest-calc-banner';
   bar.className = 'guest-calc-banner';
   bar.setAttribute('role', 'status');
-  bar.innerHTML = en
-    ? `<p><strong>View only.</strong> You can see fields and results. <a href="${registerUrl()}">Sign in or register</a> to edit values, save and export PDF.</p>`
-    : `<p><strong>Solo lectura.</strong> Puede ver campos y resultados. <a href="${registerUrl()}">Inicie sesi\u00f3n o reg\u00edstrese</a> para editar, guardar y exportar PDF.</p>`;
+  bar.innerHTML = hubCopy().bannerHtml;
   const head = root.querySelector('.lab-calc-page-head, .flat-sidebar__head, section.panel h2');
   if (head?.parentElement) {
     head.parentElement.insertBefore(bar, head.nextSibling);
@@ -42,15 +70,13 @@ function mountGuestBanner(root) {
 }
 
 function showGuestRegisterModal() {
-  const en = langEn();
+  const c = hubCopy();
   showCreditsModal({
-    title: en ? 'Sign in to edit' : 'Inicie sesi\u00f3n para editar',
-    body: en
-      ? 'This calculator is view-only for guests. Create a free account or sign in to change values and save your work.'
-      : 'Esta calculadora es solo lectura para visitantes. Cree una cuenta gratuita o inicie sesi\u00f3n para cambiar valores y guardar.',
-    primaryLabel: en ? 'Sign in / Register' : 'Entrar / Registrarse',
+    title: c.modalTitle,
+    body: c.modalBody,
+    primaryLabel: c.modalPrimary,
     primaryHref: registerUrl(),
-    secondaryLabel: en ? 'Continue viewing' : 'Seguir viendo',
+    secondaryLabel: c.modalSecondary,
     onSecondary: () => {},
   });
 }
@@ -82,7 +108,7 @@ function applyGuestInputLock() {
 }
 
 /**
- * Inicializa modo visitante en calculadoras y m\u00e1quinas.
+ * Inicializa modo visitante en calculadoras y máquinas.
  */
 export function initGuestCalcMode() {
   if (isPromoEmbed()) return;
@@ -124,6 +150,13 @@ export function initGuestCalcMode() {
       applyGuestInputLock();
     });
     guestLockObserver.observe(root, { childList: true, subtree: true });
+  }
+
+  if (!document.documentElement.dataset.guestLangWired) {
+    document.documentElement.dataset.guestLangWired = '1';
+    const onLang = () => refreshGuestBanner();
+    window.addEventListener('lab-language-changed', onLang);
+    window.addEventListener('home-language-changed', onLang);
   }
 }
 

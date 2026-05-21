@@ -954,8 +954,16 @@ bindFlatRangeSlider('rollerDR', 'rollerD', 50, 1200, 1);
 bindFlatRangeSlider('frictionR', 'friction', 0.15, 0.65, 0.01);
 
 watchLangAndApply(FLAT_PAGE_EN, {
+  reloadOnEs: false,
   onEnApplied: () => {
     document.documentElement.lang = 'en';
+    refreshMountingConfigSection();
+    syncLoadDutyUi();
+    initInfoChipPopovers(document.body);
+    refresh();
+  },
+  onEsRestored: () => {
+    document.documentElement.lang = 'es';
     refreshMountingConfigSection();
     syncLoadDutyUi();
     initInfoChipPopovers(document.body);

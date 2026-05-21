@@ -8,9 +8,26 @@ export const MACHINE_HUB_UX_EN = {
     '<strong>Indicative results only.</strong> They do not replace code-compliant calculation (EN\u00a081, ISO\u00a04413, etc.) or sign-off by a qualified professional engineer.',
   'machineHub.verifyCatalogLead':
     'Select a gearmotor from the sample catalog to compare its power and torque with the calculated results. It does not change the form inputs. Values are indicative, based on specifications published by the manufacturer.',
+  'machineHub.verifyBrandSew': 'SEW-Eurodrive',
+  'machineHub.verifyBrandSiemens': 'Siemens (Simogear)',
+  'machineHub.verifyBrandNord': 'Nord Drivesystems',
+  'machineHub.verifyBrandBonfiglioli': 'Bonfiglioli',
+  'machineHub.verifyBrandMotovario': 'Motovario',
   'machineHub.toastRfqCopied': 'Copied to clipboard.',
   'machineHub.toastRfqErr':
     'Could not copy (browser blocked clipboard). Select and copy manually.',
+  'machineHub.rfqAriaText': 'Copy duty summary as plain text for supplier RFQ',
+  'machineHub.rfqAriaCsv': 'Copy duty summary as CSV row for supplier RFQ',
+  'machineHub.guestBannerHtml':
+    '<p><strong>View only.</strong> You can see fields and results. <a href="{registerUrl}">Sign in or register</a> to edit values, save and export PDF.</p>',
+  'machineHub.guestModalTitle': 'Sign in to edit',
+  'machineHub.guestModalBody':
+    'This calculator is view-only for guests. Create a free account or sign in to change values and save.',
+  'machineHub.guestModalPrimary': 'Sign in / Register',
+  'machineHub.guestModalSecondary': 'Continue viewing',
+  'machineHub.noCreditsBannerHtml':
+    '<p><strong>No credits left.</strong> You can still view all fields and results; inputs are read-only. Recharge credits to edit again. <a href="{checkoutUrl}">View plans</a></p>',
+  'machineHub.pdfDownloadAria': 'Download engineering PDF report',
 
   'machineHub.nextStepsAria': 'Usual next step',
   'machineHub.nextStepsTitle': 'Usual next step',

@@ -17,6 +17,10 @@ export const BOLTS_ISO_EN = {
   'bolt.labelD': 'Diameter',
   'bolt.labelGrade': 'Grade',
   'bolt.labelF': 'Design tension F (kN)',
+  'bolt.helpCalcModeDesignHtml':
+    '<strong>Design:</strong> enter the tension the joint must carry; the assistant proposes the smallest metric/grade combination that satisfies (internal catalogue).',
+  'bolt.helpCalcModeDiagnosticHtml':
+    '<strong>Diagnostic:</strong> pick real M and grade and check against F and preload.',
   'bolt.helpF':
     'Total axial design load on the <strong>joint</strong> (not per bolt). Enter the service force without a safety factor; the model compares it with estimated preload. If shear is combined, use only the tensile component here and check shear separately.',
   'bolt.labelMu': 'Friction coefficient \u03bc',

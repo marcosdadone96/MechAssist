@@ -76,4 +76,12 @@ export const BEARINGS_PAGE_EN = {
   'brg.preset3': 'Rollers \u00b7 high load',
   'brg.summaryFull': 'Full results',
   'brg.copyResults': 'Copy results',
+  'brg.nextStepsAria': 'Typical next step',
+  'brg.nextStepsTitle': 'Typical next step',
+  'brg.nextLi1Html':
+    '<a href="calc-bearings-catalog.html">62xx catalogue</a> \u2014 pick a designation with demo C.',
+  'brg.nextLi2Html':
+    '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 journal diameter at the bearing seat.',
+  'brg.nextLi3Html':
+    '<a href="calc-gears.html">Cylindrical gears</a> \u2014 loads that feed equivalent P.',
 };

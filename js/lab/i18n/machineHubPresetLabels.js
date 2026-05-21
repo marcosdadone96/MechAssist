@@ -12,9 +12,15 @@ const PRESET_BUTTONS = {
   },
   minerals: {
     es: 'Mineral \u00b7 abrasivo',
-    en: 'Cement \u00b7 abrasive',
+    en: 'Mineral \u00b7 abrasive',
     titleEs: 'Mineral denso, descarga por gravedad',
     titleEn: 'Dense mineral, gravity discharge',
+  },
+  cement_clinker: {
+    es: 'Cemento \u00b7 clinker',
+    en: 'Cement \u00b7 clinker',
+    titleEs: 'Clinker cemento, descarga centr\u00edfuga',
+    titleEn: 'Cement clinker, centrifugal discharge',
   },
   food_powder: {
     es: 'Polvo \u00b7 alimentaci\u00f3n',
@@ -93,6 +99,12 @@ const PRESET_BUTTONS = {
     en: 'Workshop \u00b7 heavy',
     titleEs: 'Mayor masa, Tr 45\u00d77',
     titleEn: 'Higher mass, Tr 45\u00d77',
+  },
+  showroom_standard: {
+    es: 'Taller \u00b7 est\u00e1ndar',
+    en: 'Workshop \u00b7 standard',
+    titleEs: '3500 kg, H 1,85 m, 58 s, husillo Tr 40\u00d77',
+    titleEn: '3500 kg, H 1.85 m, 58 s, Tr 40\u00d77 screw',
   },
   chilled_water: {
     es: 'ACS \u00b7 agua',

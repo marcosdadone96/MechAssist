@@ -60,6 +60,27 @@
           Calculadoras para estimar fuerzas, secciones &#250;tiles, caudales y tiempos de ciclo en actuadores y bombas.
         </p>
 
+        <nav class="lab-next-steps lab-next-steps--hub" data-i18n="fluids.hubNextStepsAria" data-i18n-attr="aria-label" aria-label="Flujo de cálculo sugerido">
+          <h3 class="lab-next-steps__title" data-i18n="fluids.hubNextStepsTitle">Flujo de cálculo sugerido</h3>
+          <p class="lab-next-steps__lead" data-i18n="fluids.hubNextStepsLead">
+            Orden habitual al dimensionar una línea oleohidráulica nueva: actuador, bomba, prensa (si aplica) y neumática periférica.
+          </p>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="fluids.hubNextStepsLi1Html" data-i18n-html>
+              <a href="calc-hydraulic-cylinder.html">Cilindro hidráulico</a> — fuerza, caudal y pandeo del vástago.
+            </li>
+            <li data-i18n="fluids.hubNextStepsLi2Html" data-i18n-html>
+              <a href="calc-hydraulic-pump.html">Bomba hidráulica</a> — caudal, potencia y pérdidas de línea.
+            </li>
+            <li data-i18n="fluids.hubNextStepsLi3Html" data-i18n-html>
+              <a href="calc-hydraulic-press.html">Prensa hidráulica</a> — tonelaje, ciclo y bomba.
+            </li>
+            <li data-i18n="fluids.hubNextStepsLi4Html" data-i18n-html>
+              <a href="calc-pneumatic-cylinder.html">Cilindro neumático</a> — consumo de aire en ejes auxiliares.
+            </li>
+          </ul>
+        </nav>
+
         <div class="lab-hub-filter-row">
           <label class="lab-hub-filter-row__label" for="lab-hub-filter-input" data-i18n="labHub.filterLabel">Filtrar</label>
           <input
@@ -129,6 +150,11 @@
     </script>
 
     <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module">
+      import { watchLangAndApply } from './js/lab/i18n/applyModuleI18n.js';
+      import { FLUIDS_HUB_UX_EN } from './js/lab/i18n/pages/fluidsHubUxEn.js';
+      watchLangAndApply(FLUIDS_HUB_UX_EN, { reloadOnEs: false });
+    </script>
     <script type="module" src="js/ui/hubFreemium.js"></script>
     <script type="module" src="js/ui/labDonationFooter.js"></script>
     <script type="module">

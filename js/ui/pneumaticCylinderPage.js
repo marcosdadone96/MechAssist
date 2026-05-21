@@ -1,6 +1,6 @@
 import { bindInputValidation, mountLabPresetsBar } from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
-import { mountCompactLabFieldHelp } from './labHelpCompact.js';
+import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
 import { mountLabFluidPdfExportBar } from '../services/fluidLabPdfExport.js';
 import { formatDateTimeLocale, getCurrentLang } from '../config/locales.js';
@@ -68,13 +68,10 @@ let pcPdfSnapshot = null;
 const G = 9.81;
 const E_STEEL = 210e9;
 const ETA_MECH = 0.9; // -10% por friccion interna
-const LANG = (() => {
-  try {
-    return localStorage.getItem('mdr-home-lang') === 'en' ? 'en' : 'es';
-  } catch (_) {
-    return 'es';
-  }
-})();
+function pcLang() {
+  return getCurrentLang();
+}
+
 const TXT = {
   es: {
     pageTitle: 'Cilindro neumático — TheMechAssist',
@@ -364,84 +361,9 @@ const TXT = {
   },
 };
 function tr(k, vars = {}) {
-  const s = (TXT[LANG] && TXT[LANG][k]) || TXT.es[k] || k;
+  const lg = pcLang();
+  const s = (TXT[lg] && TXT[lg][k]) || TXT.es[k] || k;
   return s.replace(/\{(\w+)\}/g, (_, kk) => (vars[kk] ?? `{${kk}}`));
-}
-
-function setFieldText(id, label, hint, help) {
-  const root = document.getElementById(id)?.closest('.lab-field');
-  if (!(root instanceof HTMLElement)) return;
-  const l = root.querySelector(`label[for="${id}"]`);
-  const h = root.querySelector('.hint');
-  const p = root.querySelector('.lab-field-help');
-  if (l) l.textContent = label;
-  if (h) h.textContent = hint;
-  if (p) p.textContent = help;
-}
-
-function applyStaticI18n() {
-  document.documentElement.setAttribute('lang', LANG);
-  document.title = tr('pageTitle');
-  document.querySelector('.site-nav__center')?.setAttribute(
-    'aria-label',
-    LANG === 'en' ? 'Main navigation' : 'Navegaci\u00f3n principal',
-  );
-  const pTitle = document.querySelector('.lab-panel h2');
-  const pLead = document.querySelector('.lab-lead');
-  const pVerdict = document.getElementById('pcVerdict');
-  const dTitle = document.querySelector('.lab-diagram-wrap__title');
-  const dCap = document.querySelector('.lab-diagram-caption');
-  if (pTitle) pTitle.textContent = tr('title');
-  if (pLead) pLead.textContent = tr('lead');
-  if (pVerdict) pVerdict.textContent = tr('verdictOk');
-  if (dTitle) dTitle.textContent = tr('diagramTitle');
-  if (dCap) dCap.textContent = tr('diagramCaption');
-
-  setFieldText('pcCylinderType', tr('fCylinderTypeLabel'), tr('fCylinderTypeHint'), tr('fCylinderTypeHelp'));
-  const cylTypeSel = document.getElementById('pcCylinderType');
-  if (cylTypeSel instanceof HTMLSelectElement && cylTypeSel.options.length >= 3) {
-    cylTypeSel.options[0].textContent = tr('optCylinderDouble');
-    cylTypeSel.options[1].textContent = tr('optCylinderSingleExt');
-    cylTypeSel.options[2].textContent = tr('optCylinderSingleRet');
-  }
-  setFieldText('pcMode', tr('fCalcModeLabel'), tr('fCalcModeHint'), tr('fCalcModeHelp'));
-  const calcModeSel = document.getElementById('pcMode');
-  if (calcModeSel instanceof HTMLSelectElement && calcModeSel.options.length >= 2) {
-    calcModeSel.options[0].textContent = tr('optPcDesign');
-    calcModeSel.options[1].textContent = tr('optPcDiagnostic');
-  }
-  setFieldText('pcDiameterMode', tr('fModeLabel'), tr('fModeHint'), tr('fModeHelp'));
-  setFieldText('pcPressureBar', tr('fPressureLabel'), tr('fPressureHint'), tr('fPressureHelp'));
-  setFieldText('pcBoreIso', tr('fBoreIsoLabel'), tr('fBoreIsoHint'), tr('fBoreIsoHelp'));
-  setFieldText('pcRodIso', tr('fRodIsoLabel'), tr('fRodIsoHint'), tr('fRodIsoHelp'));
-  setFieldText('pcBoreManual', tr('fBoreManualLabel'), tr('fBoreManualHint'), tr('fBoreManualHelp'));
-  setFieldText('pcRodManual', tr('fRodManualLabel'), tr('fRodManualHint'), tr('fRodManualHelp'));
-  setFieldText('pcStrokeMm', tr('fStrokeLabel'), tr('fStrokeHint'), tr('fStrokeHelp'));
-  setFieldText('pcLoadKg', tr('fLoadLabel'), tr('fLoadHint'), tr('fLoadHelp'));
-  setFieldText('pcCyclesMin', tr('fCyclesLabel'), tr('fCyclesHint'), tr('fCyclesHelp'));
-  setFieldText('pcMotionType', tr('fMotionLabel'), tr('fMotionHint'), tr('fMotionHelp'));
-
-  const mode = document.getElementById('pcDiameterMode');
-  if (mode instanceof HTMLSelectElement && mode.options.length >= 2) {
-    mode.options[0].textContent = tr('optIso');
-    mode.options[1].textContent = tr('optManual');
-  }
-  const motion = document.getElementById('pcMotionType');
-  if (motion instanceof HTMLSelectElement && motion.options.length >= 2) {
-    motion.options[0].textContent = tr('motionH');
-    motion.options[1].textContent = tr('motionV');
-  }
-  const formSum = document.querySelector('#pcFormulasBlock summary');
-  if (formSum) formSum.textContent = tr('fFormulasSummary');
-  setFieldText('pcLabTier', tr('fLabTierLabel'), tr('fLabTierHint'), tr('fLabTierHelp'));
-  setFieldText('pcPatmBar', tr('fPatmLabel'), tr('fPatmHint'), '');
-  setFieldText('pcEulerLengthFactor', tr('fEulerLabel'), '', '');
-  setFieldText('pcMethodNote', tr('fMethodNoteLabel'), tr('fMethodNoteHint'), tr('fMethodNoteHelp'));
-  const tierSel = document.getElementById('pcLabTier');
-  if (tierSel instanceof HTMLSelectElement && tierSel.options.length >= 2) {
-    tierSel.options[0].textContent = tr('optTierBasic');
-    tierSel.options[1].textContent = tr('optTierProject');
-  }
 }
 const ISO_BORES = [32, 40, 50, 63, 80, 100, 125, 160, 200, 250, 320];
 /** Vástago ISO por defecto (primero en cada lista de `ISO_RODS_BY_BORE`) según émbolo. */
@@ -880,18 +802,18 @@ function computeAndRenderCore() {
         : `— / ${fmt(forceRealRetN, 0)} N`;
   const m1Unit =
     cylinderType === 'double'
-      ? LANG === 'en'
+      ? pcLang() === 'en'
         ? '-10% friction'
         : '-10% fricción'
       : cylinderType === 'single_extend'
-        ? `${LANG === 'en' ? '-10% friction' : '-10% fricción'} · ${tr('m1FootSpringRet')}`
-        : `${LANG === 'en' ? '-10% friction' : '-10% fricción'} · ${tr('m1FootSpringExt')}`;
+        ? `${pcLang() === 'en' ? '-10% friction' : '-10% fricción'} · ${tr('m1FootSpringRet')}`
+        : `${pcLang() === 'en' ? '-10% friction' : '-10% fricción'} · ${tr('m1FootSpringExt')}`;
   const m2Sub =
     cylinderType === 'single_retract'
-      ? LANG === 'en'
+      ? pcLang() === 'en'
         ? 'Freal retract / F load'
         : 'Freal retroceso / F carga'
-      : LANG === 'en'
+      : pcLang() === 'en'
         ? 'Freal extension / F load'
         : 'Freal avance / F carga';
 
@@ -902,13 +824,13 @@ function computeAndRenderCore() {
     metric(
       tr('m4'),
       `${fmt(pCrN, 0)} N`,
-      LANG === 'en'
+      pcLang() === 'en'
         ? `Euler, L_eff stroke*${fmt(eulerLengthFactor, 2)}`
         : `Euler, L_eff carrera*${fmt(eulerLengthFactor, 2)}`,
     ),
   ].join('');
 
-  const formulaLinesPc = LANG === 'en'
+  const formulaLinesPc = pcLang() === 'en'
     ? [
         cylinderType === 'double'
           ? 'F_push = P_gauge * A_piston * eta_mech; F_pull = P_gauge * (A_piston - A_rod) * eta_mech.'
@@ -942,13 +864,13 @@ function computeAndRenderCore() {
 
   if (formulaBody instanceof HTMLElement) {
     formulaBody.innerHTML = `
-      <p class="lab-fluid-formulas__lead">${labTierPc === 'project' ? (LANG === 'en' ? 'Project: Patm, Euler factor and optional note enabled.' : 'Proyecto: Patm, factor Euler y nota opcional activos.') : (LANG === 'en' ? 'Classroom: Patm=1 bar implied in Nl factor; Euler factor fixed 1.2.' : 'Aula: Patm=1 bar implicita en factor Nl; factor Euler fijo 1.2.')}</p>
-      ${methodNote ? `<p class="lab-fluid-formulas__sub"><strong>${LANG === 'en' ? 'Note' : 'Nota'}:</strong> ${escHtml(methodNote)}</p>` : ''}
+      <p class="lab-fluid-formulas__lead">${labTierPc === 'project' ? (pcLang() === 'en' ? 'Project: Patm, Euler factor and optional note enabled.' : 'Proyecto: Patm, factor Euler y nota opcional activos.') : (pcLang() === 'en' ? 'Classroom: Patm=1 bar implied in Nl factor; Euler factor fixed 1.2.' : 'Aula: Patm=1 bar implicita en factor Nl; factor Euler fijo 1.2.')}</p>
+      ${methodNote ? `<p class="lab-fluid-formulas__sub"><strong>${pcLang() === 'en' ? 'Note' : 'Nota'}:</strong> ${escHtml(methodNote)}</p>` : ''}
       <ol class="lab-fluid-formulas__list">${formulaLinesPc.map((x) => `<li>${x}</li>`).join('')}</ol>
     `;
   }
 
-  const springWord = LANG === 'en' ? 'spring' : 'muelle';
+  const springWord = pcLang() === 'en' ? 'spring' : 'muelle';
   const extraMetrics = [
     metric(
       tr('e1'),
@@ -958,7 +880,7 @@ function computeAndRenderCore() {
       tr('e2'),
       cylinderType === 'single_extend' ? `— (${springWord})` : `${fmt(forceRealRetN, 0)} N`,
     ),
-    metric(tr('e3'), `${fmt(nlCycle, 2)} ${LANG === 'en' ? 'Nl/cycle' : 'Nl/ciclo'}`),
+    metric(tr('e3'), `${fmt(nlCycle, 2)} ${pcLang() === 'en' ? 'Nl/cycle' : 'Nl/ciclo'}`),
     metric(tr('e4'), `${fmt(estSpeed, 3)} m/s`),
     metric(tr('e5'), `${fmt(loadN, 0)} N`, `${fmt(loadKg, 1)} kg`),
   ].join('');
@@ -1034,7 +956,7 @@ function computeAndRenderCore() {
 
   if (rodThreadInfo instanceof HTMLElement) {
     const info = ROD_THREAD_INFO[Math.round(rodMm)];
-    rodThreadInfo.textContent = info ? info[LANG] : tr('rodFallback', { d: fmt(rodMm, 0) });
+    rodThreadInfo.textContent = info ? info[pcLang()] : tr('rodFallback', { d: fmt(rodMm, 0) });
   }
 
   renderPcVerdictSummary({
@@ -1168,7 +1090,6 @@ document.getElementById('pcDiameterMode')?.addEventListener('change', () => {
   setRodOptionsForBore(Math.round(b.ok ? b.value : 63), null);
 })();
 syncManualVisibility();
-applyStaticI18n();
 syncPcLabTierUi();
 syncCalcModeUi();
 mountCompactLabFieldHelp();
@@ -1196,8 +1117,13 @@ mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountPc'), {
 });
 
 watchLangAndApply({ ...PNEUMATIC_CYL_EN, ...FLUIDS_HUB_UX_EN }, {
+  reloadOnEs: false,
   onEnApplied: () => {
-    applyStaticI18n();
+    refreshCompactLabFieldHelp();
+    computeAndRender();
+  },
+  onEsRestored: () => {
+    refreshCompactLabFieldHelp();
     computeAndRender();
   },
 });

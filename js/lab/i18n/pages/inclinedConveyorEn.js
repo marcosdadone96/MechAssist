@@ -1,5 +1,6 @@
 /** English strings for inclined-conveyor.html (`incConv.*` field keys). ASCII-safe. */
 export const INCLINED_CONVEYOR_EN = {
+  'incConv.docTitle': 'Inclined conveyor \u2014 TheMechAssist',
   'incConv.h2': 'Inclined conveyor',
   'incConv.introSummary': 'Calculator description and scope',
   'incConv.calcSeoIntro':
@@ -79,9 +80,23 @@ export const INCLINED_CONVEYOR_EN = {
   'incConv.optCustom': 'Custom (edit Service factor above)',
   'incConv.diagramSvgAria': 'Inclined belt schematic',
   'incConv.visualSectionAria': 'Schematic and reference',
+  'incConv.presetsGroupAria': 'Inclined belt presets',
+  'incConv.presetQuarryBtn': 'Quarry · short',
+  'incConv.presetSandBtn': 'Wet sand',
+  'incConv.presetWarehouseBtn': 'Silo feed',
   'incConv.presetQuarryTooltip': 'Quarry, L ~35 m, variable load',
   'incConv.presetSandTooltip': 'Wet sand, higher \u03bc and extra resistance',
   'incConv.presetWarehouseTooltip': 'Silo feed, shorter lighter belt',
+  'incConv.hintStandard': 'Framework declared in reports.',
+  'incConv.hintServiceFactorSync': 'Synced with load type except Custom.',
+  'incConv.labelVerifyBrandHtml':
+    'Brand <span class="info-chip" title="Demo catalogue manufacturer for quick verification." aria-label="Help brand.">?</span>',
+  'incConv.labelVerifySearchHtml':
+    'Filter model <span class="info-chip" title="Filter by text or code to find a catalogue model faster." aria-label="Help model filter.">?</span>',
+  'incConv.labelVerifyModelHtml':
+    'Example catalogue model <span class="info-chip" title="Compared against the calculated point: power, torque and rpm." aria-label="Help catalogue model.">?</span>',
+  'incConv.angleWarnHtml':
+    '\u26a0 \u03b8 &gt; 18\u00b0: use a belt with cleats/ribs for grip.',
   'incConv.tipDesignStandard':
     'Declares the calculation framework in reports. CEMA adds margin on steady traction only.',
   'incConv.tipLoadDuty':
