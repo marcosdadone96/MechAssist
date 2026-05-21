@@ -246,9 +246,29 @@ function validationCopy() {
   };
 }
 
+/** No validar entradas ocultas (otro modo/tier, fila de correa colapsada, etc.). */
+function shouldSkipInputValidation(el) {
+  if (!(el instanceof HTMLInputElement)) return true;
+  if (el.hidden || el.disabled) return true;
+  const field = el.closest('.lab-field, .pc-manual-field');
+  if (field instanceof HTMLElement && field.hidden) return true;
+  if (el.closest('[hidden]')) return true;
+  if (el.closest('.belt-row--display-hidden')) return true;
+  if (el.closest('.spring-collapsible:not(.spring-collapsible--open)')) return true;
+  if (el.closest('.sh-advanced-row--hidden')) return true;
+  return false;
+}
+
 /** Reaplica mensajes de error tras cambio de idioma. */
 export function revalidateAllBoundInputs() {
-  for (const id of boundValidationFields.keys()) validateBoundField(id);
+  for (const id of boundValidationFields.keys()) {
+    const el = document.getElementById(id);
+    if (el instanceof HTMLInputElement && shouldSkipInputValidation(el)) {
+      clearInputFieldError(el, id);
+      continue;
+    }
+    validateBoundField(id);
+  }
 }
 
 /** @returns {boolean} */
@@ -305,6 +325,7 @@ export function bindInputValidation(inputConfigs) {
         prev.min = min;
         prev.max = max;
         prev.positive = positive;
+        prev.optional = optional === true;
       }
       validateBoundField(id);
       return;
@@ -317,9 +338,9 @@ export function bindInputValidation(inputConfigs) {
     errEl.setAttribute('aria-live', 'polite');
     el.insertAdjacentElement('afterend', errEl);
 
-    boundValidationFields.set(id, { errEl, min, max, positive });
+    boundValidationFields.set(id, { errEl, min, max, positive, optional: optional === true });
 
-    const validate = () => validateBoundField(id, copy, optional);
+    const validate = () => validateBoundField(id, copy);
     el.addEventListener('input', validate);
     el.addEventListener('change', validate);
     validate();
@@ -329,12 +350,18 @@ export function bindInputValidation(inputConfigs) {
 /**
  * @param {string} id
  * @param {ReturnType<typeof validationCopy>} [copy]
- * @param {boolean} [optional]
  */
-function validateBoundField(id, copy = validationCopy(), optional = false) {
+function validateBoundField(id, copy = validationCopy()) {
   const meta = boundValidationFields.get(id);
   const el = document.getElementById(id);
   if (!meta || !(el instanceof HTMLInputElement)) return;
+
+  if (shouldSkipInputValidation(el)) {
+    clearInputFieldError(el, id);
+    return;
+  }
+
+  const optional = meta.optional === true;
 
   const raw = String(el.value).trim();
   if (raw === '') {

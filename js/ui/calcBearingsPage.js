@@ -11,6 +11,7 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  revalidateAllBoundInputs,
   syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
@@ -91,6 +92,7 @@ function syncBrgCalcModeUi() {
   const fl = document.getElementById('brgFieldL10Target');
   if (fc instanceof HTMLElement) fc.hidden = design;
   if (fl instanceof HTMLElement) fl.hidden = !design;
+  revalidateAllBoundInputs();
 }
 
 const BRG_PRESETS = [
@@ -567,6 +569,7 @@ watchLangAndApply(BEARINGS_PAGE_EN, {
   onEnApplied: () => scheduleBrgRecalc(),
   onEsRestored: () => scheduleBrgRecalc(),
 });
+revalidateAllBoundInputs();
 runLabCalcBoot(wrap, refreshCore);
 mountLabCloudSaveBar(bx('Rodamientos (ISO 281)', 'Bearings (ISO 281)'), {
   norm: 'ISO 281 · vida nominal L10',

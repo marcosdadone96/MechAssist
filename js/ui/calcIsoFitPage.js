@@ -11,6 +11,7 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  revalidateAllBoundInputs,
   syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
@@ -509,6 +510,7 @@ wireLabCopyLink('isoCopyLinkBtn', 'isoCopyToast');
 wireLabCopyResultsButton('isoCopyResults', {
   moduleTitle: uxCopy('Ajustes ISO 286', 'ISO 286 fits'),
 });
+revalidateAllBoundInputs();
 runLabCalcBoot(wrap, refreshCore);
 mountLabCloudSaveBar(bx('Ajustes ISO 286', 'ISO 286 fits'), {
   norm: 'ISO 286-1 · ajustes agujero-eje',

@@ -17,6 +17,7 @@ import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpC
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  revalidateAllBoundInputs,
   syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
@@ -229,7 +230,7 @@ bindInputValidation([
   { id: 'bD2', min: 10, max: 2000, label: 'Diámetro conducida d₂' },
   { id: 'bC', min: 50, max: 5000, label: 'Distancia entre centros C' },
   { id: 'bN1', positive: true, max: 30000, label: 'RPM motrices n₁' },
-  { id: 'bPowerKw', min: 0, max: 10000, label: 'Potencia' },
+  { id: 'bPowerKw', min: 0, max: 10000, optional: true, label: 'Potencia' },
   { id: 'bSlip', min: 0, max: 15, label: 'Deslizamiento' },
   { id: 'bZ1', min: 6, max: 200, label: 'Dientes Z₁' },
   { id: 'bZ2', min: 6, max: 200, label: 'Dientes Z₂' },
@@ -291,6 +292,7 @@ function syncBeltFormUi() {
     }
   }
   refreshCompactLabFieldHelp();
+  revalidateAllBoundInputs();
 }
 
 function buildParams() {
@@ -813,6 +815,7 @@ const beltUrl = createLabUrlSync(BELT_URL_PARAM_TO_ID, {
 
 beltUrl.hydrateFromUrl();
 syncBeltFormUi();
+revalidateAllBoundInputs();
 
 const wrap = document.getElementById('bResultsWrap');
 const debounced = debounce(() => runCalcWithIndustrialFeedback(wrap, refreshCore), 55);

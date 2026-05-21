@@ -1,4 +1,9 @@
-import { bindInputValidation, mountLabPresetsBar, syncInputValidationResultsGate } from './labCalcUx.js';
+import {
+  bindInputValidation,
+  mountLabPresetsBar,
+  revalidateAllBoundInputs,
+  syncInputValidationResultsGate,
+} from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
@@ -776,6 +781,7 @@ function syncHcLabTierUi() {
     : 'basic';
   const panel = document.getElementById('hcProjectPanel');
   if (panel instanceof HTMLElement) panel.hidden = tier !== 'project';
+  revalidateAllBoundInputs();
 }
 
 function syncModeUi() {
@@ -866,6 +872,7 @@ bindInputValidation([
   { id: 'hcPortDiaMm', min: 1, max: 500, label: 'Ø puerto' },
 ]);
 
+revalidateAllBoundInputs();
 mountLabPresetsBar('hcPresetsBar', HC_PRESETS, computeAndRender);
 
 computeAndRender();

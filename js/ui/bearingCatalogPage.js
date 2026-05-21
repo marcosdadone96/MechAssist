@@ -4,6 +4,7 @@
 
 import {
   bindInputValidation,
+  revalidateAllBoundInputs,
   syncInputValidationResultsGate,
   createLabUrlSync,
   mountLabPresetsBar,
@@ -264,6 +265,7 @@ wireLabCopyResultsButton('bcCopyResults', {
   moduleTitle: bx('Cat\u00e1logo rodamientos', 'Bearing catalogue'),
 });
 
+revalidateAllBoundInputs();
 if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
 else render();
 mountLabCloudSaveBar(bx('Cat\u00e1logo rodamientos', 'Bearing catalogue'), {

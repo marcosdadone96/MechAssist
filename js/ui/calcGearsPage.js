@@ -14,6 +14,7 @@ import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/la
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
 import {
   bindInputValidation,
+  revalidateAllBoundInputs,
   syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
@@ -53,8 +54,8 @@ bindInputValidation([
   { id: 'gAlpha', min: 0, max: 45, label: 'Presión α' },
   { id: 'gBeta', min: 0, max: 45, label: 'Hélice β' },
   { id: 'gN1', positive: true, max: 30000, label: 'RPM motrices n₁' },
-  { id: 'gPower', min: 0, max: 1e7, label: 'Potencia' },
-  { id: 'gTorque', min: 0, max: 1e9, label: 'Par' },
+  { id: 'gPower', min: 0, max: 1e7, optional: true, label: 'Potencia' },
+  { id: 'gTorque', min: 0, max: 1e9, optional: true, label: 'Par' },
 ]);
 
 function read(id, fallback) {
@@ -578,6 +579,7 @@ window.addEventListener(LAB_LANG_EVENT, () => {
   syncGearCalcModeUi();
   scheduleGearRecalc();
 });
+revalidateAllBoundInputs();
 runLabCalcBoot(resultsWrap, refreshCore);
 mountLabCloudSaveBar(gearsRuntimeStrings(getLabLang()).moduleLabel, {
   norm: 'AGMA 2001 (simplificado) · geometría de engranajes cilíndricos',

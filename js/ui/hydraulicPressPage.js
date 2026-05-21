@@ -192,6 +192,7 @@ function syncLabTierUi() {
     : 'basic';
   const panel = document.getElementById('hppProjectPanel');
   if (panel instanceof HTMLElement) panel.hidden = tier !== 'project';
+  revalidateAllBoundInputs();
 }
 
 function productivityBadgeHtml(cycleS) {
@@ -758,6 +759,7 @@ function syncModeUi() {
   if (diagPistonField instanceof HTMLElement) diagPistonField.hidden = mode !== 'diagnostic';
   if (diagColField instanceof HTMLElement) diagColField.hidden = mode !== 'diagnostic';
   if (forceField instanceof HTMLElement) forceField.classList.toggle('lab-field--auto', mode === 'diagnostic');
+  revalidateAllBoundInputs();
 }
 
 const computeAndRender = wrapCalcRefresh(computeAndRenderCore);
@@ -801,10 +803,10 @@ syncModeUi();
 mountCompactLabFieldHelp();
 
 bindInputValidation([
-  { id: 'hppColLengthMm', min: 50, max: 50000, label: pressLbl('Longitud columna', 'Column length') },
-  { id: 'hppEGpa', min: 70, max: 220, label: pressLbl('E m\u00f3dulo', 'E modulus') },
+  { id: 'hppColLengthMm', min: 50, max: 50000, optional: true, label: pressLbl('Longitud columna', 'Column length') },
+  { id: 'hppEGpa', min: 70, max: 220, optional: true, label: pressLbl('E m\u00f3dulo', 'E modulus') },
   { id: 'hppForceTon', min: 0.01, max: 50000, label: pressLbl('Fuerza', 'Force') },
-  { id: 'hppDiagPistonMm', min: 10, max: 5000, label: pressLbl('\u00d8 pist\u00f3n', 'Piston \u00d8') },
+  { id: 'hppDiagPistonMm', min: 10, max: 5000, optional: true, label: pressLbl('\u00d8 pist\u00f3n', 'Piston \u00d8') },
   { id: 'hppPressureBar', min: 1, max: 600, label: pressLbl('Presi\u00f3n', 'Pressure') },
   { id: 'hppStrokeMm', min: 10, max: 100000, label: pressLbl('Carrera', 'Stroke') },
   { id: 'hppCycleS', min: 0.1, max: 86400, label: pressLbl('Tiempo ciclo', 'Cycle time') },
@@ -812,7 +814,7 @@ bindInputValidation([
   { id: 'hppPumpFlowLmin', min: 0.01, max: 500000, label: pressLbl('Caudal bomba', 'Pump flow') },
   { id: 'hppSteelMpa', min: 50, max: 2000, label: pressLbl('\u03c3 acero', 'Steel \u03c3') },
   { id: 'hppUserColumnMm', min: 10, max: 5000, optional: true, label: pressLbl('Columna usuario', 'User column') },
-  { id: 'hppDiagColumnMm', min: 10, max: 5000, label: pressLbl('\u00d8 columna', 'Column \u00d8') },
+  { id: 'hppDiagColumnMm', min: 10, max: 5000, optional: true, label: pressLbl('\u00d8 columna', 'Column \u00d8') },
 ]);
 revalidateAllBoundInputs();
 

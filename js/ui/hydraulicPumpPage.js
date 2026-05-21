@@ -4,7 +4,12 @@
  * - Dimensionamiento de tuberías (Reynolds + Darcy)
  * - Veredicto integral
  */
-import { bindInputValidation, mountLabPresetsBar, syncInputValidationResultsGate } from './labCalcUx.js';
+import {
+  bindInputValidation,
+  mountLabPresetsBar,
+  revalidateAllBoundInputs,
+  syncInputValidationResultsGate,
+} from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
@@ -909,6 +914,7 @@ function syncHpLabTierUi() {
     : 'basic';
   const panel = document.getElementById('hpProjectPanel');
   if (panel instanceof HTMLElement) panel.hidden = tier !== 'project';
+  revalidateAllBoundInputs();
   const badge = document.getElementById('hpProjectBadge');
   if (badge instanceof HTMLElement) {
     badge.classList.toggle('hp-tier-badge--active', tier === 'project');
@@ -920,6 +926,7 @@ function syncHpFluidFieldsUi() {
   const rhoRow = document.getElementById('hpFluidRhoRow');
   if (!(sel instanceof HTMLSelectElement) || !(rhoRow instanceof HTMLElement)) return;
   rhoRow.hidden = sel.value !== 'custom';
+  revalidateAllBoundInputs();
 }
 
 function syncPumpModeUi() {
@@ -939,6 +946,7 @@ function syncPumpModeUi() {
       el.classList.toggle('hp-calc-mode-help__line--active', on);
     });
   }
+  revalidateAllBoundInputs();
 }
 
 const computeAndRender = wrapCalcRefresh(computeAndRenderCore);
@@ -1013,6 +1021,7 @@ bindInputValidation([
   { id: 'pipeValves', min: 0, max: 200, label: 'Válvulas' },
 ]);
 
+revalidateAllBoundInputs();
 mountLabPresetsBar('hpPresetsBar', HP_PRESETS, computeAndRender);
 
 computeAndRender();

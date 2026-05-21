@@ -1,4 +1,9 @@
-import { bindInputValidation, mountLabPresetsBar, syncInputValidationResultsGate } from './labCalcUx.js';
+import {
+  bindInputValidation,
+  mountLabPresetsBar,
+  revalidateAllBoundInputs,
+  syncInputValidationResultsGate,
+} from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
@@ -511,6 +516,7 @@ function syncManualVisibility() {
   const f2 = document.getElementById('pcRodManualField');
   if (f1 instanceof HTMLElement) f1.hidden = !manual;
   if (f2 instanceof HTMLElement) f2.hidden = !manual;
+  revalidateAllBoundInputs();
 }
 
 function syncPcDiagramLegend(cylinderType) {
@@ -1098,13 +1104,14 @@ mountCompactLabFieldHelp();
 bindInputValidation([
   { id: 'pcPatmBar', min: 0.5, max: 1.2, label: 'Patm' },
   { id: 'pcPressureBar', min: 1, max: 20, label: 'Presión' },
-  { id: 'pcBoreManual', min: 8, max: 1000, label: 'Ø cilindro (manual)' },
-  { id: 'pcRodManual', min: 4, max: 500, label: 'Ø vástago (manual)' },
+  { id: 'pcBoreManual', min: 8, max: 1000, optional: true, label: 'Ø cilindro (manual)' },
+  { id: 'pcRodManual', min: 4, max: 500, optional: true, label: 'Ø vástago (manual)' },
   { id: 'pcStrokeMm', min: 10, max: 100000, label: 'Carrera' },
   { id: 'pcLoadKg', min: 0.01, max: 1e9, label: 'Carga' },
   { id: 'pcCyclesMin', min: 0.01, max: 60000, label: 'Ciclos/min' },
 ]);
 
+revalidateAllBoundInputs();
 mountLabPresetsBar('pcPresetsBar', PC_PRESETS, computeAndRender);
 
 computeAndRender();

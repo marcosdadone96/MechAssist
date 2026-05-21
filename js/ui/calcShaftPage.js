@@ -5,6 +5,7 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  revalidateAllBoundInputs,
   syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
@@ -82,6 +83,7 @@ function syncAdvancedUi() {
     if (!row) return;
     row.classList.toggle('sh-advanced-row--hidden', !enabled);
   });
+  revalidateAllBoundInputs();
 }
 
 function syncShCalcModeUi() {
@@ -467,6 +469,7 @@ wireLabCopyLink('shCopyLinkBtn', 'shCopyToast');
 wireLabCopyResultsButton('shCopyResults', {
   moduleTitle: shaftRuntimeStrings(getLabLang()).moduleLabel,
 });
+revalidateAllBoundInputs();
 runLabCalcBoot(wrap, refreshCore);
 mountLabCloudSaveBar(shaftRuntimeStrings(getLabLang()).moduleLabel, {
   norm: 'Torsión / flexión · von Mises y Tresca (modelo simplificado)',

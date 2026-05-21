@@ -3,6 +3,7 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  revalidateAllBoundInputs,
   syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
@@ -395,6 +396,7 @@ wireLabCopyLink('sgCopyLinkBtn', 'sgCopyToast');
 wireLabCopyResultsButton('sgCopyResults', {
   moduleTitle: uxCopy('Anillos el\u00e1sticos (Seeger)', 'Seeger retaining rings'),
 });
+revalidateAllBoundInputs();
 runLabCalcBoot(wrap, refreshCore);
 mountLabCloudSaveBar(bx('Anillos el\u00e1sticos (Seeger)', 'Seeger retaining rings'), {
   norm: 'DIN 471 (eje) · DIN 472 (agujero)',

@@ -226,6 +226,15 @@ export function isPremiumEffective() {
 }
 
 /**
+ * Modo Proyecto en calculadoras lab/fluidos (tau manual, memoria ampliada, PDF).
+ * Incluye plan Ilimitado y Pro efectivo.
+ * @returns {boolean}
+ */
+export function canUseLabProjectTier() {
+  return isPremiumEffective();
+}
+
+/**
  * Muestra y permite exportar PDF (máquinas e informes Pro): Pro/ilimitado o cuenta con créditos.
  * @returns {boolean}
  */

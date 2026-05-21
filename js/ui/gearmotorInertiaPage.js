@@ -5,6 +5,7 @@
 import { renderInertiaTransmissionLine } from '../lab/diagramCatalogModules.js';
 import {
   bindInputValidation,
+  revalidateAllBoundInputs,
   mountLabPresetsBar,
   syncInputValidationResultsGate,
   wireLabCopyLink,
@@ -211,11 +212,11 @@ bindInputValidation([
   { id: 'gmTN', min: 0.01, max: 1e6, label: 'Par nominal' },
   { id: 'gmNsync', min: 1, max: 120000, label: 'n sync' },
   { id: 'gmTpeak', min: 1, max: 10, label: 'Par arranque rel.' },
-  { id: 'gmJload', min: 0, max: 10000, label: 'J carga' },
-  { id: 'gmIratio', min: 0.001, max: 100000, label: 'i reducción' },
+  { id: 'gmJload', min: 0, max: 10000, optional: true, label: 'J carga' },
+  { id: 'gmIratio', min: 0.001, max: 100000, optional: true, label: 'i reducción' },
   { id: 'gmJext', min: 0, max: 10000, label: 'J ext' },
   { id: 'gmN', min: 1, max: 120000, label: 'RPM' },
-  { id: 'gmTload', min: 0, max: 1e9, label: 'T carga' },
+  { id: 'gmTload', min: 0, max: 1e9, optional: true, label: 'T carga' },
 ]);
 
 const GM_PRESETS = [
@@ -294,6 +295,7 @@ wireLabCopyResultsButton('gmCopyResults', {
 });
 wireLabCopyLink('gmCopyLinkBtn', 'gmCopyToast');
 
+revalidateAllBoundInputs();
 scheduleGmRender();
 mountLabCloudSaveBar(bx('Inercia motor / carga', 'Motor / load inertia'), {
   norm: 'Relación J_ext/J_mot · curva de par estimada',

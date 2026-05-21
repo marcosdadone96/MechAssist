@@ -605,8 +605,15 @@ export function mountLabPdfExportButton(opts) {
 
   render();
   window.addEventListener('storage', (ev) => {
-    if (ev.key === 'mdr-local-user-v1' || ev.key === 'mdr-pro-license-v1') render();
+    if (
+      ev.key === 'mdr-local-user-v1' ||
+      ev.key === 'mdr-pro-license-v1' ||
+      ev.key === 'mdr-credits-balance-v1'
+    ) {
+      render();
+    }
   });
   window.addEventListener('mdr-pro-status-changed', render);
+  window.addEventListener('mdr-credits-changed', render);
   window.addEventListener(LAB_LANG_EVENT, render);
 }

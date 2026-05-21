@@ -17,6 +17,7 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  revalidateAllBoundInputs,
   syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
@@ -475,6 +476,7 @@ wireLabCopyLink('cCopyLinkBtn', 'cCopyToast');
 wireLabCopyResultsButton('cCopyResults', {
   moduleTitle: chainsRuntimeStrings(getLabLang()).moduleLabel,
 });
+revalidateAllBoundInputs();
 runLabCalcBoot(wrap, refreshCore);
 mountLabCloudSaveBar(chainsRuntimeStrings(getLabLang()).moduleLabel, {
   norm: 'ISO 606 · cadenas de rodillos',

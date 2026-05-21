@@ -10,6 +10,7 @@ import { bindLabUnitSelectors, formatLength, getLabUnitPrefs } from '../lab/labU
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  revalidateAllBoundInputs,
   syncInputValidationResultsGate,
   debounce,
   executiveSummaryAlert,
@@ -25,6 +26,7 @@ import {
   isEnglishUi,
 } from './labCalcUx.js';
 import { setLabPurchaseSuggestions } from './labPurchaseSuggestions.js';
+import { canUseLabProjectTier } from '../services/accessTier.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { COMPRESSION_SPRING_EN } from '../lab/i18n/pages/compressionSpringEn.js';
 import { LAB_LANG_EVENT } from '../lab/i18n/labLang.js';
@@ -264,11 +266,27 @@ function syncSimSlider(sMax) {
 }
 
 function syncSpringLabTierUi() {
-  const tier = document.getElementById('springLabTier') instanceof HTMLSelectElement
-    ? document.getElementById('springLabTier').value
-    : 'basic';
+  const tierSel = document.getElementById('springLabTier');
+  const premium = canUseLabProjectTier();
+  const upsell = document.querySelector('.spring-tier-upsell');
+  if (upsell instanceof HTMLElement) upsell.hidden = premium;
+
+  if (tierSel instanceof HTMLSelectElement) {
+    const projectOpt = tierSel.querySelector('option[value="project"]');
+    if (projectOpt instanceof HTMLOptionElement) projectOpt.disabled = !premium;
+    if (!premium && tierSel.value === 'project') tierSel.value = 'basic';
+  }
+
+  const tier = tierSel instanceof HTMLSelectElement ? tierSel.value : 'basic';
   const panel = document.getElementById('springProjectPanel');
-  if (panel instanceof HTMLElement) toggleCollapsible(panel, tier === 'project');
+  if (panel instanceof HTMLElement) toggleCollapsible(panel, premium && tier === 'project');
+  revalidateAllBoundInputs();
+}
+
+function onSpringAccessChanged() {
+  syncSpringLabTierUi();
+  const wrap = document.getElementById('springResultsWrap');
+  if (wrap) runCalcWithIndustrialFeedback(wrap, computeCore);
 }
 
 function syncSpringWorkInputsUi() {
@@ -948,19 +966,20 @@ mountLabUnitConverter();
 mountCompactLabFieldHelp();
 
 bindInputValidation([
-  { id: 'springTauAdmMpa', min: 0, max: 5000, label: 'τ adm' },
-  { id: 'springTauW', min: 0, max: 5000, label: 'τ W' },
+  { id: 'springTauAdmMpa', min: 0, max: 5000, optional: true, label: 'τ adm' },
+  { id: 'springTauW', min: 0, max: 5000, optional: true, label: 'τ W' },
   { id: 'springDWire', min: 0.2, max: 200, label: 'd hilo' },
   { id: 'springDiaValue', min: 1, max: 5000, label: 'Diámetro bobina' },
   { id: 'springNActive', min: 1, max: 500, label: 'Vueltas activas' },
   { id: 'springL0', min: 1, max: 10000, label: 'L₀' },
-  { id: 'springSWork', min: 0, max: 1e6, label: 's trabajo' },
-  { id: 'springFWork', min: 0, max: 1e9, label: 'F trabajo' },
+  { id: 'springSWork', min: 0, max: 1e6, optional: true, label: 's trabajo' },
+  { id: 'springFWork', min: 0, max: 1e9, optional: true, label: 'F trabajo' },
   { id: 'springFMin', min: 0, max: 1e9, label: 'F mín' },
 ]);
 
 syncSpringLabTierUi();
 syncSpringWorkInputsUi();
+revalidateAllBoundInputs();
 bindLabUnitSelectors(debounced);
 
 const listenIds = [
@@ -1116,12 +1135,14 @@ mountLabCloudSaveBar('compression_spring', {
 });
 watchLangAndApply(COMPRESSION_SPRING_EN, {
   reloadOnEs: false,
-  onEnApplied: () => runCalcWithIndustrialFeedback(resultsWrap, computeCore),
-  onEsRestored: () => runCalcWithIndustrialFeedback(resultsWrap, computeCore),
+  onEnApplied: () => onSpringAccessChanged(),
+  onEsRestored: () => onSpringAccessChanged(),
 });
 window.addEventListener(LAB_LANG_EVENT, () => {
   runCalcWithIndustrialFeedback(resultsWrap, computeCore);
 });
+window.addEventListener('mdr-credits-changed', onSpringAccessChanged);
+window.addEventListener('mdr-pro-status-changed', onSpringAccessChanged);
 } catch (err) {
   console.error('[compression spring]', err);
   showSpringRuntimeError(err);
