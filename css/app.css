@@ -4874,6 +4874,50 @@ main.app-main.checkout-page {
   margin-bottom: 0.25rem;
 }
 
+.register-input {
+  position: relative;
+  display: block;
+}
+
+.register-input input[type='password'],
+.register-input input[type='text'] {
+  width: 100%;
+  padding-right: 2.75rem;
+}
+
+.register-input__toggle-pw {
+  position: absolute;
+  top: 50%;
+  right: 0.4rem;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.register-input__toggle-pw:hover {
+  color: var(--accent, #0d9488);
+  background: rgba(13, 148, 136, 0.08);
+}
+
+.register-input__toggle-pw:focus-visible {
+  outline: 2px solid var(--accent, #0d9488);
+  outline-offset: 2px;
+}
+
+.register-input__toggle-pw.is-showing {
+  color: var(--accent, #0d9488);
+}
+
 .register-pw-hint {
   margin: 0.35rem 0 0;
   font-size: 0.78rem;
@@ -4883,32 +4927,34 @@ main.app-main.checkout-page {
 
 .register-pw-strength {
   margin-top: 0.45rem;
-}
-
-.register-pw-strength__track {
   height: 6px;
   border-radius: 999px;
   background: #e2e8f0;
   overflow: hidden;
 }
 
-.register-pw-strength__fill {
+.register-pw-strength__bar {
   display: block;
   height: 100%;
   width: 0;
   border-radius: inherit;
+  background: #94a3b8;
   transition: width 0.2s ease, background-color 0.2s ease;
 }
 
-.register-pw-strength__fill--weak {
+.register-pw-strength.strength-1 .register-pw-strength__bar {
   background: #ef4444;
 }
 
-.register-pw-strength__fill--medium {
-  background: #f59e0b;
+.register-pw-strength.strength-2 .register-pw-strength__bar {
+  background: #f97316;
 }
 
-.register-pw-strength__fill--strong {
+.register-pw-strength.strength-3 .register-pw-strength__bar {
+  background: #eab308;
+}
+
+.register-pw-strength.strength-4 .register-pw-strength__bar {
   background: #10b981;
 }
 
@@ -4916,18 +4962,23 @@ main.app-main.checkout-page {
   margin: 0.3rem 0 0;
   font-size: 0.78rem;
   font-weight: 600;
-  color: #475569;
+  color: #64748b;
+  min-height: 1.1em;
 }
 
-.register-pw-strength--weak .register-pw-strength__label {
+.register-pw-strength.strength-1 + .register-pw-strength__label {
   color: #b91c1c;
 }
 
-.register-pw-strength--medium .register-pw-strength__label {
-  color: #b45309;
+.register-pw-strength.strength-2 + .register-pw-strength__label {
+  color: #c2410c;
 }
 
-.register-pw-strength--strong .register-pw-strength__label {
+.register-pw-strength.strength-3 + .register-pw-strength__label {
+  color: #a16207;
+}
+
+.register-pw-strength.strength-4 + .register-pw-strength__label {
   color: #047857;
 }
 
@@ -5269,6 +5320,56 @@ main.app-main.checkout-page {
   }
 }
 
+.checkout-compare {
+  margin: 1rem 0 1.25rem;
+}
+
+.checkout-compare__title {
+  margin: 0 0 0.55rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.checkout-compare__scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.checkout-compare__table {
+  width: 100%;
+  min-width: 28rem;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.checkout-compare__table th,
+.checkout-compare__table td {
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.checkout-compare__table thead th {
+  background: #f8fafc;
+  font-weight: 800;
+  color: #334155;
+}
+
+.checkout-compare__table tbody th[scope='row'] {
+  text-align: left;
+  font-weight: 700;
+  color: #475569;
+  background: #fafafa;
+}
+
+.checkout-plan-card__credits-simple {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #475569;
+}
+
 .checkout-plan-card {
   display: flex;
   flex-direction: column;
@@ -5500,6 +5601,32 @@ main.app-main.checkout-page {
   filter: brightness(1.04);
 }
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.checkout-plan-card .button.is-loading,
+.checkout-plan-card .checkout-plan-card__annual-link.is-loading {
+  opacity: 0.7;
+  pointer-events: none;
+  cursor: wait;
+}
+
+.checkout-plan-card .is-loading .checkout-btn-spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.5em;
+  vertical-align: -0.15em;
+  animation: spin 0.6s linear infinite;
+}
+
+.checkout-plan-card .is-loading .checkout-btn-loading__text {
+  vertical-align: middle;
+}
+
 .checkout-plan-card__pending {
   margin: 0.55rem 0 0;
   font-size: 0.82rem;
@@ -5684,5 +5811,84 @@ main.app-main.checkout-page {
 .mdr-toast--error {
   background: #7f1d1d;
   color: #fef2f2;
+}
+
+/* Validación numérica en calculadoras */
+input.input-error,
+select.input-error,
+textarea.input-error {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.35);
+}
+
+.input-error-msg {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #b91c1c;
+}
+
+.lab-results--input-blocked {
+  opacity: 0.72;
+}
+
+.lab-results--input-blocked > :not(.input-validation-banner) {
+  pointer-events: none;
+}
+
+.input-validation-banner {
+  margin-bottom: 0.75rem;
+}
+
+.mdr-toast--credits-notice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.75rem 0.9rem;
+  max-width: min(360px, calc(100vw - 2rem));
+}
+
+.credits-notice-toast__text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.credits-notice-toast__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.credits-notice-toast__link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #93c5fd;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.credits-notice-toast__link:hover {
+  color: #bfdbfe;
+}
+
+.credits-notice-toast__dismiss {
+  margin-left: auto;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid rgba(248, 250, 252, 0.35);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.credits-notice-toast__dismiss:hover {
+  background: rgba(255, 255, 255, 0.16);
 }
 

@@ -2,6 +2,8 @@
 export const BOLTS_ISO_EN = {
   'bolt.docTitle': 'ISO 898-1 bolts calculator \u2014 TheMechAssist',
   'bolt.h2': 'Bolts \u00b7 ISO 898-1 (M6\u2013M36)',
+  'bolt.safetyNotice':
+    'Results are indicative only. Final sizing must be validated with manufacturer data and real operating conditions.',
   'bolt.heroLead':
     'Indicative tightening torque and preload for grades 8.8 / 10.9 / 12.9; check the joint against design tension (simplified model).',
   'bolt.helpSummary': 'Methodology and model limits',
@@ -21,6 +23,8 @@ export const BOLTS_ISO_EN = {
     '<strong>Design:</strong> enter the tension the joint must carry; the assistant proposes the smallest metric/grade combination that satisfies (internal catalogue).',
   'bolt.helpCalcModeDiagnosticHtml':
     '<strong>Diagnostic:</strong> pick real M and grade and check against F and preload.',
+  'bolt.footerHypothesis':
+    'Assumption: the model does not include combined shear loads or fatigue of bolted joints (VDI 2230).',
   'bolt.helpF':
     'Total axial design load on the <strong>joint</strong> (not per bolt). Enter the service force without a safety factor; the model compares it with estimated preload. If shear is combined, use only the tensile component here and check shear separately.',
   'bolt.labelMu': 'Friction coefficient \u03bc',

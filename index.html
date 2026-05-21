@@ -135,7 +135,7 @@
               <a class="hub-hero__btn hub-hero__btn--secondary" href="#hub-zones" data-i18n="hero.ctaExplore">Ver todas las áreas</a>
             </div>
           </div>
-          <div class="hub-hero__mockup-col" aria-hidden="true">
+          <div class="hub-hero__mockup-col" id="heroBeltMini">
             <div class="hub-hero__mockup-wrap" tabindex="-1">
               <div class="hub-hero__mockup-glow" aria-hidden="true"></div>
               <div class="hub-hero__mockup">
@@ -158,23 +158,15 @@
                     <span class="hub-hero__mockup-tab" data-i18n="hero.mockup.tabResults">Resultados</span>
                     <span class="hub-hero__mockup-tab" data-i18n="hero.mockup.tabNorm">Norma</span>
                   </div>
-                  <div class="hub-hero__mockup-fields">
-                    <div class="hub-hero__field">
-                      <span class="hub-hero__label" data-i18n="hero.mockup.power">Potencia</span>
-                      <span class="hub-hero__value">7.5 kW</span>
-                    </div>
-                    <div class="hub-hero__field">
+                  <div class="hub-hero__mockup-fields hub-hero__mockup-fields--live">
+                    <label class="hub-hero__field hub-hero__field--input">
+                      <span class="hub-hero__label" data-i18n="hero.mockup.power">Potencia (kW)</span>
+                      <input class="hub-hero__input" id="heroBeltP" type="number" min="0.1" step="any" value="7.5" />
+                    </label>
+                    <label class="hub-hero__field hub-hero__field--input">
                       <span class="hub-hero__label" data-i18n="hero.mockup.rpm">RPM motriz</span>
-                      <span class="hub-hero__value">1450 rpm</span>
-                    </div>
-                    <div class="hub-hero__field">
-                      <span class="hub-hero__label" data-i18n="hero.mockup.ratio">Relación</span>
-                      <span class="hub-hero__value">2.80 : 1</span>
-                    </div>
-                    <div class="hub-hero__field hub-hero__field--accent">
-                      <span class="hub-hero__label" data-i18n="hero.mockup.service">Factor servicio</span>
-                      <span class="hub-hero__value">1.25</span>
-                    </div>
+                      <input class="hub-hero__input" id="heroBeltN" type="number" min="100" step="any" value="1450" />
+                    </label>
                   </div>
                   <div class="hub-hero__mockup-diagram">
                     <p class="hub-hero__mockup-diagram-title" data-i18n="hero.mockup.diagramPanelTitle">
@@ -198,21 +190,18 @@
                   <div class="hub-hero__mockup-kpis" aria-hidden="true">
                     <div class="hub-hero__kpi">
                       <span class="hub-hero__kpi-label" data-i18n="hero.mockup.kpiTorque">Par eje</span>
-                      <span class="hub-hero__kpi-val">49.3 N·m</span>
+                      <span class="hub-hero__kpi-val" id="heroBeltTorque">49.3 N·m</span>
                     </div>
                     <div class="hub-hero__kpi">
-                      <span class="hub-hero__kpi-label" data-i18n="hero.mockup.kpiBelt">Vel. correa</span>
-                      <span class="hub-hero__kpi-val">18.2 m/s</span>
-                    </div>
-                    <div class="hub-hero__kpi">
-                      <span class="hub-hero__kpi-label" data-i18n="hero.mockup.kpiSafety">Margen</span>
-                      <span class="hub-hero__kpi-val hub-hero__kpi-val--ok" data-i18n="hero.mockup.kpiOk">OK</span>
+                      <span class="hub-hero__kpi-label" data-i18n="hero.mockup.kpiBelt">Vel. lineal aprox.</span>
+                      <span class="hub-hero__kpi-val" id="heroBeltV">15.2 m/s</span>
                     </div>
                   </div>
+                  <p class="hub-hero__mockup-cta-wrap">
+                    <a class="hub-hero__mockup-cta" href="calc-belts.html" data-i18n="hero.mockup.ctaFull">Ver cálculo completo →</a>
+                  </p>
                   <div class="hub-hero__result">
-                    <span class="hub-hero__result-kicker" data-i18n="hero.mockup.suggested">Correa sugerida</span>
-                    <strong data-i18n="hero.mockup.result">SPA 1600 + Poleas 112/315</strong>
-                    <span class="hub-hero__result-hint" data-i18n="hero.mockup.hint">Valores de ejemplo · no interactivo</span>
+                    <span class="hub-hero__result-hint" data-i18n="hero.mockup.hintLive">v con Ø primitivo 200 mm orientativo · T = 9550·P/n</span>
                   </div>
                 </div>
               </div>
@@ -552,7 +541,7 @@
           <header class="hub-pricing__head">
             <h2 id="hub-pricing-heading" class="hub-pricing__title" data-i18n="pricing.title">Elige tu plan</h2>
             <p class="hub-pricing__lead" data-i18n="pricing.lead">
-              Empiece gratis y pase a Pro cuando PDF, Excel y el catálogo completo pasen a ser imprescindibles en su oficina técnica.
+              Empiece gratis y pase a Pro cuando el informe PDF y el catálogo completo pasen a ser imprescindibles en su oficina técnica.
             </p>
           </header>
           <div class="hub-pricing__grid">
@@ -817,6 +806,7 @@
     </script>
 
     <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/heroBeltMiniCalc.js"></script>
     <script type="module" src="js/ui/freemiumUi.js"></script>
     <script type="module" src="js/ui/hubFreemium.js"></script>
   </body>

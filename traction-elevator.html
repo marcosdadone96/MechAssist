@@ -3,7 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Cinemática, contrapeso, rodadura y parámetros de cuadro orientativos. Pro; no sustituye normativa local." />
+    <title data-i18n="teConv.docTitle">Ascensor de tracción — TheMechAssist</title>
+    <meta
+      name="description"
+      data-i18n="teConv.metaDesc"
+      data-i18n-attr="content"
+      content="Cinemática, contrapeso, rodadura y parámetros de cuadro orientativos. Pro; no sustituye normativa local."
+    />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -12,31 +18,21 @@
     <link rel="canonical" href="https://www.themechassist.com/traction-elevator.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/traction-elevator.html" id="mdr-og-url" />
-    <meta property="og:title" content="Ascensor de tracción — TheMechAssist" />
-    <meta property="og:description" content="Cinemática, contrapeso, rodadura y parámetros de cuadro orientativos. Pro; no sustituye normativa local." />
+    <meta property="og:title" data-i18n="teConv.ogTitle" data-i18n-attr="content" content="Ascensor de tracción — TheMechAssist" />
+    <meta
+      property="og:description"
+      data-i18n="teConv.ogDesc"
+      data-i18n-attr="content"
+      content="Cinemática, contrapeso, rodadura y parámetros de cuadro orientativos. Pro; no sustituye normativa local."
+    />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Ascensor de tracción — TheMechAssist" />
-
-    <title>Ascensor de tracción — TheMechAssist</title>
+    <meta name="twitter:title" data-i18n="teConv.twitterTitle" data-i18n-attr="content" content="Ascensor de tracción — TheMechAssist" />
     <link rel="stylesheet" href="css/app.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
   <body>
-    <div id="fileProtoWarn" class="runtime-error" hidden role="alert"></div>
     <div id="runtimeError" class="runtime-error runtime-error--js" hidden role="alert"></div>
-    <script>
-      (function () {
-        if (location.protocol === 'file:') {
-          var el = document.getElementById('fileProtoWarn');
-          if (el) {
-            el.hidden = false;
-            el.textContent =
-              'Recomendación: abrir con un servidor local (en la carpeta del proyecto: npx --yes serve . y use la URL que muestre, p. ej. http://localhost:3000). Si abre el HTML con doble clic, el navegador puede bloquear el JavaScript y no verá resultados ni diagramas.';
-          }
-        }
-      })();
-    </script>
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
         <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
@@ -245,7 +241,7 @@
           <div class="field" id="teMcpManualRow">
             <label for="teMcpManual"><span data-te-for="lblMcpManual" data-i18n="teConv.lblMcpManual">Contrapeso sugerido (editable)</span> <span class="info-chip" data-i18n-attrs="title=teConv.tipMcpManual" title="Use valor manual si ya existe diseño de contrapeso; si no, mantenga el óptimo automático." tabindex="0" role="button" aria-label="Ayuda masa contrapeso manual.">?</span></label>
             <div class="flat-field__num">
-              <input id="teMcpManual" type="number" step="50" min="1" value="2100" data-auto-suggestion="true" />
+              <input inputmode="numeric" id="teMcpManual" type="number" step="50" min="1" value="2100" data-auto-suggestion="true" />
               <span class="field-hint">kg</span>
             </div>
           </div>
@@ -269,7 +265,7 @@
           <div class="field">
             <label for="teAlpha"><span data-te-for="lblAlpha" data-i18n="teConv.lblAlpha">&Aacute;ngulo de abrazamiento</span> <span class="info-chip" data-i18n-attrs="title=teConv.tipAlpha" title="Ángulo de contacto cable-polea. Mayor α mejora límite e^(μα)." tabindex="0" role="button" aria-label="Ayuda ángulo de abrazamiento.">?</span></label>
             <div class="flat-field__num">
-              <input id="teAlpha" type="number" step="5" min="90" max="360" value="180" />
+              <input inputmode="numeric" id="teAlpha" type="number" step="5" min="90" max="360" value="180" />
               <span class="field-hint">°</span>
             </div>
             <p class="field-context muted"><span data-te-rec="alpha"></span></p>
@@ -285,7 +281,7 @@
           <div class="field">
             <label for="teMaxN"><span data-te-for="lblMaxN" data-i18n="teConv.lblMaxN">M&aacute;x. cables / tiras</span> <span class="info-chip" data-i18n-attrs="title=teConv.tipMaxN" title="Tope de diseño para selección demo de cables. Si se supera, revise diámetro/cargas." tabindex="0" role="button" aria-label="Ayuda máximo de cables.">?</span></label>
             <div class="flat-field__num">
-              <input id="teMaxN" type="number" step="1" min="2" max="16" value="8" />
+              <input inputmode="numeric" id="teMaxN" type="number" step="1" min="2" max="16" value="8" />
               <span class="field-hint"><span id="teHintMaxn">límite diseño</span></span>
             </div>
             <p class="field-context muted"><span data-te-rec="maxN"></span></p>

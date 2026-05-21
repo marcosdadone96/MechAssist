@@ -22,6 +22,8 @@ import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
 import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
+import { bindInputValidation, syncInputValidationResultsGate } from './labCalcUx.js';
+import { ROLLER_CONVEYOR_VALIDATION } from './machineCalcInputValidation.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { incrementCalcCounter } from '../services/calcCounter.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
@@ -544,6 +546,7 @@ function refreshCore() {
         machineDiagram: 'Diagrama de la máquina',
       };
   const els = getEls();
+  if (syncInputValidationResultsGate(els.results)) return;
   const raw = readInputs();
   const r = computeRollerConveyor(raw);
   if (Number.isFinite(r.requiredMotorPower_kW)) incrementCalcCounter();
@@ -777,6 +780,7 @@ bindRollerRangeSlider('efficiencyR', 'efficiency', 70, 99, 0.5);
 bindRollerRangeSlider('rollerPitchR', 'rollerPitch', 50, 250, 1);
 
 applyRollerDocumentChrome();
+bindInputValidation(ROLLER_CONVEYOR_VALIDATION);
 bootMachineCalcView(refresh);
 
 wireMachineRfqExport({

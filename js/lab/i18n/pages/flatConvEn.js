@@ -9,6 +9,12 @@ export const FLAT_CONVEYOR_EN = {
     'Belt tension, drum power and indicative gearmotor check on flat belts. Bulk handling. Free online.',
   'flatConv.twitterTitle': 'Flat belt conveyor calculator online',
 
+  'flatConv.errorPositive': 'Enter a value greater than 0',
+  'flatConv.errorRange': 'Value out of allowed range',
+  'flatConv.errorInvalid': 'Enter a valid number',
+  'flatConv.errorBlocked':
+    'Fix the highlighted fields (invalid or out of range) to update results.',
+
   'flatConv.flatSidebarTitle': 'Flat belt',
   'flatConv.introSummary': 'Calculator description and scope',
   'flatConv.calcSeoIntro':

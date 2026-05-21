@@ -1,4 +1,4 @@
-import { bindInputValidation, mountLabPresetsBar } from './labCalcUx.js';
+import { bindInputValidation, mountLabPresetsBar, syncInputValidationResultsGate } from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
@@ -431,6 +431,7 @@ function renderHcVerdictSummary(opts) {
 }
 
 function computeAndRenderCore() {
+  if (syncInputValidationResultsGate(document.getElementById('hcResults'))) return;
   const mode = document.getElementById('hcMode') instanceof HTMLSelectElement
     ? document.getElementById('hcMode').value
     : 'design';

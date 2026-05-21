@@ -1,5 +1,10 @@
 /** English strings for calc-belts.html (`belt.*` keys). ASCII-safe. */
 export const BELTS_PAGE_EN = {
+  'belt.errorPositive': 'Enter a value greater than 0',
+  'belt.errorRange': 'Value out of allowed range',
+  'belt.errorInvalid': 'Enter a valid number',
+  'belt.errorBlocked':
+    'Fix the highlighted fields (invalid or out of range) to update results.',
   'belt.docTitle': 'Belt drive calculator \u2014 kinematics and speed regime \u2014 TheMechAssist',
   'belt.metaDesc':
     'V, synchronous, flat or Poly-V belt: ratio, length, linear speed and sketch. Indicative.',

@@ -3,7 +3,13 @@
  */
 
 import { renderInertiaTransmissionLine } from '../lab/diagramCatalogModules.js';
-import { bindInputValidation, mountLabPresetsBar, wireLabCopyLink, wireLabCopyResultsButton } from './labCalcUx.js';
+import {
+  bindInputValidation,
+  mountLabPresetsBar,
+  syncInputValidationResultsGate,
+  wireLabCopyLink,
+  wireLabCopyResultsButton,
+} from './labCalcUx.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
 import { withCalcCredits } from '../services/creditSession.js';
@@ -137,6 +143,7 @@ function drawChart(motor, T_load, n_op) {
 }
 
 function render() {
+  if (syncInputValidationResultsGate(document.getElementById('gmResults'))) return;
   const Jload = parseFloat(document.getElementById('gmJload')?.value || '');
   const iRatio = parseFloat(document.getElementById('gmIratio')?.value || '');
   const jExtInput = document.getElementById('gmJext');
@@ -288,7 +295,10 @@ wireLabCopyResultsButton('gmCopyResults', {
 wireLabCopyLink('gmCopyLinkBtn', 'gmCopyToast');
 
 scheduleGmRender();
-mountLabCloudSaveBar(bx('Inercia motor / carga', 'Motor / load inertia'));
+mountLabCloudSaveBar(bx('Inercia motor / carga', 'Motor / load inertia'), {
+  norm: 'Relación J_ext/J_mot · curva de par estimada',
+  svgSelector: '#gmLineDiagram, #gmChart',
+});
 watchLangAndApply(GEARMOTOR_INERTIA_EN, {
   reloadOnEs: false,
   onEnApplied: () => scheduleGmRender(),

@@ -4,6 +4,7 @@
 
 import {
   bindInputValidation,
+  syncInputValidationResultsGate,
   createLabUrlSync,
   mountLabPresetsBar,
   updateLabShareVisibility,
@@ -91,6 +92,18 @@ function render() {
 
   const row = lookupKey(d);
   const sigAdm = KEY_MATERIAL_ALLOWABLE_MPA[mat]?.sigma_lim_MPa ?? 100;
+  const l_use = Number.isFinite(lUser) && lUser > 0 ? lUser : row ? nextStandardLength(row.b * 4) : 0;
+
+  renderParallelKeyShaftDiagram(document.getElementById('kyDiagram'), {
+    d,
+    b: row?.b ?? 0,
+    h: row?.h ?? 0,
+    t1: row?.t1 ?? 0,
+    t2: row?.t2 ?? 0,
+    L: l_use,
+  });
+
+  if (syncInputValidationResultsGate(document.getElementById('kyResults'))) return;
 
   if (!row) {
     out.innerHTML = `<p class="lab-verdict lab-verdict--err">${bx(
@@ -103,7 +116,6 @@ function render() {
     return;
   }
 
-  const l_use = Number.isFinite(lUser) && lUser > 0 ? lUser : nextStandardLength(row.b * 4);
   const sigma = sigmaCrush_MPa(T, d, row.h, l_use);
   const ok = sigma <= sigAdm;
   const lLimit = 1.5 * d;
@@ -118,15 +130,6 @@ function render() {
   document.getElementById('kyH') && (document.getElementById('kyH').textContent = String(row.h));
   document.getElementById('kyT1') && (document.getElementById('kyT1').textContent = row.t1.toFixed(1));
   document.getElementById('kyT2') && (document.getElementById('kyT2').textContent = row.t2.toFixed(1));
-
-  renderParallelKeyShaftDiagram(document.getElementById('kyDiagram'), {
-    d,
-    b: row.b,
-    h: row.h,
-    t1: row.t1,
-    t2: row.t2,
-    L: l_use,
-  });
 
   const matLabel = KEY_MATERIAL_ALLOWABLE_MPA[mat]?.label ?? mat;
   if (ok) {
@@ -209,7 +212,10 @@ wireLabCopyResultsButton('kyCopyResults', {
 
 if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
 else render();
-mountLabCloudSaveBar(bx('Chavetas paralelas DIN 6885', 'Parallel keys DIN 6885'));
+mountLabCloudSaveBar(bx('Chavetas paralelas DIN 6885', 'Parallel keys DIN 6885'), {
+  norm: 'DIN 6885 · chavetas paralelas',
+  svgSelector: '#kyDiagram',
+});
 watchLangAndApply(KEYS_DIN_EN, {
   reloadOnEs: false,
   onEnApplied: () => scheduleKyRender(),

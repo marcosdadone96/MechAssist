@@ -1,6 +1,12 @@
 /** English strings for roller-conveyor.html (`rollerConv.*`). ASCII-safe. */
 export const ROLLER_CONVEYOR_EN = {
   'rollerConv.docTitle': 'Roller conveyor \u2014 TheMechAssist',
+  'rollerConv.metaDesc':
+    'Loads, roller pitch, line speed and drive power for motorized roller conveyors. Indicative sizing. Free online.',
+  'rollerConv.ogTitle': 'Motorized roller conveyor calculator \u2014 load & power',
+  'rollerConv.ogDesc':
+    'Loads, roller pitch, line speed and drive power for motorized roller conveyors. Indicative sizing. Free online.',
+  'rollerConv.twitterTitle': 'Motorized roller conveyor calculator \u2014 load & power',
   'rollerConv.h2': 'Motorized roller line',
   'rollerConv.introSummary': 'Calculator description and scope',
   'rollerConv.calcSeoIntro':

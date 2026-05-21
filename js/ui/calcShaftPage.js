@@ -5,6 +5,7 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
   executiveSummaryAlert,
@@ -13,6 +14,7 @@ import {
   mountLabPresetsBar,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  runLabCalcBoot,
   updateLabShareVisibility,
   wireLabCopyLink,
   wireLabCopyResultsButton,
@@ -237,6 +239,14 @@ function refreshCore() {
     tauAtMinDiameter_MPa: tauTor_MPa,
   };
 
+  renderShaftTorsionDiagram(document.getElementById('shDiagram'), {
+    diameter_mm: mode === 'diagnostic' ? dAvail_mm : diameter_min_mm,
+    showBending: useBending,
+    moment_Nm: M,
+  });
+
+  if (syncInputValidationResultsGate(document.getElementById('shResults'))) return;
+
   const heroEl = document.getElementById('shHero');
   if (heroEl) {
     const heroItems =
@@ -383,12 +393,6 @@ function refreshCore() {
     }
     alerts.innerHTML = parts.join('');
   }
-  renderShaftTorsionDiagram(document.getElementById('shDiagram'), {
-    diameter_mm: mode === 'diagnostic' ? dAvail_mm : r.diameter_min_mm,
-    showBending: useBending,
-    moment_Nm: M,
-  });
-
   const shopD = mode === 'diagnostic' ? dAvail_mm : r.diameter_min_mm;
   const shoppingLines = [
     {
@@ -463,8 +467,11 @@ wireLabCopyLink('shCopyLinkBtn', 'shCopyToast');
 wireLabCopyResultsButton('shCopyResults', {
   moduleTitle: shaftRuntimeStrings(getLabLang()).moduleLabel,
 });
-runCalcWithIndustrialFeedback(wrap, refreshCore);
-mountLabCloudSaveBar(shaftRuntimeStrings(getLabLang()).moduleLabel);
+runLabCalcBoot(wrap, refreshCore);
+mountLabCloudSaveBar(shaftRuntimeStrings(getLabLang()).moduleLabel, {
+  norm: 'Torsión / flexión · von Mises y Tresca (modelo simplificado)',
+  svgSelector: '#shDiagram',
+});
 
 watchLangAndApply(SHAFT_PAGE_EN, {
   reloadOnEs: false,

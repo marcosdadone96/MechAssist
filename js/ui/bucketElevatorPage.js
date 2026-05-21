@@ -30,6 +30,8 @@ import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
 import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
+import { bindInputValidation, syncInputValidationResultsGate } from './labCalcUx.js';
+import { BUCKET_ELEVATOR_VALIDATION } from './machineCalcInputValidation.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { BUCKET_ELEVATOR_EN } from '../lab/i18n/pages/bucketElevatorEn.js';
@@ -387,6 +389,8 @@ function mountBePdfExport() {
 }
 
 function computeAndRenderCore() {
+  if (syncInputValidationResultsGate(document.getElementById('beResults'))) return;
+
   const lang = getCurrentLang();
   const en = lang === 'en';
   const LBL = getI18nLabels();
@@ -763,6 +767,7 @@ try {
 
 setStep(1);
 applyBucketDocumentChrome();
+bindInputValidation(BUCKET_ELEVATOR_VALIDATION);
 bootMachineCalcView(computeAndRender);
 computeAndRender.runPreview();
 initInfoChipPopovers(document.body);

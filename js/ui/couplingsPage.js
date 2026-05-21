@@ -4,6 +4,7 @@
 
 import {
   bindInputValidation,
+  syncInputValidationResultsGate,
   mountLabPresetsBar,
   updateLabShareVisibility,
   wireLabCopyLink,
@@ -156,6 +157,7 @@ const CP_PRESETS = [
 ];
 
 function render() {
+  if (syncInputValidationResultsGate(document.getElementById('cpResults'))) return;
   const P = parseFloat((document.getElementById('cpPower')?.value || '0').replace(',', '.'));
   const n = parseFloat((document.getElementById('cpRpm')?.value || '0').replace(',', '.'));
   const K = parseFloat((document.getElementById('cpK')?.value || '1.25').replace(',', '.'));
@@ -273,7 +275,10 @@ wireLabCopyResultsButton('cpCopyResults', {
 
 if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
 else render();
-mountLabCloudSaveBar(bx('Acoplamientos', 'Couplings'));
+mountLabCloudSaveBar(bx('Acoplamientos', 'Couplings'), {
+  norm: 'Catálogo fabricante (datos demostrativos)',
+  svgSelector: '#cpDiagram',
+});
 watchLangAndApply(COUPLINGS_EN, {
   reloadOnEs: false,
   onEnApplied: () => scheduleCouplingRender(),

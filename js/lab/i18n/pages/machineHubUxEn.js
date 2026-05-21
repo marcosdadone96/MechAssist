@@ -29,6 +29,12 @@ export const MACHINE_HUB_UX_EN = {
     '<p><strong>No credits left.</strong> You can still view all fields and results; inputs are read-only. Recharge credits to edit again. <a href="{checkoutUrl}">View plans</a></p>',
   'machineHub.pdfDownloadAria': 'Download engineering PDF report',
 
+  'machineHub.errorPositive': 'Enter a value greater than 0',
+  'machineHub.errorRange': 'Value out of allowed range',
+  'machineHub.errorInvalid': 'Enter a valid number',
+  'machineHub.errorBlocked':
+    'Fix the highlighted fields (invalid or out of range) to update results.',
+
   'machineHub.nextStepsAria': 'Usual next step',
   'machineHub.nextStepsTitle': 'Usual next step',
 

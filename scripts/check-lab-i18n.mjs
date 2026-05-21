@@ -14,10 +14,13 @@ const pages = [
   { html: 'calc-iso-fit.html', en: 'js/lab/i18n/pages/isoFitPageEn.js' },
   { html: 'calc-gearmotor-inertia.html', en: 'js/lab/i18n/pages/gearmotorInertiaEn.js' },
   { html: 'calc-compression-spring.html', en: 'js/lab/i18n/pages/compressionSpringEn.js' },
+  { html: 'calc-hydraulic-pump.html', en: 'js/lab/i18n/pages/hydraulicPumpEn.js' },
 ];
 
 const navSrc = fs.readFileSync('js/lab/i18n/homeNavEn.js', 'utf8');
 const navKeys = new Set([...navSrc.matchAll(/'([^']+)':/g)].map((m) => m[1]));
+const fluidsUxSrc = fs.readFileSync('js/lab/i18n/pages/fluidsHubUxEn.js', 'utf8');
+const fluidsUxKeys = new Set([...fluidsUxSrc.matchAll(/'([^']+)':/g)].map((m) => m[1]));
 
 let failed = false;
 
@@ -27,15 +30,20 @@ for (const { html, en } of pages) {
   const keys = new Set([
     ...[...enSrc.matchAll(/'([^']+)':/g)].map((m) => m[1]),
     ...navKeys,
+    ...(html === 'calc-hydraulic-pump.html' ? fluidsUxKeys : []),
   ]);
   const dataI18n = [...htmlSrc.matchAll(/data-i18n="([^"]+)"/g)].map((m) => m[1]);
   const missing = dataI18n.filter((k) => !keys.has(k));
   const helps = (htmlSrc.match(/class="lab-field-help/g) || []).length;
-  const helpsBare = [...htmlSrc.matchAll(/<p class="lab-field-help"[^>]*>/g)].filter((m) => {
+  const helpsBare = [...htmlSrc.matchAll(/<(?:p|div)[^>]*class="[^"]*lab-field-help[^"]*"[^>]*>/g)].filter((m) => {
     if (m[0].includes('data-i18n')) return false;
     if (html === 'calc-shaft.html' && /\bid="sh(T|AvailableD)Help"/.test(m[0])) return false;
-    if (html === 'calc-bolts-iso898.html' && /\bid="blCalcModeHelp"/.test(m[0])) return false;
-    if (html === 'calc-gears.html' && /\bid="gCalcModeHelp"/.test(m[0])) return false;
+    if (
+      /\blab-field-help--(?:gear|bolt|hp)-modes\b/.test(m[0]) &&
+      /data-(?:gear|bolt|hp)-mode/.test(htmlSrc)
+    ) {
+      return false;
+    }
     return true;
   }).length;
   const nextSteps = htmlSrc.includes('lab-next-steps');

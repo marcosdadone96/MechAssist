@@ -5,7 +5,7 @@ export const GEARMOTOR_INERTIA_EN = {
   'gm.dataNoteHtml':
     '<strong>Demo catalogue:</strong> gearmotor curves and data are indicative; they do not replace manufacturer software or datasheets.',
   'gm.heroLead':
-    '<strong>J<sub>ext</sub>/J<sub>mot</sub></strong> vs a user-defined limit and available torque vs load torque at operating point \u2014 educational model with demo catalogue.',
+    'Check whether the load can be accelerated by the gearmotor without torque saturation. <strong>J<sub>ext</sub>/J<sub>mot</sub></strong> vs a user-defined limit and available torque vs load torque at operating point \u2014 educational model with demo catalogue.',
   'gm.seoSummary': 'Extended context and usage notes',
   'gm.seoIntro':
     'This lab combines reflected load inertia with the gearmotor inertia to estimate whether the ratio J<sub>ext</sub>/J<sub>mot</sub> fits typical direct-on-line or VFD startup limits, and compares available torque against load torque at operating speed using a simplified torque\u2013speed curve. The method is educational and useful for sizing before opening manufacturer software. Relevant for automation engineers integrating pumps, fans or spindles with large coupled masses.',
@@ -17,6 +17,8 @@ export const GEARMOTOR_INERTIA_EN = {
   'gm.nextLi1Html':
     '<a href="my-gearmotors.html">My gearmotors</a> \u2014 pick a model with torque and J from the catalogue.',
   'gm.nextLi2Html': '<a href="calc-couplings.html">Couplings</a> \u2014 select a coupling for the design torque.',
+  'gm.nextLi3Html':
+    'If reflected inertia exceeds the limit \u2192 increase reduction (<a href="calc-gears.html">Gears</a>) or reduce load inertia.',
   'gm.presetsLabel': 'Typical examples:',
   'gm.preset1': 'Servo + CNC spindle',
   'gm.preset2': 'Induction motor + fan',

@@ -25,6 +25,8 @@ import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getI18nLabels } from '../config/i18nLabels.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
 import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
+import { bindInputValidation, syncInputValidationResultsGate } from './labCalcUx.js';
+import { CENTRIFUGAL_PUMP_VALIDATION } from './machineCalcInputValidation.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { CENTRIFUGAL_PUMP_EN } from '../lab/i18n/pages/centrifugalPumpEn.js';
@@ -594,6 +596,7 @@ function refreshCore() {
   const lang = getCurrentLang();
   const en = lang === 'en';
   const els = getEls();
+  if (syncInputValidationResultsGate(els.results)) return;
   try {
     clearRuntimeError();
     normalizePhysicalInputs();
@@ -973,6 +976,7 @@ patchProInstallTeaserCheckoutLink();
 syncLoadDutyUi();
 syncPumpCalcModeUi();
 initInfoChipPopovers(document.body);
+bindInputValidation(CENTRIFUGAL_PUMP_VALIDATION);
 bootMachineCalcView(refresh);
 
 wireMachineRfqExport({

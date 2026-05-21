@@ -11,6 +11,7 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
   executiveSummaryAlert,
@@ -20,6 +21,7 @@ import {
   renderLabFinalVerdictBanner,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  runLabCalcBoot,
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
@@ -204,6 +206,10 @@ function refreshCore() {
 
   const r = computeIsoFit(dNom, holeLetter, holeIt, shaftLetter, shaftIt);
 
+  renderIso286FitDiagram(document.getElementById('isoDiagram'), r.ok ? r : null);
+
+  if (syncInputValidationResultsGate(document.getElementById('isoResults'))) return;
+
   const heroEl = document.getElementById('isoHero');
   const alertsEl = document.getElementById('isoAlerts');
   const box = document.getElementById('isoResults');
@@ -228,7 +234,6 @@ function refreshCore() {
       alertsEl.innerHTML = parts.join('');
     }
     if (box) box.innerHTML = '';
-    renderIso286FitDiagram(document.getElementById('isoDiagram'), null);
     updateLabShareVisibility('isoShareLinkWrap', 'isoResults');
     isoUrl.serializeToUrl();
     return;
@@ -382,8 +387,6 @@ function refreshCore() {
     ].join('');
   }
 
-  renderIso286FitDiagram(document.getElementById('isoDiagram'), r);
-
   emitEngineeringSnapshot({
     page: 'calc-iso-fit',
     moduleLabel: 'ISO 286 ajustes',
@@ -506,8 +509,11 @@ wireLabCopyLink('isoCopyLinkBtn', 'isoCopyToast');
 wireLabCopyResultsButton('isoCopyResults', {
   moduleTitle: uxCopy('Ajustes ISO 286', 'ISO 286 fits'),
 });
-runCalcWithIndustrialFeedback(wrap, refreshCore);
-mountLabCloudSaveBar(bx('Ajustes ISO 286', 'ISO 286 fits'));
+runLabCalcBoot(wrap, refreshCore);
+mountLabCloudSaveBar(bx('Ajustes ISO 286', 'ISO 286 fits'), {
+  norm: 'ISO 286-1 · ajustes agujero-eje',
+  svgSelector: '#isoDiagram',
+});
 watchLangAndApply(ISO_FIT_PAGE_EN, {
   reloadOnEs: false,
   onEnApplied: () => {

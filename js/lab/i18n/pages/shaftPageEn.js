@@ -4,6 +4,8 @@ export const SHAFT_PAGE_EN = {
   'shaft.metaDesc':
     'Minimum solid shaft diameter for pure torsion or Von Mises/Tresca equivalent stress with bending moment and Kt. Indicative pre-design.',
   'shaft.h2': 'Solid shaft \u00b7 torsion and bending (basic/advanced)',
+  'shaft.safetyNotice':
+    'Results are indicative only. Final sizing must be validated with manufacturer data and real operating conditions.',
   'shaft.heroLeadHtml':
     'Get the <strong>minimum diameter</strong> for pure torsion or, in advanced mode, equivalent stress with <strong>M</strong> and <strong>Kt</strong> (Von Mises / Tresca). Compare with a commercial \u00d8 or diagnose an installed shaft.',
   'shaft.seoSummary': 'Expanded context and usage notes',

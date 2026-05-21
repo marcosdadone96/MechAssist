@@ -19,8 +19,8 @@ export const ISO_FIT_PAGE_EN = {
   'iso.footerNote':
     'Assumption: this module covers the 1\u2013500 mm extract. For special ranges, materials or conditions, see full ISO 286-1.',
   'iso.seoSummary': 'Extended context and usage notes',
-  'iso.seoIntro':
-    'This module converts nominal diameter, hole and shaft tolerance positions and IT grade into dimensional limits and a practical clearance, transition or interference classification based on ISO 286-1 type tables. Helps reading drawings and preparing inspection instructions for H7/k6 style fits. Used by process, quality and mechanical engineers coordinating machining and assembly. For example, you can anticipate whether a bearing mounted with light interference will remain in tolerance after reaming an aluminium housing.',
+  'isoFit.calcSeoIntro':
+    'Enter nominal diameter, hole and shaft tolerance letters and IT quality grade to obtain upper and lower size limits per ISO 286-1 and classify the assembly as clearance, transition or interference fit. The educational extract covers 1 to 500 mm for everyday industrial fits such as H7/g6 running bearings, H7/k6 locational fits and tighter interference seats. Process and quality engineers use it to interpret drawings, write inspection sheets and compare presets before production. It does not replace the full standard or material-specific shrink fits; always validate on the test bench and with your metrology procedure.',
   'iso.helpSummary': 'Methodology and limits',
   'iso.presetsLabel': 'Typical examples:',
   'iso.labelD': 'Nominal diameter d (mm)',

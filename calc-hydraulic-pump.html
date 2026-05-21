@@ -316,7 +316,7 @@
           <span class="lab-presets-row__label" data-i18n="fluids.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="hpPresetsBar"></div>
         </div>
-        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled fluid-calc fluid-calc--pump">
           <div class="lab-calc-layout__diagram">
             <div class="hp-diagrams-row">
               <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
@@ -360,17 +360,17 @@
                 <div class="lab-grid lab-grid--2" style="gap:0.65rem">
                   <div class="lab-field">
                     <label for="hpTankZ_m" data-i18n="hpump.labelTankZ">Cota líquido sobre entrada bomba z (m)</label>
-                    <input id="hpTankZ_m" type="number" step="any" value="0" />
+                    <input inputmode="decimal" id="hpTankZ_m" type="number" step="any" value="0" />
                     <span class="hint" data-i18n="hpump.hintTankZ">Positivo si el nivel está por encima</span>
                   </div>
                   <div class="lab-field">
                     <label for="hpNPSHr_m" data-i18n="hpump.labelNPSHr">NPSHr bomba (m) — placa</label>
-                    <input id="hpNPSHr_m" type="number" min="0" step="any" value="0" />
+                    <input inputmode="decimal" id="hpNPSHr_m" type="number" min="0" step="any" value="0" />
                     <span class="hint" data-i18n="hpump.hintNPSHr">0 si no se conoce</span>
                   </div>
                   <div class="lab-field">
                     <label for="hpOilTempC" data-i18n="hpump.labelOilTemp">Temperatura aceite (°C)</label>
-                    <input id="hpOilTempC" type="number" step="any" value="46" />
+                    <input inputmode="decimal" id="hpOilTempC" type="number" step="any" value="46" />
                     <span class="hint" data-i18n="hpump.hintOilTemp">Solo fluido estándar en modo proyecto</span>
                     <p class="lab-field-help" data-i18n="hpump.helpOilTemp">Con aceite mineral ISO VG, modo proyecto aplica ρ(T) y Pv(T) orientativos para NPSHa. No corrige ν del tramo automáticamente.</p>
                   </div>
@@ -383,7 +383,10 @@
                   <option value="diagnostic" data-i18n="hpump.optDiagnostic">Diagnosticar máquina existente</option>
                 </select>
                 <span class="hint" data-i18n="hpump.hintCalcMode">Modo objetivo del cálculo</span>
-                <p class="lab-field-help" data-i18n="hpump.helpMode">Diseño: objetivo de rendimiento y verificación integral. Diagnóstico: se calcula caudal real desde desplazamiento y RPM.</p>
+                <div class="lab-field-help lab-field-help--hp-modes" id="hpCalcModeHelp">
+                  <p class="hp-calc-mode-help__line hp-calc-mode-help__line--active" data-hp-mode="design" data-i18n="hpump.helpCalcModeDesignHtml" data-i18n-html><strong>Diseño:</strong> objetivo de rendimiento y verificación integral (presión, caudal, eficiencias y comprobaciones de línea).</p>
+                  <p class="hp-calc-mode-help__line" data-hp-mode="diagnostic" data-i18n="hpump.helpCalcModeDiagnosticHtml" data-i18n-html><strong>Diagnóstico:</strong> el caudal en conducción se calcula desde desplazamiento y RPM; el campo de caudal queda en solo lectura.</p>
+                </div>
               </div>
 
               <div class="hp-block hp-block--pump">
@@ -413,14 +416,14 @@
                   </div>
                   <div class="lab-field">
                     <label for="hpPressure" data-i18n="hpump.labelPressure">Presión de trabajo</label>
-                    <input id="hpPressure" type="number" min="1" step="any" value="180" />
+                    <input inputmode="decimal" id="hpPressure" type="number" min="1" step="any" value="180" />
                     <span class="hint" data-i18n="hpump.hintPressure">Presión efectiva de operación</span>
                     <div id="hpPressureZone" class="hp-pressure-zone hp-pressure-zone--green" aria-live="polite"></div>
                     <p class="lab-field-help" data-i18n="hpump.helpPressure">Indicador respecto al rango típico del tipo de bomba seleccionado (orientativo).</p>
                   </div>
                   <div class="lab-field">
                     <label for="hpRpm" data-i18n="hpump.labelSpeed">RPM motor</label>
-                    <input id="hpRpm" type="number" min="100" step="any" value="1450" />
+                    <input inputmode="decimal" id="hpRpm" type="number" min="100" step="any" value="1450" />
                     <span class="hint" data-i18n="hpump.hintSpeed">Velocidad del eje primario</span>
                     <p class="lab-field-help" data-i18n="hpump.helpSpeed">Con el desplazamiento define el caudal teórico de bomba y el par requerido en el eje.</p>
                   </div>
@@ -502,7 +505,7 @@
                   </div>
                   <div class="lab-field" id="pipeFlowField">
                     <label for="pipeFlowLmin" data-i18n="hpump.labelFlow">Caudal (L/min)</label>
-                    <input id="pipeFlowLmin" type="number" min="0.1" step="any" value="42" />
+                    <input inputmode="decimal" id="pipeFlowLmin" type="number" min="0.1" step="any" value="42" />
                     <span class="hint" data-i18n="hpump.hintFlow">Caudal en conducción</span>
                     <p class="lab-field-help" data-i18n="hpump.helpFlow">Con diámetro interior permite obtener velocidad de fluido y número de Reynolds para la clasificación del flujo.</p>
                   </div>
@@ -530,7 +533,7 @@
                   </div>
                   <div class="lab-field">
                     <label for="pipeLengthM" data-i18n="hpump.labelPipeLen">Longitud de línea (m)</label>
-                    <input id="pipeLengthM" type="number" min="0.5" step="any" value="12" />
+                    <input inputmode="decimal" id="pipeLengthM" type="number" min="0.5" step="any" value="12" />
                     <span class="hint" data-i18n="hpump.hintPipeLen">Pérdida lineal principal</span>
                     <p class="lab-field-help" data-i18n="hpump.helpPipeLen">Incrementa la pérdida de carga proporcionalmente en el término f·(L/D) de Darcy-Weisbach.</p>
                   </div>

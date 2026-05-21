@@ -7,6 +7,7 @@ import { fetchCreditsBalance, getCachedCreditsState, syncAccountBillingState } f
 import { getCurrentUser } from '../services/localAuth.js';
 import { mountCreditsBar } from './creditsUi.js';
 import { initNoCreditsLockWatch, syncNoCreditsInputLock } from './noCreditsLockMode.js';
+import { hasInputValidationErrors } from './labCalcUx.js';
 
 /** @type {WeakSet<( ...args: unknown[]) => void>} */
 const machineViewBooted = new WeakSet();
@@ -30,6 +31,10 @@ export async function bootPageCredits() {
  */
 export function wrapCalcRefresh(fn) {
   const charged = (...args) => {
+    if (hasInputValidationErrors()) {
+      fn(...args);
+      return;
+    }
     if (!isCreditsSystemEnabled()) {
       fn(...args);
       return;

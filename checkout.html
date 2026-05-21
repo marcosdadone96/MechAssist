@@ -76,6 +76,60 @@
 
         <p id="coCheckoutBlocked" class="register-error" hidden role="alert"></p>
 
+        <div class="checkout-compare" id="coCompareTable" aria-labelledby="coCompareHeading">
+          <h2 class="checkout-compare__title" id="coCompareHeading">Comparativa de planes</h2>
+          <div class="checkout-compare__scroll">
+            <table class="checkout-compare__table">
+              <thead>
+                <tr>
+                  <th scope="col"></th>
+                  <th scope="col">Gratis</th>
+                  <th scope="col">Starter</th>
+                  <th scope="col">Ilimitado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Laboratorio (12 calc.)</th>
+                  <td>&#10003;</td>
+                  <td>&#10003; + PDF</td>
+                  <td>&#10003; + PDF</td>
+                </tr>
+                <tr>
+                  <th scope="row">M&#225;quinas (8 calc.)</th>
+                  <td>&#10003; b&#225;sico</td>
+                  <td>&#10003; completo</td>
+                  <td>&#10003; completo</td>
+                </tr>
+                <tr>
+                  <th scope="row">Hidr&#225;ulica (4 calc.)</th>
+                  <td>&#10003; b&#225;sico</td>
+                  <td>&#10003; completo</td>
+                  <td>&#10003; completo</td>
+                </tr>
+                <tr>
+                  <th scope="row">PDF export</th>
+                  <td>&#10007;</td>
+                  <td>30/mes</td>
+                  <td>ilimitado</td>
+                </tr>
+                <tr>
+                  <th scope="row">Guardado de proyectos</th>
+                  <td>&#10007;</td>
+                  <td>&#10003;</td>
+                  <td>&#10003;</td>
+                </tr>
+                <tr>
+                  <th scope="row">Canvas multieje</th>
+                  <td>&#10007;</td>
+                  <td>&#10007;</td>
+                  <td>&#10003;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <div id="coWithdrawalWrap" class="checkout-withdrawal register-legal-row" hidden data-credits-allow>
           <label class="register-checkbox" for="coWithdrawalWaive">
             <input type="checkbox" id="coWithdrawalWaive" name="withdrawalWaive" />
@@ -96,7 +150,7 @@
             >
               <header class="checkout-plan-card__head">
                 <h3 class="checkout-plan-card__name" id="coStarterHeading">Starter</h3>
-                <p class="checkout-plan-card__price" id="coStarterPrice">9 &#8364;/mes</p>
+                <p class="checkout-plan-card__price" id="coStarterPrice">9 &#8364;/mes (IVA incluido)</p>
                 <p class="checkout-plan-card__renewal-note" data-i18n="pricing.renewalNoteHtml" data-i18n-html>
                   Se renueva automáticamente. Cancela en cualquier momento desde
                   <a href="https://mechassist.lemonsqueezy.com/billing" target="_blank" rel="noopener">tu portal de cliente</a>.
@@ -107,14 +161,9 @@
               <details class="checkout-plan-card__credits-details" id="coStarterCreditsDetails" hidden>
                 <summary id="coStarterCreditsSummary" data-credits-pricing-summary data-i18n="pricing.starter.creditsDetailsSummary">¿Cómo funcionan los créditos?</summary>
                 <div class="checkout-plan-card__credits-explainer" id="coStarterCreditsExplainer" data-credits-pricing-explainer>
-                  <ul class="hub-pricing-card__credits-list">
-                    <li>1000 créditos se recargan el 1º de cada mes</li>
-                    <li>Cada sesión de 12 min consume 10 créditos</li>
-                    <li>Exportar PDF consume 10 créditos adicionales</li>
-                    <li>Máximo 30 PDFs al mes (incluidos en el saldo)</li>
-                    <li>Con créditos agotados: cálculo disponible, PDF no</li>
-                    <li>El plan Ilimitado no consume créditos</li>
-                  </ul>
+                  <p class="checkout-plan-card__credits-simple" id="coStarterCreditsSimple">
+                    Starter incluye 30 exportaciones PDF al mes. Cada PDF consume 1 crédito. Los créditos se renuevan el 1 de cada mes. El plan Ilimitado no tiene límite.
+                  </p>
                 </div>
               </details>
               <ul class="checkout-plan-card__list" id="coStarterBullets"></ul>
@@ -143,7 +192,7 @@
                   href="https://mechassist.lemonsqueezy.com/checkout/buy/acd30d30-72e7-4434-827e-e51487e492ca"
                   class="button button--accent button--block checkout-plan-card__cta"
                   data-lemon-squeezy
-                  >Starter &#8212; 9 &#8364;/mes</a
+                  >Starter &#8212; 9 &#8364;/mes (IVA incluido)</a
                 >
                 <p
                   class="checkout-plan-card__sub-renewal"
@@ -162,7 +211,7 @@
             >
               <header class="checkout-plan-card__head">
                 <h3 class="checkout-plan-card__name" id="coUnlimitedHeading">Ilimitado</h3>
-                <p class="checkout-plan-card__price" id="coUnlimitedPrice">25 &#8364;/mes</p>
+                <p class="checkout-plan-card__price" id="coUnlimitedPrice">25 &#8364;/mes (IVA incluido)</p>
                 <p class="checkout-plan-card__renewal-note" data-i18n="pricing.renewalNoteHtml" data-i18n-html>
                   Se renueva automáticamente. Cancela en cualquier momento desde
                   <a href="https://mechassist.lemonsqueezy.com/billing" target="_blank" rel="noopener">tu portal de cliente</a>.
@@ -185,7 +234,7 @@
                   href="https://mechassist.lemonsqueezy.com/checkout/buy/a8ac7a03-694b-43be-89cf-75804a221e30"
                   class="button button--accent button--block checkout-plan-card__cta checkout-plan-card__cta--unlimited"
                   data-lemon-squeezy
-                  >Ilimitado &#8212; 25 &#8364;/mes</a
+                  >Ilimitado &#8212; 25 &#8364;/mes (IVA incluido)</a
                 >
                 <p
                   class="checkout-plan-card__sub-renewal"

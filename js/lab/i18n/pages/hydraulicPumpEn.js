@@ -118,8 +118,10 @@ export const HYDRAULIC_PUMP_EN = {
   'hpump.hintNPSHr': '0 if unknown',
   'hpump.hintOilTemp': 'Standard fluid only in project mode',
   'hpump.hintCalcMode': 'Calculation objective mode',
-  'hpump.helpMode':
-    'Design: performance target and full verification. Diagnostic: real flow from displacement and RPM.',
+  'hpump.helpCalcModeDesignHtml':
+    '<strong>Design:</strong> performance target and full verification (pressure, flow, efficiencies and line checks).',
+  'hpump.helpCalcModeDiagnosticHtml':
+    '<strong>Diagnostic:</strong> line flow is calculated from displacement and RPM; the flow field is read-only.',
   'hpump.hintPumpType': 'Sets efficiency and pressure limit',
   'hpump.helpPumpType':
     'Each technology has distinct volumetric and mechanical efficiency and pressure range for safety evaluation.',

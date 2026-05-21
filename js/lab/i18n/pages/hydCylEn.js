@@ -1,5 +1,11 @@
 /** English strings for calc-hydraulic-cylinder.html (`hydCyl.*` keys). ASCII-safe. */
 export const HYDRAULIC_CYLINDER_EN = {
+  'hydCyl.errorPositive': 'Enter a value greater than 0',
+  'hydCyl.errorRange': 'Value out of allowed range',
+  'hydCyl.errorInvalid': 'Enter a valid number',
+  'hydCyl.errorBlocked':
+    'Fix the highlighted fields (invalid or out of range) to update results.',
+
   'hydCyl.docTitle': 'Hydraulic cylinder force and flow calculator online \u2014 TheMechAssist',
   'fluids.scopeNote':
     'Indicative calculation for preliminary sizing. Always confirm with the manufacturer catalogue and applicable standards (ISO 4413 / ISO 4414).',

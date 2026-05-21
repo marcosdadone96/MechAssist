@@ -10,6 +10,7 @@ import { bindLabUnitSelectors, formatLength, getLabUnitPrefs } from '../lab/labU
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  syncInputValidationResultsGate,
   debounce,
   executiveSummaryAlert,
   labAlert,
@@ -331,6 +332,8 @@ function endsLabel(v) {
 }
 
 function computeCore() {
+  if (syncInputValidationResultsGate(document.getElementById('springResults'))) return;
+
   const purchaseMount = document.getElementById('labPurchaseSuggestions');
   const u = getLabUnitPrefs();
   const heroEl = document.getElementById('springHero');

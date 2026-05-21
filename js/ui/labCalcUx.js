@@ -8,7 +8,14 @@ import { isCreditsSystemEnabled } from '../config/credits.js';
 import { ensureCalcSessionCharged } from '../services/creditSession.js';
 import { showNoCreditsModal } from './creditsUi.js';
 import { copyLabReportToClipboard, buildLabCopyReportFromScope } from '../services/labCopyReport.js';
-import { getLabLang } from '../lab/i18n/labLang.js';
+import { getLabLang, LAB_LANG_EVENT } from '../lab/i18n/labLang.js';
+import { LAB_INPUT_VALIDATION_EN } from '../lab/i18n/labInputValidationEn.js';
+
+/** @type {Set<string>} */
+const invalidInputIds = new Set();
+
+/** @type {Map<string, { errEl: HTMLElement, min?: number, max?: number, positive?: boolean }>} */
+const boundValidationFields = new Map();
 
 /** Potencias nominales típicas IEC / catálogo (kW) — mismas familias que SEW Eurodrive, Siemens SIMOTICS, etc. */
 export const IEC_MOTOR_KW_SERIES = [
@@ -215,83 +222,189 @@ export function renderMotorPowerRuler(powerKw) {
   </figure>`;
 }
 
+function validationCopy() {
+  const en = isEnglishUi();
+  const L = LAB_INPUT_VALIDATION_EN;
+  return {
+    invalid: en ? L['labInput.errorInvalid'] : 'Introduce un número válido',
+    positive: en ? L['labInput.errorPositive'] : 'Introduce un valor mayor que 0',
+    range: (min, max) =>
+      en
+        ? min != null && max != null
+          ? `Value must be between ${min} and ${max}`
+          : min != null
+            ? `Value must be at least ${min}`
+            : `Value must be at most ${max}`
+        : min != null && max != null
+          ? `El valor debe estar entre ${min} y ${max}`
+          : min != null
+            ? `El valor debe ser al menos ${min}`
+            : `El valor debe ser como máximo ${max}`,
+    blocked: en
+      ? L['labInput.errorBlocked']
+      : 'Corrija los campos marcados (valor inválido o fuera de rango) para actualizar los resultados.',
+  };
+}
+
+/** Reaplica mensajes de error tras cambio de idioma. */
+export function revalidateAllBoundInputs() {
+  for (const id of boundValidationFields.keys()) validateBoundField(id);
+}
+
+/** @returns {boolean} */
+export function hasInputValidationErrors() {
+  return invalidInputIds.size > 0;
+}
+
 /**
- * Borde rojo / mensaje solo en blur para rangos; en input se limpia el error cuando el valor ya es válido.
- * No bloquea el recálculo (solo visual).
- * @param {Array<{ id: string, min?: number, max?: number, label?: string }>} inputConfigs
+ * Muestra aviso en panel de resultados cuando hay entradas inválidas.
+ * @param {HTMLElement | null | undefined} resultsHost
+ */
+/**
+ * Marca el panel de resultados y muestra aviso sin borrar el contenido existente.
+ * @param {HTMLElement | null | undefined} resultsHost
+ * @returns {boolean} true si hay errores de entrada (no calcular)
+ */
+export function syncInputValidationResultsGate(resultsHost) {
+  if (!(resultsHost instanceof HTMLElement)) return hasInputValidationErrors();
+  const copy = validationCopy();
+  let banner = resultsHost.querySelector('[data-input-validation-banner]');
+  if (!hasInputValidationErrors()) {
+    resultsHost.classList.remove('lab-results--input-blocked');
+    banner?.remove();
+    return false;
+  }
+  resultsHost.classList.add('lab-results--input-blocked');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.dataset.inputValidationBanner = '1';
+    banner.className = 'input-validation-banner';
+    resultsHost.prepend(banner);
+  }
+  banner.innerHTML = labAlert('warn', escMini(copy.blocked));
+  return true;
+}
+
+/** @deprecated Usar syncInputValidationResultsGate */
+export function renderInputValidationBlocked(resultsHost) {
+  syncInputValidationResultsGate(resultsHost);
+}
+
+/**
+ * @param {Array<{ id: string, min?: number, max?: number, positive?: boolean, optional?: boolean, label?: string }>} inputConfigs
  */
 export function bindInputValidation(inputConfigs) {
-  inputConfigs.forEach(({ id, min, max }) => {
+  const copy = validationCopy();
+
+  inputConfigs.forEach(({ id, min, max, positive, optional }) => {
     const el = document.getElementById(id);
     if (!(el instanceof HTMLInputElement)) return;
-    if (el.dataset.labValidationBound === '1') return;
+    if (el.dataset.labValidationBound === '1') {
+      const prev = boundValidationFields.get(id);
+      if (prev) {
+        prev.min = min;
+        prev.max = max;
+        prev.positive = positive;
+      }
+      validateBoundField(id);
+      return;
+    }
     el.dataset.labValidationBound = '1';
 
     const errEl = document.createElement('span');
-    errEl.className = 'lab-field-error';
+    errEl.className = 'input-error-msg';
+    errEl.setAttribute('role', 'alert');
     errEl.setAttribute('aria-live', 'polite');
     el.insertAdjacentElement('afterend', errEl);
 
-    function validate(commit) {
-      const invalidMsg = uxCopy('Introduce un número válido', 'Enter a valid number');
-      const minMsg = (m) => uxCopy(`Mínimo: ${m}`, `Minimum: ${m}`);
-      const maxMsg = (m) => uxCopy(`Máximo: ${m}`, `Maximum: ${m}`);
+    boundValidationFields.set(id, { errEl, min, max, positive });
 
-      const raw = String(el.value).trim();
-      if (raw === '') {
-        el.classList.remove('lab-input--error', 'lab-input--ok');
-        errEl.textContent = '';
-        return;
-      }
-
-      const v = parseFloat(raw.replace(',', '.'));
-
-      if (commit) {
-        if (!Number.isFinite(v)) {
-          el.classList.add('lab-input--error');
-          el.classList.remove('lab-input--ok');
-          errEl.textContent = invalidMsg;
-          return;
-        }
-        if (min !== undefined && v < min) {
-          el.classList.add('lab-input--error');
-          el.classList.remove('lab-input--ok');
-          errEl.textContent = minMsg(min);
-          return;
-        }
-        if (max !== undefined && v > max) {
-          el.classList.add('lab-input--error');
-          el.classList.remove('lab-input--ok');
-          errEl.textContent = maxMsg(max);
-          return;
-        }
-        el.classList.remove('lab-input--error');
-        el.classList.add('lab-input--ok');
-        errEl.textContent = '';
-        return;
-      }
-
-      if (!Number.isFinite(v)) {
-        el.classList.remove('lab-input--ok');
-        return;
-      }
-
-      const inRange =
-        (min === undefined || v >= min) && (max === undefined || v <= max);
-      if (inRange) {
-        el.classList.remove('lab-input--error');
-        el.classList.add('lab-input--ok');
-        errEl.textContent = '';
-      } else {
-        el.classList.remove('lab-input--ok', 'lab-input--error');
-        errEl.textContent = '';
-      }
-    }
-
-    el.addEventListener('input', () => validate(false));
-    el.addEventListener('blur', () => validate(true));
-    validate(true);
+    const validate = () => validateBoundField(id, copy, optional);
+    el.addEventListener('input', validate);
+    el.addEventListener('change', validate);
+    validate();
   });
+}
+
+/**
+ * @param {string} id
+ * @param {ReturnType<typeof validationCopy>} [copy]
+ * @param {boolean} [optional]
+ */
+function validateBoundField(id, copy = validationCopy(), optional = false) {
+  const meta = boundValidationFields.get(id);
+  const el = document.getElementById(id);
+  if (!meta || !(el instanceof HTMLInputElement)) return;
+
+  const raw = String(el.value).trim();
+  if (raw === '') {
+    if (optional) {
+      clearInputFieldError(el, id);
+      return;
+    }
+    setInputFieldError(el, meta.errEl, meta.positive ? copy.positive : copy.invalid, id);
+    return;
+  }
+
+  const v = parseFloat(raw.replace(',', '.'));
+  if (!Number.isFinite(v)) {
+    setInputFieldError(el, meta.errEl, copy.invalid, id);
+    return;
+  }
+
+  if (meta.positive && v <= 0) {
+    setInputFieldError(el, meta.errEl, copy.positive, id);
+    return;
+  }
+
+  if (meta.min !== undefined && v < meta.min) {
+    setInputFieldError(el, meta.errEl, copy.range(meta.min, meta.max), id);
+    return;
+  }
+
+  if (meta.max !== undefined && v > meta.max) {
+    setInputFieldError(el, meta.errEl, copy.range(meta.min, meta.max), id);
+    return;
+  }
+
+  clearInputFieldError(el, id);
+}
+
+/**
+ * @param {HTMLInputElement} el
+ * @param {HTMLElement} errEl
+ * @param {string} msg
+ * @param {string} id
+ */
+function setInputFieldError(el, errEl, msg, id) {
+  el.classList.add('input-error');
+  el.classList.remove('lab-input--ok');
+  el.classList.remove('lab-input--error');
+  errEl.textContent = msg;
+  const had = invalidInputIds.has(id);
+  invalidInputIds.add(id);
+  if (!had) notifyInputValidationChanged();
+}
+
+/**
+ * @param {HTMLInputElement} el
+ * @param {string} id
+ */
+function clearInputFieldError(el, id) {
+  el.classList.remove('input-error');
+  const meta = boundValidationFields.get(id);
+  if (meta?.errEl) meta.errEl.textContent = '';
+  const had = invalidInputIds.delete(id);
+  if (had) notifyInputValidationChanged();
+}
+
+function notifyInputValidationChanged() {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent('lab-input-validation-changed'));
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener(LAB_LANG_EVENT, () => revalidateAllBoundInputs());
 }
 
 /**
@@ -355,6 +468,47 @@ export function mountLabPresetsBar(containerId, presets, recalculate) {
     },
     clearActive,
   };
+}
+
+/**
+ * Enlace discreto a metodología / limitaciones bajo el bloque de resultados.
+ * @param {string} [scopeSelector]
+ */
+export function mountLabNormRef(scopeSelector = 'main.lab-main') {
+  const scope = scopeSelector || 'main.lab-main';
+  const wrap = document.querySelector(`${scope} .lab-results-wrap`);
+  const parent = wrap?.parentElement || document.querySelector(scope);
+  if (!(parent instanceof HTMLElement)) return;
+  if (parent.querySelector('[data-lab-norm-ref]')) return;
+
+  const p = document.createElement('p');
+  p.className = 'lab-norm-ref';
+  p.dataset.labNormRef = '1';
+  const link = document.createElement('a');
+  link.href = 'trust.html';
+  link.className = 'lab-norm-ref__link';
+  link.setAttribute('data-i18n', 'lab.trustLink');
+  const applyTrustLabel = () => {
+    const t = typeof window.__t === 'function' ? window.__t('lab.trustLink') : '';
+    link.textContent = t || 'Metodolog\u00eda y limitaciones';
+  };
+  applyTrustLabel();
+  p.appendChild(link);
+
+  if (wrap instanceof HTMLElement) {
+    wrap.insertAdjacentElement('afterend', p);
+  } else {
+    const actions = document.querySelector(`${scope} .lab-results-actions`);
+    if (actions instanceof HTMLElement) {
+      actions.insertAdjacentElement('afterend', p);
+    } else {
+      parent.appendChild(p);
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('home-language-changed', applyTrustLabel);
+  }
 }
 
 /**

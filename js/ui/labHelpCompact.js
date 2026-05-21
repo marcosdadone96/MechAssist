@@ -1,7 +1,11 @@
 /**
  * Convierte textos largos de ayuda en campos (.lab-field-help, .hint) en un botón "?" con tooltip al hover.
- * La ayuda queda fuera del <label> (fila .lab-field__label-row) para no romper data-i18n / snapshots.
+ * La ayuda queda en la fila .lab-field__label-row (no dentro del texto del label) para no romper data-i18n.
  */
+
+const canHoverUi = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 function buildFieldTooltipContent(hintEl, helpP) {
   const parts = [];
@@ -18,6 +22,67 @@ function hideHelpSource(el) {
   if (!(el instanceof HTMLElement)) return;
   el.hidden = true;
   el.setAttribute('aria-hidden', 'true');
+}
+
+function findFieldHelpSources(field) {
+  const helpP =
+    field.querySelector(':scope > p.lab-field-help') ||
+    field.querySelector(':scope > .lab-field-help') ||
+    field.querySelector('p.lab-field-help');
+  const hintEl =
+    field.querySelector(':scope > span.hint') || field.querySelector(':scope > .hint');
+  return {
+    helpP: helpP instanceof HTMLElement ? helpP : null,
+    hintEl: hintEl instanceof HTMLElement ? hintEl : null,
+  };
+}
+
+function refreshWrapTip(wrap) {
+  const field = wrap.closest('.lab-field');
+  if (!(field instanceof HTMLElement)) return false;
+  const tip = wrap.querySelector(':scope > .lab-help-hover__tip');
+  if (!(tip instanceof HTMLElement)) return false;
+  const { helpP, hintEl } = findFieldHelpSources(field);
+  const html = buildFieldTooltipContent(hintEl, helpP);
+  if (!html.trim()) return false;
+  tip.innerHTML = html;
+  return true;
+}
+
+/**
+ * Refresca el HTML del globo desde hint/help ocultos (p. ej. tras cambio de idioma).
+ * @param {ParentNode} [root]
+ */
+export function refreshCompactLabFieldHelp(root = document) {
+  root.querySelectorAll('.lab-field[data-help-compact="1"] .lab-help-hover--field').forEach((wrap) => {
+    if (wrap instanceof HTMLElement) refreshWrapTip(wrap);
+  });
+}
+
+/**
+ * Al pasar el ratón, vuelve a leer hint/help por si el DOM o i18n cambió (p. ej. tipo de correa).
+ * @param {ParentNode} [root]
+ */
+export function bindLabHelpHover(root = document) {
+  if (!canHoverUi()) return;
+
+  root.querySelectorAll('.lab-help-hover--field').forEach((wrap) => {
+    if (!(wrap instanceof HTMLElement) || wrap.dataset.labHelpHoverBound === '1') return;
+    wrap.dataset.labHelpHoverBound = '1';
+
+    const show = () => {
+      if (!refreshWrapTip(wrap)) return;
+      wrap.classList.add('lab-help-hover--open');
+    };
+    const hide = () => {
+      wrap.classList.remove('lab-help-hover--open');
+    };
+
+    wrap.addEventListener('mouseenter', show);
+    wrap.addEventListener('mouseleave', hide);
+    wrap.addEventListener('focusin', show);
+    wrap.addEventListener('focusout', hide);
+  });
 }
 
 /**
@@ -40,14 +105,16 @@ export function mountCompactLabFieldHelp(root = document) {
       }
     }
 
-    const helpP = field.querySelector(':scope > p.lab-field-help');
-    const hintEl = field.querySelector(':scope > span.hint');
+    const { helpP, hintEl } = findFieldHelpSources(field);
     if (!helpP && !hintEl) return;
 
     const label =
       field.querySelector(':scope > label.lab-field__label-row') ||
       field.querySelector(':scope > label');
     if (!label) return;
+
+    const html = buildFieldTooltipContent(hintEl, helpP);
+    if (!html.trim()) return;
 
     field.dataset.helpCompact = '1';
 
@@ -62,10 +129,7 @@ export function mountCompactLabFieldHelp(root = document) {
 
     const tip = document.createElement('span');
     tip.className = 'lab-help-hover__tip';
-    tip.innerHTML = buildFieldTooltipContent(
-      hintEl instanceof HTMLElement ? hintEl : null,
-      helpP instanceof HTMLElement ? helpP : null,
-    );
+    tip.innerHTML = html;
 
     wrap.appendChild(btn);
     wrap.appendChild(tip);
@@ -83,22 +147,6 @@ export function mountCompactLabFieldHelp(root = document) {
     hideHelpSource(hintEl);
     hideHelpSource(helpP);
   });
-}
 
-/**
- * Actualiza el HTML del globo tras applyModuleTranslations (hint/help siguen en DOM ocultos).
- * @param {ParentNode} [root]
- */
-export function refreshCompactLabFieldHelp(root = document) {
-  root.querySelectorAll('.lab-field[data-help-compact="1"]').forEach((field) => {
-    if (!(field instanceof HTMLElement)) return;
-    const tip = field.querySelector(':scope .lab-help-hover__tip');
-    if (!tip) return;
-    const helpP = field.querySelector(':scope > p.lab-field-help');
-    const hintEl = field.querySelector(':scope > span.hint');
-    tip.innerHTML = buildFieldTooltipContent(
-      hintEl instanceof HTMLElement ? hintEl : null,
-      helpP instanceof HTMLElement ? helpP : null,
-    );
-  });
+  bindLabHelpHover(root);
 }

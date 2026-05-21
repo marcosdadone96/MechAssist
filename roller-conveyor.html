@@ -3,7 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Cargas, velocidad, paso de rodillos y potencia en línea de rodillos. Resultados indicativos." />
+    <title data-i18n="rollerConv.docTitle">Transportador de rodillos — TheMechAssist</title>
+    <meta
+      name="description"
+      data-i18n="rollerConv.metaDesc"
+      data-i18n-attr="content"
+      content="Cargas, velocidad, paso de rodillos y potencia en línea de rodillos. Resultados indicativos."
+    />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -12,31 +18,21 @@
     <link rel="canonical" href="https://www.themechassist.com/roller-conveyor.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/roller-conveyor.html" id="mdr-og-url" />
-    <meta property="og:title" content="Transportador de rodillos — TheMechAssist" />
-    <meta property="og:description" content="Cargas, velocidad, paso de rodillos y potencia en línea de rodillos. Resultados indicativos." />
+    <meta property="og:title" data-i18n="rollerConv.ogTitle" data-i18n-attr="content" content="Transportador de rodillos — TheMechAssist" />
+    <meta
+      property="og:description"
+      data-i18n="rollerConv.ogDesc"
+      data-i18n-attr="content"
+      content="Cargas, velocidad, paso de rodillos y potencia en línea de rodillos. Resultados indicativos."
+    />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Transportador de rodillos — TheMechAssist" />
-
-    <title>Transportador de rodillos — TheMechAssist</title>
+    <meta name="twitter:title" data-i18n="rollerConv.twitterTitle" data-i18n-attr="content" content="Transportador de rodillos — TheMechAssist" />
     <link rel="stylesheet" href="css/app.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
   <body>
-    <div id="fileProtoWarn" class="runtime-error" hidden role="alert"></div>
     <div id="runtimeError" class="runtime-error runtime-error--js" hidden role="alert"></div>
-    <script>
-      (function () {
-        if (location.protocol === 'file:') {
-          var el = document.getElementById('fileProtoWarn');
-          if (el) {
-            el.hidden = false;
-            el.textContent =
-              'Recomendaci\u00f3n: abrir con un servidor local (en la carpeta del proyecto: npx --yes serve . y use la URL que muestre, p. ej. http://localhost:3000). Si abre el HTML con doble clic, el navegador puede bloquear el JavaScript y no ver\u00e1 resultados ni diagramas.';
-          }
-        }
-      })();
-    </script>
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
         <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
@@ -183,7 +179,7 @@
               <label for="serviceFactor" data-i18n="rollerConv.labelSfHtml" data-i18n-html
                 >Factor de servicio (n&uacute;mero) <span class="info-chip" data-i18n-attrs="title=rollerConv.tipServiceFactor" title="Sincronizado con Tipo de carga (solo lectura salvo modo Personalizado)." aria-label="Ayuda factor de servicio sincronizado.">?</span></label
               >
-              <input id="serviceFactor" type="number" min="1.0" step="0.05" value="1.35" readonly class="input-synced" />
+              <input inputmode="decimal" id="serviceFactor" type="number" min="1.0" step="0.05" value="1.35" readonly class="input-synced" />
             </div>
           </div>
         </details>
@@ -200,7 +196,7 @@
               >
               <input type="range" id="lengthR" class="flat-slider" min="0.5" max="80" step="0.1" value="5" aria-label="Longitud" />
               <div class="flat-field__num">
-                <input id="length" type="number" min="0.5" step="0.1" value="5.0" placeholder="ej. 4–20 m" />
+                <input inputmode="decimal" id="length" type="number" min="0.5" step="0.1" value="5.0" placeholder="ej. 4–20 m" />
                 <span class="field-hint">m</span>
               </div>
               <p class="field-context muted">Típ. 3–25 m (embalaje / picking)</p>
@@ -211,7 +207,7 @@
               >
               <input type="range" id="loadMassR" class="flat-slider" min="1" max="8000" step="1" value="350" aria-label="Masa" />
               <div class="flat-field__num">
-                <input id="loadMass" type="number" min="1" step="1" value="350" placeholder="ej. 180–2400 kg" />
+                <input inputmode="numeric" id="loadMass" type="number" min="1" step="1" value="350" placeholder="ej. 180–2400 kg" />
                 <span class="field-hint">kg</span>
               </div>
               <p class="field-context muted">Típ. 100–3000 kg en paletas / carga puntual</p>
@@ -222,7 +218,7 @@
               >
               <input type="range" id="speedR" class="flat-slider" min="0.05" max="3" step="0.01" value="0.35" aria-label="v" />
               <div class="flat-field__num">
-                <input id="speed" type="number" min="0.01" step="0.01" value="0.35" placeholder="ej. 0,25–0,6 m/s" />
+                <input inputmode="decimal" id="speed" type="number" min="0.01" step="0.01" value="0.35" placeholder="ej. 0,25–0,6 m/s" />
                 <span class="field-hint">m/s</span>
               </div>
               <p class="field-context muted">Típ. 0,15–0,5 m/s (logística); hasta ~1 m/s en líneas rápidas</p>
@@ -274,7 +270,7 @@
                 <label for="uniformRollersOverride" data-i18n="rollerConv.labelUniformRollersHtml" data-i18n-html
                   >Rodillos bajo la carga (opcional) <span class="info-chip" data-i18n-attrs="title=rollerConv.tipUniformRollers" title="Opcional; estima con L y paso si vacío." aria-label="Ayuda rodillos bajo carga.">?</span></label
                 >
-                <input id="uniformRollersOverride" type="number" min="1" step="1" placeholder="Auto (L y paso)" />
+                <input inputmode="numeric" id="uniformRollersOverride" type="number" min="1" step="1" placeholder="Auto (L y paso)" />
                 <span class="field-hint">n&deg;</span>
                 <span class="field-hint" id="uniformRollersSuggestion"></span>
               </div>
@@ -329,7 +325,7 @@
               >
               <input type="range" id="rollingResistanceR" class="flat-slider" min="0.01" max="0.12" step="0.001" value="0.03" aria-label="Crr" />
               <div class="flat-field__num">
-                <input id="rollingResistance" type="number" min="0.002" step="0.001" value="0.030" />
+                <input inputmode="decimal" id="rollingResistance" type="number" min="0.002" step="0.001" value="0.030" />
                 <span class="field-hint" title="Coeficiente adimensional">adim.</span>
               </div>
               <p class="field-context muted">Típ. 0,010–0,035 líneas limpias; 0,035–0,08 suciedad o desgaste — valide con prueba</p>
@@ -385,7 +381,7 @@
               >
               <input type="range" id="efficiencyR" class="flat-slider" min="70" max="99" step="0.5" value="90" aria-label="Rendimiento" />
               <div class="flat-field__num">
-                <input id="efficiency" type="number" min="70" max="99" step="0.5" value="90" />
+                <input inputmode="decimal" id="efficiency" type="number" min="70" max="99" step="0.5" value="90" />
                 <span class="field-hint">%</span>
               </div>
               <p class="field-context muted">Típ. 85–92 % motor → eje del rodillo motriz (sin doble contar motor eléctrico)</p>
@@ -408,7 +404,7 @@
                 <label for="additionalResistance" data-i18n="rollerConv.labelAddResistanceHtml" data-i18n-html
                   >Resistencia adicional <span class="info-chip" data-i18n-attrs="title=rollerConv.tipAddResistance" title="Fuerzas extra en N no incluidas en Crr." aria-label="Ayuda resistencia adicional.">?</span></label
                 >
-                <input id="additionalResistance" type="number" min="0" step="10" value="0" />
+                <input inputmode="numeric" id="additionalResistance" type="number" min="0" step="10" value="0" />
                 <span class="field-hint">N</span>
               </div>
               <div class="field">
@@ -422,7 +418,7 @@
                 <label for="inertiaFactor" data-i18n="rollerConv.labelInertiaFactorHtml" data-i18n-html
                   >Factor inercia arranque <span class="info-chip" data-i18n-attrs="title=rollerConv.tipInertiaFactor" title="Factor ≥ 1 para masas rotativas." aria-label="Ayuda factor de inercia.">?</span></label
                 >
-                <input id="inertiaFactor" type="number" min="1" step="0.05" value="1.10" />
+                <input inputmode="decimal" id="inertiaFactor" type="number" min="1" step="0.05" value="1.10" />
               </div>
             </div>
           </div>

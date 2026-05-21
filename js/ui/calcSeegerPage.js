@@ -3,6 +3,7 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
   executiveSummaryAlert,
@@ -10,6 +11,7 @@ import {
   mountLabPresetsBar,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  runLabCalcBoot,
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
@@ -129,6 +131,15 @@ function refreshCore() {
   const alertsEl = document.getElementById('sgAlerts');
   const box = document.getElementById('sgResults');
   const svg = document.getElementById('sgDiagram');
+  const rowEarly = hit.row;
+  if (svg && rowEarly) {
+    renderSeegerDiagram(svg, {
+      kind: kind === 'shaft' ? 'shaft' : 'bore',
+      row: /** @type {any} */ (rowEarly),
+    });
+  }
+
+  if (syncInputValidationResultsGate(document.getElementById('sgResults'))) return;
 
   if (!hit.row || !Number.isFinite(d)) {
     if (heroEl) heroEl.innerHTML = '';
@@ -298,14 +309,6 @@ function refreshCore() {
     box.innerHTML = parts.join('');
   }
 
-  if (svg) {
-    if (kind === 'shaft') {
-      renderSeegerDiagram(svg, { kind: 'shaft', row: /** @type {any} */ (row) });
-    } else {
-      renderSeegerDiagram(svg, { kind: 'bore', row: /** @type {any} */ (row) });
-    }
-  }
-
   emitEngineeringSnapshot({
     page: 'calc-seeger',
     moduleLabel: bx('Anillos Seeger DIN', 'Seeger rings DIN'),
@@ -392,8 +395,11 @@ wireLabCopyLink('sgCopyLinkBtn', 'sgCopyToast');
 wireLabCopyResultsButton('sgCopyResults', {
   moduleTitle: uxCopy('Anillos el\u00e1sticos (Seeger)', 'Seeger retaining rings'),
 });
-runCalcWithIndustrialFeedback(wrap, refreshCore);
-mountLabCloudSaveBar(bx('Anillos el\u00e1sticos (Seeger)', 'Seeger retaining rings'));
+runLabCalcBoot(wrap, refreshCore);
+mountLabCloudSaveBar(bx('Anillos el\u00e1sticos (Seeger)', 'Seeger retaining rings'), {
+  norm: 'DIN 471 (eje) · DIN 472 (agujero)',
+  svgSelector: '#sgDiagram',
+});
 watchLangAndApply(SEEGER_PAGE_EN, {
   reloadOnEs: false,
   onEnApplied: () => scheduleSgRecalc(),

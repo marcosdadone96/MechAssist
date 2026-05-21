@@ -32,20 +32,7 @@
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
   <body>
-    <div id="fileProtoWarn" class="runtime-error" hidden role="alert" data-i18n="flatConv.fileProtoWarn"></div>
     <div id="runtimeError" class="runtime-error runtime-error--js" hidden role="alert"></div>
-    <script>
-      (function () {
-        if (location.protocol === 'file:') {
-          var el = document.getElementById('fileProtoWarn');
-          if (el) {
-            el.hidden = false;
-            el.textContent =
-              'Recomendación: abrir con un servidor local (en la carpeta del proyecto: npx --yes serve . y use la URL que muestre, p. ej. http://localhost:3000). Si abre el HTML con doble clic, el navegador puede bloquear el JavaScript y no verá resultados ni diagramas.';
-          }
-        }
-      })();
-    </script>
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
         <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
@@ -195,7 +182,7 @@
             >
             <input type="range" id="beltLengthR" class="flat-slider" min="2" max="80" step="0.1" value="30" data-i18n="flatConv.ariaSliderL" data-i18n-attr="aria-label" aria-label="L (deslizador)" />
             <div class="flat-field__num">
-              <input
+              <input inputmode="decimal"
                 id="beltLength"
                 type="number"
                 step="0.1"
@@ -233,7 +220,7 @@
             >
             <input type="range" id="beltSpeedR" class="flat-slider" min="0.05" max="5" step="0.01" value="1.25" data-i18n="flatConv.ariaSliderV" data-i18n-attr="aria-label" aria-label="v (deslizador)" />
             <div class="flat-field__num">
-              <input
+              <input inputmode="decimal"
                 id="beltSpeed"
                 type="number"
                 step="0.01"
@@ -261,7 +248,7 @@
             >
             <input type="range" id="loadMassR" class="flat-slider" min="10" max="8000" step="1" value="800" data-i18n="flatConv.ariaSliderM" data-i18n-attr="aria-label" aria-label="m (deslizador)" />
             <div class="flat-field__num">
-              <input
+              <input inputmode="numeric"
                 id="loadMass"
                 type="number"
                 step="1"
@@ -289,7 +276,7 @@
             >
             <input type="range" id="frictionR" class="flat-slider" min="0.15" max="0.65" step="0.01" value="0.35" data-i18n="flatConv.ariaSliderMu" data-i18n-attr="aria-label" aria-label="μ (deslizador)" />
             <div class="flat-field__num">
-              <input
+              <input inputmode="decimal"
                 id="friction"
                 type="number"
                 step="0.01"
@@ -354,7 +341,7 @@
               >Rendimiento η <span class="info-chip" data-i18n-attrs="title=flatConv.tipEfficiency" title="De la potencia del motor eléctrico al tambor: incluye motorreductor, acople y lo que haya hasta el eje del tambor, en un solo valor. Ej.: ~88 % si pierde ~12 %. No descontar otra vez el rendimiento del motor. Si η &gt; 100 % el programa avisa." aria-label="Ayuda rendimiento eta: cadena motor a tambor, un solo valor; ejemplo 88 por ciento.">?</span></label
             >
             <div class="flat-field__num">
-              <input
+              <input inputmode="numeric"
                 id="efficiency"
                 type="number"
                 step="1"
@@ -381,7 +368,7 @@
             <label for="serviceFactor" data-i18n="flatConv.labelServiceFactorHtml" data-i18n-html
               >Factor de servicio (número) <span class="info-chip" data-i18n-attrs="title=flatConv.tipServiceFactor" title="Se sincroniza con Tipo de carga más abajo (solo lectura aquí salvo modo Personalizado en ese desplegable). Es el mismo factor que multiplica el par de diseño." aria-label="Ayuda factor servicio: sincronizado con tipo de carga debajo.">?</span></label
             >
-            <input id="serviceFactor" type="number" step="0.05" min="1" max="4" value="1.35" readonly class="input-synced" />
+            <input inputmode="decimal" id="serviceFactor" type="number" step="0.05" min="1" max="4" value="1.35" readonly class="input-synced" />
             <span class="field-hint">—</span>
           </div>
           <div class="field">
@@ -443,7 +430,7 @@
                 <label for="beltMass" data-i18n="flatConv.labelBeltMassHtml" data-i18n-html
                   >Masa de banda m_b <span class="info-chip" data-i18n-attrs="title=flatConv.tipBeltMass" title="Masa total de la banda. Añade rozamiento por peso propio (portante + retorno) y entra en la masa acelerada en arranque. 0 = se ignora por completo." aria-label="Ayuda masa banda: rozamiento y arranque; 0 ignora.">?</span></label
                 >
-                <input
+                <input inputmode="numeric"
                   id="beltMass"
                   type="number"
                   step="1"
@@ -458,7 +445,7 @@
                 <label for="loadDistribution" data-i18n="flatConv.labelLoadDistHtml" data-i18n-html
                   >Fracción carga activa f_dist <span class="info-chip" data-i18n-attrs="title=flatConv.tipLoadDist" title="Parte de la masa m que genera normal sobre rodillos (0,05–1). 1 = toda la carga apoyada en rodillos; menor si parte del peso va a estructura, tolva, etc." aria-label="Ayuda fracción carga activa sobre rodillos.">?</span></label
                 >
-                <input
+                <input inputmode="decimal"
                   id="loadDistribution"
                   type="number"
                   step="0.05"
@@ -474,7 +461,7 @@
                 <label for="beltCarryFraction" data-i18n="flatConv.labelBeltCarryFracHtml" data-i18n-html
                   >Banda en rama portante <span class="info-chip" data-i18n-attrs="title=flatConv.tipBeltFraction" title="Fracción de la masa de banda asignada a la rama superior; el resto se asume en retorno. Afecta normales y rozamiento por peso de banda." aria-label="Ayuda fracción banda portante vs retorno.">?</span></label
                 >
-                <input
+                <input inputmode="decimal"
                   id="beltCarryFraction"
                   type="number"
                   step="0.05"
@@ -490,7 +477,7 @@
                 <label for="additionalResistance" data-i18n="flatConv.labelAddResHtml" data-i18n-html
                   >Resistencia adicional F_ad <span class="info-chip" data-i18n-attrs="title=flatConv.tipAdditional" title="Suma de fuerzas resistentes constantes en N no incluidas en μ: rascadores, guías, elementos de limpieza, etc." aria-label="Ayuda resistencia adicional newtons.">?</span></label
                 >
-                <input
+                <input inputmode="numeric"
                   id="additionalResistance"
                   type="number"
                   step="1"
@@ -520,7 +507,7 @@
                 <label for="inertiaFactor" data-i18n="flatConv.labelInertiaHtml" data-i18n-html
                   >Factor inercia k_in <span class="info-chip" data-i18n-attrs="title=flatConv.tipInertiaFactor" title="≥1 amplía la fuerza de arranque más allá del bloque masa×aceleración: incluye de forma simplificada tambores, acoplamientos y masa rotativa." aria-label="Ayuda factor inercia arranque.">?</span></label
                 >
-                <input
+                <input inputmode="decimal"
                   id="inertiaFactor"
                   type="number"
                   step="0.05"

@@ -209,7 +209,7 @@
                   </span>
                   <span class="lab-field__label-text" data-i18n="gear.labelAlpha">Presión normal αₙ (°)</span>
                 </label>
-                <input id="gAlpha" type="number" step="0.1" value="20" />
+                <input inputmode="decimal" id="gAlpha" type="number" step="0.1" value="20" />
                 <p class="lab-field-help" data-i18n="gear.helpAlphaHtml" data-i18n-html>
                   <strong>Ángulo de presión normal αₙ</strong> (típ. <strong>20°</strong>). En helicoidales aparece también el <strong>αₜ</strong> transverso en resultados.
                 </p>
@@ -240,7 +240,7 @@
                   </span>
                   <span class="lab-field__label-text" data-i18n="gear.labelN1">Giro entrada n₁ (RPM)</span>
                 </label>
-                <input id="gN1" type="number" min="0" value="1455" />
+                <input inputmode="decimal" id="gN1" type="number" min="0" value="1455" />
                 <span class="hint" data-i18n="gear.hintN1">0 = omitir n₂, ω y v_p</span>
                 <p class="lab-field-help" data-i18n="gear.helpN1Html" data-i18n-html>
                   Revoluciones por minuto del piñón. Cinemática: <strong>n₂ = n₁·z₁/z₂</strong>. La velocidad periférica usa <strong>v = π d n / 60 000</strong> (d en mm → m/s).
@@ -296,7 +296,7 @@
                   </span>
                   <span class="lab-field__label-text" data-i18n="gear.labelPower">Potencia en piñón P (kW) — opcional</span>
                 </label>
-                <input id="gPower" type="number" step="0.01" min="0" data-i18n="gear.placeholderPower" data-i18n-attr="placeholder" placeholder="p.ej. 4.5" />
+                <input inputmode="decimal" id="gPower" type="number" step="0.01" min="0" data-i18n="gear.placeholderPower" data-i18n-attr="placeholder" placeholder="p.ej. 4.5" />
                 <span class="hint" data-i18n="gear.hintPower">Con P y n₁ se estima T para AGMA simplificado</span>
                 <p class="lab-field-help" data-i18n="gear.helpPowerHtml" data-i18n-html>
                   Potencia transmitida en el eje del <strong>piñón</strong>. Si rellena <strong>T</strong>, ese valor tiene prioridad; P sirve para tensión tangencial y comparativa de motor.

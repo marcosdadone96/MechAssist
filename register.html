@@ -123,15 +123,34 @@
                 <label for="regLoginPassword">
                   <span data-reg-part="loginPwLabel">Contrase&ntilde;a</span>
                 </label>
-                <input
-                  id="regLoginPassword"
-                  name="password"
-                  type="password"
-                  autocomplete="current-password"
-                  required
-                  minlength="8"
-                  maxlength="128"
-                />
+                <div class="register-input">
+                  <input
+                    id="regLoginPassword"
+                    name="password"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                    minlength="8"
+                    maxlength="128"
+                  />
+                  <button
+                    type="button"
+                    class="register-input__toggle-pw"
+                    data-pw-toggle
+                    aria-label="Mostrar contrase&ntilde;a"
+                  >
+                    <svg class="register-input__eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    <svg class="register-input__eye-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" hidden>
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-6.94" />
+                      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19" />
+                      <path d="M1 1l22 22" />
+                      <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                    </svg>
+                  </button>
+                </div>
                 <p class="register-forgot-row">
                   <button type="button" class="register-forgot-link" id="regForgotPasswordBtn" data-reg-tx="forgotLink">
                     &iquest;Olvidaste tu contrase&ntilde;a?
@@ -176,29 +195,67 @@
                 <label for="regResetPassword">
                   <span data-reg-tx="resetPwLabel">Contrase&ntilde;a nueva</span>
                 </label>
-                <input
-                  id="regResetPassword"
-                  name="password"
-                  type="password"
-                  autocomplete="new-password"
-                  required
-                  minlength="8"
-                  maxlength="128"
-                />
+                <div class="register-input">
+                  <input
+                    id="regResetPassword"
+                    name="password"
+                    type="password"
+                    autocomplete="new-password"
+                    required
+                    minlength="8"
+                    maxlength="128"
+                  />
+                  <button
+                    type="button"
+                    class="register-input__toggle-pw"
+                    data-pw-toggle
+                    aria-label="Mostrar contrase&ntilde;a"
+                  >
+                    <svg class="register-input__eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    <svg class="register-input__eye-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" hidden>
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-6.94" />
+                      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19" />
+                      <path d="M1 1l22 22" />
+                      <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                    </svg>
+                  </button>
+                </div>
               </div>
               <div class="field">
                 <label for="regResetPassword2">
                   <span data-reg-tx="resetPw2Label">Confirmar contrase&ntilde;a</span>
                 </label>
-                <input
-                  id="regResetPassword2"
-                  name="password2"
-                  type="password"
-                  autocomplete="new-password"
-                  required
-                  minlength="8"
-                  maxlength="128"
-                />
+                <div class="register-input">
+                  <input
+                    id="regResetPassword2"
+                    name="password2"
+                    type="password"
+                    autocomplete="new-password"
+                    required
+                    minlength="8"
+                    maxlength="128"
+                  />
+                  <button
+                    type="button"
+                    class="register-input__toggle-pw"
+                    data-pw-toggle
+                    aria-label="Mostrar contrase&ntilde;a"
+                  >
+                    <svg class="register-input__eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    <svg class="register-input__eye-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" hidden>
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-6.94" />
+                      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19" />
+                      <path d="M1 1l22 22" />
+                      <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
             <div class="register-card__actions register-card__actions--submit">
@@ -251,33 +308,50 @@
                   >?</span
                 >
               </label>
-              <input
-                id="regPassword"
-                name="password"
-                type="password"
-                autocomplete="new-password"
-                required
-                minlength="8"
-                maxlength="128"
-                aria-describedby="regPasswordRequirements regPasswordStrengthLabel"
-              />
+              <div class="register-input">
+                <input
+                  id="regPassword"
+                  name="password"
+                  type="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="8"
+                  maxlength="128"
+                  aria-describedby="regPasswordRequirements regPwStrengthLabel"
+                />
+                <button
+                  type="button"
+                  class="register-input__toggle-pw"
+                  data-pw-toggle
+                  aria-label="Mostrar contrase&ntilde;a"
+                >
+                  <svg class="register-input__eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  <svg class="register-input__eye-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" hidden>
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-6.94" />
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19" />
+                    <path d="M1 1l22 22" />
+                    <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                  </svg>
+                </button>
+              </div>
+              <div
+                class="register-pw-strength strength-0"
+                role="meter"
+                aria-valuemin="0"
+                aria-valuemax="4"
+                aria-valuenow="0"
+                aria-label="Fortaleza contrase&ntilde;a"
+                id="regPwStrength"
+              >
+                <div class="register-pw-strength__bar"></div>
+              </div>
+              <p class="register-pw-strength__label" id="regPwStrengthLabel" aria-live="polite"></p>
               <p class="register-pw-hint" id="regPasswordRequirements" data-reg-tx="pwRequirements">
                 M&#237;nimo 8 caracteres. Recomendamos mezclar letras, n&#250;meros y s&#237;mbolos.
               </p>
-              <div class="register-pw-strength" id="regPasswordStrength" hidden>
-                <div
-                  class="register-pw-strength__track"
-                  id="regPasswordStrengthMeter"
-                  role="meter"
-                  aria-valuemin="0"
-                  aria-valuemax="3"
-                  aria-valuenow="0"
-                  aria-label="Fortaleza de la contrase&#241;a"
-                >
-                  <span class="register-pw-strength__fill" id="regPasswordStrengthFill"></span>
-                </div>
-                <p class="register-pw-strength__label" id="regPasswordStrengthLabel" aria-live="polite"></p>
-              </div>
             </div>
             <div class="field">
               <label for="regPassword2">
@@ -290,15 +364,34 @@
                   >?</span
                 >
               </label>
-              <input
-                id="regPassword2"
-                name="password2"
-                type="password"
-                autocomplete="new-password"
-                required
-                minlength="8"
-                maxlength="128"
-              />
+              <div class="register-input">
+                <input
+                  id="regPassword2"
+                  name="password2"
+                  type="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="8"
+                  maxlength="128"
+                />
+                <button
+                  type="button"
+                  class="register-input__toggle-pw"
+                  data-pw-toggle
+                  aria-label="Mostrar contrase&ntilde;a"
+                >
+                  <svg class="register-input__eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  <svg class="register-input__eye-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" hidden>
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-6.94" />
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19" />
+                    <path d="M1 1l22 22" />
+                    <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
 

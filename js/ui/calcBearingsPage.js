@@ -11,6 +11,7 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
   executiveSummaryAlert,
@@ -19,6 +20,7 @@ import {
   mountLabPresetsBar,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  runLabCalcBoot,
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
@@ -257,6 +259,10 @@ function refreshCore() {
     };
     r = computeBearingL10(p);
   }
+
+  renderBearingSectionDiagram(document.getElementById('brgDiagram'), { type });
+
+  if (syncInputValidationResultsGate(document.getElementById('brgResults'))) return;
 
   const pOverC =
     mode === 'diagnostic' && pRaw != null && cRaw != null && pRaw > cRaw;
@@ -499,8 +505,6 @@ function refreshCore() {
     noteEl.innerHTML = parts.join('');
   }
 
-  renderBearingSectionDiagram(document.getElementById('brgDiagram'), { type });
-
   const dutyEl = document.getElementById('brgDuty');
   let dutyHours = null;
   if (dutyEl instanceof HTMLInputElement && dutyEl.value.trim() !== '') {
@@ -563,8 +567,11 @@ watchLangAndApply(BEARINGS_PAGE_EN, {
   onEnApplied: () => scheduleBrgRecalc(),
   onEsRestored: () => scheduleBrgRecalc(),
 });
-runCalcWithIndustrialFeedback(wrap, refreshCore);
-mountLabCloudSaveBar(bx('Rodamientos (ISO 281)', 'Bearings (ISO 281)'));
+runLabCalcBoot(wrap, refreshCore);
+mountLabCloudSaveBar(bx('Rodamientos (ISO 281)', 'Bearings (ISO 281)'), {
+  norm: 'ISO 281 · vida nominal L10',
+  svgSelector: '#brgDiagram',
+});
 
 window.addEventListener('home-language-changed', () => {
   scheduleBrgRecalc();

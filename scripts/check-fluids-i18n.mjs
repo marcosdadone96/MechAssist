@@ -29,13 +29,23 @@ for (const { html, en, prefix } of pages) {
   const all = [...dataI18n, ...attrBundle].filter(scoped);
   const missing = all.filter((k) => !keys.has(k));
   const helps = (htmlSrc.match(/class="lab-field-help"/g) || []).length;
-  const helpsI18n = (htmlSrc.match(/lab-field-help[^>]*data-i18n/g) || []).length;
+  const helpsBare = [...htmlSrc.matchAll(/<(?:p|div)[^>]*class="[^"]*lab-field-help[^"]*"[^>]*>/g)].filter((m) => {
+    if (m[0].includes('data-i18n')) return false;
+    if (
+      /\blab-field-help--(?:gear|bolt|hp)-modes\b/.test(m[0]) &&
+      /data-(?:gear|bolt|hp)-mode/.test(htmlSrc)
+    ) {
+      return false;
+    }
+    return true;
+  }).length;
   console.log(`\n${html} (${prefix})`);
   console.log(`  data-i18n keys: ${dataI18n.length}, missing EN: ${missing.length ? missing.join(', ') : 'none'}`);
-  console.log(`  lab-field-help: ${helps}, with data-i18n: ${helpsI18n}`);
+  console.log(`  lab-field-help: ${helps}, without data-i18n on tag: ${helpsBare}`);
+  if (helpsBare > 0) failed = true;
   const presetsBar = htmlSrc.includes('lab-presets-bar');
   const presets3 = (htmlSrc.match(/labelKey:/g) || []).length;
-  if (presetsBar) console.log(`  presets bar: yes (${presets3} labelKey in page JS  expect 3 per calc)`);
+  if (presetsBar) console.log(`  presets bar: yes (${presets3} labelKey in page JS ? expect 3 per calc)`);
   if (missing.length) failed = true;
 }
 
@@ -45,8 +55,34 @@ console.log(`\nfluids-hub.html hub next-steps: ${hubNext ? 'yes' : 'MISSING'}`);
 if (!hubNext) failed = true;
 
 const labCss = fs.readFileSync('css/lab.css', 'utf8');
-const mobileHc = labCss.includes('.lab-calc-layout--hc.lab-calc-layout--with-diag') && labCss.includes('hp-diagrams-row');
-console.log(`css/lab.css fluid mobile + hp-diagrams-row: ${mobileHc ? 'yes' : 'MISSING'}`);
+const mobilePanelled =
+  labCss.includes('.lab-calc-layout--panelled.lab-calc-layout--with-diag') &&
+  labCss.includes('max-width: 919px') &&
+  labCss.includes("'inputs diagram'");
+const mobileHc =
+  labCss.includes('fluid-calc--pump') && labCss.includes('hp-diagrams-row');
+console.log(`css/lab.css lab panelled layout (919px stack): ${mobilePanelled ? 'yes' : 'MISSING'}`);
+console.log(`css/lab.css fluid hp-diagrams-row: ${mobileHc ? 'yes' : 'MISSING'}`);
+if (!mobilePanelled) failed = true;
+const fluidWrappers = pages
+  .filter((p) => p.html.startsWith('calc-'))
+  .every((p) => {
+    const src = fs.readFileSync(p.html, 'utf8');
+    const slug = p.html.replace('calc-', '').replace('.html', '');
+    const mod =
+      slug === 'hydraulic-cylinder'
+        ? 'cylinder'
+        : slug === 'hydraulic-pump'
+          ? 'pump'
+          : slug === 'hydraulic-press'
+            ? 'press'
+            : slug === 'pneumatic-cylinder'
+              ? 'pneumatic'
+              : null;
+    return mod && src.includes(`fluid-calc--${mod}`);
+  });
+console.log(`fluid-calc--* wrappers on calc pages: ${fluidWrappers ? 'yes' : 'MISSING'}`);
+if (!fluidWrappers) failed = true;
 if (!mobileHc) failed = true;
 
 process.exit(failed ? 1 : 0);

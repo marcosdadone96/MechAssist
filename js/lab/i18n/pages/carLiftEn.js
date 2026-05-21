@@ -1,6 +1,12 @@
 /** English strings for car-lift-screw.html (`carConv.*`). ASCII-safe. */
 export const CAR_LIFT_EN = {
   'carConv.docTitle': 'Screw car lift \u2014 TheMechAssist',
+  'carConv.metaDesc':
+    'Platform loads, power screw sizing and drive requirements for vehicle lifts. Indicative screw lift calculator.',
+  'carConv.ogTitle': 'Vehicle lift screw design calculator \u2014 drive requirements',
+  'carConv.ogDesc':
+    'Platform loads, power screw sizing and drive requirements for vehicle lifts. Indicative screw lift calculator.',
+  'carConv.twitterTitle': 'Vehicle lift screw design calculator \u2014 drive requirements',
   'carConv.h2': 'Screw-type car lift',
   'carConv.calcSeoIntro':
     'This calculator links lifted mass, stroke and target time to ISO trapezoidal screw lead and diameter for advance speed, resisting torque and motor power, plus indicative bronze nut pressure and friction-angle self-locking behavior. It helps lift OEMs and body shops validate an existing screw before extending the platform. A practical case is checking whether a higher rated load forces a larger thread or longer nut bearing length.',

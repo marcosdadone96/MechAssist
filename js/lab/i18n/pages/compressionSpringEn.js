@@ -33,8 +33,9 @@ export const COMPRESSION_SPRING_EN = {
   'spring.labelTier': 'Report detail level',
   'spring.optBasic': 'Classroom (basic)',
   'spring.optProject': 'Project (\u03c4 adm. + note + PDF)',
-  'spring.helpTier':
-    'Classroom mode: free basic calculation. Project mode: manual \u03c4<sub>adm</sub>, educational Goodman and PDF export (requires Pro plan).',
+  'spring.projectUpsellHtml':
+    '<strong>Project mode</strong> requires a Pro plan: manual \u03c4<sub>adm</sub>, extended Goodman note and PDF export. <a href="checkout.html">View plans</a>.',
+  'spring.helpTier': 'Classroom mode: free basic calculation. Project mode extends memory and advanced criteria.',
   'spring.hintTier': 'Same as other lab calculators',
   'spring.labelTauAdm': '\u03c4<sub>adm</sub> manual static (MPa)',
   'spring.hintTauAdm': 'Limit for \u03c4<sub>m</sub> in Goodman',

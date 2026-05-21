@@ -71,11 +71,12 @@ export const FEATURES = Object.freeze({
    * Identificacion del responsable (RGPD / transparencia). Si rellena legalEntityName,
    * la politica de privacidad muestra estos datos en lugar del texto generico.
    */
-  legalEntityName: 'Marcos',
+  legalEntityName: 'Marcos Dadone',
   /** Direccion postal; puede usar varias lineas separadas por \n */
-  legalEntityAddress: 'Castell\u00f3n, Espa\u00f1a',
+  legalEntityAddress:
+    'Pol\u00edgono 16, Parcela 86\n12589 C\u00e1lig\nCastell\u00f3n, Espa\u00f1a',
   /** Opcional: NIF-IVA, registro mercantil, nota de representante, etc. */
-  legalRegistrationNote: '',
+  legalRegistrationNote: 'X4191037T',
 
   /**
    * URL publica del sitio sin barra final. Usada por scripts/generate-sitemap.mjs

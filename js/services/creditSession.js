@@ -15,6 +15,7 @@ import {
   isCalcSlugUnlocked,
 } from './creditsApi.js';
 import { getCurrentUser } from './localAuth.js';
+import { maybeShowCreditsSessionNotice } from '../ui/creditsSessionNotice.js';
 
 const SS_PREFIX = 'mdr-credit-session:';
 
@@ -78,6 +79,8 @@ export async function ensureCalcSessionCharged() {
   if (session?.chargedAt && now - session.chargedAt < sessionMs) {
     return { allowed: true };
   }
+
+  maybeShowCreditsSessionNotice(cached);
 
   const idempotencyKey = `calc:${calcSlug}:${session?.sessionId || now}`;
 

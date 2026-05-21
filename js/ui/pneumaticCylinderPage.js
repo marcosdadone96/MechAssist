@@ -1,4 +1,4 @@
-import { bindInputValidation, mountLabPresetsBar } from './labCalcUx.js';
+import { bindInputValidation, mountLabPresetsBar, syncInputValidationResultsGate } from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
@@ -656,6 +656,7 @@ function renderCylinderDiagram(svg, strokeMm, rodMm, boreMm, cylinderType = 'dou
 }
 
 function computeAndRenderCore() {
+  if (syncInputValidationResultsGate(document.getElementById('pcResults'))) return;
   const calcMode = document.getElementById('pcMode') instanceof HTMLSelectElement
     ? document.getElementById('pcMode').value
     : 'design';

@@ -233,7 +233,7 @@
           <span class="lab-presets-row__label" data-i18n="fluids.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="hcPresetsBar"></div>
         </div>
-        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled fluid-calc fluid-calc--cylinder">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
               <p class="lab-diagram-wrap__title" data-i18n="hydCyl.diagTitle">Corte de cilindro hidráulico (doble efecto, alta presión)</p>
@@ -266,7 +266,7 @@
                   </div>
                   <div class="lab-field">
                     <label for="hcOilTempC" data-i18n="hydCyl.labelOilTemp">Temperatura aceite (°C) — nota</label>
-                    <input id="hcOilTempC" type="number" step="any" value="50" />
+                    <input inputmode="decimal" id="hcOilTempC" type="number" step="any" value="50" />
                     <span class="hint" data-i18n="hydCyl.hintOilTemp">Para trazabilidad; viscosidad no recalculada aquí</span>
                   </div>
                 </div>
@@ -282,7 +282,7 @@
               </div>
               <div class="lab-field">
                 <label for="hcPressureBar" data-i18n="hydCyl.labelPressure">Presión de trabajo (bar)</label>
-                <input id="hcPressureBar" type="number" min="1" step="any" value="180" />
+                <input inputmode="decimal" id="hcPressureBar" type="number" min="1" step="any" value="180" />
                 <span class="hint" data-i18n="hydCyl.hintPressureEff">Presión hidráulica efectiva</span>
                 <p class="lab-field-help" data-i18n="hydCyl.helpPressure">Usada para calcular fuerza real del cilindro y para el chequeo estructural del tubo.</p>
                 <table class="hc-mini-table" data-i18n-attrs="aria-label=hydCyl.tblPressureAria" aria-label="Presiones de trabajo típicas por aplicación">
@@ -323,13 +323,13 @@
               </div>
               <div class="lab-field">
                 <label for="hcStrokeMm" data-i18n="hydCyl.labelStroke">Carrera (mm)</label>
-                <input id="hcStrokeMm" type="number" min="20" step="any" value="800" />
+                <input inputmode="decimal" id="hcStrokeMm" type="number" min="20" step="any" value="800" />
                 <span class="hint" data-i18n="hydCyl.hintStroke">Longitud útil de desplazamiento</span>
                 <p class="lab-field-help" data-i18n="hydCyl.helpStroke">Carreras largas aumentan la carga crítica del chequeo Euler.</p>
               </div>
               <div class="lab-field">
                 <label for="hcLoadKg" data-i18n="hydCyl.labelLoad">Carga de trabajo (kg)</label>
-                <input id="hcLoadKg" type="number" min="1" step="any" value="1500" />
+                <input inputmode="decimal" id="hcLoadKg" type="number" min="1" step="any" value="1500" />
                 <span class="hint" data-i18n="hydCyl.hintLoadExt">Carga mecánica externa</span>
                 <p class="lab-field-help" data-i18n="hydCyl.helpLoad">Se convierte a N para comparar con fuerza disponible y factor de seguridad. El pandeo Euler usa esta carga como compresión axial en el vástago; si en su instalación solo una fracción del peso comprime el vástago, interprete el FS con margen o ajuste la carga.</p>
               </div>
@@ -340,19 +340,19 @@
                     <div class="lab-grid lab-grid--2">
                       <div class="lab-field">
                         <label for="hcTargetSpeedMs" data-i18n="hydCyl.labelTargetSpeed">Velocidad objetivo (m/s)</label>
-                        <input id="hcTargetSpeedMs" type="number" min="0.01" step="any" value="0.12" />
+                        <input inputmode="decimal" id="hcTargetSpeedMs" type="number" min="0.01" step="any" value="0.12" />
                         <span class="hint" data-i18n="hydCyl.hintTargetSpeed">Define caudal requerido</span>
                         <p class="lab-field-help" data-i18n="hydCyl.helpTargetSpeed">Con el área de pistón permite dimensionar el caudal que debe entregar la bomba.</p>
                       </div>
                       <div class="lab-field">
                         <label for="hcPumpFlowLmin" data-i18n="hydCyl.labelPumpFlow">Caudal disponible bomba (L/min)</label>
-                        <input id="hcPumpFlowLmin" type="number" min="0.1" step="any" value="35" />
+                        <input inputmode="decimal" id="hcPumpFlowLmin" type="number" min="0.1" step="any" value="35" />
                         <span class="hint" data-i18n="hydCyl.hintPumpFlow">Para estimar velocidad real</span>
                         <p class="lab-field-help" data-i18n="hydCyl.helpPumpFlow">Permite calcular la velocidad real del cilindro según el flujo disponible.</p>
                       </div>
                       <div class="lab-field">
                         <label for="hcPortDiaMm" data-i18n="hydCyl.labelPortDia">Diámetro interno de puertos (mm)</label>
-                        <input id="hcPortDiaMm" type="number" min="4" step="any" value="12" />
+                        <input inputmode="decimal" id="hcPortDiaMm" type="number" min="4" step="any" value="12" />
                         <span class="hint" data-i18n="hydCyl.hintPortDia">Control de velocidad del aceite</span>
                         <p class="lab-field-help" data-i18n="hydCyl.helpPortDia">Si la velocidad en puertos es alta, aumenta calentamiento y pérdidas.</p>
                       </div>

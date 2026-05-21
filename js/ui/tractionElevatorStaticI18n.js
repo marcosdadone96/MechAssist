@@ -212,13 +212,6 @@ export function applyTractionElevatorStaticI18n(lang = getCurrentLang()) {
   document.documentElement.lang = en ? 'en' : 'es';
   document.title = en ? 'Traction elevator \u2014 TheMechAssist' : 'Ascensor de tracci\u00f3n \u2014 TheMechAssist';
 
-  const fpw = document.getElementById('fileProtoWarn');
-  if (fpw) {
-    fpw.textContent = en
-      ? 'Tip: open via a local server (in the project folder: npx --yes serve . and use the URL shown, e.g. http://localhost:3000). Opening the HTML directly may block JavaScript and hide results/diagrams.'
-      : 'Recomendaci\u00f3n: abrir con un servidor local (en la carpeta del proyecto: npx --yes serve . y use la URL que muestre, p. ej. http://localhost:3000). Si abre el HTML con doble clic, el navegador puede bloquear el JavaScript y no ver\u00e1 resultados ni diagramas.';
-  }
-
   applyNav(lang);
   applyLabels(lang);
   applySelectsAndHints(lang);

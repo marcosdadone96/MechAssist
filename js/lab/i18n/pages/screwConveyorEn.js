@@ -1,6 +1,12 @@
 /** English strings for screw-conveyor.html (`scConv.*` field keys). ASCII-safe. */
 export const SCREW_CONVEYOR_EN = {
   'scConv.docTitle': 'Screw conveyor \u2014 TheMechAssist',
+  'scConv.metaDesc':
+    'Trough fill, screw speed, torque and drive power for inclined augers. Indicative helical conveyor sizing.',
+  'scConv.ogTitle': 'Screw conveyor calculator \u2014 fill, speed & power',
+  'scConv.ogDesc':
+    'Trough fill, screw speed, torque and drive power for inclined augers. Indicative helical conveyor sizing.',
+  'scConv.twitterTitle': 'Screw conveyor calculator \u2014 fill, speed & power',
   'scConv.h2': 'Screw conveyor',
   'scConv.introSummary': 'Calculator description and scope',
   'scConv.calcSeoIntro':

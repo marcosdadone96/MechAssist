@@ -133,6 +133,14 @@
     /* ignore */
   }
 
+  function loadSiteNavMobile() {
+    if (!document.querySelector('header.site-nav')) return;
+    var s = document.createElement('script');
+    s.type = 'module';
+    s.src = 'js/ui/siteNavMobile.js';
+    document.head.appendChild(s);
+  }
+
   var consent = getConsent();
   if (consent === 'analytics') {
     loadGtag();
@@ -144,5 +152,11 @@
     } else {
       showBanner(detectLang());
     }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadSiteNavMobile);
+  } else {
+    loadSiteNavMobile();
   }
 })();

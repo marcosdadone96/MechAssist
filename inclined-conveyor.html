@@ -3,7 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Tensión, potencia y factor de uso en transportador en pendiente. Comprobación orientativa de motorreductor." />
+    <title data-i18n="incConv.docTitle">Cinta inclinada — TheMechAssist</title>
+    <meta
+      name="description"
+      data-i18n="incConv.metaDesc"
+      data-i18n-attr="content"
+      content="Tensión, potencia y factor de uso en transportador en pendiente. Comprobación orientativa de motorreductor."
+    />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -12,31 +18,21 @@
     <link rel="canonical" href="https://www.themechassist.com/inclined-conveyor.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/inclined-conveyor.html" id="mdr-og-url" />
-    <meta property="og:title" content="Cinta inclinada — TheMechAssist" />
-    <meta property="og:description" content="Tensión, potencia y factor de uso en transportador en pendiente. Comprobación orientativa de motorreductor." />
+    <meta property="og:title" data-i18n="incConv.ogTitle" data-i18n-attr="content" content="Cinta inclinada — TheMechAssist" />
+    <meta
+      property="og:description"
+      data-i18n="incConv.ogDesc"
+      data-i18n-attr="content"
+      content="Tensión, potencia y factor de uso en transportador en pendiente. Comprobación orientativa de motorreductor."
+    />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Cinta inclinada — TheMechAssist" />
-
-    <title>Cinta inclinada — TheMechAssist</title>
+    <meta name="twitter:title" data-i18n="incConv.twitterTitle" data-i18n-attr="content" content="Cinta inclinada — TheMechAssist" />
     <link rel="stylesheet" href="css/app.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
   <body>
-    <div id="fileProtoWarn" class="runtime-error" hidden role="alert"></div>
     <div id="runtimeError" class="runtime-error runtime-error--js" hidden role="alert"></div>
-    <script>
-      (function () {
-        if (location.protocol === 'file:') {
-          var el = document.getElementById('fileProtoWarn');
-          if (el) {
-            el.hidden = false;
-            el.textContent =
-              'Recomendación: abrir con un servidor local (en la carpeta del proyecto: npx --yes serve .). Con file:// el navegador puede bloquear módulos JS y no verá diagramas ni resultados.';
-          }
-        }
-      })();
-    </script>
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
         <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
@@ -162,7 +158,7 @@
               <label for="incServiceFactor" data-i18n="incConv.labelServiceFactorHtml" data-i18n-html
                 >Factor de servicio (número) <span class="info-chip" data-i18n-attrs="title=incConv.tipServiceFactor" title="Multiplicador de diseño sobre régimen/arranque. Mayor SF = más margen y mayor par requerido." aria-label="Ayuda factor de servicio.">?</span></label
               >
-              <input id="incServiceFactor" type="number" step="0.05" min="1" max="4" value="1.35" readonly class="input-synced" />
+              <input inputmode="decimal" id="incServiceFactor" type="number" step="0.05" min="1" max="4" value="1.35" readonly class="input-synced" />
               <span class="field-hint" data-i18n="incConv.hintServiceFactorSync">Sincronizado con tipo de carga salvo «Personalizado».</span>
             </div>
           </div>
@@ -180,7 +176,7 @@
               >
               <input type="range" id="incLengthR" class="flat-slider" min="2" max="120" step="0.1" value="24" aria-label="L" />
               <div class="flat-field__num">
-                <input id="incLength" type="number" step="0.1" min="0.1" value="24" placeholder="ej. 14–80 m" />
+                <input inputmode="decimal" id="incLength" type="number" step="0.1" min="0.1" value="24" placeholder="ej. 14–80 m" />
                 <span class="field-hint">m</span>
               </div>
               <p class="field-context muted">Típ. 12–80 m (áridos / alimentación)</p>
@@ -189,7 +185,7 @@
               <label for="incHeight" data-i18n="incConv.labelHeightHtml" data-i18n-html>Desnivel H <span class="info-chip" data-i18n-attrs="title=incConv.tipHeight" title="Altura vertical entre carga y descarga. Si θ está vacío, se calcula con arcsin(H/L)." aria-label="Ayuda desnivel.">?</span></label>
               <input type="range" id="incHeightR" class="flat-slider" min="0" max="40" step="0.05" value="4.5" aria-label="H" />
               <div class="flat-field__num">
-                <input id="incHeight" type="number" step="0.01" min="0" value="4.5" placeholder="ej. 2–12 m" />
+                <input inputmode="decimal" id="incHeight" type="number" step="0.01" min="0" value="4.5" placeholder="ej. 2–12 m" />
                 <span class="field-hint">m</span>
               </div>
               <p class="field-context muted">Típ. 2–15 m (cantera / reciclaje). Si θ está vacío → arcsin(H/L)</p>
@@ -198,7 +194,7 @@
               <label for="incAngle" data-i18n="incConv.labelAngleHtml" data-i18n-html
                 >Ángulo θ (opcional) <span class="info-chip" data-i18n-attrs="title=incConv.tipAngle" title="Si lo rellena, el cálculo usa este ángulo en lugar de derivarlo desde H y L." aria-label="Ayuda ángulo.">?</span></label
               >
-              <input id="incAngle" type="number" step="0.1" min="0" max="89" value="" placeholder="vacío = arcsin(H/L)" />
+              <input inputmode="decimal" id="incAngle" type="number" step="0.1" min="0" max="89" value="" placeholder="vacío = arcsin(H/L)" />
               <span class="field-hint">° — si se rellena, sustituye a H</span>
               <span class="field-hint inc-angle-warning" id="incAngleWarn" hidden data-i18n="incConv.angleWarnHtml" data-i18n-html>⚠ θ &gt; 18°: usar banda con perfiles/nervios antideslizantes.</span>
             </div>
@@ -222,7 +218,7 @@
               <label for="incLoadMass" data-i18n="incConv.labelLoadMassHtml" data-i18n-html>Masa m <span class="info-chip" data-i18n-attrs="title=incConv.tipLoadMass" title="Masa total de material transportado en el tramo considerado por el modelo." aria-label="Ayuda masa de carga.">?</span></label>
               <input type="range" id="incLoadMassR" class="flat-slider" min="10" max="8000" step="1" value="900" aria-label="m" />
               <div class="flat-field__num">
-                <input id="incLoadMass" type="number" step="1" min="0.1" value="900" placeholder="ej. 400–5200 kg" />
+                <input inputmode="numeric" id="incLoadMass" type="number" step="1" min="0.1" value="900" placeholder="ej. 400–5200 kg" />
                 <span class="field-hint">kg</span>
               </div>
               <p class="field-context muted">Masa en el tramo modelado; reparto uniforme como en cinta plana</p>
@@ -233,7 +229,7 @@
               >
               <input type="range" id="incSpeedR" class="flat-slider" min="0.05" max="5" step="0.01" value="1" aria-label="v" />
               <div class="flat-field__num">
-                <input id="incSpeed" type="number" step="0.01" min="0" value="1.0" placeholder="ej. 0,8–2 m/s" />
+                <input inputmode="decimal" id="incSpeed" type="number" step="0.01" min="0" value="1.0" placeholder="ej. 0,8–2 m/s" />
                 <span class="field-hint">m/s</span>
               </div>
               <p class="field-context muted">Velocidad habitual cajas y granel: 0,5–2,0 m/s (validar producto y normativa)</p>
@@ -242,7 +238,7 @@
               <label for="incRollerD" data-i18n="incConv.labelRollerDHtml" data-i18n-html>Diámetro tambor motriz D <span class="info-chip" data-i18n-attrs="title=incConv.tipRollerD" title="Diámetro primitivo del tambor de accionamiento. Convierte fuerza en par (T=F·D/2)." aria-label="Ayuda diámetro de tambor.">?</span></label>
               <input type="range" id="incRollerDR" class="flat-slider" min="50" max="1200" step="1" value="500" aria-label="D" />
               <div class="flat-field__num">
-                <input id="incRollerD" type="number" step="1" min="50" value="500" placeholder="ej. 400–800 mm" />
+                <input inputmode="numeric" id="incRollerD" type="number" step="1" min="50" value="500" placeholder="ej. 400–800 mm" />
                 <span class="field-hint">mm</span>
               </div>
               <p class="field-context muted">Tambor motriz típico: 200–630 mm (según banda y potencia)</p>
@@ -260,7 +256,7 @@
               <label for="incFriction" data-i18n="incConv.labelFrictionHtml" data-i18n-html>Coeficiente μ <span class="info-chip" data-i18n-attrs="title=incConv.tipFriction" title="Coeficiente efectivo de rozamiento global en la pendiente. Orientativo típico: 0,25–0,60 según estado." aria-label="Ayuda coeficiente de fricción.">?</span></label>
               <input type="range" id="incFrictionR" class="flat-slider" min="0.15" max="0.65" step="0.01" value="0.4" aria-label="μ" />
               <div class="flat-field__num">
-                <input id="incFriction" type="number" step="0.01" min="0" value="0.4" placeholder="ej. 0,35–0,50" />
+                <input inputmode="decimal" id="incFriction" type="number" step="0.01" min="0" value="0.4" placeholder="ej. 0,35–0,50" />
                 <span class="field-hint">—</span>
               </div>
               <p class="field-context muted">Rodillos secos: 0,22–0,35 · suciedad/humedad: mayor (ver tabla desplegable)</p>
@@ -305,7 +301,7 @@
             </div>
             <div class="field">
               <label for="incEfficiency" data-i18n="incConv.labelEfficiencyHtml" data-i18n-html>Rendimiento η (hasta el tambor) <span class="info-chip" data-i18n-attrs="title=incConv.tipEfficiency" title="Rendimiento mecánico total desde motor hasta tambor. Habitual 80–95% según transmisión." aria-label="Ayuda rendimiento.">?</span></label>
-              <input id="incEfficiency" type="number" step="1" min="1" max="150" value="86" placeholder="ej. 85–92" />
+              <input inputmode="numeric" id="incEfficiency" type="number" step="1" min="1" max="150" value="86" placeholder="ej. 85–92" />
               <span class="field-hint">% — &gt;100 % inválido; cálculo limita a 99 %</span>
             </div>
           </div>
@@ -325,37 +321,37 @@
             <div class="field-grid">
               <div class="field">
                 <label for="incBeltWidth" data-i18n="incConv.labelBeltWidthHtml" data-i18n-html>Ancho de banda B <span class="info-chip" data-i18n-attrs="title=incConv.tipBeltWidth" title="Ancho nominal de cinta. Ayuda a contextualizar caudal y familia de banda." aria-label="Ayuda ancho de banda.">?</span></label>
-                <input id="incBeltWidth" type="number" step="0.01" min="0.1" value="0.8" placeholder="ej. 0,65–1,0 m" />
+                <input inputmode="decimal" id="incBeltWidth" type="number" step="0.01" min="0.1" value="0.8" placeholder="ej. 0,65–1,0 m" />
                 <span class="field-hint">m</span>
               </div>
               <div class="field">
                 <label for="incBeltMass" data-i18n="incConv.labelBeltMassHtml" data-i18n-html>Masa de banda m_b <span class="info-chip" data-i18n-attrs="title=incConv.tipBeltMass" title="Masa propia de la banda usada en el término gravitatorio/rozamiento del modelo extendido." aria-label="Ayuda masa de banda.">?</span></label>
-                <input id="incBeltMass" type="number" step="1" min="0" value="0" placeholder="ej. 45–320 kg" />
+                <input inputmode="numeric" id="incBeltMass" type="number" step="1" min="0" value="0" placeholder="ej. 45–320 kg" />
                 <span class="field-hint">kg</span>
               </div>
               <div class="field">
                 <label for="incLoadDistribution" data-i18n="incConv.labelLoadDistHtml" data-i18n-html>Fracción carga f_dist <span class="info-chip" data-i18n-attrs="title=incConv.tipLoadDist" title="Fracción de carga efectivamente activa en el tramo analizado (1 = carga total activa)." aria-label="Ayuda fracción de carga.">?</span></label>
-                <input id="incLoadDistribution" type="number" step="0.05" min="0.05" max="1" value="1" />
+                <input inputmode="decimal" id="incLoadDistribution" type="number" step="0.05" min="0.05" max="1" value="1" />
                 <span class="field-hint">1 = toda la masa activa</span>
               </div>
               <div class="field">
                 <label for="incBeltSlopePart" data-i18n="incConv.labelBeltSlopePartHtml" data-i18n-html>Banda en pendiente f_p <span class="info-chip" data-i18n-attrs="title=incConv.tipBeltSlopePart" title="Fracción de masa de banda ubicada en el tramo inclinado que contribuye al esfuerzo." aria-label="Ayuda banda en pendiente.">?</span></label>
-                <input id="incBeltSlopePart" type="number" step="0.05" min="0.3" max="1" value="0.9" />
+                <input inputmode="decimal" id="incBeltSlopePart" type="number" step="0.05" min="0.3" max="1" value="0.9" />
                 <span class="field-hint">fracción de m_b en subida</span>
               </div>
               <div class="field">
                 <label for="incAdditionalResistance" data-i18n="incConv.labelAddResistanceHtml" data-i18n-html>Resistencia adicional <span class="info-chip" data-i18n-attrs="title=incConv.tipAddResistance" title="Pérdidas extra no modeladas (rascadores, sellos, puntos duros, etc.) en Newton." aria-label="Ayuda resistencia adicional.">?</span></label>
-                <input id="incAdditionalResistance" type="number" step="1" min="0" value="0" placeholder="ej. 0–2500 N" />
+                <input inputmode="numeric" id="incAdditionalResistance" type="number" step="1" min="0" value="0" placeholder="ej. 0–2500 N" />
                 <span class="field-hint">N</span>
               </div>
               <div class="field">
                 <label for="incAccelTime" data-i18n="incConv.labelAccelTimeHtml" data-i18n-html>Tiempo aceleración <span class="info-chip" data-i18n-attrs="title=incConv.tipAccelTime" title="Tiempo de rampa hasta velocidad nominal. Menor tiempo implica mayor pico de arranque." aria-label="Ayuda tiempo de aceleración.">?</span></label>
-                <input id="incAccelTime" type="number" step="0.1" min="0.05" value="3" />
+                <input inputmode="decimal" id="incAccelTime" type="number" step="0.1" min="0.05" value="3" />
                 <span class="field-hint">s</span>
               </div>
               <div class="field">
                 <label for="incInertiaFactor" data-i18n="incConv.labelInertiaFactorHtml" data-i18n-html>Factor inercia k_in <span class="info-chip" data-i18n-attrs="title=incConv.tipInertiaFactor" title="Multiplicador por inercias rotativas de tambor/acoplamiento en fase de arranque." aria-label="Ayuda factor de inercia.">?</span></label>
-                <input id="incInertiaFactor" type="number" step="0.05" min="1" max="2" value="1.2" />
+                <input inputmode="decimal" id="incInertiaFactor" type="number" step="0.05" min="1" max="2" value="1.2" />
                 <span class="field-hint">tambores / acoplamiento</span>
               </div>
             </div>

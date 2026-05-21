@@ -4,6 +4,7 @@
 
 import {
   bindInputValidation,
+  syncInputValidationResultsGate,
   createLabUrlSync,
   mountLabPresetsBar,
   updateLabShareVisibility,
@@ -18,6 +19,7 @@ import { renderBoltedJointDiagram } from '../lab/diagramCatalogModules.js';
 import { getLabLang } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { BOLTS_ISO_EN } from '../lab/i18n/pages/boltsIsoEn.js';
+import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 
 const BOLT_GRADES_TRY = ['8.8', '10.9', '12.9'];
 
@@ -139,20 +141,22 @@ function render() {
   const tbl = document.getElementById('blTable');
   if (!out || !tbl) return;
 
+  renderBoltedJointDiagram(document.getElementById('blDiagram'), d);
+
+  if (syncInputValidationResultsGate(document.getElementById('blResults'))) return;
+
   if (mode === 'design' && F_kN > 0 && !designSug) {
     out.innerHTML = `<p class="lab-verdict lab-verdict--err">${bx(
       `No hay combinación M6–M36 en grados 8.8/10.9/12.9 que cubra ${F_kN.toFixed(2)} kN en este modelo. Considere mayor diámetro fuera de tabla, rosca fina o más tornillos en paralelo.`,
       `No M6–M36 grade 8.8/10.9/12.9 combination covers ${F_kN.toFixed(2)} kN in this model. Consider larger diameter, fine thread, or more bolts in parallel.`,
     )}</p>`;
     tbl.innerHTML = '';
-    renderBoltedJointDiagram(document.getElementById('blDiagram'), 12);
     updateLabShareVisibility('blShareLinkWrap', 'blOut');
     if (!blUrl.hydrating) blUrl.serializeToUrl();
     return;
   }
 
   const row = boltRowCatalog(d, grade);
-  renderBoltedJointDiagram(document.getElementById('blDiagram'), d);
 
   if (!row) {
     out.innerHTML = `<p class="lab-verdict lab-verdict--err">${bx('Combinación no disponible.', 'Combination not available.')}</p>`;
@@ -252,11 +256,22 @@ wireLabCopyResultsButton('blCopyResults', {
   moduleTitle: bx('Torniller\u00eda ISO 898', 'ISO 898 bolts'),
 });
 
+mountCompactLabFieldHelp();
+
 if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
 else render();
-mountLabCloudSaveBar(bx('Torniller\u00eda ISO 898', 'ISO 898 bolts'));
+mountLabCloudSaveBar(bx('Torniller\u00eda ISO 898', 'ISO 898 bolts'), {
+  norm: 'ISO 898-1 · propiedades mecánicas tornillos',
+  svgSelector: '#blDiagram',
+});
 watchLangAndApply(BOLTS_ISO_EN, {
   reloadOnEs: false,
-  onEnApplied: () => scheduleBlRender(),
-  onEsRestored: () => scheduleBlRender(),
+  onEnApplied: () => {
+    refreshCompactLabFieldHelp();
+    scheduleBlRender();
+  },
+  onEsRestored: () => {
+    refreshCompactLabFieldHelp();
+    scheduleBlRender();
+  },
 });

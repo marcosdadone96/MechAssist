@@ -5,6 +5,7 @@
 import { getLabLang } from './labLang.js';
 import { HOME_NAV_EN } from './homeNavEn.js';
 import { applyMachinePresetLabels } from './machineHubPresetLabels.js';
+import { refreshCompactLabFieldHelp } from '../../ui/labHelpCompact.js';
 
 /** @type {Map<Element, { text?: string, html?: string, attr?: string, attrValue?: string, attrBundle?: Record<string, string> }>} */
 const esSnapshots = new Map();
@@ -145,6 +146,28 @@ export function restoreModuleTranslations() {
   applyMachinePresetLabels('es');
 }
 
+/** Propaga ?lang=en en enlaces de .lab-next-steps cuando el idioma activo es EN. */
+export function wireLabNextStepsLang() {
+  document.querySelectorAll('.lab-next-steps a[href]').forEach((anchor) => {
+    if (!(anchor instanceof HTMLAnchorElement)) return;
+    const raw = anchor.getAttribute('href') || '';
+    if (!raw || raw.startsWith('#') || raw.startsWith('mailto:')) return;
+    if (!anchor.dataset.hrefEs) anchor.dataset.hrefEs = raw;
+    const base = anchor.dataset.hrefEs;
+    if (getLabLang() === 'en') {
+      try {
+        const u = new URL(base, window.location.href);
+        u.searchParams.set('lang', 'en');
+        anchor.href = `${u.pathname}${u.search}${u.hash}`;
+      } catch (_) {
+        anchor.href = base.includes('?') ? `${base}&lang=en` : `${base}?lang=en`;
+      }
+    } else {
+      anchor.href = base;
+    }
+  });
+}
+
 /**
  * @param {Record<string, string>} dict
  * @param {{ onEnApplied?: () => void, onEsRestored?: () => void, reloadOnEs?: boolean }} [opts]
@@ -158,24 +181,33 @@ export function watchLangAndApply(dict, opts = {}) {
     if (getLabLang() === 'en') {
       applyModuleTranslations(dict);
       applyMachinePresetLabels('en');
+      refreshCompactLabFieldHelp();
+      wireLabNextStepsLang();
       onEnApplied?.();
     } else {
       restoreModuleTranslations();
+      refreshCompactLabFieldHelp();
+      wireLabNextStepsLang();
       onEsRestored?.();
     }
   }
 
   applyForLang();
+  wireLabNextStepsLang();
 
   const onLangEvent = () => {
     if (getLabLang() === 'en') {
       applyModuleTranslations(dict);
       applyMachinePresetLabels('en');
+      refreshCompactLabFieldHelp();
+      wireLabNextStepsLang();
       onEnApplied?.();
     } else if (reloadOnEs) {
       location.reload();
     } else {
       restoreModuleTranslations();
+      refreshCompactLabFieldHelp();
+      wireLabNextStepsLang();
       onEsRestored?.();
     }
   };

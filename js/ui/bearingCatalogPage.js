@@ -4,6 +4,7 @@
 
 import {
   bindInputValidation,
+  syncInputValidationResultsGate,
   createLabUrlSync,
   mountLabPresetsBar,
   updateLabShareVisibility,
@@ -54,27 +55,39 @@ function fillBearingSelect(seriesId) {
 
 const BC_PRESETS = [
   {
-    label: '6205-2Z · servicio medio',
+    label: '6205 · uso general',
     labelKey: 'bcat.preset1',
     values: {
       bcSeries: '6200',
       bcBearing: '6205-2Z',
-      bcP: 3200,
-      bcN: 1455,
+      bcP: 2000,
+      bcN: 1450,
+      bcLreq: 15000,
+      bcHpd: 16,
+    },
+  },
+  {
+    label: '6305 · carga media',
+    labelKey: 'bcat.preset2',
+    values: {
+      bcSeries: '6300',
+      bcBearing: '6305-2Z',
+      bcP: 4500,
+      bcN: 960,
       bcLreq: 20000,
       bcHpd: 16,
     },
   },
   {
-    label: '6308-2Z · alta carga',
-    labelKey: 'bcat.preset2',
+    label: 'NJ 208 · radial alta',
+    labelKey: 'bcat.preset3',
     values: {
-      bcSeries: '6300',
-      bcBearing: '6308-2Z',
-      bcP: 12000,
-      bcN: 720,
-      bcLreq: 40000,
-      bcHpd: 12,
+      bcSeries: 'NJ2',
+      bcBearing: 'NJ 208 EC',
+      bcP: 8000,
+      bcN: 750,
+      bcLreq: 25000,
+      bcHpd: 16,
     },
   },
 ];
@@ -133,6 +146,17 @@ function render() {
 
   const ser = DEEP_GROOVE_SERIES.find((s) => s.id === seriesId);
   const b = ser?.bearings.find((x) => x.designation === des);
+  if (b) {
+    renderCatalogDeepGrooveSection(document.getElementById('bcDiagram'), {
+      d: b.d,
+      D: b.D,
+      B: b.B,
+      designation: b.designation,
+    });
+  }
+
+  if (syncInputValidationResultsGate(document.getElementById('bcResults'))) return;
+
   if (!b) {
     out.innerHTML = '';
     tbl.innerHTML = '';
@@ -144,13 +168,6 @@ function render() {
   if (autoGeom) {
     autoGeom.textContent = `${b.designation}: d=${b.d} mm · D=${b.D} mm · B=${b.B} mm · C=${numLocale(b.C_N)} N`;
   }
-
-  renderCatalogDeepGrooveSection(document.getElementById('bcDiagram'), {
-    d: b.d,
-    D: b.D,
-    B: b.B,
-    designation: b.designation,
-  });
 
   const C = b.C_N;
   const Puse = Math.max(1, P);
@@ -249,7 +266,10 @@ wireLabCopyResultsButton('bcCopyResults', {
 
 if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
 else render();
-mountLabCloudSaveBar(bx('Cat\u00e1logo rodamientos', 'Bearing catalogue'));
+mountLabCloudSaveBar(bx('Cat\u00e1logo rodamientos', 'Bearing catalogue'), {
+  norm: 'ISO 15 · rodamientos de bolas de surco profundo (catálogo)',
+  svgSelector: '#bcDiagram',
+});
 watchLangAndApply(BEARING_CATALOG_EN, {
   reloadOnEs: false,
   onEnApplied: () => scheduleBcRender(),

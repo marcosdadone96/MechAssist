@@ -250,7 +250,7 @@
           <span class="lab-presets-row__label" data-i18n="fluids.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="pcPresetsBar"></div>
         </div>
-        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled fluid-calc fluid-calc--pneumatic">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
               <p class="lab-diagram-wrap__title" data-i18n="pneuCyl.diagTitle">Corte de cilindro neumático (doble efecto)</p>
@@ -295,7 +295,7 @@
                 <div class="lab-grid lab-grid--2" style="gap:0.65rem">
                   <div class="lab-field">
                     <label for="pcPatmBar" data-i18n="pneuCyl.labelPatm">Presión atmosférica local (bar abs)</label>
-                    <input id="pcPatmBar" type="number" step="any" value="1.013" />
+                    <input inputmode="decimal" id="pcPatmBar" type="number" step="any" value="1.013" />
                     <span class="hint" data-i18n="pneuCyl.hintPatm">Para conversión a aire libre Nl</span>
                   </div>
                   <div class="lab-field">
@@ -325,7 +325,7 @@
               </div>
               <div class="lab-field">
                 <label for="pcPressureBar" data-i18n="pneuCyl.labelPressure">Presión de red (bar)</label>
-                <input id="pcPressureBar" type="number" min="1" step="any" value="6" />
+                <input inputmode="decimal" id="pcPressureBar" type="number" min="1" step="any" value="6" />
                 <span class="hint" data-i18n="pneuCyl.hintPressureSupply">Presión manométrica de alimentación</span>
                 <p class="lab-field-help" data-i18n="pneuCyl.helpPressure">Valor disponible en la red neumática en condiciones reales de operación, sin caídas locales severas.</p>
                 <table class="pc-mini-table" data-i18n="pneuCyl.pressureTableAria" data-i18n-attr="aria-label" aria-label="Presión de red típica por aplicación">
@@ -369,19 +369,19 @@
               </div>
               <div class="lab-field pc-manual-field" id="pcBoreManualField" hidden>
                 <label for="pcBoreManual" data-i18n="pneuCyl.labelBoreManual">Diámetro de émbolo manual (mm)</label>
-                <input id="pcBoreManual" type="number" min="8" step="any" value="63" />
+                <input inputmode="decimal" id="pcBoreManual" type="number" min="8" step="any" value="63" />
                 <span class="hint" data-i18n="pneuCyl.hintBoreManual">Solo para caso no estándar</span>
                 <p class="lab-field-help" data-i18n="pneuCyl.helpBoreManual">Si el valor no coincide con ISO, el asesor propone el diámetro normalizado más cercano.</p>
               </div>
               <div class="lab-field pc-manual-field" id="pcRodManualField" hidden>
                 <label for="pcRodManual" data-i18n="pneuCyl.labelRodManual">Diámetro de vástago manual (mm)</label>
-                <input id="pcRodManual" type="number" min="4" step="any" value="20" />
+                <input inputmode="decimal" id="pcRodManual" type="number" min="4" step="any" value="20" />
                 <span class="hint" data-i18n="pneuCyl.hintRodManual">Validar disponibilidad comercial</span>
                 <p class="lab-field-help" data-i18n="pneuCyl.helpRodManual">Los vástagos fuera de serie ISO pueden aumentar coste y plazo de suministro.</p>
               </div>
               <div class="lab-field">
                 <label for="pcStrokeMm" data-i18n="pneuCyl.labelStroke">Carrera (mm)</label>
-                <input id="pcStrokeMm" type="number" min="10" step="any" value="500" />
+                <input inputmode="decimal" id="pcStrokeMm" type="number" min="10" step="any" value="500" />
                 <span class="hint" data-i18n="pneuCyl.hintStroke">Longitud útil de desplazamiento</span>
                 <p class="lab-field-help" data-i18n="pneuCyl.helpStroke">Carreras largas incrementan riesgo de pandeo y consumo por ciclo.</p>
               </div>
@@ -390,7 +390,7 @@
                   <div class="pc-field-group__inner">
                     <div class="lab-field">
                       <label for="pcLoadKg" data-i18n="pneuCyl.labelLoad">Carga a mover (kg)</label>
-                      <input id="pcLoadKg" type="number" min="0.1" step="any" value="120" />
+                      <input inputmode="decimal" id="pcLoadKg" type="number" min="0.1" step="any" value="120" />
                       <span class="hint" data-i18n="pneuCyl.hintLoad">Carga externa equivalente</span>
                       <p class="lab-field-help" data-i18n="pneuCyl.helpLoad">Se convierte a fuerza en N (F = m×g) para comparar con la fuerza real del cilindro.</p>
                     </div>
@@ -399,7 +399,7 @@
               </div>
               <div class="lab-field">
                 <label for="pcCyclesMin" data-i18n="pneuCyl.labelCycles">Ciclos por minuto (cpm)</label>
-                <input id="pcCyclesMin" type="number" min="0.1" step="any" value="12" />
+                <input inputmode="decimal" id="pcCyclesMin" type="number" min="0.1" step="any" value="12" />
                 <span class="hint" data-i18n="pneuCyl.hintCycles">Frecuencia de operación</span>
                 <p class="lab-field-help" data-i18n="pneuCyl.helpCycles">Permite calcular el consumo en Nl/min para dimensionar compresor y acumulación.</p>
               </div>

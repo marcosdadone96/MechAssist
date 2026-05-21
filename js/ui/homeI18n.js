@@ -27,6 +27,8 @@ const dict = {
     'hero.mockup.live': 'Vista previa',
     'hero.mockup.pill': 'ISO / AGMA orientativo',
     'hero.mockup.hint': 'Valores de ejemplo \u00b7 no interactivo',
+    'hero.mockup.hintLive': 'v con \u00d8 primitivo 200 mm orientativo \u00b7 T = 9550\u00b7P/n',
+    'hero.mockup.ctaFull': 'Ver c\u00e1lculo completo \u2192',
     'hero.mockup.power': 'Potencia',
     'hero.mockup.rpm': 'RPM motriz',
     'hero.mockup.ratio': 'Relaci\u00f3n',
@@ -107,7 +109,7 @@ const dict = {
     'featured.iso.title': 'Ajustes ISO 286',
     'featured.iso.desc': 'Elige ajuste correcto en minutos y evita retrabajos por holguras o interferencias mal definidas.',
     'hero.tier':
-      'Gratis: calculadoras b\u00e1sicas de transmisi\u00f3n, ISO, torniller\u00eda, lienzo multieje y la mayor\u00eda de m\u00e1quinas fluidos. Pro: PDF/Excel, proyectos guardados, historial sin l\u00edmites diarios y calculadoras premium se\u00f1aladas con badge.',
+      'Gratis: calculadoras b\u00e1sicas de transmisi\u00f3n, ISO, torniller\u00eda, lienzo multieje y la mayor\u00eda de m\u00e1quinas fluidos. Pro: informe PDF, proyectos guardados, historial sin l\u00edmites diarios y calculadoras premium se\u00f1aladas con badge.',
     'nav.brandHome': 'Inicio \u2014 TheMechAssist',
     'nav.plans': 'Planes',
     'nav.hubLab': 'Laboratorio de transmisi\u00f3n',
@@ -266,6 +268,18 @@ const dict = {
     'page.transmissionLab.docTitle': 'Laboratorio de transmisi\u00f3n \u2014 TheMechAssist',
     'page.transmissionLab.metaDesc':
       'Engranajes, correas, cadenas, rodamientos, ejes, chavetas, ajustes ISO, Seeger, acoplamientos y torniller\u00eda: calculadoras con diagramas. TheMechAssist.',
+    'page.machinesHub.docTitle': 'M\u00e1quinas y transporte \u2014 TheMechAssist',
+    'page.machinesHub.metaDesc':
+      'Calculadoras para cintas, rodillos, bombas centr\u00edfugas, elevadores, tornillo y ascensores: potencias, tensiones y par\u00e1metros orientativos.',
+    'page.fluidsHub.docTitle': 'Hidr\u00e1ulica y neum\u00e1tica \u2014 TheMechAssist',
+    'page.fluidsHub.metaDesc':
+      'Cilindros hidr\u00e1ulicos y neum\u00e1ticos, prensa hidr\u00e1ulica y bomba: fuerzas, caudales, potencias y ciclos orientativos.',
+    'hub.machines.soonExtruder.descHtml':
+      'Estimado <strong>Q3 2026</strong>. <a href="feedback.html?topic=roadmap">Avisarme cuando est\u00e9 listo</a>.',
+    'hub.machines.soonFan.descHtml':
+      'Estimado <strong>Q4 2026</strong>. <a href="feedback.html?topic=roadmap">Avisarme cuando est\u00e9 listo</a>.',
+    'hub.fluids.soon.descHtml':
+      'En desarrollo. <a href="feedback.html?topic=roadmap">Avisarme cuando est\u00e9 listo</a>.',
     'lab.gears': 'Engranajes',
     'lab.belts': 'Correas',
     'lab.chains': 'Cadenas',
@@ -286,7 +300,7 @@ const dict = {
     badgeFree: 'GRATIS',
     'pricing.title': 'Elige tu plan',
     'pricing.lead':
-      'Cuatro caminos independientes: registro con cr\u00e9ditos, Starter (9 \u20ac/mes), Ilimitado (25 \u20ac/mes) o desbloqueo puntual de una calculadora (1 \u20ac/mes).',
+      'Empiece gratis y pase a Pro cuando el informe PDF y el cat\u00e1logo completo pasen a ser imprescindibles en su oficina t\u00e9cnica.',
     'pricing.free.name': 'Registro',
     'pricing.free.price': '0 \u20ac',
     'pricing.free.hint': '1000 cr\u00e9ditos de bienvenida para todo el cat\u00e1logo',
@@ -407,6 +421,8 @@ const dict = {
     'hero.mockup.live': 'Preview',
     'hero.mockup.pill': 'ISO / AGMA (indicative)',
     'hero.mockup.hint': 'Sample values \u00b7 not interactive',
+    'hero.mockup.hintLive': 'v at indicative 200 mm pitch diameter \u00b7 T = 9550\u00b7P/n',
+    'hero.mockup.ctaFull': 'Open full calculator \u2192',
     'hero.mockup.power': 'Power',
     'hero.mockup.rpm': 'Driver RPM',
     'hero.mockup.ratio': 'Ratio',
@@ -487,7 +503,7 @@ const dict = {
     'featured.iso.title': 'ISO 286 fits',
     'featured.iso.desc': 'Select the right fit in minutes and avoid rework from poor tolerance choices.',
     'hero.tier':
-      'Free: basic transmission, ISO fits, bolting, multi-shaft canvas and most machine/fluid models. Pro: PDF/Excel, saved projects, unlimited daily use where included, and premium calculators marked with a badge.',
+      'Free: basic transmission, ISO fits, bolting, multi-shaft canvas and most machine/fluid models. Pro: PDF reports, saved projects, unlimited daily use where included, and premium calculators marked with a badge.',
     'nav.brandHome': 'Home \u2014 TheMechAssist',
     'nav.plans': 'Plans',
     'nav.hubLab': 'Transmission lab',
@@ -533,6 +549,7 @@ const dict = {
     'machine.inclinedConveyor': 'Inclined conveyor',
     'lab.index': 'Index',
     'lab.canvasPro': 'Multi-shaft canvas',
+    'lab.trustLink': 'Methodology and limitations',
     'hub.machines.eyebrow': 'Machines',
     'hub.machines.title': 'Machines and conveying',
     'hub.machines.lead':
@@ -643,6 +660,20 @@ const dict = {
     'page.transmissionLab.docTitle': 'Transmission lab \u2014 TheMechAssist',
     'page.transmissionLab.metaDesc':
       'Gears, belts, chains, bearings, shafts, keys, ISO fits, retaining rings, couplings and bolting: calculators with diagrams. TheMechAssist.',
+    'page.machinesHub.docTitle': 'Machines & bulk handling \u2014 TheMechAssist',
+    'page.machinesHub.metaDesc':
+      'Belt, roller, centrifugal pump, bucket elevator, screw conveyor and lift calculators: power, tension and indicative parameters.',
+    'page.fluidsHub.docTitle': 'Hydraulics & pneumatics \u2014 TheMechAssist',
+    'page.fluidsHub.metaDesc':
+      'Hydraulic and pneumatic cylinders, press and pump: forces, flow rates, power and indicative cycles.',
+    'hub.machines.soonExtruder.descHtml':
+      'Estimated <strong>Q3 2026</strong>. <a href="feedback.html?topic=roadmap">Notify me when ready</a>.',
+    'hub.machines.soonFan.descHtml':
+      'Estimated <strong>Q4 2026</strong>. <a href="feedback.html?topic=roadmap">Notify me when ready</a>.',
+    'hub.fluids.soonCompressor.descHtml':
+      'Estimated <strong>Q3 2026</strong>. <a href="feedback.html?topic=roadmap">Notify me when ready</a>.',
+    'hub.fluids.soonValves.descHtml':
+      'Estimated <strong>Q4 2026</strong>. <a href="feedback.html?topic=roadmap">Notify me when ready</a>.',
     'lab.gears': 'Gears',
     'lab.belts': 'Belts',
     'lab.chains': 'Chains',
@@ -663,7 +694,7 @@ const dict = {
     badgeFree: 'FREE',
     'pricing.title': 'Choose your plan',
     'pricing.lead':
-      'Four independent paths: sign up with welcome credits, Starter (\u20ac9/mo), Unlimited (\u20ac25/mo), or unlock one calculator (\u20ac1/mo).',
+      'Start free and upgrade to Pro when the PDF report and full catalogue become essential in your engineering office.',
     'pricing.free.name': 'Sign up',
     'pricing.free.price': '0 \u20ac',
     'pricing.free.hint': '1000 welcome credits for the full catalog',

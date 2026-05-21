@@ -65,8 +65,11 @@ const TX = {
     pwPh: 'M\u00ednimo 8 caracteres',
     pwRequirements:
       'M\u00ednimo 8 caracteres. Recomendamos mezclar letras, n\u00fameros y s\u00edmbolos.',
+    toggleShowPw: 'Mostrar contrase\u00f1a',
+    toggleHidePw: 'Ocultar contrase\u00f1a',
+    pwStrengthVeryWeak: 'Muy d\u00e9bil',
     pwStrengthWeak: 'D\u00e9bil',
-    pwStrengthMedium: 'Media',
+    pwStrengthFair: 'Aceptable',
     pwStrengthStrong: 'Fuerte',
     pwStrengthMeterAria: 'Fortaleza de la contrase\u00f1a',
     pw2Label: 'Confirmar contrase\u00f1a',
@@ -172,8 +175,11 @@ const TX = {
     pwPh: 'At least 8 characters',
     pwRequirements:
       'At least 8 characters. We recommend mixing letters, numbers and symbols.',
+    toggleShowPw: 'Show password',
+    toggleHidePw: 'Hide password',
+    pwStrengthVeryWeak: 'Very weak',
     pwStrengthWeak: 'Weak',
-    pwStrengthMedium: 'Fair',
+    pwStrengthFair: 'Fair',
     pwStrengthStrong: 'Strong',
     pwStrengthMeterAria: 'Password strength',
     pw2Label: 'Confirm password',
@@ -320,6 +326,13 @@ function applyTx() {
     btn.classList.toggle('hub-lang__btn--active', l === lang);
   });
 
+  updatePasswordToggleLabels();
+
+  const meter = document.getElementById('regPwStrength');
+  if (meter instanceof HTMLElement) {
+    meter.setAttribute('aria-label', t.pwStrengthMeterAria);
+  }
+
   const user = getCurrentUser();
   const signedLead = document.querySelector('[data-reg-tx="signedInLead"]');
   if (signedLead && user) signedLead.textContent = t.signedInLead(user.name);
@@ -454,75 +467,81 @@ function showAuthPanels() {
   if (wrap instanceof HTMLElement) wrap.hidden = false;
 }
 
-const WEAK_PASSWORD_PATTERNS = [
-  /^12345678$/,
-  /^password\d*$/i,
-  /^qwerty\d*$/i,
-  /^(.)\1{7,}$/,
-];
-
 /**
  * @param {string} pw
- * @returns {0|1|2|3}
+ * @returns {0|1|2|3|4}
  */
 function scorePasswordStrength(pw) {
   if (!pw) return 0;
-  const len = pw.length;
-  const hasLower = /[a-z]/.test(pw);
+  if (pw.length < 8) return 1;
   const hasUpper = /[A-Z]/.test(pw);
   const hasDigit = /\d/.test(pw);
-  const hasSymbol = /[^A-Za-z0-9]/.test(pw);
-  const types = [hasLower, hasUpper, hasDigit, hasSymbol].filter(Boolean).length;
-  if (len < 8) return 1;
-  if (WEAK_PASSWORD_PATTERNS.some((re) => re.test(pw)) || types < 2) return 1;
-  if (len >= 12 && types >= 3) return 3;
-  if (types >= 3 || (len >= 10 && types >= 2)) return 2;
+  const hasSpecial = /[^A-Za-z0-9]/.test(pw);
+  if (hasSpecial) return 4;
+  if (hasUpper || hasDigit) return 3;
   return 2;
+}
+
+function strengthLabelForLevel(level, t) {
+  if (level === 1) return t.pwStrengthVeryWeak;
+  if (level === 2) return t.pwStrengthWeak;
+  if (level === 3) return t.pwStrengthFair;
+  if (level === 4) return t.pwStrengthStrong;
+  return '';
 }
 
 function updatePasswordStrengthUI() {
   const lang = getLang();
   const t = TX[lang];
   const input = document.getElementById('regPassword');
-  const wrap = document.getElementById('regPasswordStrength');
-  const fill = document.getElementById('regPasswordStrengthFill');
-  const label = document.getElementById('regPasswordStrengthLabel');
-  const meter = document.getElementById('regPasswordStrengthMeter');
-  if (!(input instanceof HTMLInputElement) || !(wrap instanceof HTMLElement)) return;
+  const meter = document.getElementById('regPwStrength');
+  const bar = meter?.querySelector('.register-pw-strength__bar');
+  const label = document.getElementById('regPwStrengthLabel');
+  if (!(input instanceof HTMLInputElement) || !(meter instanceof HTMLElement)) return;
 
-  const pw = input.value;
-  if (!pw) {
-    wrap.hidden = true;
-    if (label) label.textContent = '';
-    return;
+  const level = scorePasswordStrength(input.value);
+  const text = strengthLabelForLevel(level, t);
+
+  for (let i = 0; i <= 4; i++) {
+    meter.classList.toggle(`strength-${i}`, level === i);
   }
 
-  wrap.hidden = false;
-  const level = scorePasswordStrength(pw);
-  const labels = [t.pwStrengthWeak, t.pwStrengthMedium, t.pwStrengthStrong];
-  const text = labels[level - 1] || t.pwStrengthWeak;
-
-  wrap.classList.remove(
-    'register-pw-strength--weak',
-    'register-pw-strength--medium',
-    'register-pw-strength--strong',
-  );
-  if (level === 1) wrap.classList.add('register-pw-strength--weak');
-  else if (level === 2) wrap.classList.add('register-pw-strength--medium');
-  else wrap.classList.add('register-pw-strength--strong');
-
-  if (fill instanceof HTMLElement) {
-    fill.className = 'register-pw-strength__fill';
-    if (level === 1) fill.classList.add('register-pw-strength__fill--weak');
-    else if (level === 2) fill.classList.add('register-pw-strength__fill--medium');
-    else fill.classList.add('register-pw-strength__fill--strong');
-    fill.style.width = `${(level / 3) * 100}%`;
+  if (bar instanceof HTMLElement) {
+    bar.style.width = level > 0 ? `${(level / 4) * 100}%` : '0%';
   }
   if (label) label.textContent = text;
-  if (meter instanceof HTMLElement) {
-    meter.setAttribute('aria-valuenow', String(level));
-    meter.setAttribute('aria-label', t.pwStrengthMeterAria || 'Password strength');
-  }
+  meter.setAttribute('aria-valuenow', String(level));
+  meter.setAttribute('aria-label', t.pwStrengthMeterAria);
+}
+
+function updatePasswordToggleLabels() {
+  const t = TX[getLang()];
+  document.querySelectorAll('[data-pw-toggle]').forEach((btn) => {
+    if (!(btn instanceof HTMLButtonElement)) return;
+    const inp = btn.previousElementSibling;
+    const showing = inp instanceof HTMLInputElement && inp.type === 'text';
+    btn.setAttribute('aria-label', showing ? t.toggleHidePw : t.toggleShowPw);
+  });
+}
+
+function wirePasswordToggle() {
+  document.querySelectorAll('[data-pw-toggle]').forEach((btn) => {
+    if (!(btn instanceof HTMLButtonElement)) return;
+    const inp = btn.previousElementSibling;
+    if (!(inp instanceof HTMLInputElement)) return;
+
+    btn.addEventListener('click', () => {
+      const show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      btn.classList.toggle('is-showing', show);
+      const eyeOff = btn.querySelector('.register-input__eye-off');
+      const eyeOn = btn.querySelector('.register-input__eye-on');
+      if (eyeOff instanceof SVGElement) eyeOff.hidden = show;
+      if (eyeOn instanceof SVGElement) eyeOn.hidden = !show;
+      updatePasswordToggleLabels();
+    });
+  });
+  updatePasswordToggleLabels();
 }
 
 function wirePasswordStrength() {
@@ -611,6 +630,7 @@ export function mountRegisterPage() {
 
   showAuthPanels();
   wireAuthTabs();
+  wirePasswordToggle();
   wirePasswordStrength();
   wirePasswordRecovery(lang);
 

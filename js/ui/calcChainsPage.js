@@ -17,6 +17,7 @@ import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
   executiveSummaryAlert,
@@ -26,6 +27,7 @@ import {
   mountLabPresetsBar,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  runLabCalcBoot,
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
@@ -217,6 +219,10 @@ function refreshCore() {
     n1_rpm: n1 > 0 ? n1 : undefined,
   };
   const r = computeRollerChain(p);
+  renderChainDriveDiagram(document.getElementById('cDiagram'), p);
+
+  if (syncInputValidationResultsGate(document.getElementById('cResults'))) return;
+
   const lub = localizeChainLubrication(r.chainLubrication, lang);
   const normsNote = lang === 'en' ? t.normsNote : r.normsNote;
 
@@ -421,8 +427,6 @@ function refreshCore() {
     `;
   }
 
-  renderChainDriveDiagram(document.getElementById('cDiagram'), p);
-
   const cref = !useManual && chainRefId ? chainRefId : 'iso-12b-1';
   const shoppingLines = [
     {
@@ -471,8 +475,11 @@ wireLabCopyLink('cCopyLinkBtn', 'cCopyToast');
 wireLabCopyResultsButton('cCopyResults', {
   moduleTitle: chainsRuntimeStrings(getLabLang()).moduleLabel,
 });
-runCalcWithIndustrialFeedback(wrap, refreshCore);
-mountLabCloudSaveBar(chainsRuntimeStrings(getLabLang()).moduleLabel);
+runLabCalcBoot(wrap, refreshCore);
+mountLabCloudSaveBar(chainsRuntimeStrings(getLabLang()).moduleLabel, {
+  norm: 'ISO 606 · cadenas de rodillos',
+  svgSelector: '#cDiagram',
+});
 watchLangAndApply(CHAINS_EN, {
   reloadOnEs: false,
   onEnApplied: () => scheduleChainRecalc(),

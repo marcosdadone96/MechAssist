@@ -33,17 +33,20 @@ const TX = {
     lead: 'Elija una opci\u00f3n y pulse el bot\u00f3n para abrir el pago seguro en Lemon Squeezy.',
     choicesAria: 'Opciones disponibles',
     choices: [
-      { label: 'Starter', detail: '9 \u20ac/mes \u00b7 cr\u00e9ditos y hasta 30 PDF/mes' },
-      { label: 'Ilimitado', detail: '25 \u20ac/mes \u00b7 cat\u00e1logo sin gastar cr\u00e9ditos' },
+      { label: 'Starter', detail: '9 \u20ac/mes (IVA incluido) \u00b7 cr\u00e9ditos y hasta 30 PDF/mes' },
+      { label: 'Ilimitado', detail: '25 \u20ac/mes (IVA incluido) \u00b7 cat\u00e1logo sin gastar cr\u00e9ditos' },
       { label: 'Una calculadora', detail: '1 \u20ac/30 d\u00edas \u00b7 sin suscripci\u00f3n' },
     ],
     subsHeading: 'Suscripciones',
     subsLead: 'Mismo bot\u00f3n principal en cada tarjeta. El plan anual de Starter es un enlace aparte.',
     starterHeading: 'Starter',
-    starterPrice: '9 \u20ac/mes',
+    starterPrice: '9 \u20ac/mes (IVA incluido)',
     starterHint:
       '1000 cr\u00e9ditos de bienvenida al verificar la cuenta. No es uso ilimitado: consulte el desglose debajo.',
     starterCreditsSummary: '\u00bfC\u00f3mo funcionan los cr\u00e9ditos?',
+    starterCreditsSimple:
+      'Starter incluye 30 exportaciones PDF al mes. Cada PDF consume 1 cr\u00e9dito. Los cr\u00e9ditos se renuevan el 1 de cada mes. El plan Ilimitado no tiene l\u00edmite.',
+    compareHeading: 'Comparativa de planes',
     starterBullets: [
       'Hasta 30 PDF/mes en el contador del plan Starter',
       'Sesiones de c\u00e1lculo (12 min) en lab, m\u00e1quinas e hidr\u00e1ulica: 10 cr\u00e9ditos cada una',
@@ -51,7 +54,7 @@ const TX = {
       'Gestione la suscripci\u00f3n en el portal Lemon',
     ],
     unlimitedHeading: 'Ilimitado',
-    unlimitedPrice: '25 \u20ac/mes',
+    unlimitedPrice: '25 \u20ac/mes (IVA incluido)',
     unlimitedHint: 'Todo el cat\u00e1logo sin gastar cr\u00e9ditos ni l\u00edmite de PDF por cr\u00e9ditos.',
     unlimitedBullets: [
       'Acceso completo sin consumir cr\u00e9ditos',
@@ -74,16 +77,16 @@ const TX = {
     unlockLoadError: 'No se pudieron cargar las calculadoras',
     unlockBtn: 'Desbloquear por 1 \u20ac',
     unlockFor: (name) => `Desbloquear: ${name}`,
-    starterMonthly: 'Starter \u2014 9 \u20ac/mes',
+    starterMonthly: 'Starter \u2014 9 \u20ac/mes (IVA incluido)',
     starterAnnual: 'Starter anual \u2014 79 \u20ac/a\u00f1o',
     starterAnnualNote: '(\u2248 6,58 \u20ac/mes de media)',
-    unlimitedMonthly: 'Ilimitado \u2014 25 \u20ac/mes',
+    unlimitedMonthly: 'Ilimitado \u2014 25 \u20ac/mes (IVA incluido)',
     unlimitedAnnual: 'Ilimitado anual \u2014 199 \u20ac/a\u00f1o',
     unlimitedAnnualNote: '(\u2248 16,58 \u20ac/mes \u00b7 2 meses gratis)',
     creditsNote: '',
     signedAs: (name, email) => `Sesion: ${name} (${email})`,
     stripeBtn: 'Pagar con tarjeta (Stripe)',
-    monthlyPlan: 'Starter \u2014 9 \u20ac/mes',
+    monthlyPlan: 'Starter \u2014 9 \u20ac/mes (IVA incluido)',
     annualPlan: 'Starter anual \u2014 79 \u20ac/a\u00f1o',
     checkoutPayNote: 'Pago seguro con Lemon Squeezy. IVA seg\u00fan pa\u00eds en la pasarela.',
     withdrawalLabelHtml:
@@ -91,6 +94,7 @@ const TX = {
     withdrawalHelp:
       'Si no marca esta casilla no puede completar la compra con entrega digital inmediata. Para otro modo de contrataci\u00f3n, contacte antes de pagar.',
     withdrawalRequired: 'Debe aceptar la renuncia al desistimiento para continuar.',
+    redirecting: 'Redirigiendo\u2026',
     paymentNotConfigured:
       'No hay enlaces de pago en esta pagina. Configure Stripe o Lemon Squeezy en la aplicacion.',
     backHome: 'Volver al inicio',
@@ -129,14 +133,14 @@ const TX = {
     lead: 'Pick an option and use the button to open secure checkout on Lemon Squeezy.',
     choicesAria: 'Available options',
     choices: [
-      { label: 'Starter', detail: '\u20ac9/mo \u00b7 credits and up to 30 PDFs/month' },
-      { label: 'Unlimited', detail: '\u20ac25/mo \u00b7 full catalog without credits' },
+      { label: 'Starter', detail: '\u20ac9/mo (VAT included) \u00b7 credits and up to 30 PDFs/month' },
+      { label: 'Unlimited', detail: '\u20ac25/mo (VAT included) \u00b7 full catalog without credits' },
       { label: 'Single calculator', detail: '\u20ac1/30 days \u00b7 no subscription' },
     ],
     subsHeading: 'Subscriptions',
     subsLead: 'Each card has one main button. Starter annual billing is a separate link.',
     starterHeading: 'Starter',
-    starterPrice: '\u20ac9/month',
+    starterPrice: '\u20ac9/month (VAT included)',
     starterHint:
       '1000 welcome credits when you verify your account. Not unlimited — see the breakdown below.',
     starterCreditsSummary: 'How do credits work?',
@@ -147,7 +151,7 @@ const TX = {
       'Manage billing in the Lemon portal',
     ],
     unlimitedHeading: 'Unlimited',
-    unlimitedPrice: '\u20ac25/month',
+    unlimitedPrice: '\u20ac25/month (VAT included)',
     unlimitedHint: 'Full catalog without spending credits or PDF credit limits.',
     unlimitedBullets: [
       'Full access without credit spend',
@@ -165,16 +169,16 @@ const TX = {
     unlockLoadError: 'Could not load the calculator list',
     unlockBtn: 'Unlock for \u20ac1/month',
     unlockFor: (name) => `Unlock: ${name}`,
-    starterMonthly: 'Starter \u2014 \u20ac9/month',
+    starterMonthly: 'Starter \u2014 \u20ac9/month (VAT included)',
     starterAnnual: 'Starter annual \u2014 \u20ac79/year',
     starterAnnualNote: '(avg. \u2248 \u20ac6.58/month)',
-    unlimitedMonthly: 'Unlimited \u2014 \u20ac25/month',
+    unlimitedMonthly: 'Unlimited \u2014 \u20ac25/month (VAT included)',
     unlimitedAnnual: 'Unlimited annual \u2014 \u20ac199/year',
     unlimitedAnnualNote: '(avg. \u2248 \u20ac16.58/mo \u00b7 2 months free)',
     creditsNote: '',
     signedAs: (name, email) => `Signed in: ${name} (${email})`,
     stripeBtn: 'Pay with card (Stripe)',
-    monthlyPlan: 'Starter \u2014 \u20ac9/month',
+    monthlyPlan: 'Starter \u2014 \u20ac9/month (VAT included)',
     annualPlan: 'Starter annual \u2014 \u20ac79/year',
     checkoutPayNote: 'Secure checkout via Lemon Squeezy. VAT by country at payment.',
     withdrawalLabelHtml:
@@ -182,6 +186,7 @@ const TX = {
     withdrawalHelp:
       'If you do not tick this box you cannot complete immediate digital delivery. Contact us before paying for other arrangements.',
     withdrawalRequired: 'You must accept the withdrawal waiver to continue.',
+    redirecting: 'Redirecting\u2026',
     paymentNotConfigured:
       'No payment links on this page. Configure Stripe or Lemon Squeezy in the app.',
     backHome: 'Back to home',
@@ -277,7 +282,11 @@ function applyCreditsPricingToCheckout(t) {
   }
   if (details instanceof HTMLElement) details.hidden = !enabled;
   if (summary) summary.textContent = t.starterCreditsSummary || '';
-  if (explainer instanceof HTMLElement && enabled) {
+  const simple = document.getElementById('coStarterCreditsSimple');
+  if (simple instanceof HTMLElement) {
+    simple.textContent = t.starterCreditsSimple || '';
+  }
+  if (explainer instanceof HTMLElement && enabled && !document.getElementById('coStarterCreditsSimple')) {
     explainer.innerHTML = getCreditsPricingExplainerHtml(lang);
   }
 }
@@ -304,6 +313,7 @@ function applyTx(t) {
   set('coEyebrow', t.eyebrow);
   set('coTitle', t.title);
   set('coLead', t.lead);
+  set('coCompareHeading', t.compareHeading);
   set('coSubsHeading', t.subsHeading);
   set('coSubsLead', t.subsLead);
   set('coDemoNote', t.checkoutPayNote);
@@ -393,6 +403,94 @@ function highlightCheckoutFocus() {
     document.getElementById('coUnlockBlock')?.classList.add('checkout-section--highlight');
   } else if (hash === '#starter') {
     document.getElementById('coStarterBlock')?.classList.add('checkout-plan-card--highlight');
+  }
+}
+
+function checkoutRedirectSpinnerSvg() {
+  return (
+    '<svg class="checkout-btn-spinner" width="1em" height="1em" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+    '<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" fill="none" opacity="0.25"></circle>' +
+    '<path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"></path>' +
+    '</svg>'
+  );
+}
+
+/**
+ * @param {HTMLElement} el
+ * @param {typeof TX.es} t
+ */
+function setCheckoutLinkLoading(el, t) {
+  if (!(el instanceof HTMLElement)) return;
+  if (!el.dataset.coRestLabel) {
+    el.dataset.coRestLabel = el.textContent?.trim() || '';
+  }
+  clearCheckoutLinkLoadingTimer(el);
+  el.classList.add('is-loading');
+  el.setAttribute('aria-disabled', 'true');
+  if (el instanceof HTMLAnchorElement) {
+    el.tabIndex = -1;
+  }
+  if (el instanceof HTMLButtonElement) {
+    el.disabled = true;
+  }
+  el.innerHTML = `${checkoutRedirectSpinnerSvg()}<span class="checkout-btn-loading__text">${t.redirecting}</span>`;
+}
+
+/** @param {HTMLElement} el */
+function restoreCheckoutLink(el) {
+  if (!(el instanceof HTMLElement)) return;
+  clearCheckoutLinkLoadingTimer(el);
+  el.classList.remove('is-loading');
+  el.removeAttribute('aria-disabled');
+  if (el instanceof HTMLAnchorElement) {
+    el.tabIndex = 0;
+  }
+  if (el instanceof HTMLButtonElement) {
+    el.disabled = false;
+  }
+  if (el.dataset.coRestLabel) {
+    el.textContent = el.dataset.coRestLabel;
+  }
+}
+
+/** @param {HTMLElement} el */
+function clearCheckoutLinkLoadingTimer(el) {
+  const raw = el.dataset.coLoadingTimer;
+  if (raw) {
+    window.clearTimeout(Number(raw));
+    delete el.dataset.coLoadingTimer;
+  }
+}
+
+/**
+ * @param {typeof TX.es} t
+ */
+function bindLemonCheckoutLinkLoading(t) {
+  for (const el of document.querySelectorAll('[data-lemon-squeezy]')) {
+    if (!(el instanceof HTMLElement)) continue;
+    if (el.hidden) continue;
+    el.addEventListener('click', (ev) => {
+      if (!assertWithdrawalOrShowError(t)) {
+        ev.preventDefault();
+        return;
+      }
+      if (el.classList.contains('is-loading')) {
+        ev.preventDefault();
+        return;
+      }
+      const href = el instanceof HTMLAnchorElement ? String(el.href || '').trim() : '';
+      if (!href) {
+        ev.preventDefault();
+        return;
+      }
+      ev.preventDefault();
+      setCheckoutLinkLoading(el, t);
+      const timerId = window.setTimeout(() => restoreCheckoutLink(el), 8000);
+      el.dataset.coLoadingTimer = String(timerId);
+      window.setTimeout(() => {
+        window.location.assign(href);
+      }, 40);
+    });
   }
 }
 
@@ -592,13 +690,7 @@ export async function mountCheckoutPage() {
     window.location.href = buildCalcUnlockCheckoutUrl(slug);
   });
 
-  ['coLemonMonthly', 'coLemonAnnual', 'coLemonUnlimited', 'coLemonUnlimitedAnnual'].forEach((id) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener('click', (ev) => {
-      if (!assertWithdrawalOrShowError(t)) ev.preventDefault();
-    });
-  });
+  bindLemonCheckoutLinkLoading(t);
 
   document.querySelectorAll('[data-co-lang]').forEach((btn) => {
     btn.addEventListener('click', () => {

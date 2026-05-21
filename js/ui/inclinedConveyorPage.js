@@ -22,6 +22,8 @@ import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
 import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
+import { bindInputValidation, syncInputValidationResultsGate } from './labCalcUx.js';
+import { INCLINED_CONVEYOR_VALIDATION } from './machineCalcInputValidation.js';
 import { incrementCalcCounter } from '../services/calcCounter.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
@@ -658,13 +660,6 @@ function localizeInclinedStaticContent() {
     const proFlag = isPremiumEffective() ? '<span class="premium-flag">Pro</span> ' : '';
     pdfH2.innerHTML = `${proFlag}<span class="panel-icon">PDF</span> Export report`;
   }
-  if (location.protocol === 'file:') {
-    const fpw = document.getElementById('fileProtoWarn');
-    if (fpw) {
-      fpw.textContent =
-        'Recommendation: use a local HTTP server (npx --yes serve .). With file:// the browser may block JS modules and hide diagrams and results.';
-    }
-  }
   const eng = document.querySelector('#incEngineeringReport')?.closest('.panel');
   if (eng) {
     const t = eng.querySelector('.motors-details__title');
@@ -763,6 +758,7 @@ function refreshCore() {
         calcErrorSuffix: 'Use servidor HTTP si abre con file://. Consola F12 para más detalle.',
       };
   const els = getEls();
+  if (syncInputValidationResultsGate(els.results)) return;
   try {
     clearRuntimeError();
     normalizePhysicalInputs();
@@ -1047,6 +1043,7 @@ bindIncRangeSlider('incSpeedR', 'incSpeed', 0.05, 5, 0.01);
 bindIncRangeSlider('incRollerDR', 'incRollerD', 50, 1200, 1);
 bindIncRangeSlider('incFrictionR', 'incFriction', 0.15, 0.65, 0.01);
 
+bindInputValidation(INCLINED_CONVEYOR_VALIDATION);
 bootMachineCalcView(refresh);
 
 wireMachineRfqExport({

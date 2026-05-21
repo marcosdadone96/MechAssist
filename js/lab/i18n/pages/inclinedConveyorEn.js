@@ -1,6 +1,12 @@
 /** English strings for inclined-conveyor.html (`incConv.*` field keys). ASCII-safe. */
 export const INCLINED_CONVEYOR_EN = {
   'incConv.docTitle': 'Inclined conveyor \u2014 TheMechAssist',
+  'incConv.metaDesc':
+    'Inclined belt tension, drive power and indicative gearmotor check on sloped conveyors. Bulk handling. Free online.',
+  'incConv.ogTitle': 'Inclined belt conveyor calculator \u2014 power & tension',
+  'incConv.ogDesc':
+    'Inclined belt tension, drive power and indicative gearmotor check on sloped conveyors. Bulk handling. Free online.',
+  'incConv.twitterTitle': 'Inclined belt conveyor calculator \u2014 power & tension',
   'incConv.h2': 'Inclined conveyor',
   'incConv.introSummary': 'Calculator description and scope',
   'incConv.calcSeoIntro':

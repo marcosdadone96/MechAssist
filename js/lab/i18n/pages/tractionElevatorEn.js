@@ -1,5 +1,12 @@
 /** English strings for traction-elevator.html (`teConv.*` field keys). ASCII-safe. */
 export const TRACTION_ELEVATOR_EN = {
+  'teConv.docTitle': 'Traction elevator calculator \u2014 TheMechAssist',
+  'teConv.metaDesc':
+    'Rope tension, counterweight, traction limit and sheave torque estimates. Indicative; not a code substitute.',
+  'teConv.ogTitle': 'Traction elevator calculator \u2014 kinematics & counterweight',
+  'teConv.ogDesc':
+    'Rope tension, counterweight, traction limit and sheave torque estimates. Indicative; not a code substitute.',
+  'teConv.twitterTitle': 'Traction elevator calculator \u2014 kinematics & counterweight',
   'teConv.introSummary': 'Calculator description and scope',
   'teConv.calcSeoIntro':
     'This sheet integrates cabin mass, payload and counterweight with cable tension on the inclined path, applying an Euler\u2013Eytelwein traction limit and estimating sheave torque, for training only and not replacing the lift code memo in your jurisdiction. It helps installation engineers and educators compare doubling ropes or changing groove friction. Picture retuning counterweight when switching from freight to a service with more short stops.',

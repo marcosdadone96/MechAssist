@@ -38,6 +38,8 @@ import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 const FLAT_PAGE_EN = { ...MACHINE_HUB_UX_EN, ...FLAT_CONVEYOR_EN };
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
 import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
+import { bindInputValidation, syncInputValidationResultsGate } from './labCalcUx.js';
+import { FLAT_CONVEYOR_VALIDATION } from './machineCalcInputValidation.js';
 import { incrementCalcCounter } from '../services/calcCounter.js';
 
 const inputIds = [
@@ -497,6 +499,9 @@ function initAdvancedDetailsPersistence() {
 }
 
 function refreshCore() {
+  const els = getEls();
+  if (syncInputValidationResultsGate(els.results)) return;
+
   const conveyorExtrasUnlocked = isPremiumEffective() || isFreeMachineFullAccess();
   const pdfReportUnlocked = isPdfReportUiUnlocked();
   const LBL = getI18nLabels();
@@ -588,7 +593,6 @@ function refreshCore() {
           'Compruebe la consola (F12). Si abrió el archivo con doble clic, use un servidor local: npx --yes serve .',
         missingFieldsPrefix: 'Falta indicar:',
       };
-  const els = getEls();
   try {
     clearRuntimeError();
     const missing = collectEmptyCoreFieldIds();
@@ -952,6 +956,8 @@ bindFlatRangeSlider('loadMassR', 'loadMass', 10, 8000, 1);
 bindFlatRangeSlider('beltSpeedR', 'beltSpeed', 0.05, 5, 0.01);
 bindFlatRangeSlider('rollerDR', 'rollerD', 50, 1200, 1);
 bindFlatRangeSlider('frictionR', 'friction', 0.15, 0.65, 0.01);
+
+bindInputValidation(FLAT_CONVEYOR_VALIDATION);
 
 watchLangAndApply(FLAT_PAGE_EN, {
   reloadOnEs: false,

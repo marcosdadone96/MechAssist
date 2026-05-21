@@ -49,4 +49,17 @@ export const DEEP_GROOVE_SERIES = [
       { designation: '6308-2Z', d: 40, D: 90, B: 23, C_N: 55900, Co_N: 25000 },
     ],
   },
+  {
+    id: 'NJ2',
+    label: 'Rodillos cilíndricos NJ2xx (cargas radiales altas)',
+    bearings: [
+      { designation: 'NJ 206 EC', d: 30, D: 62, B: 16, C_N: 52000, Co_N: 49000 },
+      { designation: 'NJ 208 EC', d: 40, D: 80, B: 18, C_N: 68000, Co_N: 64000 },
+      { designation: 'NJ 210 EC', d: 50, D: 90, B: 20, C_N: 78000, Co_N: 72000 },
+      { designation: 'NJ 212 EC', d: 60, D: 110, B: 22, C_N: 102000, Co_N: 98000 },
+      { designation: 'NJ 214 EC', d: 70, D: 125, B: 24, C_N: 122000, Co_N: 118000 },
+    ],
+  },
 ];
+
+export const BEARING_CATALOG_SERIES = DEEP_GROOVE_SERIES;

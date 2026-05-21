@@ -95,7 +95,7 @@
             <strong>Catálogo demo:</strong> curvas y datos de motorreductor son orientativos; no sustituyen software ni hojas del fabricante.
           </p>
           <p class="lab-calc-hero-lead" data-i18n="gm.heroLead" data-i18n-html>
-            Relación <strong>J<sub>ext</sub>/J<sub>mot</sub></strong> frente a un límite que usted define y par disponible vs par resistente en el punto de trabajo — modelo pedagógico con catálogo demo.
+            Verifica si la carga puede ser acelerada por el motorreductor sin saturación de par. Relación <strong>J<sub>ext</sub>/J<sub>mot</sub></strong> frente a un límite que usted define y par disponible vs par resistente en el punto de trabajo — modelo pedagógico con catálogo demo.
           </p>
           <details class="lab-calc-seo">
             <summary data-i18n="gm.seoSummary">Contexto ampliado y notas de uso</summary>
@@ -121,6 +121,7 @@
           <ul class="lab-next-steps__list">
             <li data-i18n="gm.nextLi1Html" data-i18n-html><a href="my-gearmotors.html">Mis motorreductores</a> — seleccionar modelo con par y J del catálogo.</li>
             <li data-i18n="gm.nextLi2Html" data-i18n-html><a href="calc-couplings.html">Acoplamientos</a> — seleccionar acoplamiento con el par de diseño.</li>
+            <li data-i18n="gm.nextLi3Html" data-i18n-html>Si la inercia reflejida supera el límite &rarr; aumentar reducción (<a href="calc-gears.html">Engranajes</a>) o reducir inercia de carga.</li>
           </ul>
         </nav>
         <div class="lab-presets-row">
@@ -159,7 +160,7 @@
               </div>
               <div class="lab-field">
                 <label for="gmJratioMax" data-i18n="gm.labelJratioMax">Límite admisible Jext/Jmot</label>
-                <input id="gmJratioMax" type="number" min="1" step="0.5" value="10" />
+                <input inputmode="decimal" id="gmJratioMax" type="number" min="1" step="0.5" value="10" />
                 <span class="hint" data-i18n="gm.hintJratioMax">Relación máxima permitida</span>
                 <div class="gm-ref-chips" role="group" data-i18n="gm.ratioChipsAria" data-i18n-attr="aria-label" aria-label="Valores orientativos de relación de inercias">
                   <button type="button" class="gm-ref-chip" data-gm-ratio="1" data-i18n="gm.chipServo">Servomotor: ≤ 1</button>
@@ -170,13 +171,13 @@
               </div>
               <div class="lab-field">
                 <label for="gmTN" data-i18n="gm.labelTN">Par nominal Tn (N·m)</label>
-                <input id="gmTN" type="number" min="0.1" step="any" value="48" />
+                <input inputmode="decimal" id="gmTN" type="number" min="0.1" step="any" value="48" />
                 <span class="hint" data-i18n="gm.hintTN">Par continuo nominal</span>
                 <p class="lab-field-help" data-i18n="gm.helpTN">Par que el motorreductor puede entregar de forma continua cerca de su régimen nominal.</p>
               </div>
               <div class="lab-field">
                 <label for="gmNsync" data-i18n="gm.labelNsync">Velocidad síncrona base (rpm)</label>
-                <input id="gmNsync" type="number" min="100" step="1" value="1500" />
+                <input inputmode="numeric" id="gmNsync" type="number" min="100" step="1" value="1500" />
                 <span class="hint" data-i18n="gm.hintNsync">Referencia para la curva T(n)</span>
                 <p class="lab-field-help" data-i18n="gm.helpNsync">Velocidad base para escalar la curva de par estimada. Normalmente 1500 rpm o 3000 rpm según polos.</p>
               </div>
@@ -188,13 +189,13 @@
               </div>
               <div class="lab-field">
                 <label for="gmJload" data-i18n="gm.labelJload">J carga (kg·m²) · opcional</label>
-                <input id="gmJload" type="number" min="0" step="any" />
+                <input inputmode="decimal" id="gmJload" type="number" min="0" step="any" />
                 <span class="hint" data-i18n="gm.hintJload">Inercia en el eje lento o de carga</span>
                 <p class="lab-field-help" data-i18n="gm.helpJload">Si indica relación de reducción, se calculará automáticamente la inercia reflejada al eje rápido.</p>
               </div>
               <div class="lab-field">
                 <label for="gmIratio" data-i18n="gm.labelIratio">Relación de reducción i · opcional</label>
-                <input id="gmIratio" type="number" min="0.01" step="any" />
+                <input inputmode="decimal" id="gmIratio" type="number" min="0.01" step="any" />
                 <span class="hint" data-i18n="gm.hintIratio">i = n motor / n carga</span>
                 <p class="lab-field-help" data-i18n="gm.helpIratio">Para cálculo rápido: J_reflejada = J_carga / i².</p>
               </div>
@@ -206,13 +207,13 @@
               </div>
               <div class="lab-field">
                 <label for="gmN" data-i18n="gm.labelN">Velocidad operación (rpm)</label>
-                <input id="gmN" type="number" min="1" step="1" value="1455" />
+                <input inputmode="numeric" id="gmN" type="number" min="1" step="1" value="1455" />
                 <span class="hint" data-i18n="gm.hintN">Punto real de trabajo</span>
                 <p class="lab-field-help" data-i18n="gm.helpN">Velocidad donde compara par disponible y par resistente. Use la velocidad objetivo durante operación normal.</p>
               </div>
               <div class="lab-field lab-field--wide">
                 <label for="gmTload" data-i18n="gm.labelTload">Par resistente de carga (N·m)</label>
-                <input id="gmTload" type="number" min="0" step="any" value="12" />
+                <input inputmode="decimal" id="gmTload" type="number" min="0" step="any" value="12" />
                 <span class="hint" data-i18n="gm.hintTload">Par exigido por la máquina</span>
                 <p class="lab-field-help" data-i18n="gm.helpTload">Par que necesita la carga en el punto de operación. Si hay picos, use el valor más severo para una validación conservadora.</p>
               </div>

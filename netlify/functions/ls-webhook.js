@@ -260,19 +260,15 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ received: true }) };
   }
 
-  console.log(1034986, {
-    event: eventName,
-    kind,
-    email: rec.email,
-    lemon_variant_id: attrs.variant_id,
-    lemon_product_id: attrs.product_id,
-    lemon_product_name: attrs.product_name,
-    lemon_variant_name: attrs.variant_name,
-    lemon_status: attrs.status,
-    variantIdResolved: rec.variantId,
-    subscription_id: data?.id ?? null,
-    order_id: attrs.order_id ?? null,
-  });
+  if (eventName === 'order_created' || eventName === 'subscription_created') {
+    console.log('ls-webhook: entitlement_event', {
+      event: eventName,
+      kind,
+      email: rec.email,
+      variantId: rec.variantId,
+      active: rec.active,
+    });
+  }
 
   let stored = toStored(rec);
   let prevPro = null;

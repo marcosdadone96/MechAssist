@@ -65,7 +65,11 @@
         align-self: start;
       }
       #hpPressDiagram {
-        max-height: 245px;
+        display: block;
+        width: 100%;
+        min-height: 200px;
+        max-height: min(58vh, 440px);
+        height: auto;
       }
       .lab-field--auto input,
       .lab-field--auto select {
@@ -279,7 +283,7 @@
           <span class="lab-presets-row__label" data-i18n="fluids.presetsLabel">Ejemplos típicos:</span>
           <div class="lab-presets-bar" id="hppPresetsBar"></div>
         </div>
-        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled">
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--hc lab-calc-layout--panelled fluid-calc fluid-calc--press">
           <div class="lab-calc-layout__diagram">
             <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
               <p class="lab-diagram-wrap__title" id="hppDiagramTitle" data-i18n="hpress.diagTitle">Prensa hidráulica de 4 columnas (esquema funcional)</p>
@@ -304,7 +308,7 @@
                 <div class="lab-grid lab-grid--2" style="gap:0.65rem">
                   <div class="lab-field">
                     <label for="hppColLengthMm" data-i18n="hpress.labelColLength">Longitud libre columna L (mm)</label>
-                    <input id="hppColLengthMm" type="number" min="200" step="any" value="2200" />
+                    <input inputmode="decimal" id="hppColLengthMm" type="number" min="200" step="any" value="2200" />
                     <span class="hint" data-i18n="hpress.hintColLength">Entre guías / longitud no arriostrada</span>
                   </div>
                   <div class="lab-field">
@@ -339,7 +343,7 @@
               </div>
               <div class="lab-field">
                 <label for="hppForceTon" data-i18n="hpress.labelForce">Fuerza de prensado requerida (t)</label>
-                <input id="hppForceTon" type="number" min="1" step="any" value="120" />
+                <input inputmode="decimal" id="hppForceTon" type="number" min="1" step="any" value="120" />
                 <span class="hint" data-i18n="hpress.hintForce">Carga de trabajo objetivo</span>
                 <p class="lab-field-help" data-i18n="hpress.helpForce">Toneladas requeridas en el punto de prensado real.</p>
                 <table class="hpp-mini-table" data-i18n="hpress.tonnageTableAria" data-i18n-attr="aria-label" aria-label="Tonelajes típicos por aplicación industrial">
@@ -359,19 +363,19 @@
               </div>
               <div class="lab-field" id="hppDiagPistonField" hidden>
                 <label for="hppDiagPistonMm" data-i18n="hpress.labelDiagPiston">Diámetro pistón existente (mm)</label>
-                <input id="hppDiagPistonMm" type="number" min="20" step="any" value="250" />
+                <input inputmode="decimal" id="hppDiagPistonMm" type="number" min="20" step="any" value="250" />
                 <span class="hint" data-i18n="hpress.hintDiagPiston">Dato real de máquina instalada</span>
                 <p class="lab-field-help" data-i18n="hpress.helpDiagPiston">En diagnóstico se usa junto con la presión para calcular la fuerza/tonelaje real disponible.</p>
               </div>
               <div class="lab-field">
                 <label for="hppPressureBar" data-i18n="hpress.labelPressure">Presión máxima del sistema (bar)</label>
-                <input id="hppPressureBar" type="number" min="50" step="any" value="210" />
+                <input inputmode="decimal" id="hppPressureBar" type="number" min="50" step="any" value="210" />
                 <span class="hint" data-i18n="hpress.hintPressure">Límite hidráulico nominal</span>
                 <p class="lab-field-help" data-i18n="hpress.helpPressure">La combinación fuerza–presión define el diámetro mínimo del pistón.</p>
               </div>
               <div class="lab-field">
                 <label for="hppStrokeMm" data-i18n="hpress.labelStroke">Carrera del cilindro (mm)</label>
-                <input id="hppStrokeMm" type="number" min="20" step="any" value="450" />
+                <input inputmode="decimal" id="hppStrokeMm" type="number" min="20" step="any" value="450" />
                 <span class="hint" data-i18n="hpress.hintStroke">Recorrido útil vertical</span>
                 <p class="lab-field-help" data-i18n="hpress.helpStroke">Influye en tiempo, caudal y volumen total desplazado.</p>
               </div>
@@ -383,7 +387,7 @@
               </div>
               <div class="lab-field">
                 <label for="hppApproachFactor" data-i18n="hpress.labelApproach">Factor velocidad aproximación</label>
-                <input id="hppApproachFactor" type="number" min="1" max="6" step="any" value="2.5" />
+                <input inputmode="decimal" id="hppApproachFactor" type="number" min="1" max="6" step="any" value="2.5" />
                 <span class="hint" data-i18n="hpress.hintApproach">Aproximación más rápida que prensado</span>
                 <p class="lab-field-help" data-i18n="hpress.helpApproachFactor">
                   Relación entre la velocidad de bajada en vacío y la velocidad de prensado bajo carga. Valores mayores mejoran productividad, pero exigen más caudal instantáneo y más potencia hidráulica.
@@ -392,7 +396,7 @@
               </div>
               <div class="lab-field">
                 <label for="hppPumpFlowLmin" data-i18n="hpress.labelPumpFlow">Caudal de bomba actual (L/min)</label>
-                <input id="hppPumpFlowLmin" type="number" min="1" step="any" value="120" />
+                <input inputmode="decimal" id="hppPumpFlowLmin" type="number" min="1" step="any" value="120" />
                 <span class="hint" data-i18n="hpress.hintPumpFlow">Para comparar contra requerido</span>
                 <p class="lab-field-help" data-i18n="hpress.helpPumpFlow">Si es insuficiente, el asesor sugiere el caudal mínimo necesario.</p>
               </div>
@@ -407,19 +411,19 @@
               </div>
               <div class="lab-field">
                 <label for="hppSteelMpa" data-i18n="hpress.labelColStress">Tensión admisible columna (MPa)</label>
-                <input id="hppSteelMpa" type="number" min="80" step="any" value="160" />
+                <input inputmode="decimal" id="hppSteelMpa" type="number" min="80" step="any" value="160" />
                 <span class="hint" data-i18n="hpress.hintColStress">Depende del acero y factor de diseño</span>
                 <p class="lab-field-help" data-i18n="hpress.helpColStress">Valor conservador para chequeo básico de sección en columnas.</p>
               </div>
               <div class="lab-field">
                 <label for="hppUserColumnMm" data-i18n="hpress.labelUserCol">Diámetro de columna disponible (mm)</label>
-                <input id="hppUserColumnMm" type="number" min="20" step="any" value="" data-i18n="hpress.placeholderOptional" data-i18n-attr="placeholder" placeholder="Opcional" />
+                <input inputmode="decimal" id="hppUserColumnMm" type="number" min="20" step="any" value="" data-i18n="hpress.placeholderOptional" data-i18n-attr="placeholder" placeholder="Opcional" />
                 <span class="hint" data-i18n="hpress.hintUserCol">Si lo indica, se compara con el mínimo calculado</span>
                 <p class="lab-field-help" data-i18n="hpress.helpUserCol">Verificación adicional frente al diámetro mínimo orientativo por tensión axial (×1,2).</p>
               </div>
               <div class="lab-field" id="hppDiagColField" hidden>
                 <label for="hppDiagColumnMm" data-i18n="hpress.labelDiagCol">Diámetro real de columnas (mm)</label>
-                <input id="hppDiagColumnMm" type="number" min="20" step="any" value="110" />
+                <input inputmode="decimal" id="hppDiagColumnMm" type="number" min="20" step="any" value="110" />
                 <span class="hint" data-i18n="hpress.hintDiagCol">Para veredicto estructural en diagnóstico</span>
                 <p class="lab-field-help" data-i18n="hpress.helpDiagCol">Permite estimar el máximo tonelaje soportado por sus columnas actuales antes de deformación elástica.</p>
               </div>

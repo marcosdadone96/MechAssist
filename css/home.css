@@ -549,6 +549,40 @@ a.hub-account__btn--link:hover {
   letter-spacing: -0.02em;
 }
 
+.hub-hero__field--input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.hub-hero__input {
+  width: 100%;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #0f172a;
+}
+
+.hub-hero__mockup-cta-wrap {
+  margin: 0.5rem 0 0;
+  text-align: center;
+}
+
+.hub-hero__mockup-cta {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #0d9488;
+  text-decoration: none;
+}
+
+.hub-hero__mockup-cta:hover {
+  text-decoration: underline;
+}
+
 .hub-hero__mockup-diagram {
   display: flex;
   flex-direction: column;

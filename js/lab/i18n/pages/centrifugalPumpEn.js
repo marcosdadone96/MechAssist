@@ -1,6 +1,12 @@
 /** English strings for centrifugal-pump.html (`cPump.*` keys). ASCII-safe. */
 export const CENTRIFUGAL_PUMP_EN = {
   'cPump.docTitle': 'Centrifugal pump calculator online \u2014 TheMechAssist',
+  'cPump.metaDesc':
+    'Pump curve, duty point, shaft power and indicative NPSH. Pro tool; does not replace manufacturer data.',
+  'cPump.ogTitle': 'Centrifugal pump calculator \u2014 curve, power & NPSH',
+  'cPump.ogDesc':
+    'Pump curve, duty point, shaft power and indicative NPSH. Pro tool; does not replace manufacturer data.',
+  'cPump.twitterTitle': 'Centrifugal pump calculator \u2014 curve, power & NPSH',
   'cPump.h2': 'Centrifugal pump \u00b7 operating point and drive sizing',
   'cPump.heroLead':
     'Hydraulic power, shaft power and drive torque from flow, head, efficiency and fluid properties.',

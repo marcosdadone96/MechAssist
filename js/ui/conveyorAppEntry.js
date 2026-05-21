@@ -18,15 +18,20 @@ if (!getCurrentUser()?.email) {
   initGuestCalcMode();
 }
 
-function showConveyorModuleLoadError(err) {
-  const msg = String(err?.message || err);
+async function showConveyorModuleLoadError(err) {
   console.error(err);
   const el = document.getElementById('runtimeError');
   if (el instanceof HTMLElement) {
+    const { genericReloadErrorMessage } = await import('./runtimeErrorMessages.js');
+    const en = (() => {
+      try {
+        return localStorage.getItem('mdr-home-lang') === 'en';
+      } catch (_) {
+        return false;
+      }
+    })();
     el.hidden = false;
-    el.textContent =
-      'No se pudo cargar el motor de la calculadora (revisar consola F12). Si la ruta no es flat-conveyor.html, pruebe esa URL o recargue. Detalle: ' +
-      msg;
+    el.textContent = genericReloadErrorMessage(en);
   }
 }
 

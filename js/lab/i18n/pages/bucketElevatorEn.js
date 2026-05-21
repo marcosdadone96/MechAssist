@@ -6,6 +6,12 @@ import { BUCKET_ELEVATOR_MAIN_EN } from './bucketElevatorMainEn.js';
 export const BUCKET_ELEVATOR_EN = {
   ...BUCKET_ELEVATOR_MAIN_EN,
   'beConv.docTitle': 'Bucket elevator calculator online \u2014 TheMechAssist',
+  'beConv.metaDesc':
+    'Indicative bucket elevator power, lift height and capacity. CEMA-style online design check. Pro module.',
+  'beConv.ogTitle': 'Bucket elevator design calculator (CEMA) \u2014 online',
+  'beConv.ogDesc':
+    'Indicative bucket elevator power, lift height and capacity. CEMA-style online design check. Pro module.',
+  'beConv.twitterTitle': 'Bucket elevator design calculator (CEMA) \u2014 online',
   'beConv.h2': 'Bucket elevator \u00b7 capacity, speed and drive',
   'beConv.heroLead':
     'Step-by-step bucket elevator sizing: geometry, capacity, belt speed and drive power.',

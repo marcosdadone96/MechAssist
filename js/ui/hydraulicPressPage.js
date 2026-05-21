@@ -1,4 +1,9 @@
-import { bindInputValidation, mountLabPresetsBar } from './labCalcUx.js';
+import {
+  bindInputValidation,
+  mountLabPresetsBar,
+  revalidateAllBoundInputs,
+  syncInputValidationResultsGate,
+} from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
@@ -111,7 +116,7 @@ function nearestIsoAtOrAbove(mm) {
  * @param {2|4} nCols
  */
 function renderPressDiagram(svg, pistonMm, forceTon, nCols) {
-  if (!(svg instanceof SVGElement)) return;
+  if (!(svg instanceof SVGSVGElement)) return;
   const cylW = Math.max(34, Math.min(70, pistonMm * 0.16));
   const cx = 380;
   const yBeam = 38;
@@ -338,6 +343,20 @@ function updateApproachNote(strokeMm, cycleS, approachFactor) {
     : '';
 }
 
+function updatePressDiagramTitle(nCols) {
+  const en = pressLang();
+  const diagTitle = document.getElementById('hppDiagramTitle');
+  if (!diagTitle) return;
+  diagTitle.textContent =
+    nCols === 2
+      ? en
+        ? '2-column hydraulic press (functional schematic)'
+        : 'Prensa hidráulica de 2 columnas (esquema funcional)'
+      : en
+        ? '4-column hydraulic press (functional schematic)'
+        : 'Prensa hidráulica de 4 columnas (esquema funcional)';
+}
+
 function computeAndRenderCore() {
   const en = pressLang();
   const mode = document.getElementById('hppMode') instanceof HTMLSelectElement
@@ -346,6 +365,20 @@ function computeAndRenderCore() {
   const labTier = document.getElementById('hppLabTier') instanceof HTMLSelectElement
     ? document.getElementById('hppLabTier').value
     : 'basic';
+
+  const colsEl = document.getElementById('hppColumns');
+  const nColsRaw = colsEl instanceof HTMLSelectElement ? Number(colsEl.value) : 4;
+  const nCols = nColsRaw === 2 ? 2 : 4;
+  const forceParsed = parseFloat(String(document.getElementById('hppForceTon')?.value || '120').replace(',', '.'));
+  const forceTonPreview = Number.isFinite(forceParsed) && forceParsed > 0 ? forceParsed : 120;
+  const pistonPreview =
+    mode === 'diagnostic'
+      ? parseFloat(String(document.getElementById('hppDiagPistonMm')?.value || '250').replace(',', '.')) || 250
+      : 250;
+  updatePressDiagramTitle(nCols);
+  renderPressDiagram(document.getElementById('hpPressDiagram'), pistonPreview, forceTonPreview, nCols);
+
+  if (syncInputValidationResultsGate(document.getElementById('hppResults'))) return;
 
   const results = document.getElementById('hppResults');
   const advisor = document.getElementById('hppAdvisor');
@@ -369,10 +402,9 @@ function computeAndRenderCore() {
   const pumpFlowLmin = need(readLabNumber('hppPumpFlowLmin', 1, undefined, pressLbl('Caudal de bomba (L/min)', 'Pump flow (L/min)')));
   const sigmaAllowMpa = need(readLabNumber('hppSteelMpa', 80, undefined, pressLbl('Tensi\u00f3n admisible columna (MPa)', 'Allowable column stress (MPa)')));
 
-  const colsEl = document.getElementById('hppColumns');
-  const nColsRaw = colsEl instanceof HTMLSelectElement ? Number(colsEl.value) : NaN;
-  let nCols = 4;
-  if (nColsRaw === 2 || nColsRaw === 4) nCols = nColsRaw;
+  let nColsValid = nCols;
+  const nColsRawValidate = colsEl instanceof HTMLSelectElement ? Number(colsEl.value) : NaN;
+  if (nColsRawValidate === 2 || nColsRawValidate === 4) nColsValid = nColsRawValidate;
   else errors.push(pressLbl('N\u00famero de columnas: valor no v\u00e1lido.', 'Number of columns: invalid value.'));
 
   const userColEl = document.getElementById('hppUserColumnMm');
@@ -421,30 +453,7 @@ function computeAndRenderCore() {
     advisor.innerHTML = `<div class="lab-alert lab-alert--danger"><div class="lab-alert__body"><strong>${en ? 'Invalid input:' : 'Entrada no v\u00e1lida:'}</strong><ul style="margin:0.4em 0 1.1em;padding:0">${errors.map((e) => `<li>${e}</li>`).join('')}</ul></div></div>`;
     verdict.className = 'lab-verdict lab-verdict--err';
     verdict.textContent = en ? 'Check form values.' : 'Revise los valores del formulario.';
-    const titleEl = document.getElementById('hppDiagramTitle');
-    if (titleEl) {
-      titleEl.textContent =
-        nCols === 2
-          ? en
-            ? '2-column hydraulic press (functional schematic)'
-            : 'Prensa hidr\u00e1ulica de 2 columnas (esquema funcional)'
-          : en
-            ? '4-column hydraulic press (functional schematic)'
-            : 'Prensa hidr\u00e1ulica de 4 columnas (esquema funcional)';
-    }
     return;
-  }
-
-  const diagTitle = document.getElementById('hppDiagramTitle');
-  if (diagTitle) {
-    diagTitle.textContent =
-      nCols === 2
-        ? en
-          ? '2-column hydraulic press (functional schematic)'
-          : 'Prensa hidr\u00e1ulica de 2 columnas (esquema funcional)'
-        : en
-          ? '4-column hydraulic press (functional schematic)'
-          : 'Prensa hidr\u00e1ulica de 4 columnas (esquema funcional)';
   }
 
   const forceNDesign = forceTon * 1000 * G;
@@ -492,7 +501,7 @@ function computeAndRenderCore() {
     : NaN;
   const fsEulerCol = labTier === 'project' && Number.isFinite(pCrColN) ? pCrColN / Math.max(1, forcePerColN) : NaN;
 
-  renderPressDiagram(document.getElementById('hpPressDiagram'), pistonUseMm, tonReal, nCols);
+  renderPressDiagram(document.getElementById('hpPressDiagram'), pistonUseMm, tonReal, nColsValid);
 
   const mainCards = [
     metric(
@@ -802,13 +811,15 @@ bindInputValidation([
   { id: 'hppApproachFactor', min: 1, max: 20, label: pressLbl('Factor aproximaci\u00f3n', 'Approach factor') },
   { id: 'hppPumpFlowLmin', min: 0.01, max: 500000, label: pressLbl('Caudal bomba', 'Pump flow') },
   { id: 'hppSteelMpa', min: 50, max: 2000, label: pressLbl('\u03c3 acero', 'Steel \u03c3') },
-  { id: 'hppUserColumnMm', min: 10, max: 5000, label: pressLbl('Columna usuario', 'User column') },
+  { id: 'hppUserColumnMm', min: 10, max: 5000, optional: true, label: pressLbl('Columna usuario', 'User column') },
   { id: 'hppDiagColumnMm', min: 10, max: 5000, label: pressLbl('\u00d8 columna', 'Column \u00d8') },
 ]);
+revalidateAllBoundInputs();
 
 mountLabPresetsBar('hppPresetsBar', HPP_PRESETS, computeAndRender);
 
-computeAndRender();
+if (typeof computeAndRender.runPreview === 'function') computeAndRender.runPreview();
+else computeAndRender();
 
 mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMount'), {
   getPayload: () => pressPdfSnapshot,

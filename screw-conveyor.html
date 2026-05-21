@@ -3,7 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Llenado, velocidad, potencia y par en transportador helicoidal. Módulo Pro orientativo." />
+    <title data-i18n="scConv.docTitle">Tornillo sin fin — TheMechAssist</title>
+    <meta
+      name="description"
+      data-i18n="scConv.metaDesc"
+      data-i18n-attr="content"
+      content="Llenado, velocidad, potencia y par en transportador helicoidal. Módulo Pro orientativo."
+    />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -12,31 +18,21 @@
     <link rel="canonical" href="https://www.themechassist.com/screw-conveyor.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/screw-conveyor.html" id="mdr-og-url" />
-    <meta property="og:title" content="Tornillo sin fin — TheMechAssist" />
-    <meta property="og:description" content="Llenado, velocidad, potencia y par en transportador helicoidal. Módulo Pro orientativo." />
+    <meta property="og:title" data-i18n="scConv.ogTitle" data-i18n-attr="content" content="Tornillo sin fin — TheMechAssist" />
+    <meta
+      property="og:description"
+      data-i18n="scConv.ogDesc"
+      data-i18n-attr="content"
+      content="Llenado, velocidad, potencia y par en transportador helicoidal. Módulo Pro orientativo."
+    />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Tornillo sin fin — TheMechAssist" />
-
-    <title>Tornillo sin fin — TheMechAssist</title>
+    <meta name="twitter:title" data-i18n="scConv.twitterTitle" data-i18n-attr="content" content="Tornillo sin fin — TheMechAssist" />
     <link rel="stylesheet" href="css/app.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
   </head>
   <body>
-    <div id="fileProtoWarn" class="runtime-error" hidden role="alert"></div>
     <div id="runtimeError" class="runtime-error runtime-error--js" hidden role="alert"></div>
-    <script>
-      (function () {
-        if (location.protocol === 'file:') {
-          var el = document.getElementById('fileProtoWarn');
-          if (el) {
-            el.hidden = false;
-            el.textContent =
-              'Recomendación: servidor HTTP (npx --yes serve .). Con file:// los módulos pueden no cargar.';
-          }
-        }
-      })();
-    </script>
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
         <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
@@ -207,7 +203,7 @@
               <label for="screwLength"><span data-i18n="scConv.lblLength">Longitud del transportador L</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipLength" title="Longitud efectiva de transporte en metros. A mayor longitud, mayor resistencia equivalente y potencia requerida." tabindex="0" role="button" aria-label="Ayuda longitud de transporte.">?</span></label>
               <input type="range" id="screwLengthR" class="flat-slider" min="0.5" max="50" step="0.1" value="12" data-i18n="scConv.ariaLength" data-i18n-attr="aria-label" aria-label="Longitud L" />
               <div class="flat-field__num">
-                <input id="screwLength" type="number" step="0.1" min="0.5" value="12" placeholder="ej. 8–25 m" />
+                <input inputmode="decimal" id="screwLength" type="number" step="0.1" min="0.5" value="12" placeholder="ej. 8–25 m" />
                 <span class="field-hint">m</span>
               </div>
               <p class="field-context muted"><span data-i18n="scConv.recLength"></span></p>
@@ -216,7 +212,7 @@
               <label for="screwAngle"><span data-i18n="scConv.lblAngle">Ángulo de inclinación θ</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipAngle" title="Ángulo respecto a horizontal. En inclinaciones altas el rendimiento real puede caer; valide con fabricante para θ elevados." tabindex="0" role="button" aria-label="Ayuda inclinación del tornillo.">?</span></label>
               <input type="range" id="screwAngleR" class="flat-slider" min="0" max="45" step="0.5" value="8" data-i18n="scConv.ariaAngle" data-i18n-attr="aria-label" aria-label="Ángulo θ" />
               <div class="flat-field__num">
-                <input id="screwAngle" type="number" step="0.5" min="0" max="90" value="8" placeholder="ej. 0–18°" />
+                <input inputmode="decimal" id="screwAngle" type="number" step="0.5" min="0" max="90" value="8" placeholder="ej. 0–18°" />
                 <span class="field-hint">°</span>
               </div>
               <p class="field-context muted"><span data-i18n="scConv.recAngle"></span></p>
@@ -313,7 +309,7 @@
             <div class="field">
               <label for="screwBearingEta"><span data-i18n="scConv.lblBearingEta">Rendimiento del accionamiento η (%)</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipBearingEta" title="Rendimiento agregado de apoyos/transmisión mecánica. Valor típico de partida: 90–95 %." tabindex="0" role="button" aria-label="Ayuda rendimiento mecánico.">?</span></label>
               <div class="flat-field__num">
-                <input id="screwBearingEta" type="number" step="0.5" min="70" max="99" value="92" placeholder="ej. 88–94" />
+                <input inputmode="decimal" id="screwBearingEta" type="number" step="0.5" min="70" max="99" value="92" placeholder="ej. 88–94" />
                 <span class="field-hint">%</span>
               </div>
               <p class="field-context muted"><span data-i18n="scConv.recBearingEta"></span></p>
@@ -330,7 +326,7 @@
             </div>
             <div class="field">
               <label for="screwServiceFactor"><span data-i18n="scConv.lblSf">Factor de servicio SF</span> <span class="info-chip" data-i18n-attrs="title=scConv.tipSf" title="Margen de dimensionamiento sobre par/potencia. Referencia común: 1,15–1,35 moderado, hasta 1,75 o más en cargas severas." tabindex="0" role="button" aria-label="Ayuda factor de servicio.">?</span></label>
-              <input id="screwServiceFactor" type="number" step="0.05" min="1" max="3" value="1.35" readonly class="input-synced" />
+              <input inputmode="decimal" id="screwServiceFactor" type="number" step="0.05" min="1" max="3" value="1.35" readonly class="input-synced" />
               <span class="field-hint" data-i18n="scConv.sfCombinedHint">Se combina con abrasividad/corrosividad.</span>
             </div>
           </div>

@@ -13,10 +13,11 @@ import {
   formatRotation,
   getLabUnitPrefs,
 } from '../lab/labUnitPrefs.js';
-import { mountCompactLabFieldHelp } from './labHelpCompact.js';
+import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import {
   bindInputValidation,
+  syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
   executiveSummaryAlert,
@@ -25,6 +26,7 @@ import {
   mountLabPresetsBar,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  runLabCalcBoot,
   updateLabShareVisibility,
   wireLabCopyLink,
   wireLabCopyResultsButton,
@@ -226,7 +228,7 @@ bindInputValidation([
   { id: 'bD1', min: 10, max: 2000, label: 'Diámetro motriz d₁' },
   { id: 'bD2', min: 10, max: 2000, label: 'Diámetro conducida d₂' },
   { id: 'bC', min: 50, max: 5000, label: 'Distancia entre centros C' },
-  { id: 'bN1', min: 0, max: 30000, label: 'RPM motrices n₁' },
+  { id: 'bN1', positive: true, max: 30000, label: 'RPM motrices n₁' },
   { id: 'bPowerKw', min: 0, max: 10000, label: 'Potencia' },
   { id: 'bSlip', min: 0, max: 15, label: 'Deslizamiento' },
   { id: 'bZ1', min: 6, max: 200, label: 'Dientes Z₁' },
@@ -288,6 +290,7 @@ function syncBeltFormUi() {
       else if (slipEl.value === '0') slipEl.value = '2';
     }
   }
+  refreshCompactLabFieldHelp();
 }
 
 function buildParams() {
@@ -350,6 +353,10 @@ function refreshCore() {
   const u = getLabUnitPrefs();
   const p = buildParams();
   const r = computeBeltDriveTransmission(p);
+  renderBeltDriveDiagram(document.getElementById('bDiagram'), r);
+
+  if (syncInputValidationResultsGate(document.getElementById('bResults'))) return;
+
   const bt = r.beltType;
 
   const heroEl = document.getElementById('bHero');
@@ -732,8 +739,6 @@ function refreshCore() {
     sub.innerHTML = '';
   }
 
-  renderBeltDriveDiagram(document.getElementById('bDiagram'), r);
-
   const pKw = readOptionalNonNeg('bPowerKw');
   const beltCommerceId = commerceIdForBeltSelection(bt, {
     vProfileId: readSelect('bVProfile', 'SPA'),
@@ -847,8 +852,14 @@ document.getElementById('bBeltType')?.addEventListener('change', () => {
 
 watchLangAndApply(BELTS_PAGE_EN, {
   reloadOnEs: false,
-  onEnApplied: () => scheduleBeltRecalc(),
-  onEsRestored: () => scheduleBeltRecalc(),
+  onEnApplied: () => {
+    refreshCompactLabFieldHelp();
+    scheduleBeltRecalc();
+  },
+  onEsRestored: () => {
+    refreshCompactLabFieldHelp();
+    scheduleBeltRecalc();
+  },
 });
 
 wireLabCopyLink('bCopyLinkBtn', 'bCopyToast');
@@ -856,5 +867,8 @@ wireLabCopyResultsButton('bCopyResults', {
   moduleTitle: bx('Correas de transmisi\u00f3n', 'Transmission belts'),
 });
 
-runCalcWithIndustrialFeedback(wrap, refreshCore);
-mountLabCloudSaveBar('Correas de transmisi\u00f3n');
+runLabCalcBoot(wrap, refreshCore);
+mountLabCloudSaveBar('Correas de transmisi\u00f3n', {
+  norm: 'Perfiles clásicos V / planas · transmisión por fricción',
+  svgSelector: '#bDiagram',
+});

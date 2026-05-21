@@ -14,6 +14,7 @@ import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/la
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
 import {
   bindInputValidation,
+  syncInputValidationResultsGate,
   createLabUrlSync,
   debounce,
   executiveSummaryAlert,
@@ -23,6 +24,7 @@ import {
   renderMotorPowerRuler,
   renderResultHero,
   runCalcWithIndustrialFeedback,
+  runLabCalcBoot,
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
@@ -50,7 +52,7 @@ bindInputValidation([
   { id: 'gFace', min: 1, max: 500, label: 'Ancho de cara b' },
   { id: 'gAlpha', min: 0, max: 45, label: 'Presión α' },
   { id: 'gBeta', min: 0, max: 45, label: 'Hélice β' },
-  { id: 'gN1', min: 0, max: 30000, label: 'RPM motrices n₁' },
+  { id: 'gN1', positive: true, max: 30000, label: 'RPM motrices n₁' },
   { id: 'gPower', min: 0, max: 1e7, label: 'Potencia' },
   { id: 'gTorque', min: 0, max: 1e9, label: 'Par' },
 ]);
@@ -253,6 +255,13 @@ function refreshCore() {
     faceWidth_mm: read('gFace', 28),
   };
   const r = computeSpurGearPair(p);
+
+  renderGearPairDiagram(document.getElementById('gDiagram'), {
+    ...p,
+    unitPrefs: getLabUnitPrefs(),
+  });
+
+  if (syncInputValidationResultsGate(document.getElementById('gResults'))) return;
 
   const Topt = readOptional('gTorque');
   const Popt = readOptional('gPower');
@@ -459,11 +468,6 @@ function refreshCore() {
     sub.innerHTML = '';
   }
 
-  renderGearPairDiagram(document.getElementById('gDiagram'), {
-    ...p,
-    unitPrefs: u,
-  });
-
   const shoppingLines = [
     {
       commerceId: 'gear-pair-quote',
@@ -574,5 +578,8 @@ window.addEventListener(LAB_LANG_EVENT, () => {
   syncGearCalcModeUi();
   scheduleGearRecalc();
 });
-runCalcWithIndustrialFeedback(resultsWrap, refreshCore);
-mountLabCloudSaveBar(gearsRuntimeStrings(getLabLang()).moduleLabel);
+runLabCalcBoot(resultsWrap, refreshCore);
+mountLabCloudSaveBar(gearsRuntimeStrings(getLabLang()).moduleLabel, {
+  norm: 'AGMA 2001 (simplificado) · geometría de engranajes cilíndricos',
+  svgSelector: '#gDiagram',
+});

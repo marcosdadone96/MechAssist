@@ -2,6 +2,8 @@
 export const KEYS_DIN_EN = {
   'keys.docTitle': 'Parallel keys DIN 6885 calculator \u2014 TheMechAssist',
   'keys.h2': 'Parallel keys DIN 6885-1 \u00b7 crushing check',
+  'keys.safetyNotice':
+    'Results are indicative only. Final sizing must be validated with manufacturer data and real operating conditions.',
   'keys.heroLead':
     'From <strong>shaft diameter</strong> get standard <strong>b</strong> and <strong>h</strong>; check <strong>crushing</strong> with torque and length <strong>L</strong> (C45 or stainless with indicative allowable).',
   'keys.helpSummary': 'Methodology and limits',
@@ -12,8 +14,8 @@ export const KEYS_DIN_EN = {
   'keys.optC45': 'Steel C45',
   'keys.optInox': 'Stainless (AISI 304 approx.)',
   'keys.seoSummary': 'Extended context and usage notes',
-  'keys.seoIntro':
-    'This tool proposes normalized parallel key width and height from shaft diameter per DIN 6885-1 type tables and checks contact and crushing pressures for the transmitted torque and chosen effective length. Useful for machining orders and to see whether to lengthen the key or use two elements before manufacturing. Common for machine-tool designers and fitters reviewing an installed pinion. For example, when replacing a pump motor you can check whether the existing key is still adequate if the new assembly nominal torque rises.',
+  'keys.calcSeoIntro':
+    'This calculator reads parallel key width b and height h from DIN 6885-1 normalized tables versus shaft diameter, then checks crushing and surface pressures for your torque and effective key length L. It helps machinists and designers specify toleranced keyway depth, length and material (C45 or stainless with indicative allowable stress) before manufacturing hubs and shafts. Use it when upgrading drive torque, validating an existing key after a motor change, or deciding whether to lengthen the key or use twin keys. Results are indicative; confirm fits and hardness with your shop standard.',
   'keys.presetsLabel': 'Typical examples:',
   'keys.preset1': 'Shaft \u00d832 \u00b7 C45',
   'keys.preset2': 'Shaft \u00d850 \u00b7 high torque',

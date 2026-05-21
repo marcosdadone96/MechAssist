@@ -1,14 +1,23 @@
 /**
- * Ayuda compacta en táctil: al pulsar un .info-chip muestra el texto de title en un globo.
- * El atributo title sigue existiendo para escritorio (hover); lectores usan aria-label.
+ * Ayuda en .info-chip: hover en escritorio (ratón), clic/pulse en táctil.
+ * El atributo title se mantiene como respaldo; el globo usa el mismo texto.
  */
 
 import { getCurrentLang, HOME_LANG_CHANGED_EVENT } from '../config/locales.js';
 
 let activeEl = null;
+let hoverHideTimer = null;
 let langListenersBound = false;
 
+const canHoverUi = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
 function removePopover() {
+  if (hoverHideTimer) {
+    clearTimeout(hoverHideTimer);
+    hoverHideTimer = null;
+  }
   if (activeEl) {
     const c = activeEl._cleanup;
     if (typeof c === 'function') c();
@@ -97,6 +106,59 @@ function bindLangResync() {
 }
 
 /**
+ * @param {HTMLElement} chip
+ * @param {{ toggle?: boolean }} [opts]
+ */
+function showChipPopover(chip, opts = {}) {
+  const text = (chip.getAttribute('title') || '').trim();
+  if (!text) return;
+
+  if (
+    opts.toggle &&
+    activeEl?.dataset.anchorId === chip.dataset.popoverAnchorId &&
+    chip.dataset.popoverAnchorId
+  ) {
+    removePopover();
+    return;
+  }
+  removePopover();
+  if (!chip.dataset.popoverAnchorId) {
+    chip.dataset.popoverAnchorId = `ic-${Math.random().toString(36).slice(2, 9)}`;
+  }
+
+  const bubble = document.createElement('div');
+  bubble.className = 'info-chip-popover';
+  bubble.setAttribute('role', 'tooltip');
+  bubble.dataset.anchorId = chip.dataset.popoverAnchorId;
+  bubble.textContent = text;
+  document.body.appendChild(bubble);
+  activeEl = bubble;
+  positionPopover(bubble, chip);
+
+  const onReposition = () => {
+    if (document.body.contains(bubble) && document.body.contains(chip)) {
+      positionPopover(bubble, chip);
+    }
+  };
+  window.addEventListener('scroll', onReposition, true);
+  window.addEventListener('resize', onReposition);
+  bubble._cleanup = () => {
+    window.removeEventListener('scroll', onReposition, true);
+    window.removeEventListener('resize', onReposition);
+  };
+
+  bubble.addEventListener('mouseenter', () => {
+    if (hoverHideTimer) {
+      clearTimeout(hoverHideTimer);
+      hoverHideTimer = null;
+    }
+  });
+  bubble.addEventListener('mouseleave', () => {
+    hoverHideTimer = window.setTimeout(removePopover, 80);
+  });
+}
+
+/**
  * @param {ParentNode} [root]
  */
 export function initInfoChipPopovers(root = document.body) {
@@ -113,6 +175,8 @@ export function initInfoChipPopovers(root = document.body) {
   syncAllInfoChipA11y(root);
   bindLangResync();
 
+  const hoverUi = canHoverUi();
+
   document.addEventListener(
     'mousedown',
     (e) => {
@@ -127,40 +191,35 @@ export function initInfoChipPopovers(root = document.body) {
     if (e.key === 'Escape') removePopover();
   });
 
+  if (hoverUi) {
+    root.addEventListener('mouseover', (e) => {
+      const chip = /** @type {HTMLElement | null} */ (e.target)?.closest?.('.info-chip');
+      if (!chip || !root.contains(chip) || chip.classList.contains('info-chip--static')) return;
+      if (chip.contains(/** @type {Node} */ (e.relatedTarget))) return;
+      if (hoverHideTimer) {
+        clearTimeout(hoverHideTimer);
+        hoverHideTimer = null;
+      }
+      showChipPopover(chip);
+    });
+
+    root.addEventListener('mouseout', (e) => {
+      const chip = /** @type {HTMLElement | null} */ (e.target)?.closest?.('.info-chip');
+      if (!chip || !root.contains(chip)) return;
+      const to = /** @type {Node | null} */ (e.relatedTarget);
+      if (to && (chip.contains(to) || activeEl?.contains(to))) return;
+      hoverHideTimer = window.setTimeout(removePopover, 120);
+    });
+  }
+
   root.addEventListener('click', (e) => {
+    if (hoverUi) return;
     const chip = /** @type {HTMLElement | null} */ (e.target)?.closest?.('.info-chip');
     if (!chip || !root.contains(chip)) return;
     if (chip.classList.contains('info-chip--static')) return;
-    const text = (chip.getAttribute('title') || '').trim();
-    if (!text) return;
     e.preventDefault();
     e.stopPropagation();
-
-    if (activeEl?.dataset.anchorId === chip.dataset.popoverAnchorId && chip.dataset.popoverAnchorId) {
-      removePopover();
-      return;
-    }
-    removePopover();
-    if (!chip.dataset.popoverAnchorId) chip.dataset.popoverAnchorId = `ic-${Math.random().toString(36).slice(2, 9)}`;
-
-    const bubble = document.createElement('div');
-    bubble.className = 'info-chip-popover';
-    bubble.setAttribute('role', 'tooltip');
-    bubble.dataset.anchorId = chip.dataset.popoverAnchorId;
-    bubble.textContent = text;
-    document.body.appendChild(bubble);
-    activeEl = bubble;
-    positionPopover(bubble, chip);
-
-    const onReposition = () => {
-      if (document.body.contains(bubble)) positionPopover(bubble, chip);
-    };
-    window.addEventListener('scroll', onReposition, true);
-    window.addEventListener('resize', onReposition);
-    bubble._cleanup = () => {
-      window.removeEventListener('scroll', onReposition, true);
-      window.removeEventListener('resize', onReposition);
-    };
+    showChipPopover(chip, { toggle: true });
   });
 
   root.addEventListener('keydown', (e) => {
@@ -168,6 +227,6 @@ export function initInfoChipPopovers(root = document.body) {
     const chip = /** @type {HTMLElement | null} */ (e.target)?.closest?.('.info-chip');
     if (!chip || !root.contains(chip) || chip.classList.contains('info-chip--static')) return;
     e.preventDefault();
-    chip.click();
+    showChipPopover(chip, { toggle: true });
   });
 }

@@ -4,7 +4,7 @@
  * - Dimensionamiento de tuberías (Reynolds + Darcy)
  * - Veredicto integral
  */
-import { bindInputValidation, mountLabPresetsBar } from './labCalcUx.js';
+import { bindInputValidation, mountLabPresetsBar, syncInputValidationResultsGate } from './labCalcUx.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
@@ -539,6 +539,7 @@ function renderHpVerdictSummary(opts) {
 }
 
 function computeAndRenderCore() {
+  if (syncInputValidationResultsGate(document.getElementById('hpResults'))) return;
   const mode = val('hpMode', 'design');
   const type = val('hpType', 'gear');
   const pUnit = val('hpPressureUnit', 'bar');
@@ -929,6 +930,14 @@ function syncPumpModeUi() {
   if (flowInput instanceof HTMLInputElement) {
     flowInput.readOnly = mode === 'diagnostic';
     flowInput.setAttribute('aria-readonly', mode === 'diagnostic' ? 'true' : 'false');
+  }
+  const help = document.getElementById('hpCalcModeHelp');
+  if (help instanceof HTMLElement) {
+    help.querySelectorAll('[data-hp-mode]').forEach((el) => {
+      if (!(el instanceof HTMLElement)) return;
+      const on = el.getAttribute('data-hp-mode') === mode;
+      el.classList.toggle('hp-calc-mode-help__line--active', on);
+    });
   }
 }
 

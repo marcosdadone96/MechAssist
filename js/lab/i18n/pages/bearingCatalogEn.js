@@ -7,15 +7,16 @@ export const BEARING_CATALOG_EN = {
   'bcat.heroLead':
     'Pick series and designation with demo <strong>C</strong>; get <strong>L<sub>10h</sub></strong> from <strong>P</strong> and <strong>n</strong>. For life with known <strong>C</strong> only, use the generic L10 module.',
   'bcat.calcSeoIntro':
-    'Pick a commercial designation from series 6000, 6200 or 6300 and get basic rating life in hours L10h using demo catalogue dynamic load C against equivalent load and speed. Abbreviated ISO 281 for deep groove balls, useful to screen sizes before the full manufacturer catalogue. Typical for maintenance and design when proposing a quick replacement. A frequent case is comparing a 62xx against a wider 63xx when axial thrust rises after misalignment.',
+    'Browse a demo deep-groove ball bearing catalogue for ISO 15 dimension series 6000, 6200 and 6300 (62xx family). Each designation shows bore, outer diameter and width plus indicative dynamic load rating C for a quick L10h life estimate per ISO 281. Typical uses include electric motor support bearings, conveyor idlers, pump shafts and light gearbox outputs where axial capacity is moderate. Enter equivalent load P and speed n to screen whether a 6205, 6308 or lighter 60xx fits your duty before opening the manufacturer catalogue for seals, clearance class and lubrication.',
   'bcat.seoHintHtml':
     'Use this module to select a bearing from 6000/6200/6300 series by designation. If you already have catalogue <strong>C</strong>, use the generic L10 module.',
   'bcat.methodLeadHtml':
     'Choose <strong>series</strong> and <strong>designation</strong>; enter equivalent <strong>P</strong> and <strong>n</strong>. <strong>L<sub>10h</sub></strong> is computed with <code>L = (C/P)\u00b3</code> (balls) against target hours. Catalogue and <strong>C</strong> are demo; always confirm with the manufacturer.',
   'bcat.helpSummary': 'Methodology and limits',
   'bcat.presetsLabel': 'Typical examples:',
-  'bcat.preset1': '6205-2Z \u00b7 medium duty',
-  'bcat.preset2': '6308-2Z \u00b7 high load',
+  'bcat.preset1': '6205 \u00b7 general purpose',
+  'bcat.preset2': '6305 \u00b7 medium load',
+  'bcat.preset3': 'NJ 208 \u00b7 high radial',
   'bcat.labelSeries': 'Series',
   'bcat.labelBearing': 'Designation \u2014 indicative data',
   'bcat.seoSummary': 'Extended context and usage notes',

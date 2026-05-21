@@ -220,6 +220,10 @@
           </div>
 
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
+            <p class="lab-alert lab-alert--info spring-tier-upsell" data-i18n="spring.projectUpsellHtml" data-i18n-html>
+              <strong>Modo Proyecto</strong> requiere plan Pro: &tau;<sub>adm</sub> manual, nota Goodman ampliada y exportación PDF.
+              <a href="checkout.html">Ver planes</a>.
+            </p>
             <div class="lab-grid lab-grid--2">
               <div class="lab-field lab-field--wide">
                 <label for="springLabTier" class="lab-field__label-row">
@@ -236,9 +240,7 @@
                   <option value="project" data-i18n="spring.optProject">Proyecto (tau adm. + nota + PDF)</option>
                 </select>
                 <span class="hint" data-i18n="spring.hintTier">Igual que otras calculadoras del laboratorio</span>
-                <p class="lab-field-help" data-i18n="spring.helpTier" data-i18n-html>
-                  Modo Aula: c&aacute;lculo b&aacute;sico gratuito. Modo Proyecto: &tau;<sub>adm</sub> manual, Goodman docente y exportar PDF (requiere plan Pro).
-                </p>
+                <p class="lab-field-help" data-i18n="spring.helpTier">Modo Aula: c&aacute;lculo b&aacute;sico gratuito. Modo Proyecto ampl&iacute;a memoria y criterios avanzados.</p>
               </div>
 
               <div class="lab-field lab-field--wide" id="springProjectPanel" hidden>
@@ -252,7 +254,7 @@
                       </span>
                       <span class="lab-field__label-text" data-i18n="spring.labelTauAdm">&tau;<sub>adm</sub> est&aacute;tica manual (MPa)</span>
                     </label>
-                    <input id="springTauAdmMpa" type="number" min="0" step="any" value="" placeholder="Vacío = catálogo" data-i18n="spring.phTauAdm" data-i18n-attr="placeholder" />
+                    <input inputmode="decimal" id="springTauAdmMpa" type="number" min="0" step="any" value="" placeholder="Vacío = catálogo" data-i18n="spring.phTauAdm" data-i18n-attr="placeholder" />
                     <span class="hint" data-i18n="spring.hintTauAdm">L&iacute;mite para &tau;<sub>m</sub> en Goodman</span>
                   </div>
                   <div class="lab-field">
@@ -264,7 +266,7 @@
                       </span>
                       <span class="lab-field__label-text" data-i18n="spring.labelTauW">&tau;<sub>W</sub> alternante adm. (MPa)</span>
                     </label>
-                    <input id="springTauW" type="number" min="0" step="any" value="" placeholder="Fabricante / ensayo" />
+                    <input inputmode="decimal" id="springTauW" type="number" min="0" step="any" value="" placeholder="Fabricante / ensayo" />
                     <span class="hint" data-i18n="spring.hintTauW">Para &tau;<sub>alt</sub> / Goodman docente</span>
                   </div>
                   <div class="lab-field lab-field--wide">
@@ -327,7 +329,7 @@
                   </span>
                   <span class="lab-field__label-text" data-i18n="spring.labelDWire">Di&aacute;metro hilo d (mm)</span>
                 </label>
-                <input id="springDWire" type="number" min="0.2" step="any" value="4" />
+                <input inputmode="decimal" id="springDWire" type="number" min="0.2" step="any" value="4" />
                 <p class="lab-field-help" data-i18n="spring.helpDWire" data-i18n-html>Alambre redondo; con <strong>D<sub>m</sub></strong> define el &iacute;ndice <strong>C = D<sub>m</sub>/d</strong> y el factor de Wahl.</p>
               </div>
 
@@ -357,7 +359,7 @@
                   </span>
                   <span class="lab-field__label-text" data-i18n="spring.labelDiaValue">Valor D<sub>m</sub> o D<sub>e</sub> (mm)</span>
                 </label>
-                <input id="springDiaValue" type="number" min="1" step="any" value="28" />
+                <input inputmode="decimal" id="springDiaValue" type="number" min="1" step="any" value="28" />
               </div>
 
               <div class="lab-field">
@@ -370,7 +372,7 @@
                   </span>
                   <span class="lab-field__label-text" data-i18n="spring.labelNActive">Espiras activas n (&minus;)</span>
                 </label>
-                <input id="springNActive" type="number" min="1" step="any" value="8" />
+                <input inputmode="decimal" id="springNActive" type="number" min="1" step="any" value="8" />
                 <p class="lab-field-help" data-i18n="spring.helpNActive" data-i18n-html>Entra en <strong>k</strong> como divisor; m&aacute;s espiras ablanda el muelle (menor <strong>k</strong>).</p>
               </div>
 
@@ -383,7 +385,7 @@
                   </span>
                   <span class="lab-field__label-text" data-i18n="spring.labelL0">Longitud libre L<sub>0</sub> (mm)</span>
                 </label>
-                <input id="springL0" type="number" min="1" step="any" value="65" />
+                <input inputmode="decimal" id="springL0" type="number" min="1" step="any" value="65" />
                 <p class="lab-field-help" data-i18n="spring.helpL0" data-i18n-html>Sin carga. Con <strong>L<sub>s</sub></strong> (altura s&oacute;lida modelada) da el recorrido &uacute;til hasta bloqueo.</p>
               </div>
 
@@ -429,7 +431,7 @@
                   </span>
                   <span class="lab-field__label-text" data-i18n="spring.labelSWork">Carrera trabajo <span class="math-plain">s<sub>op</sub></span> (mm)</span>
                 </label>
-                <input id="springSWork" type="number" min="0" step="any" value="" placeholder="Opcional" data-i18n="spring.phSWork" data-i18n-attr="placeholder" />
+                <input inputmode="decimal" id="springSWork" type="number" min="0" step="any" value="" placeholder="Opcional" data-i18n="spring.phSWork" data-i18n-attr="placeholder" />
                 <p class="lab-field-help" data-i18n="spring.helpSWork" data-i18n-html>Debe ser <strong>&le; s<sub>max</sub></strong> (hasta s&oacute;lido). Equivale a <strong>F<sub>op</sub> = k &middot; s<sub>op</sub></strong>.</p>
               </div>
 
@@ -442,7 +444,7 @@
                   </span>
                   <span class="lab-field__label-text" data-i18n="spring.labelFWork">Fuerza trabajo <span class="math-plain">F<sub>op</sub></span> (N)</span>
                 </label>
-                <input id="springFWork" type="number" min="0" step="any" value="" placeholder="Opcional" data-i18n="spring.phFWork" data-i18n-attr="placeholder" />
+                <input inputmode="decimal" id="springFWork" type="number" min="0" step="any" value="" placeholder="Opcional" data-i18n="spring.phFWork" data-i18n-attr="placeholder" />
                 <p class="lab-field-help" data-i18n="spring.helpFWork" data-i18n-html><strong>s<sub>op</sub> = F<sub>op</sub> / k</strong> (ley lineal).</p>
               </div>
 
@@ -456,7 +458,7 @@
                   </span>
                   <span class="lab-field__label-text" data-i18n="spring.labelFMin">Fuerza m&iacute;nima en ciclo <span class="math-plain">F<sub>min</sub></span> (N)</span>
                 </label>
-                <input id="springFMin" type="number" min="0" step="any" value="0" />
+                <input inputmode="decimal" id="springFMin" type="number" min="0" step="any" value="0" />
                 <p class="lab-field-help" data-i18n="spring.helpFMin" data-i18n-html><strong>0</strong> = carga est&aacute;tica; si hay fluctuaci&oacute;n, indique la carga m&iacute;nima para estimar <strong>&tau;<sub>alt</sub></strong> y Goodman simplificado (proyecto con <strong>&tau;<sub>W</sub></strong>).</p>
               </div>
 

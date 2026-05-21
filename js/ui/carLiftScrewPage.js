@@ -19,6 +19,8 @@ import { getCurrentLang } from '../config/locales.js';
 import { FEATURES } from '../config/features.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
 import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
+import { bindInputValidation, syncInputValidationResultsGate } from './labCalcUx.js';
+import { CAR_LIFT_SCREW_VALIDATION } from './machineCalcInputValidation.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { CAR_LIFT_EN } from '../lab/i18n/pages/carLiftEn.js';
@@ -493,6 +495,8 @@ function refreshCore() {
         engMotor:
           'Referencia motor asincrono ~4 polos para husillo vertical; valide montaje, IP y lubricacion con el fabricante.',
       };
+  if (syncInputValidationResultsGate(document.getElementById('clResults'))) return;
+
   const p = buildParams();
   let r;
   try {
@@ -721,6 +725,7 @@ try {
 } catch (e) {
   console.error(e);
 }
+bindInputValidation(CAR_LIFT_SCREW_VALIDATION);
 bootMachineCalcView(refresh);
 
 wireMachineRfqExport({

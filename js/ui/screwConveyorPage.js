@@ -32,6 +32,8 @@ import { getI18nLabels } from '../config/i18nLabels.js';
 import { getCurrentLang } from '../config/locales.js';
 import { escapeCsvCell, wireMachineRfqExport } from './machineRfqExport.js';
 import { bootMachineCalcView, wrapCalcRefresh } from './creditsPageBoot.js';
+import { bindInputValidation, syncInputValidationResultsGate } from './labCalcUx.js';
+import { SCREW_CONVEYOR_VALIDATION } from './machineCalcInputValidation.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { MACHINE_HUB_UX_EN } from '../lab/i18n/pages/machineHubUxEn.js';
 import { SCREW_CONVEYOR_EN } from '../lab/i18n/pages/screwConveyorEn.js';
@@ -587,6 +589,7 @@ function refreshCore() {
           'Nota: la potencia de arranque con tornillo lleno puede ser 2–3× la potencia de régimen en materiales cohesivos o húmedos. Consulte con el fabricante del motorreductor el par de arranque disponible.',
       };
   const els = getEls();
+  if (syncInputValidationResultsGate(els.results)) return;
   try {
     clearRuntimeError();
     const raw = readInputs();
@@ -826,5 +829,6 @@ document.querySelector('.flat-sidebar')?.addEventListener('click', (e) => {
 });
 
 syncLoadDutyUi();
+bindInputValidation(SCREW_CONVEYOR_VALIDATION);
 bootMachineCalcView(refresh);
 
