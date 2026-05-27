@@ -1,5 +1,5 @@
 /**
- * Mini calculadora de correas en el hero de index.html (T = 9550·P/n, v lineal orientativa).
+ * Mini calculadora de correas en el hero de index.html (T = 9550\u00b7P/n, v lineal orientativa).
  */
 
 const R1_REF = 22;
@@ -10,9 +10,10 @@ const CY = 44;
 const R2_MIN = 12;
 const R2_MAX = 50;
 const INNER_RATIO = 13 / 22;
+const UNIT_NM = 'N\u00b7m';
 
 function fmtNum(n, digits = 1) {
-  if (!Number.isFinite(n)) return '—';
+  if (!Number.isFinite(n)) return '\u2014';
   return n.toLocaleString(undefined, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
 }
 
@@ -92,7 +93,7 @@ function recalc() {
 
   if (root) updateHeroBeltSvg(root, R1_REF, r2);
 
-  if (tOut) tOut.textContent = `${fmtNum(T, 1)} N·m`;
+  if (tOut) tOut.textContent = `${fmtNum(T, 1)} ${UNIT_NM}`;
   if (vOut) vOut.textContent = `${fmtNum(v, 2)} m/s`;
 }
 

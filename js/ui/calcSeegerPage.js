@@ -23,6 +23,7 @@ import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { lookupSeeger } from '../lab/seegerDinTables.js';
 import { renderSeegerDiagram } from '../lab/diagramSeeger.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getLabLang } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { SEEGER_PAGE_EN } from '../lab/i18n/pages/seegerPageEn.js';
@@ -40,7 +41,7 @@ mountCompactLabFieldHelp();
 
 bindInputValidation([
   { id: 'sgD', min: 3, max: 1000, label: 'Diámetro d' },
-  { id: 'sgFaxWork', min: 0, max: 1e9, label: 'Fax trabajo' },
+  { id: 'sgFaxWork', min: 0, max: 1e9, optional: true, label: 'Fax trabajo' },
 ]);
 
 function readD() {
@@ -190,31 +191,28 @@ function refreshCore() {
   const sgVerdict =
     faxWork != null && Number.isFinite(faxAdm) && faxWork > faxAdm ? 'error' : 'ok';
 
+  const grooveClearMm =
+    kind === 'shaft'
+      ? /** @type {import('../lab/seegerDinTables.js').SeegerExternalRow} */ (row).m
+      : /** @type {import('../lab/seegerDinTables.js').SeegerInternalRow} */ (row).m;
+
   if (heroEl) {
     heroEl.innerHTML = renderResultHero(
       [
-      {
-        label: bx('C\u00f3digo de pedido (referencia)', 'Order code (reference)'),
-        display: pedidoCompacto,
-        hint: hintPedido,
-      },
-      {
-        label: bx('Norma principal', 'Main standard'),
-        display: norm,
-        hint:
-          kind === 'shaft'
-            ? bx('Anillos de seguridad exteriores para ejes (DIN 471).', 'External retaining rings for shafts (DIN 471).')
-            : bx('Anillos de seguridad interiores para alojamientos (DIN 472).', 'Internal retaining rings for bores (DIN 472).'),
-      },
-      {
-        label: bx('Fax admisible orient.', 'Orient. allowable Fax'),
-        display: Number.isFinite(faxAdm) ? `${Math.round(faxAdm)} N` : bx('No disponible', 'Not available'),
-        hint: bx(
-          'Escalado orientativo con tabla DIN 471 (acero est\u00e1ndar). Confirmar en fabricante.',
-          'Indicative scaling from DIN 471 table (standard steel). Confirm with manufacturer.',
-        ),
-      },
-    ],
+        {
+          label: bx('Designaci\u00f3n circlip', 'Circlip designation'),
+          display: pedidoCompacto,
+          hint: hintPedido,
+        },
+        {
+          label: bx('Anchura ranura m (holgura axial ref.)', 'Groove width m (axial ref.)'),
+          display: `${grooveClearMm} mm`,
+          hint: bx(
+            'Cota axial de ranura seg\u00fan tabla demo; confirmar tolerancias en cat\u00e1logo.',
+            'Axial groove dimension per demo table; confirm tolerances in catalogue.',
+          ),
+        },
+      ],
       { verdict: sgVerdict },
     );
   }
@@ -407,3 +405,4 @@ watchLangAndApply(SEEGER_PAGE_EN, {
   onEnApplied: () => scheduleSgRecalc(),
   onEsRestored: () => scheduleSgRecalc(),
 });
+initInfoChipPopovers(document);

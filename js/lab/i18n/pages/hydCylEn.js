@@ -9,6 +9,8 @@ export const HYDRAULIC_CYLINDER_EN = {
   'hydCyl.docTitle': 'Hydraulic cylinder force and flow calculator online \u2014 TheMechAssist',
   'fluids.scopeNote':
     'Indicative calculation for preliminary sizing. Always confirm with the manufacturer catalogue and applicable standards (ISO 4413 / ISO 4414).',
+  'fluids.safetyNotice':
+    'Indicative pre-sizing calculation. Confirm pressures, flow rates and component dimensions with the manufacturer catalogue and applicable standards (ISO 4413 / ISO 4414).',
   'hydCyl.h2': 'Hydraulic cylinder \u2014 force, flow and structural safety',
   'hydCyl.heroLead':
     'Push/pull force, required flow, rod buckling (Euler) and minimum wall thickness for safe operation at working pressure.',
@@ -35,12 +37,13 @@ export const HYDRAULIC_CYLINDER_EN = {
   'hydCyl.optEuler20': '2.0 \u2014 very free rod',
   'hydCyl.labelOilTemp': 'Oil temperature (\u00b0C) \u2014 note',
   'hydCyl.hintOilTemp': 'For traceability; viscosity not recalculated here',
-  'hydCyl.labelMode': 'What do you want to calculate?',
-  'hydCyl.optDesign': 'Design new machine',
-  'hydCyl.optDiagnostic': 'Diagnose existing machine',
-  'hydCyl.hintMode': 'Design or inverse sizing',
-  'hydCyl.helpMode':
-    'Design: target load and sizing. Diagnostic: actual pressure and bore to get available force/tonnage.',
+  'hydCyl.labelCalcMode': 'Work mode',
+  'hydCyl.optDesign': 'Design \u2014 required force \u2192 minimum bore',
+  'hydCyl.optDiagnostic': 'Diagnostic \u2014 installed cylinder \u2192 force and buckling check',
+  'hydCyl.helpCalcModeDesignHtml':
+    '<strong>Design:</strong> enter required force and working pressure \u2192 minimum recommended piston diameter (ISO series) plus flow and structural checks.',
+  'hydCyl.helpCalcModeDiagnosticHtml':
+    '<strong>Diagnostic:</strong> enter piston and rod diameter, pressure and load \u2192 available push force, Euler buckling and tube wall check.',
   'hydCyl.labelPressure': 'Working pressure (bar)',
   'hydCyl.hintPressureEff': 'Effective hydraulic pressure',
   'hydCyl.helpPressure':
@@ -107,4 +110,6 @@ export const HYDRAULIC_CYLINDER_EN = {
   'hydCyl.preset1': 'Clamp \u00b7 63 mm',
   'hydCyl.preset2': 'Lift \u00b7 100 mm',
   'hydCyl.preset3': 'Diagnostic \u00b7 80 mm',
+  'hydCyl.copyLink': 'Copy link',
+  'hydCyl.copyToast': 'Link copied!',
 };

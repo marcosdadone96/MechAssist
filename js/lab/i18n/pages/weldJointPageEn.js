@@ -1,0 +1,95 @@
+/** English strings for calc-weld-joint.html (`weld.*`). ASCII-safe. */
+export const WELD_JOINT_PAGE_EN = {
+  'weld.docTitle': 'Welded joint calculator \u2014 TheMechAssist',
+  'weld.metaDesc':
+    'Indicative fillet and butt weld checks: throat stress, usage factor and minimum leg size. EN 1993-1-8 oriented predesign. Free online.',
+  'weld.h2': 'Welded joints \u00b7 fillet and butt',
+  'weld.safetyNotice':
+    'Indicative model only. Final welded design requires certified calculation per EN 1993-1-8, AWS D1.1 or national code, qualified procedures and inspection.',
+  'weld.heroLead':
+    'Fillet weld shear stress or butt weld equivalent stress with usage factor versus indicative electrode limits.',
+  'weld.seoSummary': 'Expanded context and usage notes',
+  'weld.calcSeoIntro':
+    'Quick predesign of fillet welds (throat shear with optional bending) and butt welds (normal + shear, Von Mises). Electrode categories E35, E42 and E50 with indicative allowable stresses for education and workshop estimates.',
+  'weld.helpSummary': 'Methodology and model limits',
+  'weld.methodBodyHtml':
+    'Fillet: effective throat <strong>a = 0.7h</strong>, length <strong>l_eff = l \u2212 2h</strong>. Butt: <strong>\u03c3 = F/(t\u00b7l)</strong>, <strong>\u03c4 = V/(t\u00b7l)</strong>, <strong>\u03c3_eq = \u221a(\u03c3\u00b2 + 3\u03c4\u00b2)</strong>. Not a substitute for EN 1993-1-8 directional methods or fatigue.',
+  'weld.electrodeTableSummary': 'Indicative electrode allowable stresses',
+  'weld.tableThCat': 'Category',
+  'weld.tableThSigma': '\u03c3_adm',
+  'weld.tableThTau': '\u03c4_adm',
+  'weld.tableThSteel': 'Reference steel',
+  'weld.tableRowE35': 'E35',
+  'weld.tableRowE35Sigma': '140 MPa',
+  'weld.tableRowE35Tau': '84 MPa',
+  'weld.tableRowE35Steel': 'S235',
+  'weld.tableRowE42': 'E42',
+  'weld.tableRowE42Sigma': '175 MPa',
+  'weld.tableRowE42Tau': '105 MPa',
+  'weld.tableRowE42Steel': 'S275/S355',
+  'weld.tableRowE50': 'E50',
+  'weld.tableRowE50Sigma': '210 MPa',
+  'weld.tableRowE50Tau': '126 MPa',
+  'weld.tableRowE50Steel': 'S355/S420',
+  'weld.nextStepsTitle': 'Typical next step',
+  'weld.nextStepsAria': 'Typical next step',
+  'weld.nextLi1Html': '<a href="calc-bolts-iso898.html">Bolts ISO 898</a> \u2014 bolted alternative.',
+  'weld.nextLi2Html': '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 shaft with welded hub.',
+  'weld.nextLi3Html': '<a href="calc-beam.html">Beams</a> \u2014 welded beam connections.',
+  'weld.presetsLabel': 'Typical examples:',
+  'weld.preset1': 'T-joint \u2014 point load (fillet)',
+  'weld.preset2': 'Lap plate \u2014 tension (fillet)',
+  'weld.preset3': 'Butt joint \u2014 pure tension',
+  'weld.diagTitle': 'Joint schematic \u00b7 updates with type',
+  'weld.diagAriaLabel': 'Weld joint diagram',
+  'weld.diagCaptionHtml': 'Throat <strong>a</strong> and leg <strong>h</strong> shown indicatively; confirm with WPS and NDT plan.',
+  'weld.labelMode': 'Weld mode',
+  'weld.optFillet': 'Fillet weld',
+  'weld.optButt': 'Butt weld',
+  'weld.labelJointType': 'Joint type',
+  'weld.optT': 'T-joint',
+  'weld.optLap': 'Lap',
+  'weld.optCorner': 'Corner',
+  'weld.optButtJoint': 'Butt',
+  'weld.labelElectrode': 'Electrode category',
+  'weld.optE35': 'E35 (indicative)',
+  'weld.optE42': 'E42 (indicative)',
+  'weld.optE50': 'E50 (indicative)',
+  'weld.optCustom': 'Custom allowable',
+  'weld.labelCustomAdm': 'Custom \u03c4_adm (MPa)',
+  'weld.labelCathetus': 'Fillet leg h (mm)',
+  'weld.labelLength': 'Weld length l (mm)',
+  'weld.labelThickness': 'Plate thickness t (mm)',
+  'weld.labelForce': 'Force F (N)',
+  'weld.labelShear': 'Shear V (N, butt)',
+  'weld.labelMoment': 'Bending moment M (N\u00b7m, 0 = omit)',
+  'weld.labelMomentArm': 'Lever arm z (mm)',
+  'weld.labelCords': 'Number of fillet welds',
+  'weld.optOneCord': '1 weld',
+  'weld.optTwoCords': '2 welds',
+  'weld.copyResults': 'Copy results',
+  'weld.copyLink': 'Copy link',
+  'weld.copyToast': 'Link copied!',
+  'weld.recalculating': 'Recalculating',
+  'weld.summaryFull': 'Full result',
+  'weld.relatedHintHtml':
+    'Bolted frame? <a href="calc-bolts-iso898.html">ISO 898 bolts \u2192</a>',
+  'weld.helpModeHtml':
+    '<strong>Fillet</strong>: triangular throat. <strong>Butt</strong>: full penetration butt weld (simplified).',
+  'weld.helpJointTypeHtml':
+    '<strong>T</strong>: vertical plate on base. <strong>Lap</strong>: overlapping plates. <strong>Corner</strong> or <strong>butt</strong> by geometry.',
+  'weld.helpElectrodeHtml':
+    'Indicative <strong>E35/E42/E50</strong> categories with simplified allowable <strong>\u03c4</strong> and <strong>\u03c3</strong> limits.',
+  'weld.helpCathetusHtml':
+    'Fillet leg <strong>h</strong> (mm). Throat <strong>a \u2248 0.7h</strong>. Check minimum <strong>h<sub>min</sub></strong> vs plate <strong>t</strong>.',
+  'weld.helpLengthHtml':
+    'Nominal weld length. Effective <strong>l<sub>eff</sub> = l \u2212 2h</strong> (fillet).',
+  'weld.helpThicknessHtml':
+    'Thickness of thinner plate (mm). Sets recommended minimum leg size.',
+  'weld.helpForceHtml':
+    'Force <strong>F</strong> on the joint (N).',
+  'weld.helpMomentHtml':
+    'Bending moment <strong>M</strong> (N\u00b7m). <strong>0</strong> if not applicable.',
+  'weld.helpMomentArmHtml':
+    'Distance from weld group centroid to moment axis (mm).',
+};

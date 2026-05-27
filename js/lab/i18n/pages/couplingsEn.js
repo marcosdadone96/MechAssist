@@ -2,6 +2,8 @@
 export const COUPLINGS_EN = {
   'coup.docTitle': 'Coupling selector \u2014 TheMechAssist',
   'coup.h2': 'Industrial couplings \u00b7 catalogue selection',
+  'coup.safetyNotice':
+    'Demo catalogue. T_nom and dimensions are sample values \u2014 always check the official manufacturer datasheet before ordering.',
   'coup.dataNoteHtml':
     '<strong>Sample data:</strong> Lovejoy / KTR / Flender style models with indicative T<sub>nom</sub>. For orders, use the official manufacturer datasheet.',
   'coup.heroLead':

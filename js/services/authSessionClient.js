@@ -1,5 +1,5 @@
 /**
- * Cierre de sesión local cuando el servidor invalida el JWT (otro dispositivo, etc.).
+ * Cierre de sesiÃ³n local cuando el servidor invalida el JWT (otro dispositivo, etc.).
  */
 
 const SESSION_END_KEY = 'mdr-session-ended';
@@ -53,7 +53,7 @@ function bearerTokenUsed(tokenUsed) {
 /**
  * @param {Response} res
  * @param {unknown} [data]
- * @param {string} [tokenUsed] JWT enviado en Authorization (evita borrar sesión nueva por peticiones antiguas)
+ * @param {string} [tokenUsed] JWT enviado en Authorization (evita borrar sesiÃ³n nueva por peticiones antiguas)
  */
 export function handleAuthHttpResponse(res, data, tokenUsed) {
   if (res?.status !== 401) return false;

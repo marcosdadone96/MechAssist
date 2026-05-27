@@ -1,4 +1,4 @@
-/** English machine copy for bucket-elevator.html (`beMain*`, `beLbl*`, …). */
+/** English machine copy for bucket-elevator.html (`beMain*`, `beLbl*`, Â…). */
 export const BUCKET_ELEVATOR_MAIN_EN = {
   beMainH2: 'Bucket elevator \u2014 indicative design (CEMA practice)',
   beMainLead:

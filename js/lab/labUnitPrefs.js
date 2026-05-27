@@ -5,12 +5,13 @@
 
 const STORAGE_KEY = 'mdt_lab_units_v1';
 
-/** @typedef {{ length: 'mm'|'m'|'cm'|'in', rotation: 'rpm'|'rad_s', linear: 'm_s'|'mm_s'|'km_h', life?: 'hours'|'Mrev'|'rev' }} LabUnitPrefs */
+/** @typedef {{ length: 'mm'|'m'|'cm'|'in', rotation: 'rpm'|'rad_s', linear: 'm_s'|'mm_s'|'km_h', torque?: 'Nm'|'Nmm'|'lbfft', life?: 'hours'|'Mrev'|'rev' }} LabUnitPrefs */
 
 const DEFAULTS = /** @type {LabUnitPrefs} */ ({
   length: 'mm',
   rotation: 'rpm',
   linear: 'm_s',
+  torque: 'Nm',
   life: 'hours',
 });
 
@@ -77,6 +78,17 @@ export function formatLinearSpeed(m_s, pref) {
 }
 
 /**
+ * @param {number | null | undefined} Nm
+ * @param {'Nm'|'Nmm'|'lbfft'} [pref]
+ */
+export function formatTorque(Nm, pref = getLabUnitPrefs().torque ?? 'Nm') {
+  if (Nm == null || !Number.isFinite(Nm)) return '—';
+  if (pref === 'Nmm') return `${(Nm * 1000).toFixed(1)} N·mm`;
+  if (pref === 'lbfft') return `${(Nm * 0.737562).toFixed(2)} lbf·ft`;
+  return `${Nm.toFixed(2)} N·m`;
+}
+
+/**
  * Vincula selects estándar del DOM y persiste. Llama onChange tras cada cambio y al hidratar.
  * @param {() => void} onChange
  * @param {{ life?: boolean }} [opts]
@@ -85,12 +97,14 @@ export function bindLabUnitSelectors(onChange, opts = {}) {
   const len = document.getElementById('labUnitLength');
   const rot = document.getElementById('labUnitRotation');
   const lin = document.getElementById('labUnitLinear');
+  const torq = document.getElementById('labUnitTorque');
   const life = document.getElementById('labUnitLife');
   const p = getLabUnitPrefs();
 
   if (len instanceof HTMLSelectElement) len.value = p.length;
   if (rot instanceof HTMLSelectElement) rot.value = p.rotation;
   if (lin instanceof HTMLSelectElement) lin.value = p.linear;
+  if (torq instanceof HTMLSelectElement) torq.value = p.torque ?? 'Nm';
   if (life instanceof HTMLSelectElement && opts.life) life.value = p.life ?? 'hours';
 
   const fire = () => {
@@ -98,6 +112,9 @@ export function bindLabUnitSelectors(onChange, opts = {}) {
       length: len instanceof HTMLSelectElement ? /** @type {'mm'|'m'|'cm'} */ (len.value) : p.length,
       rotation: rot instanceof HTMLSelectElement ? /** @type {'rpm'|'rad_s'} */ (rot.value) : p.rotation,
       linear: lin instanceof HTMLSelectElement ? /** @type {'m_s'|'mm_s'|'km_h'} */ (lin.value) : p.linear,
+      ...(torq instanceof HTMLSelectElement
+        ? { torque: /** @type {'Nm'|'Nmm'|'lbfft'} */ (torq.value) }
+        : {}),
       ...(life instanceof HTMLSelectElement && opts.life
         ? { life: /** @type {'hours'|'Mrev'|'rev'} */ (life.value) }
         : {}),
@@ -108,6 +125,7 @@ export function bindLabUnitSelectors(onChange, opts = {}) {
   len?.addEventListener('change', fire);
   rot?.addEventListener('change', fire);
   lin?.addEventListener('change', fire);
+  torq?.addEventListener('change', fire);
   life?.addEventListener('change', fire);
 }
 

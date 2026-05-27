@@ -1,5 +1,5 @@
 /**
- * Auditoría completa catálogo — laboratorio, máquinas, hidráulica.
+ * AuditorÃ­a completa catÃ¡logo Â— laboratorio, mÃ¡quinas, hidrÃ¡ulica.
  * node scripts/audit-full-catalog.mjs
  */
 import fs from 'fs';
@@ -93,7 +93,7 @@ function auditHtml(slug, group) {
   const issues = [];
   if (missing.length)
     issues.push(
-      `missing EN (${missing.length}): ${missing.slice(0, 4).join(', ')}${missing.length > 4 ? '…' : ''}`,
+      `missing EN (${missing.length}): ${missing.slice(0, 4).join(', ')}${missing.length > 4 ? 'Â…' : ''}`,
     );
   if (chips > 0 && chipsAttrs < chips && chipsRuntime > 0)
     issues.push(`chips runtime (${chipsRuntime} data-sc/te-chip), no data-i18n-attrs`);
@@ -136,7 +136,7 @@ function auditPageJs(slug) {
   return { reload, noReloadOnEs };
 }
 
-console.log('=== AUDITORÍA COMPLETA TheMechAssist ===\n');
+console.log('=== AUDITORÃA COMPLETA TheMechAssist ===\n');
 
 const rows = [];
 const seen = new Set();
@@ -180,7 +180,7 @@ for (const label of ['lab', 'fluids', 'machine', 'transmission']) {
 
 const gaps = rows.filter((r) => r.score !== 'OK');
 console.log(
-  `\n=== RESUMEN: ${rows.length} páginas, ${gaps.length} con GAP/WARN, ${rows.filter((r) => r.score === 'OK').length} OK ===`,
+  `\n=== RESUMEN: ${rows.length} pÃ¡ginas, ${gaps.length} con GAP/WARN, ${rows.filter((r) => r.score === 'OK').length} OK ===`,
 );
 
 process.exit(0);

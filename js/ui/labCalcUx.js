@@ -646,23 +646,36 @@ export function createLabUrlSync(paramToId, options = {}) {
  * @param {string} buttonId
  * @param {{ moduleTitle: string; scopeSelector?: string }} opts
  */
-export function wireLabCopyResultsButton(buttonId, { moduleTitle, scopeSelector = 'main.lab-main' }) {
+export function wireLabCopyResultsButton(buttonId, { moduleTitle, scopeSelector = 'main.lab-main', toastId }) {
   document.getElementById(buttonId)?.addEventListener('click', async () => {
     const btn = document.getElementById(buttonId);
     if (!(btn instanceof HTMLButtonElement)) return;
-    const en = getLabLang() === 'en';
+    const toast = toastId ? document.getElementById(toastId) : null;
     const original = btn.textContent || uxCopy('Copiar resultados', 'Copy results');
     try {
       const scope = document.querySelector(scopeSelector) || document.body;
       const report = buildLabCopyReportFromScope(moduleTitle, scope);
       await copyLabReportToClipboard(report);
-      btn.textContent = uxCopy('Resultados copiados', 'Results copied');
+      if (toast instanceof HTMLElement) {
+        toast.classList.add('is-shown');
+        window.setTimeout(() => toast.classList.remove('is-shown'), 2000);
+      } else {
+        btn.textContent = uxCopy('Resultados copiados', 'Results copied');
+        window.setTimeout(() => {
+          btn.textContent = original;
+        }, 1400);
+      }
     } catch {
-      btn.textContent = uxCopy('No se pudo copiar', 'Could not copy');
-    } finally {
-      window.setTimeout(() => {
-        btn.textContent = original;
-      }, 1400);
+      if (toast instanceof HTMLElement) {
+        toast.textContent = uxCopy('No se pudo copiar', 'Could not copy');
+        toast.classList.add('is-shown');
+        window.setTimeout(() => toast.classList.remove('is-shown'), 2000);
+      } else {
+        btn.textContent = uxCopy('No se pudo copiar', 'Could not copy');
+        window.setTimeout(() => {
+          btn.textContent = original;
+        }, 1400);
+      }
     }
   });
 }
@@ -686,6 +699,43 @@ export function wireLabCopyLink(buttonId, toastId) {
       }
     }
   });
+}
+
+/**
+ * Panel colapsable de insights del asesor IA (calculadoras lab).
+ * @param {string} containerId
+ * @param {import('../services/iaAdvisor.js').AdvisorInsight[]} insights
+ * @param {{ summaryEs?: string, summaryEn?: string, open?: boolean }} [opts]
+ */
+export function renderLabAdvisorInsights(containerId, insights, opts = {}) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const list = Array.isArray(insights) ? insights : [];
+  if (!list.length) {
+    el.hidden = true;
+    el.innerHTML = '';
+    return;
+  }
+  const en = isEnglishUi();
+  const summary = en
+    ? opts.summaryEn || 'AI advisor · design hints'
+    : opts.summaryEs || 'Asesor IA · recomendaciones';
+  const cards = list
+    .map((it) => {
+      const cls =
+        it.tone === 'warn' ? 'mdr-insight--warn' : it.tone === 'tip' ? 'mdr-insight--tip' : 'mdr-insight--info';
+      return `<article class="mdr-insight ${cls}">
+        <h4>${escMini(it.title)}</h4>
+        <p>${escMini(it.body)}</p>
+        ${it.normRef ? `<p class="mdr-insight__norm">${escMini(it.normRef)}</p>` : ''}
+      </article>`;
+    })
+    .join('');
+  el.hidden = false;
+  el.innerHTML = `<details class="lab-advisor-field-details lab-advisor-field-details--panel-on"${opts.open ? ' open' : ''}>
+    <summary>${escMini(summary)}</summary>
+    <div class="lab-advisor-field-details__body lab-advisor-field-details__body--insights">${cards}</div>
+  </details>`;
 }
 
 /** Muestra la fila de compartir cuando hay métricas en el bloque de resultados. */

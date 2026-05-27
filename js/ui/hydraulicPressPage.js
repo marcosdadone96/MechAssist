@@ -3,7 +3,12 @@ import {
   mountLabPresetsBar,
   revalidateAllBoundInputs,
   syncInputValidationResultsGate,
+  updateLabShareVisibility,
+  wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
+import { bindFluidLabUnitSelectors, formatFlowLmin } from '../lab/fluidLabUnitPrefs.js';
+import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
@@ -24,7 +29,7 @@ const HPP_PRESETS = [
     label: '120 t · conformado',
     labelKey: 'hpress.preset1',
     values: {
-      hppMode: 'design',
+      hppCalcMode: 'design',
       hppLabTier: 'basic',
       hppForceTon: 120,
       hppPressureBar: 210,
@@ -40,7 +45,7 @@ const HPP_PRESETS = [
     label: '50 t · carrera corta',
     labelKey: 'hpress.preset2',
     values: {
-      hppMode: 'design',
+      hppCalcMode: 'design',
       hppLabTier: 'basic',
       hppForceTon: 50,
       hppPressureBar: 180,
@@ -56,7 +61,7 @@ const HPP_PRESETS = [
     label: 'Diagnóstico · instalada',
     labelKey: 'hpress.preset3',
     values: {
-      hppMode: 'diagnostic',
+      hppCalcMode: 'diagnostic',
       hppLabTier: 'basic',
       hppPressureBar: 200,
       hppDiagPistonMm: 250,
@@ -360,8 +365,8 @@ function updatePressDiagramTitle(nCols) {
 
 function computeAndRenderCore() {
   const en = pressLang();
-  const mode = document.getElementById('hppMode') instanceof HTMLSelectElement
-    ? document.getElementById('hppMode').value
+  const mode = document.getElementById('hppCalcMode') instanceof HTMLSelectElement
+    ? document.getElementById('hppCalcMode').value
     : 'design';
   const labTier = document.getElementById('hppLabTier') instanceof HTMLSelectElement
     ? document.getElementById('hppLabTier').value
@@ -448,6 +453,7 @@ function computeAndRenderCore() {
 
   if (errors.length) {
     results.innerHTML = '';
+    updateLabShareVisibility('hppShareLinkWrap', 'hppResults');
     const note = document.getElementById('hppApproachDynamicNote');
     if (note instanceof HTMLElement) note.textContent = '';
     if (formulaBody instanceof HTMLElement) formulaBody.innerHTML = '';
@@ -523,10 +529,10 @@ function computeAndRenderCore() {
     ),
     metric(
       en ? 'Required pump flow' : 'Caudal bomba necesario',
-      `${fmt(qReqLmin, 1)} L/min`,
+      formatFlowLmin(qReqLmin),
       en
-        ? `approach ${fmt(qApproachLmin, 1)} / work ${fmt(qWorkLmin, 1)}`
-        : `aprox. ${fmt(qApproachLmin, 1)} / trabajo ${fmt(qWorkLmin, 1)}`,
+        ? `approach ${formatFlowLmin(qApproachLmin)} / work ${formatFlowLmin(qWorkLmin)}`
+        : `aprox. ${formatFlowLmin(qApproachLmin)} / trabajo ${formatFlowLmin(qWorkLmin)}`,
     ),
     metric(
       en ? 'Electric motor power' : 'Potencia motor el\u00e9ctrico',
@@ -538,18 +544,18 @@ function computeAndRenderCore() {
   const secondaryCards = [
     metric(
       en ? 'Approach flow' : 'Caudal de aproximaci\u00f3n',
-      `${fmt(qApproachLmin, 1)} L/min`,
+      formatFlowLmin(qApproachLmin),
       en ? `approach factor ${fmt(approachFactor, 2)}\u00d7` : `factor aprox. ${fmt(approachFactor, 2)}\u00d7`,
     ),
     metric(
       en ? 'Working flow' : 'Caudal de trabajo',
-      `${fmt(qWorkLmin, 1)} L/min`,
+      formatFlowLmin(qWorkLmin),
       en ? 'pressing phase' : 'fase de prensado',
     ),
     metric(
       en ? 'Available power (current pump)' : 'Potencia disponible (bomba actual)',
       `${fmt(motorKwFromPump, 2)} kW`,
-      en ? `current Q ${fmt(pumpFlowLmin, 1)} L/min` : `Q actual ${fmt(pumpFlowLmin, 1)} L/min`,
+      en ? `current Q ${formatFlowLmin(pumpFlowLmin)}` : `Q actual ${formatFlowLmin(pumpFlowLmin)}`,
     ),
     metric(
       en ? 'Estimated cycle time (current pump)' : 'Tiempo de ciclo estimado con bomba actual',
@@ -728,6 +734,7 @@ function computeAndRenderCore() {
     pressPdfSnapshot.resultRows.push({ label: 'Pcr col', value: `${fmt(pCrColN / 1000, 1)} kN` });
     pressPdfSnapshot.resultRows.push({ label: 'FS Euler', value: fmt(fsEulerCol, 2) });
   }
+  updateLabShareVisibility('hppShareLinkWrap', 'hppResults');
 }
 
 /** @param {{ pumpOk: boolean, columnsOk: boolean, balanced: boolean }} opts */
@@ -749,9 +756,9 @@ function renderHppVerdictSummary(opts) {
   `;
 }
 
-function syncModeUi() {
-  const mode = document.getElementById('hppMode') instanceof HTMLSelectElement
-    ? document.getElementById('hppMode').value
+function syncHppCalcModeUi() {
+  const mode = document.getElementById('hppCalcMode') instanceof HTMLSelectElement
+    ? document.getElementById('hppCalcMode').value
     : 'design';
   const forceField = document.getElementById('hppForceTon')?.closest('.lab-field');
   const diagPistonField = document.getElementById('hppDiagPistonField');
@@ -759,6 +766,14 @@ function syncModeUi() {
   if (diagPistonField instanceof HTMLElement) diagPistonField.hidden = mode !== 'diagnostic';
   if (diagColField instanceof HTMLElement) diagColField.hidden = mode !== 'diagnostic';
   if (forceField instanceof HTMLElement) forceField.classList.toggle('lab-field--auto', mode === 'diagnostic');
+  const helpWrap = document.getElementById('hppCalcModeHelp');
+  if (helpWrap instanceof HTMLElement) {
+    helpWrap.querySelectorAll('[data-hpress-mode]').forEach((el) => {
+      if (!(el instanceof HTMLElement)) return;
+      const on = el.getAttribute('data-hpress-mode') === mode;
+      el.classList.toggle('hpp-calc-mode-help__line--active', on);
+    });
+  }
   revalidateAllBoundInputs();
 }
 
@@ -776,7 +791,7 @@ const computeAndRender = wrapCalcRefresh(computeAndRenderCore);
   'hppUserColumnMm',
   'hppDiagPistonMm',
   'hppDiagColumnMm',
-  'hppMode',
+  'hppCalcMode',
   'hppLabTier',
   'hppColLengthMm',
   'hppColK',
@@ -788,8 +803,8 @@ const computeAndRender = wrapCalcRefresh(computeAndRenderCore);
   el.addEventListener('change', computeAndRender);
 });
 
-document.getElementById('hppMode')?.addEventListener('change', () => {
-  syncModeUi();
+document.getElementById('hppCalcMode')?.addEventListener('change', () => {
+  syncHppCalcModeUi();
   computeAndRender();
 });
 
@@ -799,7 +814,7 @@ document.getElementById('hppLabTier')?.addEventListener('change', () => {
 });
 
 syncLabTierUi();
-syncModeUi();
+syncHppCalcModeUi();
 mountCompactLabFieldHelp();
 
 bindInputValidation([
@@ -823,6 +838,16 @@ mountLabPresetsBar('hppPresetsBar', HPP_PRESETS, computeAndRender);
 if (typeof computeAndRender.runPreview === 'function') computeAndRender.runPreview();
 else computeAndRender();
 
+injectLabUnitConverterIfNeeded();
+mountLabUnitConverter();
+bindFluidLabUnitSelectors(computeAndRender);
+
+wireLabCopyLink('hpCopyLinkBtn', 'hpCopyLinkToast');
+wireLabCopyResultsButton('hppCopyResults', {
+  moduleTitle: getCurrentLang() === 'en' ? 'Hydraulic press' : 'Prensa hidr\u00e1ulica',
+  toastId: 'hppCopyToast',
+});
+
 mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMount'), {
   getPayload: () => pressPdfSnapshot,
   getDiagramElements: () => {
@@ -838,13 +863,13 @@ watchLangAndApply(PRESS_PAGE_I18N, {
   onEnApplied: () => {
     applyHydraulicPressDocumentChrome();
     refreshCompactLabFieldHelp();
-    syncModeUi();
+    syncHppCalcModeUi();
     computeAndRender();
   },
   onEsRestored: () => {
     applyHydraulicPressDocumentChrome();
     refreshCompactLabFieldHelp();
-    syncModeUi();
+    syncHppCalcModeUi();
     computeAndRender();
   },
 });

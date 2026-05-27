@@ -6,6 +6,8 @@ import {
   bindInputValidation,
   syncInputValidationResultsGate,
   mountLabPresetsBar,
+  renderMotorPowerRuler,
+  renderResultHero,
   updateLabShareVisibility,
   wireLabCopyLink,
   wireLabCopyResultsButton,
@@ -18,6 +20,7 @@ import { renderCouplingAssemblyDiagram } from '../lab/diagramCatalogModules.js';
 import { getLabLang } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { COUPLINGS_EN } from '../lab/i18n/pages/couplingsEn.js';
+import { initInfoChipPopovers } from './infoChipPopover.js';
 
 function bx(es, en) {
   return getLabLang() === 'en' ? en : es;
@@ -168,6 +171,10 @@ function render() {
   if (!out || !tbl) return;
 
   if (!(Number.isFinite(P) && P >= 0 && Number.isFinite(n) && n > 0 && Number.isFinite(K) && K >= 1)) {
+    const cpHero = document.getElementById('cpHero');
+    if (cpHero) cpHero.innerHTML = '';
+    const cpMotorRuler = document.getElementById('cpMotorRuler');
+    if (cpMotorRuler) cpMotorRuler.innerHTML = '';
     out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>${bx('Entrada no válida:', 'Invalid input:')}</strong> ${bx('use P ≥ 0, n > 0 y K ≥ 1.', 'use P ≥ 0, n > 0 and K ≥ 1.')}</p>`;
     tbl.innerHTML = '';
     updateLabShareVisibility('cpShareLinkWrap', 'cpOut');
@@ -180,6 +187,10 @@ function render() {
   const row = brand?.series.find((s) => s.model === model);
 
   if (!row) {
+    const cpHero = document.getElementById('cpHero');
+    if (cpHero) cpHero.innerHTML = '';
+    const cpMotorRuler = document.getElementById('cpMotorRuler');
+    if (cpMotorRuler) cpMotorRuler.innerHTML = '';
     out.innerHTML = `<p class="lab-verdict lab-verdict--muted">${bx('Seleccione fabricante y modelo.', 'Select manufacturer and model.')}</p>`;
     tbl.innerHTML = '';
     updateLabShareVisibility('cpShareLinkWrap', 'cpOut');
@@ -190,6 +201,30 @@ function render() {
   const ok = row.T_nom_Nm >= T_des;
   const ratio = T_des / row.T_nom_Nm;
   const sug = ok ? null : findSuggestedModel(brandId, T_des);
+  const cpVerdict = ratio > 1 ? 'error' : ratio > 0.8 ? 'warn' : 'ok';
+
+  const cpHero = document.getElementById('cpHero');
+  if (cpHero) {
+    cpHero.innerHTML = renderResultHero(
+      [
+        {
+          label: bx('T diseño', 'Design torque T'),
+          display: `${T_des.toFixed(1)} N·m`,
+          hint: bx('T = P/ω · K', 'T = P/ω · K'),
+        },
+        {
+          label: bx('Modelo sugerido', 'Suggested model'),
+          display: sug?.model ?? row.model,
+          hint: bx(`T_nom = ${row.T_nom_Nm.toFixed(1)} N·m`, `T_nom = ${row.T_nom_Nm.toFixed(1)} N·m`),
+        },
+      ],
+      { verdict: cpVerdict },
+    );
+  }
+  const cpMotorRuler = document.getElementById('cpMotorRuler');
+  if (cpMotorRuler) {
+    cpMotorRuler.innerHTML = P > 0 && n > 0 ? renderMotorPowerRuler(P) : '';
+  }
 
   if (ratio <= 0.8) {
     out.innerHTML = `<p class="lab-verdict lab-verdict--ok"><strong>${bx('Margen holgado:', 'Comfortable margin:')}</strong> ${row.model} ${bx('trabaja cómodo', 'runs comfortably')} (${T_des.toFixed(1)} N·m ≤ 0.8·T<sub>nom</sub>).</p>`;
@@ -284,3 +319,4 @@ watchLangAndApply(COUPLINGS_EN, {
   onEnApplied: () => scheduleCouplingRender(),
   onEsRestored: () => scheduleCouplingRender(),
 });
+initInfoChipPopovers(document);

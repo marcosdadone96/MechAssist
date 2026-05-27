@@ -9,7 +9,12 @@ import {
   mountLabPresetsBar,
   revalidateAllBoundInputs,
   syncInputValidationResultsGate,
+  updateLabShareVisibility,
+  wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
+import { bindFluidLabUnitSelectors, formatFlowLmin, formatPressureBar } from '../lab/fluidLabUnitPrefs.js';
+import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
@@ -610,6 +615,7 @@ function computeAndRenderCore() {
 
   if (errors.length) {
     results.innerHTML = '';
+    updateLabShareVisibility('hpumpShareLinkWrap', 'hpResults');
     if (formulaBody instanceof HTMLElement) formulaBody.innerHTML = '';
     const vsErr = document.getElementById('hpVerdictSummary');
     if (vsErr instanceof HTMLElement) vsErr.innerHTML = '';
@@ -709,7 +715,7 @@ function computeAndRenderCore() {
 
   const secondaryCards = [
     metric(tr('mType'), preset.label),
-    metric(tr('mQTheo'), `${fmt(qTheoLmin, 2)} L/min`),
+    metric(tr('mQTheo'), formatFlowLmin(qTheoLmin)),
     metric(tr('mPower'), `${fmt(pAbsKw, 3)} kW`, `${fmt(pAbsHp, 2)} HP`),
     metric(tr('mDiaS'), `${fmt(suctionIn, 3)} in`, `(${fmt(suctionMm, 1)} mm)`),
     metric(tr('mDiaL'), `${fmt(pipeDiaIn, 3)} in`, `(${fmt(pipeDiaMm, 1)} mm)`),
@@ -717,7 +723,7 @@ function computeAndRenderCore() {
     metric(tr('mVLine'), `${fmt(vPipe, 2)} m/s`, pipeLineType),
     metric(tr('mRe'), `${fmt(re, 0)}`, regime, reVisual.cls, reVisual.title),
     metric(tr('mF'), `${fmt(f, 4)}`),
-    metric(tr('mDp'), `${fmt(dpBar, 3)} bar`, `${fmt(dpPa / 1000, 1)} kPa`),
+    metric(tr('mDp'), formatPressureBar(dpBar), `${fmt(dpPa / 1000, 1)} kPa`),
     metric(tr('mRange'), `${fmt(speedTarget.min, 1)} - ${fmt(speedTarget.max, 1)} m/s`, pipeLineType),
     metric(
       tr('mNpsh'),
@@ -906,6 +912,7 @@ function computeAndRenderCore() {
       ? 'NPSHa is indicative; use manufacturer NPSHr curves and site layout for final acceptance.'
       : 'NPSHa es indicativa; usar curvas NPSHr del fabricante y trazado real para aceptación final.',
   };
+  updateLabShareVisibility('hpumpShareLinkWrap', 'hpResults');
 }
 
 function syncHpLabTierUi() {
@@ -1029,6 +1036,16 @@ computeAndRender();
 ['hpBtnCalcPump', 'hpBtnCalcPipes'].forEach((btnId) => {
   const b = document.getElementById(btnId);
   if (b) b.addEventListener('click', () => computeAndRender());
+});
+
+injectLabUnitConverterIfNeeded();
+mountLabUnitConverter();
+bindFluidLabUnitSelectors(computeAndRender);
+
+wireLabCopyLink('hpumpCopyLinkBtn', 'hpumpCopyLinkToast');
+wireLabCopyResultsButton('hpCopyResults', {
+  moduleTitle: getLang() === 'en' ? 'Hydraulic pump' : 'Bomba hidr\u00e1ulica',
+  toastId: 'hpCopyToast',
 });
 
 mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountHp'), {

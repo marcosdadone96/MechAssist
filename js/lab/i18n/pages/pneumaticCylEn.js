@@ -131,4 +131,6 @@ export const PNEUMATIC_CYL_EN = {
   'pneuCyl.helpMotionVert':
     'Vertical lifting typically requires a larger force margin (usually above 2.0\u00d7).',
   'pneuCyl.verdictOk': 'SYSTEM SUITABLE',
+  'pneuCyl.copyLink': 'Copy link',
+  'pneuCyl.copyToast': 'Link copied!',
 };

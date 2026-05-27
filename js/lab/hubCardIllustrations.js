@@ -3,7 +3,7 @@
  * Mini schematics mirror each calculator diagram (not abstract icons).
  * @typedef {{ theme: string, type: 'svg', svg: string } | { theme: string, type: 'img', src: string, alt?: string }} HubCardArt
  */
-/** SVG de mùquinas: carga diferida en labHubCardArt.js para no romper el hub si falta el archivo en deploy. */
+/** SVG de m¬ùquinas: carga diferida en labHubCardArt.js para no romper el hub si falta el archivo en deploy. */
 
 const HUB_VB = '0 0 160 96';
 const HUB_BG = `<rect width="160" height="96" fill="#f1f5f9"/>`;
@@ -102,6 +102,16 @@ export const HUB_CARD_ART = {
     type: 'svg',
     svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#ecfdf5"/><circle cx="38" cy="50" r="20" fill="#64748b" stroke="#334155" stroke-width="2"/><circle cx="122" cy="50" r="20" fill="#64748b" stroke="#334155" stroke-width="2"/><rect x="14" y="44" width="132" height="12" rx="3" fill="#475569"/><circle cx="26" cy="50" r="4" fill="#94a3b8"/><circle cx="50" cy="50" r="4" fill="#94a3b8"/><circle cx="74" cy="50" r="4" fill="#94a3b8"/><circle cx="98" cy="50" r="4" fill="#94a3b8"/><circle cx="122" cy="50" r="4" fill="#94a3b8"/><circle cx="146" cy="50" r="4" fill="#94a3b8"/></svg>`,
   },
+  'calc-worm-gear.html': {
+    theme: 'kinematic',
+    type: 'svg',
+    svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#ecfdf5"/><circle cx="48" cy="50" r="18" fill="#e2e8f0" stroke="#475569" stroke-width="2"/><path d="M38 38 Q48 50 58 62 Q52 44 38 38" fill="none" stroke="#0f766e" stroke-width="2.4"/><circle cx="108" cy="50" r="28" fill="#fff" stroke="#0f766e" stroke-width="2.2"/><line x1="108" y1="22" x2="108" y2="78" stroke="#0d9488" stroke-width="1.4"/><line x1="80" y1="50" x2="136" y2="50" stroke="#0d9488" stroke-width="1.4"/><line x1="92" y1="32" x2="124" y2="68" stroke="#0d9488" stroke-width="1.4"/><line x1="92" y1="68" x2="124" y2="32" stroke="#0d9488" stroke-width="1.4"/><line x1="66" y1="50" x2="80" y2="50" stroke="#64748b" stroke-width="1.2" stroke-dasharray="4 3"/><text x="80" y="86" text-anchor="middle" fill="#0f766e" font-size="10" font-family="system-ui,sans-serif">worm</text></svg>`,
+  },
+  'calc-fatigue.html': {
+    theme: 'shaft',
+    type: 'svg',
+    svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#fef2f2"/><line x1="28" y1="72" x2="132" y2="72" stroke="#94a3b8" stroke-width="1.5"/><line x1="28" y1="72" x2="28" y2="20" stroke="#94a3b8" stroke-width="1.5"/><polyline points="28,72 132,20" fill="none" stroke="#dc2626" stroke-width="2.5"/><path d="M28,68 Q80,36 132,28" fill="none" stroke="#ea580c" stroke-width="2"/><path d="M28,72 Q70,48 132,38" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="5 4"/><circle cx="96" cy="38" r="7" fill="#059669" fill-opacity="0.3" stroke="#047857" stroke-width="2"/><line x1="28" y1="72" x2="96" y2="38" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 3"/></svg>`,
+  },
   'calc-bearings.html': {
     theme: 'shaft',
     type: 'svg',
@@ -141,6 +151,11 @@ export const HUB_CARD_ART = {
     theme: 'join',
     type: 'svg',
     svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#fafaf9"/><path d="M72 18 L88 34 L84 34 L84 72 L76 72 L76 34 L72 34Z" fill="#78716c" stroke="#44403c" stroke-width="1.5"/><rect x="70" y="72" width="20" height="8" rx="1" fill="#a8a29e"/><path d="M80 26v38" stroke="#0d9488" stroke-width="2" stroke-dasharray="4 3" opacity="0.7"/></svg>`,
+  },
+  'calc-bolt-shear.html': {
+    theme: 'join',
+    type: 'svg',
+    svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#f8fafc"/><rect x="36" y="28" width="88" height="44" rx="4" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/><circle cx="56" cy="44" r="6" fill="#fff" stroke="#0f766e" stroke-width="1.8"/><circle cx="104" cy="44" r="6" fill="#fff" stroke="#0f766e" stroke-width="1.8"/><circle cx="56" cy="64" r="6" fill="#fff" stroke="#0f766e" stroke-width="1.8"/><circle cx="104" cy="64" r="6" fill="#fff" stroke="#0f766e" stroke-width="1.8"/><path d="M12 50h136" stroke="#2563eb" stroke-width="3" marker-end="url(#none)"/><path d="M80 20v56" stroke="#c2410c" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/></svg>`,
   },
   'calc-gearmotor-inertia.html': {
     theme: 'dynamic',
@@ -185,6 +200,16 @@ export const HUB_CARD_ART = {
     type: 'svg',
     svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#f0fdfa"/><rect x="48" y="18" width="64" height="12" rx="2" fill="#64748b"/><rect x="40" y="30" width="80" height="8" fill="#94a3b8"/><rect x="36" y="38" width="88" height="28" rx="3" fill="#0d9488" opacity="0.9"/><rect x="52" y="66" width="56" height="14" rx="2" fill="#475569"/><path d="M80 30v8" stroke="#fbbf24" stroke-width="3"/></svg>`,
   },
+  'calc-hydraulic-valve.html': {
+    theme: 'fluid',
+    type: 'svg',
+    svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#ecfeff"/><rect x="52" y="34" width="56" height="28" rx="4" fill="#cffafe" stroke="#0891b2" stroke-width="2"/><path d="M16 48h36M108 48h36" stroke="#0e7490" stroke-width="3" stroke-linecap="round"/><path d="M80 16v18M80 62v18" stroke="#155e75" stroke-width="2.5" stroke-linecap="round"/><rect x="68" y="42" width="24" height="12" rx="2" fill="#22d3ee" stroke="#0891b2" stroke-width="1.5"/><path d="M72 48h16" stroke="#0e7490" stroke-width="2" stroke-linecap="round"/><path d="M28 48l8-6v12zM132 48l-8-6v12z" fill="#06b6d4" opacity="0.75"/></svg>`,
+  },
+  'calc-hydraulic-accumulator.html': {
+    theme: 'fluid',
+    type: 'svg',
+    svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#f0f9ff"/><rect x="58" y="14" width="44" height="68" rx="22" fill="none" stroke="#0284c7" stroke-width="2.5"/><ellipse cx="80" cy="48" rx="14" ry="28" fill="#bae6fd" stroke="#0369a1" stroke-width="1.5"/><rect x="72" y="4" width="16" height="10" rx="2" fill="#e0f2fe" stroke="#64748b" stroke-width="1.2"/><rect x="72" y="82" width="16" height="10" rx="2" fill="#7dd3fc" stroke="#0284c7" stroke-width="1.2"/><text x="80" y="11" text-anchor="middle" font-size="7" fill="#475569">N2</text></svg>`,
+  },
   _soon: {
     theme: 'soon',
     type: 'svg',
@@ -214,7 +239,7 @@ export function normalizeHubCalcId(hrefOrName) {
   }
   key = key.split('?')[0].split('#')[0];
   if (!key || key === '_soon') return key;
-  // Netlify pretty URLs sirven /calc-gears sin .html; el cat·logo usa calc-gears.html
+  // Netlify pretty URLs sirven /calc-gears sin .html; el cat√°logo usa calc-gears.html
   if (!key.endsWith('.html') && !key.includes('.')) {
     return `${key}.html`;
   }

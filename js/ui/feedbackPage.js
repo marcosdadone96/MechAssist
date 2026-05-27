@@ -1,5 +1,5 @@
 /**
- * Sugerencias: 1) funciÛn Netlify email-feedback (Resend), 2) Web3Forms si hay clave en runtime
+ * Sugerencias: 1) funci√≥n Netlify email-feedback (Resend), 2) Web3Forms si hay clave en runtime
  * (`getFeedbackWeb3FormsAccessKey`), 3) Netlify Forms (POST a /feedback.html y, si falla, a /).
  */
 
@@ -49,7 +49,7 @@ async function submitViaEmailFunction(form) {
 }
 
 /**
- * Envùo independiente del hosting (requiere clave en features.js).
+ * Env¬ùo independiente del hosting (requiere clave en features.js).
  * @param {HTMLFormElement} form
  * @param {string} accessKey
  */
@@ -65,7 +65,7 @@ async function submitViaWeb3Forms(form, accessKey) {
     access_key: accessKey,
     subject: '[TheMechAssist] Sugerencia',
     message: lines.join('\n'),
-    from_name: name || 'Anùnimo',
+    from_name: name || 'An¬ùnimo',
   };
   if (email) payload.email = email;
 
@@ -79,7 +79,7 @@ async function submitViaWeb3Forms(form, accessKey) {
 }
 
 /**
- * Netlify Forms: mismo cuerpo en la acciùn del form y, si falla, en la raùz del sitio.
+ * Netlify Forms: mismo cuerpo en la acci¬ùn del form y, si falla, en la ra¬ùz del sitio.
  * @param {HTMLFormElement} form
  */
 async function submitViaNetlifyForms(form) {
@@ -130,7 +130,7 @@ function mountFeedbackPage() {
         errBox.textContent =
           msg && msg !== 'feedback.errorFile'
             ? msg
-            : 'Abre esta pùgina desde la web publicada (no desde un archivo local).';
+            : 'Abre esta p¬ùgina desde la web publicada (no desde un archivo local).';
         errBox.hidden = false;
       }
     };
@@ -156,7 +156,7 @@ function mountFeedbackPage() {
           const fnRes = await submitViaEmailFunction(form);
           if (fnRes.ok) sent = true;
         } catch (_) {
-          /* funciùn no desplegada o red */
+          /* funci¬ùn no desplegada o red */
         }
       }
 

@@ -7,6 +7,7 @@ import {
   syncInputValidationResultsGate,
   createLabUrlSync,
   mountLabPresetsBar,
+  renderResultHero,
   updateLabShareVisibility,
   wireLabCopyLink,
   wireLabCopyResultsButton,
@@ -106,6 +107,8 @@ function render() {
   if (syncInputValidationResultsGate(document.getElementById('kyResults'))) return;
 
   if (!row) {
+    const kyHero = document.getElementById('kyHero');
+    if (kyHero) kyHero.innerHTML = '';
     out.innerHTML = `<p class="lab-verdict lab-verdict--err">${bx(
       'Di\u00e1metro fuera de tabla (m\u00edn. 6 mm en este extracto).',
       'Diameter outside table (min. 6 mm in this extract).',
@@ -118,6 +121,25 @@ function render() {
 
   const sigma = sigmaCrush_MPa(T, d, row.h, l_use);
   const ok = sigma <= sigAdm;
+  const matLabel = KEY_MATERIAL_ALLOWABLE_MPA[mat]?.label ?? mat;
+  const kyHero = document.getElementById('kyHero');
+  if (kyHero) {
+    kyHero.innerHTML = renderResultHero(
+      [
+        {
+          label: bx('Longitud chaveta L', 'Key length L'),
+          display: `${l_use.toFixed(0)} mm`,
+          hint: bx('Longitud útil considerada en aplastamiento.', 'Effective length used in crushing check.'),
+        },
+        {
+          label: bx('Tensión aplastamiento', 'Crushing stress'),
+          display: `${sigma.toFixed(1)} MPa`,
+          hint: bx(`σ_adm orientativa ${sigAdm} MPa (${matLabel})`, `Indicative σ_allow ${sigAdm} MPa (${matLabel})`),
+        },
+      ],
+      { verdict: ok ? 'ok' : 'error' },
+    );
+  }
   const lLimit = 1.5 * d;
   const overLengthAdvisory = Number.isFinite(l_use) && Number.isFinite(d) && l_use > lLimit;
   let suggestL = null;
@@ -131,29 +153,35 @@ function render() {
   document.getElementById('kyT1') && (document.getElementById('kyT1').textContent = row.t1.toFixed(1));
   document.getElementById('kyT2') && (document.getElementById('kyT2').textContent = row.t2.toFixed(1));
 
-  const matLabel = KEY_MATERIAL_ALLOWABLE_MPA[mat]?.label ?? mat;
-  if (ok) {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--ok"><strong>${bx('APTO', 'OK')}</strong> ${bx(
-      `criterio de aplastamiento orientativo frente a ${matLabel}`,
-      `indicative crushing criterion vs ${matLabel}`,
-    )} (\u03c3<sub>ap</sub> \u2248 ${sigma.toFixed(1)} MPa \u2264 \u03c3<sub>adm</sub> ${sigAdm} MPa).<br/>
-      <strong>${bx('Referencia norma:', 'Standard ref.:')}</strong> ${bx(
-      'dimensiones seg\u00fan tabla paralela tipo DIN 6885-1 (extracto educativo).',
-      'dimensions per DIN 6885-1 parallel key table (educational extract).',
-    )}</p>`;
+  const detailParts = [];
+  if (!ok) {
+    detailParts.push(
+      `<p class="lab-verdict lab-verdict--err">${bx(
+        `Aplastamiento insuficiente: \u03c3<sub>ap</sub> \u2248 ${sigma.toFixed(1)} MPa &gt; \u03c3<sub>adm</sub> ${sigAdm} MPa (${matLabel}).`,
+        `Insufficient crushing: \u03c3<sub>ap</sub> \u2248 ${sigma.toFixed(1)} MPa &gt; \u03c3<sub>adm</sub> ${sigAdm} MPa (${matLabel}).`,
+      )}${
+        suggestL
+          ? ` <strong>${bx('Recomendado:', 'Suggested:')}</strong> ${bx('longitud comercial', 'commercial length')} \u2265 <strong>${suggestL} mm</strong> (${bx('verificar ranura en eje/cubo', 'check groove in shaft/hub')}).`
+          : ''
+      }</p>`,
+    );
   } else {
-    out.innerHTML = `<p class="lab-verdict lab-verdict--err"><strong>${bx('INSUFICIENTE', 'INSUFFICIENT')}</strong> ${bx(
-      'en aplastamiento',
-      'in crushing',
-    )} (\u03c3<sub>ap</sub> \u2248 ${sigma.toFixed(1)} MPa &gt; \u03c3<sub>adm</sub> ${sigAdm} MPa).<br/>
-      ${suggestL ? `<strong>${bx('Recomendado:', 'Suggested:')}</strong> ${bx('longitud comercial', 'commercial length')} \u2265 <strong>${suggestL} mm</strong> (${bx('verificar ranura en eje/cubo', 'check groove in shaft/hub')}).` : ''}</p>`;
+    detailParts.push(
+      `<p class="lab-small-print">${bx(
+        'Dimensiones seg\u00fan tabla paralela tipo DIN 6885-1 (extracto educativo).',
+        'Dimensions per DIN 6885-1 parallel key table (educational extract).',
+      )}</p>`,
+    );
   }
   if (overLengthAdvisory) {
-    out.innerHTML += `<p class="lab-verdict lab-verdict--warn"><strong>${bx('Aviso orientativo:', 'Advisory:')}</strong> L = ${l_use.toFixed(1)} mm ${bx('supera', 'exceeds')} 1.5\u00b7d \u2248 ${lLimit.toFixed(1)} mm. ${bx(
-      'Para chavetas est\u00e1ndar, revise la recomendaci\u00f3n L \u2264 1.5\u00b7d.',
-      'For standard keys, review recommendation L \u2264 1.5\u00b7d.',
-    )}</p>`;
+    detailParts.push(
+      `<p class="lab-verdict lab-verdict--warn"><strong>${bx('Aviso orientativo:', 'Advisory:')}</strong> L = ${l_use.toFixed(1)} mm ${bx('supera', 'exceeds')} 1.5\u00b7d \u2248 ${lLimit.toFixed(1)} mm. ${bx(
+        'Para chavetas est\u00e1ndar, revise la recomendaci\u00f3n L \u2264 1.5\u00b7d.',
+        'For standard keys, review recommendation L \u2264 1.5\u00b7d.',
+      )}</p>`,
+    );
   }
+  out.innerHTML = detailParts.join('');
 
   const rowsHtml = DIN6885_FORM_A_ROWS.map((r) => {
     const active = d >= r.d_min && d < r.d_max;
@@ -187,7 +215,7 @@ function render() {
 bindInputValidation([
   { id: 'kyD', min: 6, max: 500, label: 'Ø eje' },
   { id: 'kyT', min: 0, max: 1e9, label: 'Par' },
-  { id: 'kyL', min: 1, max: 5000, label: 'Longitud L' },
+  { id: 'kyL', min: 1, max: 5000, optional: true, label: 'Longitud L' },
 ]);
 
 kyUrl.hydrateFromUrl();

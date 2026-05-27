@@ -165,6 +165,248 @@ export function metricsFromGears(agma) {
  * @param {string} beltType
  * @returns {{ energyEfficiencyPct: number | null, materialUtilizationPct: number | null }}
  */
+/**
+ * @param {{ sf?: number, sh?: number, pitchLineVelocity?: number, lubeType?: 'splash'|'forced'|'grease'|'oil', lang?: 'es'|'en' }} ctx
+ * @param {{ lang?: 'es'|'en' }} [opts]
+ */
+export function buildGearsAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const sf = Number(ctx.sf);
+  const sh = Number(ctx.sh);
+  const vp = Number(ctx.pitchLineVelocity);
+  const lube = ctx.lubeType === 'grease' ? 'grease' : ctx.lubeType === 'oil' ? 'forced' : ctx.lubeType;
+
+  if (Number.isFinite(sf) && sf < 1.5) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Low bending safety factor' : 'Margen de flexión ajustado',
+      body:
+        lang === 'en'
+          ? 'Bending safety factor SF < 1.5. Review module or face width.'
+          : 'Margen de seguridad a flexión ajustado (SF < 1.5). Revise módulo o anchura de cara.',
+      normRef: 'AGMA 2101-D04 (simplified) — indicative.',
+    });
+  }
+  if (Number.isFinite(sh) && sh < 1.2) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Low pitting safety factor' : 'Margen de picadura bajo',
+      body:
+        lang === 'en'
+          ? 'Contact safety factor SH < 1.2. Consider surface treatment or EP lubricant.'
+          : 'Margen de picadura bajo (SH < 1.2). Considere tratamiento superficial o lubricante EP.',
+      normRef: 'AGMA 2101-D04 (simplified) — indicative.',
+    });
+  }
+  if (Number.isFinite(vp) && vp > 10) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'High pitch-line speed' : 'Velocidad en paso elevada',
+      body:
+        lang === 'en'
+          ? 'Pitch-line speed > 10 m/s. Forced lubrication recommended; verify flank roughness.'
+          : 'Velocidad en paso > 10 m/s. Lubricación forzada recomendada; verifique rugosidad de flancos.',
+      normRef: lang === 'en' ? 'Manufacturer practice / ISO 6336 context.' : 'Práctica de fabricante / contexto ISO 6336.',
+    });
+  }
+  if (lube === 'grease' && Number.isFinite(vp) && vp > 6) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'Grease at moderate speed' : 'Grasa a velocidad moderada',
+      body:
+        lang === 'en'
+          ? 'At this pitch-line speed, oil bath or forced lubrication is often preferred over grease alone.'
+          : 'A esta velocidad en paso, baño de aceite o lubricación forzada suele preferirse frente a solo grasa.',
+    });
+  }
+  if (!out.length) {
+    out.push({
+      tone: 'info',
+      title: lang === 'en' ? 'Gears advisor' : 'Asesor engranajes',
+      body:
+        lang === 'en'
+          ? 'SF, SH and pitch-line speed are within typical bands for this quick check.'
+          : 'SF, SH y velocidad en paso dentro de bandas típicas para esta comprobación rápida.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ chainSpeed?: number, pitch?: number, sprocketTeeth?: number, lang?: 'es'|'en' }} ctx
+ * @param {{ lang?: 'es'|'en' }} [opts]
+ */
+export function buildChainsAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const v = Number(ctx.chainSpeed);
+  const z = Number(ctx.sprocketTeeth);
+
+  if (Number.isFinite(v) && v > 7) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'High chain speed' : 'Velocidad de cadena alta',
+      body:
+        lang === 'en'
+          ? 'Speed > 7 m/s for this pitch. Noise and wear risk; consider silent chain or smaller pitch.'
+          : 'Velocidad > 7 m/s para este paso. Riesgo de ruido y desgaste acelerado. Use cadena silenciosa o reduzca paso.',
+      normRef: 'ISO 606 / manufacturer catalogue — indicative.',
+    });
+  }
+  if (Number.isFinite(z) && z < 17) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'Small sprocket' : 'Piñón pequeño',
+      body:
+        lang === 'en'
+          ? 'Sprocket with < 17 teeth: higher polygonal effect and wear. Consider z ≥ 19.'
+          : 'Piñón con < 17 dientes: mayor efecto poligonal y desgaste. Considere z ≥ 19.',
+    });
+  }
+  if (!out.length) {
+    out.push({
+      tone: 'info',
+      title: lang === 'en' ? 'Chains advisor' : 'Asesor cadenas',
+      body:
+        lang === 'en'
+          ? 'Chain speed and driver teeth count look reasonable for a first pass.'
+          : 'Velocidad y número de dientes del piñón motriz coherentes para un primer corte.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ cpRatio?: number, L10_hours?: number, speed_rpm?: number, nRef_rpm?: number, lang?: 'es'|'en' }} ctx
+ * @param {{ lang?: 'es'|'en' }} [opts]
+ */
+export function buildBearingsAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const cp = Number(ctx.cpRatio);
+  const l10 = Number(ctx.L10_hours);
+  const n = Number(ctx.speed_rpm);
+  const nRef = Number(ctx.nRef_rpm) || 20000;
+
+  if (Number.isFinite(cp) && cp < 3) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Low C/P ratio' : 'Relación C/P baja',
+      body:
+        lang === 'en'
+          ? 'C/P < 3. Reduced L10 life; consider a bearing with higher dynamic load rating.'
+          : 'Relación C/P < 3. Vida L₁₀ reducida; considere rodamiento de mayor capacidad dinámica.',
+      normRef: 'ISO 281 — basic rating life.',
+    });
+  }
+  if (Number.isFinite(l10) && l10 < 5000) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Short nominal life' : 'Vida nominal corta',
+      body:
+        lang === 'en'
+          ? 'Nominal life < 5,000 h. For continuous industrial duty, L10 ≥ 20,000 h is often targeted.'
+          : 'Vida nominal < 5.000 h. Para aplicaciones industriales continuas se recomienda L₁₀ ≥ 20.000 h.',
+      normRef: 'ISO 281 — indicative duty targets.',
+    });
+  }
+  if (Number.isFinite(n) && n > 0.8 * nRef) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'Speed near catalogue limit' : 'Velocidad cercana al límite',
+      body:
+        lang === 'en'
+          ? 'Operating speed is close to the indicative reference limit. Verify operating temperature.'
+          : 'Velocidad cercana al límite orientativo del fabricante. Verifique temperatura de operación.',
+      normRef: 'Manufacturer speed ratings — confirm with datasheet.',
+    });
+  }
+  if (!out.length) {
+    out.push({
+      tone: 'info',
+      title: lang === 'en' ? 'Bearings advisor' : 'Asesor rodamientos',
+      body:
+        lang === 'en'
+          ? 'C/P, L10 and speed are within typical bands for this quick screening.'
+          : 'C/P, L₁₀ y velocidad dentro de bandas típicas para este cribado rápido.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ sf?: number, tau_MPa?: number, bending_MPa?: number, yield_steel_MPa?: number, lang?: 'es'|'en' }} ctx
+ * @param {{ lang?: 'es'|'en' }} [opts]
+ */
+export function buildShaftAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const sf = Number(ctx.sf);
+  const tau = Number(ctx.tau_MPa);
+  const bend = Number(ctx.bending_MPa);
+  const yieldSteel = Number(ctx.yield_steel_MPa) || 355;
+
+  if (Number.isFinite(sf) && sf < 1.0) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Shaft overload' : 'Eje insuficiente',
+      body:
+        lang === 'en'
+          ? 'The shaft does not resist the current load (SF < 1.0). Increase diameter or change material.'
+          : 'El eje no resiste la carga actual (SF < 1.0). Aumente el diámetro o cambie el material.',
+      normRef: 'Torsion / combined stress — indicative.',
+    });
+  } else if (Number.isFinite(sf) && sf < 1.5) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Low torsion safety factor' : 'Margen de torsión ajustado',
+      body:
+        lang === 'en'
+          ? 'Torsion safety factor SF < 1.5. Review shaft diameter or material.'
+          : 'Margen de seguridad a torsión ajustado (SF < 1.5). Revise el diámetro o material del eje.',
+      normRef: 'Shaft sizing — indicative.',
+    });
+  }
+  if (Number.isFinite(tau) && tau > 0.6 * yieldSteel) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'Torsion stress near elastic limit' : 'Tensión de torsión elevada',
+      body:
+        lang === 'en'
+          ? 'Torsion stress is close to 60% of the indicative yield limit. Consider 42CrMo4 or similar alloy.'
+          : 'Tensión de torsión cercana al 60% del límite elástico orientativo. Considere acero 42CrMo4 o similar.',
+      normRef: 'Material selection — confirm with datasheet.',
+    });
+  }
+  if (Number.isFinite(bend) && bend > 0 && Number.isFinite(sf) && sf < 2.0) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'Combined bending and torsion' : 'Flexión y torsión combinadas',
+      body:
+        lang === 'en'
+          ? 'With combined bending, SF < 2 may be insufficient under variable loads (fatigue).'
+          : 'Con flexión combinada, SF < 2 puede ser insuficiente en servicio con cargas variables (fatiga).',
+      normRef: 'Fatigue / notch effects — detailed check recommended.',
+    });
+  }
+  if (!out.length) {
+    out.push({
+      tone: 'info',
+      title: lang === 'en' ? 'Shaft advisor' : 'Asesor eje',
+      body:
+        lang === 'en'
+          ? 'Safety factor and stress levels are within typical bands for this quick check.'
+          : 'Factor de seguridad y tensiones dentro de bandas típicas para esta comprobación rápida.',
+    });
+  }
+  return out;
+}
+
 export function metricsFromBeltType(beltType) {
   const eta = typicalBeltEfficiency(/** @type {any} */ (beltType));
   return {

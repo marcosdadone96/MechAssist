@@ -1,4 +1,4 @@
-/** Mantener alineado con cookiesAndAnalyticsBoot.js (script cl·sico, sin import). */
+/** Mantener alineado con cookiesAndAnalyticsBoot.js (script cl√°sico, sin import). */
 export const COOKIE_CONSENT_LS_KEY = 'mdr-cookie-consent-v1';
 
 /** @typedef {'analytics' | 'essential' | null} CookieConsentValue */

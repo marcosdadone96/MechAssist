@@ -45,7 +45,7 @@
         color: #0f766e;
       }
       #gmChart {
-        min-height: 200px;
+        min-height: 280px;
       }
       .gm-summary-grid {
         margin-top: 0.45rem;
@@ -91,6 +91,9 @@
       <section class="lab-panel lab-panel--accent">
         <header class="lab-calc-page-head">
           <h2 data-i18n="gm.h2">Inercia de carga vs motorreductor · datos introducidos por usuario</h2>
+          <p class="lab-safety-notice" data-i18n="gm.safetyNotice">
+            Resultados orientativos. No sustituyen el cálculo de detalle con datos reales de fabricante ni la validación en prototipo.
+          </p>
           <p class="lab-data-note" data-i18n="gm.dataNoteHtml" data-i18n-html>
             <strong>Catálogo demo:</strong> curvas y datos de motorreductor son orientativos; no sustituyen software ni hojas del fabricante.
           </p>
@@ -220,7 +223,9 @@
             </div>
           </div>
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
-            <div class="lab-results-wrap">
+            <div id="gmHero"></div>
+            <div id="gmMotorRuler"></div>
+            <div class="lab-results-wrap" id="gmResults">
               <div id="gmOut" class="lab-catalog-verdict"></div>
               <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked" open>
                 <summary data-i18n="gm.summaryFull">Resultado completo</summary>

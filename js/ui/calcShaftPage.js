@@ -13,16 +13,19 @@ import {
   labAlert,
   metricHtml,
   mountLabPresetsBar,
+  renderLabAdvisorInsights,
+  renderMotorPowerRuler,
   renderResultHero,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
   updateLabShareVisibility,
+  uxCopy,
   wireLabCopyLink,
   wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
-import { metricsFromShaft } from '../services/iaAdvisor.js';
+import { buildShaftAdvisorInsights, metricsFromShaft } from '../services/iaAdvisor.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
 import { LAB_LANG_EVENT, getLabLang } from '../lab/i18n/labLang.js';
@@ -247,48 +250,68 @@ function refreshCore() {
     moment_Nm: M,
   });
 
-  if (syncInputValidationResultsGate(document.getElementById('shResults'))) return;
+  if (syncInputValidationResultsGate(document.getElementById('shResults'))) {
+    renderLabAdvisorInsights('shAdvisorPanel', []);
+    return;
+  }
+
+  const dHero_mm = mode === 'design' ? r.diameter_min_mm : dAvail_mm;
+  const sfVal = useBending
+    ? sigmaEq_MPa > 0
+      ? sigmaAllow_MPa / sigmaEq_MPa
+      : null
+    : tauTor_MPa > 0
+      ? tauAllow_MPa / tauTor_MPa
+      : null;
 
   const heroEl = document.getElementById('shHero');
   if (heroEl) {
-    const heroItems =
-      mode === 'diagnostic'
-        ? [
-            {
-              label: useBending ? t.heroUtilBend : t.heroUtilTor,
-              display:
-                diagUtil != null && Number.isFinite(diagUtil)
-                  ? `${(diagUtil * 100).toFixed(1)} %`
-                  : '—',
-              hint:
-                diagUtil != null && Number.isFinite(diagUtil)
-                  ? t.heroFs(1 / diagUtil)
-                  : '—',
-            },
-            {
-              label: useBending ? t.heroSigEq : t.heroTau,
-              display: useBending ? `${sigmaEq_MPa.toFixed(2)} MPa` : `${tauTor_MPa.toFixed(2)} MPa`,
-              hint: t.heroDHint(dAvail_mm, critLabel(criterion)),
-            },
-          ]
-        : [
-            {
-              label: t.heroDMin,
-              display: formatLength(r.diameter_min_mm, u.length),
-              hint: useBending ? t.heroDMinHintBend : t.heroDMinHintTor,
-            },
-            {
-              label: useBending ? t.heroSigAtMin : t.heroTauAtMin,
-              display: useBending ? `${sigmaEq_MPa.toFixed(2)} MPa` : `${r.tauAtMinDiameter_MPa.toFixed(2)} MPa`,
-              hint: useBending
-                ? t.heroKtHint(critLabel(criterion), Kt)
-                : t.heroTauCompare(r.tauAllow_MPa),
-            },
-          ];
     const shaftVerdict =
       validationMsgs.length ? 'error' : mode === 'design' ? (!fitOk ? 'error' : 'ok') : !fitOk ? 'warn' : 'ok';
-    heroEl.innerHTML = renderResultHero(heroItems, { verdict: shaftVerdict });
+    heroEl.innerHTML = renderResultHero(
+      [
+        {
+          label: uxCopy('Ø recomendado', 'Recommended Ø'),
+          display: formatLength(dHero_mm, u.length),
+          hint:
+            mode === 'design'
+              ? useBending
+                ? t.heroDMinHintBend
+                : t.heroDMinHintTor
+              : t.heroDHint(dAvail_mm, critLabel(criterion)),
+        },
+        {
+          label: uxCopy('Margen de seguridad SF', 'Safety factor SF'),
+          display: sfVal != null && Number.isFinite(sfVal) ? sfVal.toFixed(2) : '—',
+          hint:
+            sfVal != null && Number.isFinite(sfVal)
+              ? uxCopy(
+                  'SF = σ_adm / σ_eq (flexión) o τ_adm / τ (torsión).',
+                  'SF = σ_allow / σ_eq (bending) or τ_allow / τ (torsion).',
+                )
+              : '—',
+        },
+      ],
+      { verdict: shaftVerdict },
+    );
   }
+
+  const shMotorRuler = document.getElementById('shMotorRuler');
+  if (shMotorRuler) shMotorRuler.innerHTML = '';
+
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  renderLabAdvisorInsights(
+    'shAdvisorPanel',
+    buildShaftAdvisorInsights(
+      {
+        sf: sfVal ?? undefined,
+        tau_MPa: tauTor_MPa,
+        bending_MPa: useBending ? sigmaBend_MPa : 0,
+        lang: advLang,
+      },
+      { lang: advLang },
+    ),
+  );
 
   const box = document.getElementById('shResults');
   if (box) {

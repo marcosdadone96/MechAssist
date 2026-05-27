@@ -5,6 +5,8 @@ const pages = [
   { html: 'calc-hydraulic-pump.html', en: 'js/lab/i18n/pages/hydraulicPumpEn.js', prefix: 'hpump.' },
   { html: 'calc-hydraulic-press.html', en: 'js/lab/i18n/pages/hydraulicPressEn.js', prefix: 'hpress.' },
   { html: 'calc-pneumatic-cylinder.html', en: 'js/lab/i18n/pages/pneumaticCylEn.js', prefix: 'pneuCyl.' },
+  { html: 'calc-hydraulic-valve.html', en: 'js/lab/i18n/pages/hydraulicValveEn.js', prefix: 'hvalve.' },
+  { html: 'calc-hydraulic-accumulator.html', en: 'js/lab/i18n/pages/hydraulicAccumulatorEn.js', prefix: 'hacc.' },
   { html: 'fluids-hub.html', en: 'js/lab/i18n/pages/fluidsHubUxEn.js', prefix: 'fluids.' },
 ];
 
@@ -32,8 +34,8 @@ for (const { html, en, prefix } of pages) {
   const helpsBare = [...htmlSrc.matchAll(/<(?:p|div)[^>]*class="[^"]*lab-field-help[^"]*"[^>]*>/g)].filter((m) => {
     if (m[0].includes('data-i18n')) return false;
     if (
-      /\blab-field-help--(?:gear|bolt|hp)-modes\b/.test(m[0]) &&
-      /data-(?:gear|bolt|hp)-mode/.test(htmlSrc)
+      /\blab-field-help--(?:gear|bolt|hp|hc|hpress|hvalve|hacc)-modes\b/.test(m[0]) &&
+      /data-(?:gear|bolt|hp|hc|hpress|hvalve|ha)-mode/.test(htmlSrc)
     ) {
       return false;
     }
@@ -78,7 +80,11 @@ const fluidWrappers = pages
             ? 'press'
             : slug === 'pneumatic-cylinder'
               ? 'pneumatic'
-              : null;
+              : slug === 'hydraulic-valve'
+                ? 'valve'
+                : slug === 'hydraulic-accumulator'
+                  ? 'accumulator'
+                  : null;
     return mod && src.includes(`fluid-calc--${mod}`);
   });
 console.log(`fluid-calc--* wrappers on calc pages: ${fluidWrappers ? 'yes' : 'MISSING'}`);

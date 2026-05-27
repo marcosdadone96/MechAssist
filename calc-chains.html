@@ -50,6 +50,9 @@
       <section class="lab-panel lab-panel--accent">
         <header class="lab-calc-page-head">
           <h2 data-i18n="chains.h2">Cadena de rodillos · dos piñones</h2>
+          <p class="lab-safety-notice" data-i18n="chains.safetyNotice">
+            Cálculo orientativo ISO 606. Confirme paso, número de eslabones y lubricación con el catálogo del fabricante. La longitud de cadena no sustituye el cálculo de eje a eje real.
+          </p>
           <p class="lab-calc-hero-lead" data-i18n="chains.heroLead">
             Cinemática DIN 8187 / ISO 606: primitivos, relación, longitud en pasos, velocidad lineal y avisos de articulación y lubricación.
           </p>
@@ -267,11 +270,13 @@
               </label>
             </div>
             <div id="cHero"></div>
+            <div id="cMotorRuler"></div>
             <details class="lab-results-details lab-results-details--chevron-end">
               <summary data-i18n="chains.summaryPerElement">Resultados por elemento</summary>
               <div id="cElementResults" class="lab-element-columns"></div>
             </details>
             <div id="cAlerts" class="lab-alerts"></div>
+            <div id="cAdvisorPanel" hidden></div>
             <div class="lab-results-wrap" id="cResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">

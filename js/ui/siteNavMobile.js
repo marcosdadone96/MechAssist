@@ -1,6 +1,6 @@
 /**
- * Menú hamburguesa en cabecera global (< 768px).
- * Mantiene visibles: logo, botón menú y selector de idioma.
+ * MenÃº hamburguesa en cabecera global (< 768px).
+ * Mantiene visibles: logo, botÃ³n menÃº y selector de idioma.
  */
 
 const MQ = '(min-width: 768px)';
@@ -53,7 +53,7 @@ function initSiteNavMobile() {
       return false;
     }
   })();
-  toggle.setAttribute('aria-label', en ? 'Open menu' : 'Abrir menú');
+  toggle.setAttribute('aria-label', en ? 'Open menu' : 'Abrir menÃº');
   toggle.innerHTML =
     '<span class="site-nav__toggle-bar" aria-hidden="true"></span><span class="site-nav__toggle-bar" aria-hidden="true"></span><span class="site-nav__toggle-bar" aria-hidden="true"></span>';
 
@@ -63,7 +63,7 @@ function initSiteNavMobile() {
   toggle.addEventListener('click', () => {
     const open = nav.classList.toggle('site-nav--menu-open');
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    toggle.setAttribute('aria-label', open ? (en ? 'Close menu' : 'Cerrar menú') : en ? 'Open menu' : 'Abrir menú');
+    toggle.setAttribute('aria-label', open ? (en ? 'Close menu' : 'Cerrar menÃº') : en ? 'Open menu' : 'Abrir menÃº');
   });
 
   nav.querySelectorAll('.site-nav__center a, .site-nav__end a').forEach((a) => {

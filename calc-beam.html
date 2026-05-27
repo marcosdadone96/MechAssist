@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="beam.docTitle">Vigas · flexión y flecha — TheMechAssist</title>
+    <meta name="description" data-i18n="beam.metaDesc" data-i18n-attr="content" content="Flecha, momento y tensión en vigas estáticas. Secciones rectangular, circular, I y T." />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
+    <link rel="canonical" href="https://www.themechassist.com/calc-beam.html" id="mdr-canonical" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.themechassist.com/calc-beam.html" />
+    <meta property="og:title" data-i18n="beam.docTitle" data-i18n-attr="content" content="Vigas · flexión y flecha — TheMechAssist" />
+    <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+    <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
+  </head>
+  <body class="lab-body">
+    <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
+      </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
+    </header>
+    <main class="lab-main">
+
+
+
+
+
+      <section class="lab-panel lab-panel--accent">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="beam.h2">Vigas · flexión, flecha y tensin</h2>
+          <p class="lab-safety-notice" data-i18n="beam.safetyNotice">
+            Clculo orientativo según teora de Euler-Bernoulli. Predimensionado; el dimensionado estructural final requiere cargas certificadas y normativa aplicable (EN 1993, AISC).
+          </p>
+          <p class="lab-calc-hero-lead" data-i18n="beam.heroLead">
+            Flecha máxima δ, momento flector M, cortante V y tensin normal σ a partir del vano L, la seccin y la carga. Solo carga estática.
+          </p>
+          <details class="lab-calc-seo">
+            <summary data-i18n="beam.seoSummary">Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro" data-i18n="beam.calcSeoIntro">
+              Calculadora de vigas estáticas: apoyada, voladizo o empotrada en ambos extremos, con carga puntual o distribuida. Secciones rectangular, circular maciza o hueca, perfil I y T. útil para bastidores, pasillos y soportes antes de un FEA detallado.
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="beam.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help" data-i18n="beam.methodBodyHtml" data-i18n-html>
+                Teora <strong>Euler-Bernoulli</strong>: secciones planas permanecen planas; vlido para vigas esbeltas (L/h &gt; 10).
+                Tensin <strong>σ = M/W</strong> en fibra extrema; cortadura rectangular <strong>τ = 1,5V/A</strong>.
+              </p>
+            </div>
+          </details>
+          <details class="lab-calc-seo" style="margin-top: 0.75rem">
+            <summary data-i18n="beam.stdSectionsSummary">
+              Dimensiones de perfiles est&aacute;ndar orientativas (IPE/HEA)
+            </summary>
+            <div class="lab-table-wrap">
+              <table class="lab-table">
+                <thead>
+                  <tr>
+                    <th data-i18n="beam.thProfile">Perfil</th>
+                    <th>h (mm)</th>
+                    <th>b<sub>f</sub> (mm)</th>
+                    <th>t<sub>w</sub> (mm)</th>
+                    <th>t<sub>f</sub> (mm)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>IPE 100</td><td>100</td><td>55</td><td>4.1</td><td>5.7</td></tr>
+                  <tr><td>IPE 140</td><td>140</td><td>73</td><td>4.7</td><td>6.9</td></tr>
+                  <tr><td>IPE 160</td><td>160</td><td>82</td><td>5.0</td><td>7.4</td></tr>
+                  <tr><td>IPE 200</td><td>200</td><td>100</td><td>5.6</td><td>8.5</td></tr>
+                  <tr><td>IPE 240</td><td>240</td><td>120</td><td>6.2</td><td>9.8</td></tr>
+                  <tr><td>IPE 270</td><td>270</td><td>135</td><td>6.6</td><td>10.2</td></tr>
+                  <tr><td>IPE 300</td><td>300</td><td>150</td><td>7.1</td><td>10.7</td></tr>
+                  <tr><td>HEA 100</td><td>96</td><td>100</td><td>5.0</td><td>8.0</td></tr>
+                  <tr><td>HEA 120</td><td>114</td><td>120</td><td>5.0</td><td>8.0</td></tr>
+                  <tr><td>HEA 140</td><td>133</td><td>140</td><td>5.5</td><td>8.5</td></tr>
+                  <tr><td>HEA 160</td><td>152</td><td>160</td><td>6.0</td><td>9.0</td></tr>
+                  <tr><td>HEA 200</td><td>190</td><td>200</td><td>6.5</td><td>10.0</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </header>
+        <nav class="lab-next-steps" data-i18n="beam.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="beam.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="beam.nextLi1Html" data-i18n-html><a href="calc-shaft.html">Eje · torsión</a>  si la viga también lleva par.</li>
+            <li data-i18n="beam.nextLi2Html" data-i18n-html><a href="calc-weld-joint.html">Unin soldada</a>  extremos soldados.</li>
+            <li data-i18n="beam.nextLi3Html" data-i18n-html><a href="calc-bolts-iso898.html">Tornillera ISO 898</a>  unión atornillada.</li>
+          </ul>
+        </nav>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label" data-i18n="beam.presetsLabel">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="beamPresetsBar"></div>
+        </div>
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title" data-i18n="beam.diagTitle">Vista esquemática · se actualiza al cambiar los datos</p>
+              <svg id="beamDiagram" xmlns="http://www.w3.org/2000/svg" data-i18n="beam.diagAriaLabel" data-i18n-attr="aria-label" aria-label="Diagrama de viga"></svg>
+              <p class="lab-diagram-caption" data-i18n="beam.diagCaptionHtml" data-i18n-html>
+                Apoyos, carga, diagrama de momento y flecha <strong>δ</strong> (curva discontinua). Cotas orientativas.
+              </p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field">
+                <label for="beamType" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelBeamType">Tipo de viga</span>
+                </label>
+                <select id="beamType">
+                  <option value="simply-supported" data-i18n="beam.optSimply">Apoyada en ambos extremos</option>
+                  <option value="cantilever" data-i18n="beam.optCantilever">Voladizo (empotrada)</option>
+                  <option value="fixed-both" data-i18n="beam.optFixedBoth">Empotradaempotrada (aprox.)</option>
+                </select>
+                <p class="lab-field-help" data-i18n="beam.helpBeamTypeHtml" data-i18n-html>
+                  <strong>Apoyada</strong>: dos apoyos. <strong>Voladizo</strong>: un empotramiento. <strong>Empotrada&ndash;empotrada</strong>: modelo simplificado.
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="beamLoadType" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelLoadType">Tipo de carga</span>
+                </label>
+                <select id="beamLoadType">
+                  <option value="point-center" data-i18n="beam.optPointCenter">Carga puntual en el centro</option>
+                  <option value="point-custom" data-i18n="beam.optPointCustom">Carga puntual en posicin a</option>
+                  <option value="distributed" data-i18n="beam.optDistributed">Carga distribuida en todo el vano</option>
+                  <option value="distributed-partial" data-i18n="beam.optDistributedPartial">Carga distribuida parcial</option>
+                </select>
+                <p class="lab-field-help" data-i18n="beam.helpLoadTypeHtml" data-i18n-html>
+                  <strong>F</strong> puntual (N) o <strong>q</strong> distribuida (N/m). Posici&oacute;n <strong>a</strong> si aplica.
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="beamSection" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelSection">Seccin transversal</span>
+                </label>
+                <select id="beamSection">
+                  <option value="rectangular" data-i18n="beam.optRect">Rectangular b × h</option>
+                  <option value="circular-solid" data-i18n="beam.optCirc">Circular maciza</option>
+                  <option value="circular-hollow" data-i18n="beam.optHollow">Circular hueca</option>
+                  <option value="i-section" data-i18n="beam.optI">Perfil I</option>
+                  <option value="t-section" data-i18n="beam.optT">Perfil T</option>
+                </select>
+                <p class="lab-field-help" data-i18n="beam.helpSectionHtml" data-i18n-html>
+                  Dimensiones en <strong>mm</strong>. Perfil I/T: alma y alas seg&uacute;n cat&aacute;logo o medida propia.
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="beamE" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelMaterial">Mdulo elstico E</span>
+                </label>
+                <select id="beamE">
+                  <option value="steel" data-i18n="beam.optSteel">Acero</option>
+                  <option value="stainless" data-i18n="beam.optStainless">Inoxidable</option>
+                  <option value="aluminum" data-i18n="beam.optAluminum">Aluminio</option>
+                  <option value="cast-iron" data-i18n="beam.optCastIron">Fundicin</option>
+                  <option value="timber" data-i18n="beam.optTimber">Madera (orientativo)</option>
+                  <option value="custom" data-i18n="beam.optCustomE">E personalizado</option>
+                </select>
+              </div>
+              <div class="lab-field" id="beamECustomRow" hidden>
+                <label for="beamECustom" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelECustom">E (MPa)</span>
+                </label>
+                <input inputmode="decimal" id="beamECustom" type="number" step="any" min="1000" value="210000" />
+              </div>
+              <div class="lab-field">
+                <label for="beamSpan" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Vano">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18h16M6 18V8M18 18V8"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="beam.labelSpan">Longitud L (m)</span>
+                </label>
+                <input inputmode="decimal" id="beamSpan" type="number" step="0.001" min="0.001" value="3" />
+                <p class="lab-field-help" data-i18n="beam.helpSpanHtml" data-i18n-html>
+                  Vano <strong>L</strong> entre apoyos (m). En voladizo, longitud libre desde el empotramiento.
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="beamLoad" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelLoad">Carga F (N) o q (N/m)</span>
+                </label>
+                <input inputmode="decimal" id="beamLoad" type="number" step="any" min="0" value="5000" />
+                <p class="lab-field-help" data-i18n="beam.helpLoadHtml" data-i18n-html>
+                  <strong>F</strong> en cargas puntuales (N). <strong>q</strong> en cargas distribuidas (N/m).
+                </p>
+              </div>
+              <div class="lab-field" id="beamLoadPosRow" hidden>
+                <label for="beamLoadPos" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelLoadPos">Posicin a desde apoyo izq. (m)</span>
+                </label>
+                <input inputmode="decimal" id="beamLoadPos" type="number" step="0.01" min="0" value="1.5" />
+                <p class="lab-field-help" data-i18n="beam.helpLoadPosHtml" data-i18n-html>Distancia <strong>a</strong> desde el apoyo izquierdo hasta la carga (m).</p>
+              </div>
+              <div class="lab-field" id="beamLoadPosBRow" hidden>
+                <label for="beamLoadPosB" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelLoadPosB">Fin de carga distribuida b (m)</span>
+                </label>
+                <input inputmode="decimal" id="beamLoadPosB" type="number" step="0.01" min="0" value="3" />
+              </div>
+              <div class="lab-field" id="beamRectRows">
+                <label for="beamWidth" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelWidth">Anchura b (mm)</span>
+                </label>
+                <input inputmode="decimal" id="beamWidth" type="number" step="any" min="0.1" value="100" />
+                <p class="lab-field-help" data-i18n="beam.helpWidthHtml" data-i18n-html>Anchura <strong>b</strong> de la seccin rectangular (mm).</p>
+              </div>
+              <div class="lab-field" id="beamRectRows2">
+                <label for="beamHeight" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelHeight">Altura h (mm)</span>
+                </label>
+                <input inputmode="decimal" id="beamHeight" type="number" step="any" min="0.1" value="200" />
+                <p class="lab-field-help" data-i18n="beam.helpHeightHtml" data-i18n-html>Altura <strong>h</strong> de la seccin rectangular (mm).</p>
+              </div>
+              <div class="lab-field" id="beamCircRow" hidden>
+                <label for="beamDiam" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelDiam">Diámetro d (mm)</span>
+                </label>
+                <input inputmode="decimal" id="beamDiam" type="number" step="any" min="0.1" value="32" />
+                <p class="lab-field-help" data-i18n="beam.helpDiamHtml" data-i18n-html>Diámetro de la seccin circular maciza (mm).</p>
+              </div>
+              <div class="lab-field" id="beamHollowRows" hidden>
+                <label for="beamDiamExt" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelDiamExt">Diámetro exterior (mm)</span>
+                </label>
+                <input inputmode="decimal" id="beamDiamExt" type="number" step="any" value="60" />
+              </div>
+              <div class="lab-field" id="beamHollowRows2" hidden>
+                <label for="beamDiamInt" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelDiamInt">Diámetro interior (mm)</span>
+                </label>
+                <input inputmode="decimal" id="beamDiamInt" type="number" step="any" min="0" value="40" />
+              </div>
+              <div class="lab-field" id="beamISectionRows" hidden>
+                <label for="beamFlangeW" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelFlangeW">Anchura ala b<sub>f</sub> (mm)</span>
+                </label>
+                <input inputmode="decimal" id="beamFlangeW" type="number" step="any" value="100" />
+              </div>
+              <div class="lab-field" id="beamISectionRows2" hidden>
+                <label for="beamTotalH" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelTotalH">Altura total h (mm)</span>
+                </label>
+                <input inputmode="decimal" id="beamTotalH" type="number" step="any" value="200" />
+              </div>
+              <div class="lab-field" id="beamISectionRows3" hidden>
+                <label for="beamWebT" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelWebT">Espesor alma t<sub>w</sub> (mm)</span>
+                </label>
+                <input inputmode="decimal" id="beamWebT" type="number" step="any" value="5.6" />
+              </div>
+              <div class="lab-field" id="beamISectionRows4" hidden>
+                <label for="beamFlangeT" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelFlangeT">Espesor ala t<sub>f</sub> (mm)</span>
+                </label>
+                <input inputmode="decimal" id="beamFlangeT" type="number" step="any" value="8.5" />
+              </div>
+              <div class="lab-field">
+                <label for="beamSigAdm" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="beam.labelSigAdm">σ admisible (MPa)</span>
+                </label>
+                <input inputmode="decimal" id="beamSigAdm" type="number" step="any" min="0" value="160" placeholder="0 = omitir" />
+                <p class="lab-field-help" data-i18n="beam.helpSigAdmHtml" data-i18n-html>
+                  Tensin normal mxima admisible orientativa. <strong>0</strong> omite la comprobación de uso.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="lab-calc-layout__out lab-calc-layout__out--panel">
+            <div
+              class="lab-units-bar"
+              role="group"
+              aria-label="Unidades de los resultados"
+              data-lab-convert-categories="length force pressure"
+              data-lab-convert-title="Conversor (vigas)"
+              data-lab-convert-tip="Longitud, fuerza y tensin en resultados."
+            >
+              <span class="lab-units-bar__title" data-i18n="beam.unitsBarTitle">Cómo ver los resultados</span>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl" data-i18n="beam.unitsLength">Longitud</span>
+                <select id="labUnitLength" class="lab-units-bar__select">
+                  <option value="mm" data-i18n="beam.optMm">mm</option>
+                  <option value="cm" data-i18n="beam.optCm">cm</option>
+                  <option value="m" data-i18n="beam.optM">m</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl" data-i18n="beam.unitsForce">Fuerza</span>
+                <select id="labUnitForce" class="lab-units-bar__select">
+                  <option value="N" data-i18n="beam.optN">N</option>
+                  <option value="kN" data-i18n="beam.optKN">kN</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl" data-i18n="beam.unitsPressure">Tensin</span>
+                <select id="labUnitPressure" class="lab-units-bar__select">
+                  <option value="MPa" data-i18n="beam.optMpa">MPa</option>
+                  <option value="kPa" data-i18n="beam.optKpa">kPa</option>
+                  <option value="Nmm2" data-i18n="beam.optNmm2">N/mm</option>
+                </select>
+              </label>
+            </div>
+            <div id="beamHero"></div>
+            <div id="beamAlerts" class="lab-alerts"></div>
+            <div class="lab-results-wrap" id="beamResultsWrap">
+              <div class="lab-results-computing" aria-hidden="true">
+                <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
+                  <path fill="#0f766e" d="M32 8l2.2 4.4 4.9-1.3 1.3 4.9 4.4 2.2-2.2 4.4 1.3 4.9-4.9 1.3-2.2 4.4-4.4-2.2-4.9 1.3-1.3-4.9-4.4-2.2 2.2-4.4-1.3-4.9 4.9-1.3 4.4-2.2zm0 10a14 14 0 100 28 14 14 0 000-28z"/>
+                </svg>
+                <span class="lab-results-computing__label" data-i18n="beam.recalculating">Recalculando</span>
+              </div>
+              <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked" open>
+                <summary data-i18n="beam.summaryFull">Resultado completo</summary>
+                <div class="lab-results" id="beamResults"></div>
+              </details>
+              <div class="lab-results-actions">
+                <button type="button" class="lab-btn lab-btn--block" id="beamCopyResults" data-i18n="beam.copyResults">Copiar resultados</button>
+              </div>
+            </div>
+            <p class="lab-related-hint" data-i18n="beam.relatedHintHtml" data-i18n-html>
+              Transmisión completa? <a href="machines-hub.html">Calcula la máquina accionada →</a>
+            </p>
+            <div id="labPurchaseSuggestions" hidden></div>
+            <div class="lab-results-share lab-results-share--footer" id="beamShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="beamCopyLinkBtn" data-i18n="beam.copyLink">Copiar enlace</button>
+              <div class="lab-copy-toast" id="beamCopyToast" role="status" data-i18n="beam.copyToast">Enlace copiado!</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+    
+    
+    
+    
+    </main>
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
+    <script type="module" src="js/ui/calcBeamPage.js"></script>
+    <script type="module" src="js/ui/labDonationFooter.js"></script>
+  </body>
+</html>

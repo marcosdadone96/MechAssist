@@ -4,7 +4,7 @@
 import { getHubCardArt, normalizeHubCalcId } from '../lab/hubCardIllustrations.js';
 import { getHubMinimalGlyph } from '../lab/hubCardMinimalGlyphs.js';
 
-/** Calculadoras del hub Mùquinas (y mismas rutas en otros hubs). */
+/** Calculadoras del hub M¬ùquinas (y mismas rutas en otros hubs). */
 export const MACHINE_HUB_SLUGS = new Set([
   'centrifugal-pump.html',
   'flat-conveyor.html',

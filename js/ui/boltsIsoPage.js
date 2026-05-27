@@ -7,6 +7,7 @@ import {
   syncInputValidationResultsGate,
   createLabUrlSync,
   mountLabPresetsBar,
+  renderResultHero,
   updateLabShareVisibility,
   wireLabCopyLink,
   wireLabCopyResultsButton,
@@ -143,9 +144,15 @@ function render() {
 
   renderBoltedJointDiagram(document.getElementById('blDiagram'), d);
 
-  if (syncInputValidationResultsGate(document.getElementById('blResults'))) return;
+  if (syncInputValidationResultsGate(document.getElementById('blResults'))) {
+    const blHero = document.getElementById('blHero');
+    if (blHero) blHero.innerHTML = '';
+    return;
+  }
 
   if (mode === 'design' && F_kN > 0 && !designSug) {
+    const blHero = document.getElementById('blHero');
+    if (blHero) blHero.innerHTML = '';
     out.innerHTML = `<p class="lab-verdict lab-verdict--err">${bx(
       `No hay combinación M6–M36 en grados 8.8/10.9/12.9 que cubra ${F_kN.toFixed(2)} kN en este modelo. Considere mayor diámetro fuera de tabla, rosca fina o más tornillos en paralelo.`,
       `No M6–M36 grade 8.8/10.9/12.9 combination covers ${F_kN.toFixed(2)} kN in this model. Consider larger diameter, fine thread, or more bolts in parallel.`,
@@ -173,6 +180,27 @@ function render() {
   const ratioVsPreload = preloadN > 0 ? F_N / preloadN : 0;
   const K_mu = 0.9 * mu + 0.092;
   const T_mu_Nm = (K_mu * preloadN * d) / 1000;
+  const blVerdict =
+    F_N <= 0 ? 'warn' : ratioVsPreload > 1 || !ok ? 'error' : ratioVsPreload > 0.9 ? 'warn' : 'ok';
+
+  const blHero = document.getElementById('blHero');
+  if (blHero) {
+    blHero.innerHTML = renderResultHero(
+      [
+        {
+          label: bx('Fuerza de apriete F_V', 'Clamp force F_V'),
+          display: `${(preloadN / 1000).toFixed(2)} kN`,
+          hint: bx('Precarga orientativa ≈ 75% Rp·A_s', 'Indicative preload ≈ 75% Rp·A_s'),
+        },
+        {
+          label: bx('Factor de seguridad SF', 'Safety factor SF'),
+          display: F_N > 0 && Number.isFinite(SF) ? SF.toFixed(2) : '—',
+          hint: bx('F_Rd / F_req (modelo simplificado)', 'F_Rd / F_req (simplified model)'),
+        },
+      ],
+      { verdict: blVerdict },
+    );
+  }
 
   if (F_N <= 0) {
     out.innerHTML = `<p class="lab-verdict lab-verdict--muted">${bx(

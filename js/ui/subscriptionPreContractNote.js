@@ -1,5 +1,5 @@
 /**
- * Aviso precontractual (renovacin, cancelacin, reembolso) para suscripciones.
+ * Aviso precontractual (renovaciÂn, cancelaciÂn, reembolso) para suscripciones.
  */
 import { FEATURES } from '../config/features.js';
 

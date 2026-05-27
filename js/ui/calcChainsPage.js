@@ -26,14 +26,17 @@ import {
   labHelpTooltipMarkup,
   metricHtml,
   mountLabPresetsBar,
+  renderMotorPowerRuler,
   renderResultHero,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
+  renderLabAdvisorInsights,
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
   wireLabCopyResultsButton,
 } from './labCalcUx.js';
+import { buildChainsAdvisorInsights } from '../services/iaAdvisor.js';
 import { commerceIdForChainRef } from '../data/commerceCatalog.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
@@ -222,7 +225,10 @@ function refreshCore() {
   const r = computeRollerChain(p);
   renderChainDriveDiagram(document.getElementById('cDiagram'), p);
 
-  if (syncInputValidationResultsGate(document.getElementById('cResults'))) return;
+  if (syncInputValidationResultsGate(document.getElementById('cResults'))) {
+    renderLabAdvisorInsights('cAdvisorPanel', []);
+    return;
+  }
 
   const lub = localizeChainLubrication(r.chainLubrication, lang);
   const normsNote = lang === 'en' ? t.normsNote : r.normsNote;
@@ -234,6 +240,9 @@ function refreshCore() {
 
   const heroEl = document.getElementById('cHero');
   if (heroEl) {
+    const cMotorRuler = document.getElementById('cMotorRuler');
+    if (cMotorRuler) cMotorRuler.innerHTML = '';
+
     heroEl.innerHTML = renderResultHero(
       [
         {
@@ -446,6 +455,20 @@ function refreshCore() {
   setLabPurchaseFromShoppingLines(document.getElementById('labPurchaseSuggestions'), shoppingLines, [
     { label: t.shopPinion, searchQuery: t.shopQ },
   ]);
+
+  const advLang = lang === 'en' ? 'en' : 'es';
+  renderLabAdvisorInsights(
+    'cAdvisorPanel',
+    buildChainsAdvisorInsights(
+      {
+        chainSpeed: r.linearSpeed_m_s,
+        pitch: r.pitch_mm,
+        sprocketTeeth: r.z1,
+        lang: advLang,
+      },
+      { lang: advLang },
+    ),
+  );
 
   updateLabShareVisibility('cShareLinkWrap', 'cResults');
   chainUrl.serializeToUrl();

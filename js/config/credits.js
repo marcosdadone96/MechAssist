@@ -1,7 +1,7 @@
 /**
- * Crùditos (saldo ùnico) y costes de uso.
- * `creditPoolFromPath` solo etiqueta la secciùn; el saldo es compartido.
- * Persistencia en Netlify Blobs vùa `credits-balance` y `credits-consume`.
+ * CrÔøΩditos (saldo ÔøΩnico) y costes de uso.
+ * `creditPoolFromPath` solo etiqueta la secciÔøΩn; el saldo es compartido.
+ * Persistencia en Netlify Blobs vÔøΩa `credits-balance` y `credits-consume`.
  */
 import { FEATURES } from './features.js';
 
@@ -73,7 +73,7 @@ export function getCreditCosts() {
 }
 
 /**
- * Saldo disponible (unificado o suma de registros antiguos en cachÈ).
+ * Saldo disponible (unificado o suma de registros antiguos en cachÔøΩ).
  * @param {Record<string, unknown> | null | undefined} balance
  */
 export function creditsAmountFromBalance(balance) {

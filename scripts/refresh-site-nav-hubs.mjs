@@ -1,5 +1,5 @@
 /**
- * Actualiza cabecera site-nav: enlace de vuelta al hub según área + Sugerencias junto al idioma.
+ * Actualiza cabecera site-nav: enlace de vuelta al hub segÃºn Ã¡rea + Sugerencias junto al idioma.
  */
 import fs from 'fs';
 import path from 'path';
@@ -64,7 +64,7 @@ function hubCategory(base) {
 }
 
 const CENTER_LAB = `      <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
-        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisiÃ³n</a>
         <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
       </nav>`;
 

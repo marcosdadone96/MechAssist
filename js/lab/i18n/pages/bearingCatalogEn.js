@@ -6,6 +6,8 @@ export const BEARING_CATALOG_EN = {
     '<strong>Sample data:</strong> 62xx series with indicative C. For final selection, use the official SKF or FAG catalogue.',
   'bcat.heroLead':
     'Pick series and designation with demo <strong>C</strong>; get <strong>L<sub>10h</sub></strong> from <strong>P</strong> and <strong>n</strong>. For life with known <strong>C</strong> only, use the generic L10 module.',
+  'bcat.safetyNotice':
+    'Nominal L\u2081\u2080 life is indicative. Always consult the manufacturer catalogue and apply a\u2081, aISO modification factors per actual lubrication, temperature and contamination conditions (ISO 281).',
   'bcat.calcSeoIntro':
     'Browse a demo deep-groove ball bearing catalogue for ISO 15 dimension series 6000, 6200 and 6300 (62xx family). Each designation shows bore, outer diameter and width plus indicative dynamic load rating C for a quick L10h life estimate per ISO 281. Typical uses include electric motor support bearings, conveyor idlers, pump shafts and light gearbox outputs where axial capacity is moderate. Enter equivalent load P and speed n to screen whether a 6205, 6308 or lighter 60xx fits your duty before opening the manufacturer catalogue for seals, clearance class and lubrication.',
   'bcat.seoHintHtml':

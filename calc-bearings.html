@@ -55,6 +55,9 @@
       <section class="lab-panel">
         <header class="lab-calc-page-head">
           <h2 data-i18n="brg.h2">Vida básica L10 (ISO 281 simplificada)</h2>
+          <p class="lab-safety-notice" data-i18n="brg.safetyNotice">
+            Vida nominal L₁₀ orientativa (ISO 281). Confirme siempre con factores a₁ y aISO reales: lubricación, temperatura y contaminación afectan la vida real de forma significativa.
+          </p>
           <p class="lab-calc-hero-lead" data-i18n="brg.heroLead" data-i18n-html>
             L<sub>10</sub> a partir de <strong>C</strong> (catálogo), <strong>P</strong> equivalente y rpm; modo diseño o diagnóstico. Sin factores a<sub>ISO</sub> extendidos ni confiabilidad distinta del 90%.
           </p>
@@ -272,6 +275,7 @@
               </label>
             </div>
             <div id="brgHero"></div>
+            <div id="brgAdvisorPanel" hidden></div>
             <div class="lab-results-wrap" id="brgResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">

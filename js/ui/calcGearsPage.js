@@ -26,13 +26,14 @@ import {
   renderResultHero,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
+  renderLabAdvisorInsights,
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
   wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
-import { metricsFromGears } from '../services/iaAdvisor.js';
+import { buildGearsAdvisorInsights, metricsFromGears } from '../services/iaAdvisor.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { LAB_LANG_EVENT, getLabLang } from '../lab/i18n/labLang.js';
 import { gearsRuntimeStrings } from '../lab/i18n/runtime/gearsRuntime.js';
@@ -262,7 +263,10 @@ function refreshCore() {
     unitPrefs: getLabUnitPrefs(),
   });
 
-  if (syncInputValidationResultsGate(document.getElementById('gResults'))) return;
+  if (syncInputValidationResultsGate(document.getElementById('gResults'))) {
+    renderLabAdvisorInsights('gAdvisorPanel', []);
+    return;
+  }
 
   const Topt = readOptional('gTorque');
   const Popt = readOptional('gPower');
@@ -499,6 +503,22 @@ function refreshCore() {
       searchQuery: t.shopQ(r.module_mm),
     },
   ]);
+
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  const lubeAdv = lube === 'grease' ? 'grease' : 'forced';
+  renderLabAdvisorInsights(
+    'gAdvisorPanel',
+    buildGearsAdvisorInsights(
+      {
+        sf: agma.hasLoad ? agma.bendingSafety_SF : undefined,
+        sh: agma.hasLoad ? agma.contactSafety_SH : undefined,
+        pitchLineVelocity: r.v_pitch_m_s,
+        lubeType: lubeAdv,
+        lang: advLang,
+      },
+      { lang: advLang },
+    ),
+  );
 
   updateLabShareVisibility('gShareLinkWrap', 'gResults');
   gearUrl.serializeToUrl();

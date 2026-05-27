@@ -1,6 +1,6 @@
 /**
  * One-shot: reemplaza carga directa de GA por cookiesAndAnalyticsBoot.js
- * Ejecutar desde la raíz del repo: node scripts/patch-gtag-to-consent.mjs
+ * Ejecutar desde la raÃ­z del repo: node scripts/patch-gtag-to-consent.mjs
  */
 import fs from 'fs';
 import path from 'path';

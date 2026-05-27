@@ -2,6 +2,8 @@
 export const GEARMOTOR_INERTIA_EN = {
   'gm.docTitle': 'Load vs motor inertia \u2014 TheMechAssist',
   'gm.h2': 'Load inertia vs gearmotor \u00b7 user-defined data',
+  'gm.safetyNotice':
+    'Indicative results. They do not replace detailed calculation with actual manufacturer data or prototype validation.',
   'gm.dataNoteHtml':
     '<strong>Demo catalogue:</strong> gearmotor curves and data are indicative; they do not replace manufacturer software or datasheets.',
   'gm.heroLead':

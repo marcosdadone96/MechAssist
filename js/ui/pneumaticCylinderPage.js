@@ -3,7 +3,12 @@ import {
   mountLabPresetsBar,
   revalidateAllBoundInputs,
   syncInputValidationResultsGate,
+  updateLabShareVisibility,
+  wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
+import { bindFluidLabUnitSelectors, formatNlMin } from '../lab/fluidLabUnitPrefs.js';
+import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
@@ -735,6 +740,7 @@ function computeAndRenderCore() {
 
   if (errors.length) {
     results.innerHTML = '';
+    updateLabShareVisibility('pcShareLinkWrap', 'pcResults');
     if (formulaBody instanceof HTMLElement) formulaBody.innerHTML = '';
     if (rodThreadInfo instanceof HTMLElement) rodThreadInfo.textContent = '';
     const vsEl = document.getElementById('pcVerdictSummary');
@@ -827,7 +833,7 @@ function computeAndRenderCore() {
   const keyMetrics = [
     metric(tr('m1'), m1Line, m1Unit),
     metric(tr('m2'), `${fmt(forceRatio, 2)} x`, m2Sub),
-    metric(tr('m3'), `${fmt(nlMin, 1)} Nl/min`, `${fmt(cyclesMin, 1)} cpm`),
+    metric(tr('m3'), formatNlMin(nlMin), `${fmt(cyclesMin, 1)} cpm`),
     metric(
       tr('m4'),
       `${fmt(pCrN, 0)} N`,
@@ -1038,6 +1044,7 @@ function computeAndRenderCore() {
       ? 'Educational model; verify threads, mounting and buckling with manufacturer data.'
       : 'Modelo educativo; verificar roscas, montaje y pandeo con datos de fabricante.',
   };
+  updateLabShareVisibility('pcShareLinkWrap', 'pcResults');
 }
 
 function syncPcLabTierUi() {
@@ -1115,6 +1122,16 @@ revalidateAllBoundInputs();
 mountLabPresetsBar('pcPresetsBar', PC_PRESETS, computeAndRender);
 
 computeAndRender();
+
+injectLabUnitConverterIfNeeded();
+mountLabUnitConverter();
+bindFluidLabUnitSelectors(computeAndRender);
+
+wireLabCopyLink('pcCopyLinkBtn', 'pcCopyLinkToast');
+wireLabCopyResultsButton('pcCopyResults', {
+  moduleTitle: getCurrentLang() === 'en' ? 'Pneumatic cylinder' : 'Cilindro neum\u00e1tico',
+  toastId: 'pcCopyToast',
+});
 
 mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountPc'), {
   getPayload: () => pcPdfSnapshot,

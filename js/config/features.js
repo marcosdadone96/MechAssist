@@ -228,6 +228,8 @@ export const FEATURES = Object.freeze({
   }),
 
   monetization: Object.freeze({
+    /** Pro candidate: full Goodman diagram + advanced fatigue modifiers */
+    fatigueAdvanced: true,
     flat: Object.freeze({
       scenarioCompare: false,
       advancedMotorCompare: false,

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="pscrew.docTitle">Tornillo de potencia trapezoidal ISO 2904 — TheMechAssist</title>
+    <meta name="description" data-i18n="pscrew.metaDesc" data-i18n-attr="content" content="Par de avance, rendimiento y autobloqueo en husillo trapezoidal ISO 2904 (Tr). Predimensionado orientativo." />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
+    <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
+    <link rel="canonical" href="https://www.themechassist.com/calc-power-screw.html" id="mdr-canonical" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.themechassist.com/calc-power-screw.html" />
+    <meta property="og:title" data-i18n="pscrew.docTitle" data-i18n-attr="content" content="Tornillo de potencia trapezoidal ISO 2904 — TheMechAssist" />
+    <meta property="og:description" data-i18n="pscrew.metaDesc" data-i18n-attr="content" content="Par de avance, rendimiento y autobloqueo en husillo trapezoidal ISO 2904 (Tr)." />
+    <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" data-i18n="pscrew.docTitle" data-i18n-attr="content" content="Tornillo de potencia trapezoidal ISO 2904 — TheMechAssist" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+    <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
+  </head>
+  <body class="lab-body">
+    <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
+      </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
+    </header>
+    <main class="lab-main">
+
+
+
+
+
+      <section class="lab-panel lab-panel--accent">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="pscrew.h2">Tornillo de potencia · trapezoidal (ISO 2904)</h2>
+          <p class="lab-safety-notice" data-i18n="pscrew.safetyNotice">
+            Modelo orientativo. Verifique resistencia del husillo, tuerca y dispositivos de elevación según normativa aplicable.
+          </p>
+          <p class="lab-calc-hero-lead" data-i18n="pscrew.heroLead">
+            Par de subida y bajada, rendimiento η, autobloqueo y presión en tuerca a partir del paso p, diámetro d, número de entradas y coeficiente de fricción μ.
+          </p>
+          <details class="lab-calc-seo">
+            <summary data-i18n="pscrew.seoSummary">Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro" data-i18n="pscrew.calcSeoIntro">
+              Husillos trapezoidales Tr en gatos mecánicos, prensas y mesas CNC. La herramienta estima par, rendimiento y autobloqueo con un modelo clásico tornillo–tuerca; útil para comparar pasos y materiales antes de un diseño detallado.
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="pscrew.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help" data-i18n="pscrew.methodBodyHtml" data-i18n-html>
+                Par de avance: <strong>T = F·(d<sub>2</sub>/2)·tan(λ ± φ′)</strong>, con ángulo de avance <strong>λ = arctan(L/(π·d<sub>2</sub>))</strong> y <strong>L = n·p</strong>.
+                No sustituye comprobación de pandeo, fatiga del filete ni verificación de tuerca según catálogo.
+              </p>
+            </div>
+          </details>
+        </header>
+        <nav class="lab-next-steps" data-i18n="pscrew.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="pscrew.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="pscrew.nextLi1Html" data-i18n-html><a href="car-lift-screw.html">Elevador de vehículos</a>  aplicación típica.</li>
+            <li data-i18n="pscrew.nextLi2Html" data-i18n-html><a href="calc-shaft.html">Eje · torsión</a>  diámetro del husillo.</li>
+            <li data-i18n="pscrew.nextLi3Html" data-i18n-html><a href="calc-bearings.html">Rodamientos · L10</a>  apoyos del husillo.</li>
+          </ul>
+        </nav>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label" data-i18n="pscrew.presetsLabel">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="pscrewPresetsBar"></div>
+        </div>
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title" data-i18n="pscrew.diagTitle">Perfil trapezoidal y esquema de carga</p>
+              <svg id="pscrewDiagram" xmlns="http://www.w3.org/2000/svg" data-i18n="pscrew.diagAriaLabel" data-i18n-attr="aria-label" aria-label="Diagrama husillo trapezoidal"></svg>
+              <p class="lab-diagram-caption" data-i18n="pscrew.diagCaptionHtml" data-i18n-html>
+                Vista lateral y detalle del filete <strong>Tr 30°</strong>. Cotas <strong>d</strong>, <strong>d<sub>2</sub></strong>, <strong>p</strong> y <strong>L</strong> orientativas; no sustituye plano de taller.
+              </p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field">
+                <label for="pscrewPitch" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Paso de rosca">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18h16M7 14l3-4 3 4 3-6"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="pscrew.labelPitch">Paso p (mm)</span>
+                </label>
+                <select id="pscrewPitch">
+                  <option value="1.5">1,5</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4" selected>4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="8">8</option>
+                  <option value="10">10</option>
+                  <option value="12">12</option>
+                  <option value="16">16</option>
+                </select>
+                <p class="lab-field-help" data-i18n="pscrew.helpPitchHtml" data-i18n-html>
+                  Paso normalizado <strong>p</strong> (mm). Con <strong>n</strong> entradas, avance <strong>L = n·p</strong>.
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="pscrewDiam" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Diámetro nominal">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><path d="M5 12h14"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="pscrew.labelDiam">Diámetro nominal d (mm) </span>
+                </label>
+                <input inputmode="decimal" id="pscrewDiam" type="number" step="any" min="4" value="16" />
+                <p class="lab-field-help" data-i18n="pscrew.helpDiamHtml" data-i18n-html>
+                  Diámetro medio aproximado <strong>d<sub>2</sub> ≈ d − 0,5·p</strong> para el cálculo de par.
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="pscrewStarts" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="pscrew.labelStarts">Número de entradas n</span>
+                </label>
+                <select id="pscrewStarts">
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+                <p class="lab-field-help" data-i18n="pscrew.helpStartsHtml" data-i18n-html>
+                  Número de principios de rosca (<strong>n</strong>). Multiplica el avance: <strong>L = n·p</strong>.
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="pscrewFriction" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="pscrew.labelFriction">Coeficiente de fricción μ</span>
+                </label>
+                <select id="pscrewFriction">
+                  <option value="bronze-lub" data-i18n="pscrew.optBronzeLub">Bronce/acero lubricado</option>
+                  <option value="bronze-dry" selected data-i18n="pscrew.optBronzeDry">Bronce/acero seco</option>
+                  <option value="steel-lub" data-i18n="pscrew.optSteelLub">Acero/acero lubricado</option>
+                  <option value="steel-dry" data-i18n="pscrew.optSteelDry">Acero/acero seco</option>
+                  <option value="custom" data-i18n="pscrew.optMuCustom">μ personalizado</option>
+                </select>
+                <p class="lab-field-help" data-i18n="pscrew.helpFrictionHtml" data-i18n-html>
+                  μ orientativo según par de materiales. Afecta par, rendimiento η y autobloqueo (λ &lt; φ′).
+                </p>
+              </div>
+              <div class="lab-field" id="pscrewFrictionCustomRow" hidden>
+                <label for="pscrewFrictionCustom" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="pscrew.labelMuCustom">μ (personalizado)</span>
+                </label>
+                <input inputmode="decimal" id="pscrewFrictionCustom" type="number" step="0.01" min="0.01" max="0.5" value="0.12" />
+              </div>
+              <div class="lab-field">
+                <label for="pscrewLoad" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Carga axial">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v14M8 14l4 4 4-4"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="pscrew.labelLoad">Carga axial F (N)</span>
+                </label>
+                <input inputmode="decimal" id="pscrewLoad" type="number" step="any" min="0" value="20000" />
+                <p class="lab-field-help" data-i18n="pscrew.helpLoadHtml" data-i18n-html>
+                  Fuerza axial sobre el husillo (N). En elevación, incluya factor de seguridad de carga.
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="pscrewN" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="pscrew.labelRpm">Velocidad n (RPM)</span>
+                </label>
+                <input inputmode="decimal" id="pscrewN" type="number" step="any" min="0" value="0" placeholder="0 = omitir potencia" />
+                <p class="lab-field-help" data-i18n="pscrew.helpRpmHtml" data-i18n-html>
+                  Velocidad de giro (RPM). Con <strong>n &gt; 0</strong> se estima potencia <strong>P</strong>.
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="pscrewNutTurns" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="pscrew.labelNutTurns">Espiras activas en tuerca</span>
+                </label>
+                <input inputmode="decimal" id="pscrewNutTurns" type="number" step="1" min="1" value="5" />
+                <p class="lab-field-help" data-i18n="pscrew.helpNutTurnsHtml" data-i18n-html>
+                  Longitud de rosca en contacto en la tuerca; usada para presión superficial <strong>p = F/A<sub>c</sub></strong>.
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="pscrewPadm" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="pscrew.labelPadm">Presión adm. tuerca p<sub>adm</sub> (MPa)</span>
+                </label>
+                <input inputmode="decimal" id="pscrewPadm" type="number" step="any" min="0" value="10" placeholder="0 = omitir" />
+                <p class="lab-field-help" data-i18n="pscrew.helpPadmHtml" data-i18n-html>
+                  Límite orientativo de presión en tuerca (MPa). <strong>0</strong> omite la comprobación.
+                </p>
+              </div>
+              <div class="lab-field lab-field--wide">
+                <details class="lab-results-details lab-results-details--chevron-end">
+                  <summary data-i18n="pscrew.isoTableSummary">Pasos normalizados ISO 2904 (orientativo)</summary>
+                  <div class="lab-table-wrap">
+                    <table class="lab-table">
+                      <thead>
+                        <tr>
+                          <th data-i18n="pscrew.tableThSize">Designaci&oacute;n</th>
+                          <th data-i18n="pscrew.tableThPitch">p (mm)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>Tr 8 × 1,5</td><td>1,5</td></tr>
+                        <tr><td>Tr 10 × 2</td><td>2</td></tr>
+                        <tr><td>Tr 12 × 3</td><td>3</td></tr>
+                        <tr><td>Tr 16 × 4</td><td>4</td></tr>
+                        <tr><td>Tr 20 × 4</td><td>4</td></tr>
+                        <tr><td>Tr 24 × 5</td><td>5</td></tr>
+                        <tr><td>Tr 32 × 6</td><td>6</td></tr>
+                        <tr><td>Tr 40 × 7</td><td>7</td></tr>
+                        <tr><td>Tr 50 × 8</td><td>8</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </details>
+              </div>
+            </div>
+          </div>
+          <div class="lab-calc-layout__out lab-calc-layout__out--panel">
+            <div id="pscrewHero"></div>
+            <div id="pscrewAlerts" class="lab-alerts"></div>
+            <div class="lab-results-wrap" id="pscrewResultsWrap">
+              <div class="lab-results-computing" aria-hidden="true">
+                <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
+                  <path fill="#0f766e" d="M32 8l2.2 4.4 4.9-1.3 1.3 4.9 4.4 2.2-2.2 4.4 1.3 4.9-4.9 1.3-2.2 4.4-4.4-2.2-4.9 1.3-1.3-4.9-4.4-2.2 2.2-4.4-1.3-4.9 4.9-1.3 4.4-2.2zm0 10a14 14 0 100 28 14 14 0 000-28z"/>
+                </svg>
+                <span class="lab-results-computing__label" data-i18n="pscrew.recalculating">Recalculando</span>
+              </div>
+              <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked" open>
+                <summary data-i18n="pscrew.summaryFull">Resultado completo</summary>
+                <div class="lab-results" id="pscrewResults"></div>
+              </details>
+              <div class="lab-results-actions">
+                <button type="button" class="lab-btn lab-btn--block" id="pscrewCopyResults" data-i18n="pscrew.copyResults">Copiar resultados</button>
+              </div>
+            </div>
+            <p class="lab-related-hint" data-i18n="pscrew.relatedHintHtml" data-i18n-html>
+              Elevación o prensa? <a href="car-lift-screw.html">Elevador de vehículos →</a>
+            </p>
+            <div id="labPurchaseSuggestions" hidden></div>
+            <div class="lab-results-share lab-results-share--footer" id="pscrewShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="pscrewCopyLinkBtn" data-i18n="pscrew.copyLink">Copiar enlace</button>
+              <div class="lab-copy-toast" id="pscrewCopyToast" role="status" data-i18n="pscrew.copyToast">&#161;Enlace copiado!</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+    
+    
+    
+    
+    </main>
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
+    <script type="module" src="js/ui/calcPowerScrewPage.js"></script>
+    <script type="module" src="js/ui/labDonationFooter.js"></script>
+  </body>
+</html>

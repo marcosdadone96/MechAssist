@@ -73,6 +73,10 @@
               </p>
             </div>
           </details>
+          <p class="lab-safety-notice" data-i18n="bcat.safetyNotice">
+            La vida nominal L₁₀ es orientativa. Consulte siempre el catálogo del fabricante (SKF, FAG, NSK...) y aplique
+            factores de modificación a₁, aISO según condiciones reales de lubricación, temperatura y contaminación (ISO 281).
+          </p>
         </header>
         <nav class="lab-next-steps" data-i18n="bcat.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
           <h3 class="lab-next-steps__title" data-i18n="bcat.nextStepsTitle">Siguiente paso habitual</h3>
@@ -133,7 +137,8 @@
             </div>
           </div>
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
-            <div class="lab-results-wrap">
+            <div id="bcHero"></div>
+            <div class="lab-results-wrap" id="bcResults">
               <div id="bcOut" class="lab-catalog-verdict"></div>
               <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked" open>
                 <summary data-i18n="bcat.summaryFull">Resultado completo</summary>

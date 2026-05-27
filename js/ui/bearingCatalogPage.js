@@ -8,6 +8,7 @@ import {
   syncInputValidationResultsGate,
   createLabUrlSync,
   mountLabPresetsBar,
+  renderResultHero,
   updateLabShareVisibility,
   wireLabCopyLink,
   wireLabCopyResultsButton,
@@ -156,9 +157,15 @@ function render() {
     });
   }
 
-  if (syncInputValidationResultsGate(document.getElementById('bcResults'))) return;
+  if (syncInputValidationResultsGate(document.getElementById('bcResults'))) {
+    const bcHero = document.getElementById('bcHero');
+    if (bcHero) bcHero.innerHTML = '';
+    return;
+  }
 
   if (!b) {
+    const bcHero = document.getElementById('bcHero');
+    if (bcHero) bcHero.innerHTML = '';
     out.innerHTML = '';
     tbl.innerHTML = '';
     if (autoGeom) autoGeom.textContent = bx('Geometría y C del rodamiento seleccionado.', 'Geometry and C of selected bearing.');
@@ -177,6 +184,8 @@ function render() {
   const hpdUse = Number.isFinite(hpd) && hpd > 0 ? Math.min(24, hpd) : null;
   const Lh = nUse != null ? l10_hours(Lrev, nUse) : NaN;
   if (nUse == null || hpdUse == null) {
+    const bcHero = document.getElementById('bcHero');
+    if (bcHero) bcHero.innerHTML = '';
     out.innerHTML = `<p class="lab-verdict lab-verdict--err">${bx(
       'Entrada no válida: use n > 0 min⁻¹ y horas/día > 0.',
       'Invalid input: use n > 0 min⁻¹ and hours/day > 0.',
@@ -190,6 +199,26 @@ function render() {
   const reqYears = Lreq / (hpdUse * 365);
   const margin = Lreq > 0 ? (Lh - Lreq) / Lreq : 0;
   const ok = Lh >= Lreq;
+  const bcVerdict = ok && margin >= 0.5 ? 'ok' : ok ? 'warn' : 'error';
+
+  const bcHero = document.getElementById('bcHero');
+  if (bcHero) {
+    bcHero.innerHTML = renderResultHero(
+      [
+        {
+          label: bx('Vida L₁₀h', 'Life L₁₀h'),
+          display: Number.isFinite(Lh) ? `${Lh.toFixed(0)} h` : '—',
+          hint: bx(`Objetivo ${numLocale(Lreq)} h`, `Target ${numLocale(Lreq)} h`),
+        },
+        {
+          label: bx('Veredicto', 'Verdict'),
+          display: ok ? (margin >= 0.5 ? bx('APTO', 'OK') : bx('REVISAR', 'REVIEW')) : bx('INSUFICIENTE', 'INSUFFICIENT'),
+          hint: bx('Comparación orientativa L₁₀h vs objetivo', 'Indicative L₁₀h vs target comparison'),
+        },
+      ],
+      { verdict: bcVerdict },
+    );
+  }
 
   const yearsWord = bx('años', 'years');
   if (ok && margin >= 0.5) {

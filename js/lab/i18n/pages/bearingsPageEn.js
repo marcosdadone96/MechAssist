@@ -4,6 +4,8 @@ export const BEARINGS_PAGE_EN = {
   'brg.metaDesc':
     'Basic rating life L10 from C, P and rpm. Simplified ISO 281; use manufacturer C.',
   'brg.h2': 'Basic rating life L10 (simplified ISO 281)',
+  'brg.safetyNotice':
+    'Nominal L\u2081\u2080 life is indicative (ISO 281). Always apply a\u2081 and aISO factors for lubrication, temperature and contamination.',
   'brg.heroLead':
     'L<sub>10</sub> from catalogue <strong>C</strong>, equivalent <strong>P</strong> and rpm; design or diagnostic mode. No extended a<sub>ISO</sub> factors or reliability other than 90%.',
   'brg.seoSummary': 'Expanded context and usage notes',

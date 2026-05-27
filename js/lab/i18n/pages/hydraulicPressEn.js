@@ -55,9 +55,13 @@ export const HYDRAULIC_PRESS_EN = {
   'hpress.optK20': '2.0 \u2014 guided free-free',
   'hpress.helpLeadHtml':
     'Computes piston diameter, pump flow, motor power and basic column checks for a 2- or 4-column press with productivity criteria. Euler buckling and cycles are <strong>simplified</strong>; does not model frame flexure or load eccentricity on the platen. Not a substitute for structural calculation or certified press standards.',
-  'hpress.labelMode': 'What do you want to calculate?',
-  'hpress.optDesign': 'Design new machine',
-  'hpress.optDiagnostic': 'Diagnose existing machine',
+  'hpress.labelCalcMode': 'Work mode',
+  'hpress.optDesign': 'Design \u2014 required tonnage \u2192 cylinder bore and pump',
+  'hpress.optDiagnostic': 'Diagnostic \u2014 installed press \u2192 available tonnage',
+  'hpress.helpCalcModeDesignHtml':
+    '<strong>Design:</strong> target tonnage and cycle time \u2192 ISO piston diameter, indicative pump flow and motor power.',
+  'hpress.helpCalcModeDiagnosticHtml':
+    '<strong>Diagnostic:</strong> actual piston diameter and pressure \u2192 available force/tonnage and column checks.',
   'hpress.kNoteHtml':
     'For industrial presses with columns guided at both ends, use <strong>K = 0.7</strong> (conservative recommended). <strong>K = 0.5</strong> only if fixity is guaranteed in construction.',
   'hpress.vsTitle': 'Check summary',
@@ -120,4 +124,6 @@ export const HYDRAULIC_PRESS_EN = {
   'hpress.tonnageRow3t': '200 \u2013 500 t',
   'hpress.tonnageRow4': 'Hot forging / large parts',
   'hpress.tonnageRow4t': '500 \u2013 2000 t',
+  'hpress.copyLink': 'Copy link',
+  'hpress.copyToast': 'Link copied!',
 };

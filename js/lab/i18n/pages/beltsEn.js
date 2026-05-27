@@ -9,6 +9,8 @@ export const BELTS_PAGE_EN = {
   'belt.metaDesc':
     'V, synchronous, flat or Poly-V belt: ratio, length, linear speed and sketch. Indicative.',
   'belt.h2': 'Belt drives \u00b7 kinematics and speed regime',
+  'belt.safetyNotice':
+    'Powers and correction factors are indicative. Confirm belt type, installation tension and service life with the manufacturer catalogue.',
   'belt.heroLead':
     'Speed ratio, open-belt primitive length and a linear-speed verdict by belt family (V, synchronous, flat, Poly-V).',
   'belt.seoSummary': 'Expanded context and usage notes',

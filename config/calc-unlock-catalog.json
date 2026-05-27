@@ -1,29 +1,177 @@
 [
-  { "slug": "calc-gears.html", "es": "Engranajes cilíndricos", "en": "Spur gears" },
-  { "slug": "calc-belts.html", "es": "Correas y poleas", "en": "Belts and pulleys" },
-  { "slug": "calc-chains.html", "es": "Cadenas y piñones", "en": "Chains and sprockets" },
-  { "slug": "calc-bearings.html", "es": "Rodamientos · vida L10", "en": "Bearings · L10 life" },
-  { "slug": "calc-bearings-catalog.html", "es": "Rodamientos · catálogo 62xx", "en": "Bearings · 62xx catalog" },
-  { "slug": "calc-shaft.html", "es": "Eje · torsión", "en": "Shaft · torsion" },
-  { "slug": "calc-keys-din6885.html", "es": "Chavetas DIN 6885", "en": "Keys DIN 6885" },
-  { "slug": "calc-iso-fit.html", "es": "Ajustes ISO 286", "en": "ISO 286 fits" },
-  { "slug": "calc-seeger.html", "es": "Anillos Seeger DIN 471/472", "en": "Seeger rings DIN 471/472" },
-  { "slug": "calc-couplings.html", "es": "Acoplamientos · catálogo", "en": "Couplings · catalog" },
-  { "slug": "calc-bolts-iso898.html", "es": "Tornillería ISO 898-1", "en": "Bolts ISO 898-1" },
-  { "slug": "calc-gearmotor-inertia.html", "es": "Motor · inercia J", "en": "Motor · inertia J" },
-  { "slug": "calc-compression-spring.html", "es": "Muelle de compresión", "en": "Compression spring" },
-  { "slug": "transmission-canvas.html", "es": "Lienzo técnico multieje", "en": "Multi-shaft canvas" },
-  { "slug": "transmission-studio.html", "es": "Transmission Studio", "en": "Transmission Studio" },
-  { "slug": "flat-conveyor.html", "es": "Cinta transportadora plana", "en": "Flat belt conveyor" },
-  { "slug": "inclined-conveyor.html", "es": "Cinta inclinada", "en": "Inclined conveyor" },
-  { "slug": "roller-conveyor.html", "es": "Transportador de rodillos", "en": "Roller conveyor" },
-  { "slug": "bucket-elevator.html", "es": "Elevador de cangilones", "en": "Bucket elevator" },
-  { "slug": "screw-conveyor.html", "es": "Tornillo sin fin", "en": "Screw conveyor" },
-  { "slug": "traction-elevator.html", "es": "Ascensor de tracción", "en": "Traction elevator" },
-  { "slug": "car-lift-screw.html", "es": "Elevador de vehículos", "en": "Vehicle lift (screw)" },
-  { "slug": "centrifugal-pump.html", "es": "Bomba centrífuga", "en": "Centrifugal pump" },
-  { "slug": "calc-hydraulic-pump.html", "es": "Bomba hidráulica", "en": "Hydraulic pump" },
-  { "slug": "calc-hydraulic-cylinder.html", "es": "Cilindro hidráulico", "en": "Hydraulic cylinder" },
-  { "slug": "calc-hydraulic-press.html", "es": "Prensa hidráulica", "en": "Hydraulic press" },
-  { "slug": "calc-pneumatic-cylinder.html", "es": "Cilindro neumático", "en": "Pneumatic cylinder" }
+  {
+    "slug": "calc-gears.html",
+    "es": "Engranajes cilï¿½ndricos",
+    "en": "Spur gears"
+  },
+  {
+    "slug": "calc-belts.html",
+    "es": "Correas y poleas",
+    "en": "Belts and pulleys"
+  },
+  {
+    "slug": "calc-chains.html",
+    "es": "Cadenas y piï¿½ones",
+    "en": "Chains and sprockets"
+  },
+  {
+    "slug": "calc-bearings.html",
+    "es": "Rodamientos ï¿½ vida L10",
+    "en": "Bearings ï¿½ L10 life"
+  },
+  {
+    "slug": "calc-bearings-catalog.html",
+    "es": "Rodamientos ï¿½ catï¿½logo 62xx",
+    "en": "Bearings ï¿½ 62xx catalog"
+  },
+  {
+    "slug": "calc-shaft.html",
+    "es": "Eje ï¿½ torsiï¿½n",
+    "en": "Shaft ï¿½ torsion"
+  },
+  {
+    "slug": "calc-keys-din6885.html",
+    "es": "Chavetas DIN 6885",
+    "en": "Keys DIN 6885"
+  },
+  {
+    "slug": "calc-iso-fit.html",
+    "es": "Ajustes ISO 286",
+    "en": "ISO 286 fits"
+  },
+  {
+    "slug": "calc-seeger.html",
+    "es": "Anillos Seeger DIN 471/472",
+    "en": "Seeger rings DIN 471/472"
+  },
+  {
+    "slug": "calc-couplings.html",
+    "es": "Acoplamientos ï¿½ catï¿½logo",
+    "en": "Couplings ï¿½ catalog"
+  },
+  {
+    "slug": "calc-bolts-iso898.html",
+    "es": "Tornillerï¿½a ISO 898-1",
+    "en": "Bolts ISO 898-1"
+  },
+  {
+    "slug": "calc-gearmotor-inertia.html",
+    "es": "Motor ï¿½ inercia J",
+    "en": "Motor ï¿½ inertia J"
+  },
+  {
+    "slug": "calc-compression-spring.html",
+    "es": "Muelle de compresiï¿½n",
+    "en": "Compression spring"
+  },
+  {
+    "slug": "calc-beam.html",
+    "es": "Vigas ï¿½ flexiï¿½n",
+    "en": "Beams ï¿½ bending"
+  },
+  {
+    "slug": "calc-power-screw.html",
+    "es": "Tornillo de potencia",
+    "en": "Power screw (trapezoidal)"
+  },
+  {
+    "slug": "calc-weld-joint.html",
+    "es": "Uniones soldadas",
+    "en": "Welded joints"
+  },
+  {
+    "slug": "transmission-canvas.html",
+    "es": "Lienzo tï¿½cnico multieje",
+    "en": "Multi-shaft canvas"
+  },
+  {
+    "slug": "transmission-studio.html",
+    "es": "Transmission Studio",
+    "en": "Transmission Studio"
+  },
+  {
+    "slug": "flat-conveyor.html",
+    "es": "Cinta transportadora plana",
+    "en": "Flat belt conveyor"
+  },
+  {
+    "slug": "inclined-conveyor.html",
+    "es": "Cinta inclinada",
+    "en": "Inclined conveyor"
+  },
+  {
+    "slug": "roller-conveyor.html",
+    "es": "Transportador de rodillos",
+    "en": "Roller conveyor"
+  },
+  {
+    "slug": "bucket-elevator.html",
+    "es": "Elevador de cangilones",
+    "en": "Bucket elevator"
+  },
+  {
+    "slug": "screw-conveyor.html",
+    "es": "Tornillo sin fin",
+    "en": "Screw conveyor"
+  },
+  {
+    "slug": "traction-elevator.html",
+    "es": "Ascensor de tracciï¿½n",
+    "en": "Traction elevator"
+  },
+  {
+    "slug": "car-lift-screw.html",
+    "es": "Elevador de vehï¿½culos",
+    "en": "Vehicle lift (screw)"
+  },
+  {
+    "slug": "centrifugal-pump.html",
+    "es": "Bomba centrï¿½fuga",
+    "en": "Centrifugal pump"
+  },
+  {
+    "slug": "calc-hydraulic-pump.html",
+    "es": "Bomba hidrï¿½ulica",
+    "en": "Hydraulic pump"
+  },
+  {
+    "slug": "calc-hydraulic-cylinder.html",
+    "es": "Cilindro hidrï¿½ulico",
+    "en": "Hydraulic cylinder"
+  },
+  {
+    "slug": "calc-hydraulic-press.html",
+    "es": "Prensa hidrï¿½ulica",
+    "en": "Hydraulic press"
+  },
+  {
+    "slug": "calc-pneumatic-cylinder.html",
+    "es": "Cilindro neumï¿½tico",
+    "en": "Pneumatic cylinder"
+  },
+  {
+    "slug": "calc-hydraulic-valve.html",
+    "es": "Vï¿½lvulas hidrï¿½ulicas",
+    "en": "Hydraulic valves"
+  },
+  {
+    "slug": "calc-hydraulic-accumulator.html",
+    "es": "Acumulador hidrÃ¡ulico",
+    "en": "Hydraulic accumulator"
+  },
+  {
+    "slug": "calc-worm-gear.html",
+    "es": "Tornillo sin fin y corona",
+    "en": "Worm gear"
+  },
+  {
+    "slug": "calc-fatigue.html",
+    "es": "Fatiga ï¿½ Diagrama de Goodman",
+    "en": "Fatigue ï¿½ Goodman diagram"
+  },
+  {
+    "slug": "calc-bolt-shear.html",
+    "es": "Cortante en tornillerÃ­a",
+    "en": "Bolt shear & bearing"
+  }
 ]

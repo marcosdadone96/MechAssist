@@ -56,7 +56,7 @@ function displayValueForField(el) {
     const opt = el.selectedOptions[0];
     if (!opt) return cleanValue(el.value);
     const txt = String(opt.textContent || '').trim();
-    const short = txt.split(' — ')[0].split(' – ')[0];
+    const short = txt.split(' Â— ')[0].split(' Â– ')[0];
     return cleanValue(short || el.value);
   }
   if (el instanceof HTMLInputElement) {

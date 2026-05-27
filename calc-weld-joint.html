@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="weld.docTitle">Uniones soldadas filete y a tope — TheMechAssist</title>
+    <meta name="description" data-i18n="weld.metaDesc" data-i18n-attr="content" content="Comprobación orientativa de cordones de filete y soldaduras a tope. Modelo educativo EN 1993-1-8." />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
+    <link rel="canonical" href="https://www.themechassist.com/calc-weld-joint.html" id="mdr-canonical" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.themechassist.com/calc-weld-joint.html" />
+    <meta property="og:title" data-i18n="weld.docTitle" data-i18n-attr="content" content="Uniones soldadas filete y a tope — TheMechAssist" />
+    <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+    <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
+  </head>
+  <body class="lab-body">
+    <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
+      </a>
+            <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
+      </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
+    </header>
+    <main class="lab-main">
+
+
+
+
+
+      <section class="lab-panel lab-panel--accent">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="weld.h2">Uniones soldadas · filete y a tope</h2>
+          <p class="lab-safety-notice" data-i18n="weld.safetyNotice">
+            Modelo orientativo. El diseño final requiere cálculo certificado EN 1993-1-8 / AWS D1.1 y procedimiento de soldadura cualificado.
+          </p>
+          <p class="lab-calc-hero-lead" data-i18n="weld.heroLead">
+            Tensin en garganta τ<sub>r</sub> (filete) o tensin equivalente σ<sub>eq</sub> (tope) con factor de uso frente a límites orientativos del electrodo.
+          </p>
+          <details class="lab-calc-seo">
+            <summary data-i18n="weld.seoSummary">Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro" data-i18n="weld.calcSeoIntro">
+              Comprobacin rpida de cordones de filete en juntas en T, solape o esquina, y de soldaduras a tope sometidas a traccin y cortante. útil para predimensionar soldaduras en bastidores, soportes y uniones de chapa antes del cálculo estructural completo.
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="weld.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help" data-i18n="weld.methodBodyHtml" data-i18n-html>
+                Filete: garganta <strong>a = 0,7h</strong>, longitud efectiva <strong>l<sub>eff</sub> = l − 2h</strong>, tensin resultante <strong>τ<sub>r</sub></strong>.
+                Tope: Von Mises simplificado <strong>σ<sub>eq</sub> = ?(? + 3?)</strong>. Lmites según categora de electrodo (orientativo).
+              </p>
+            </div>
+          </details>
+        </header>
+        <nav class="lab-next-steps" data-i18n="weld.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="weld.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="weld.nextLi1Html" data-i18n-html><a href="calc-bolts-iso898.html">Tornillera ISO 898</a>  uniones atornilladas.</li>
+            <li data-i18n="weld.nextLi2Html" data-i18n-html><a href="calc-shaft.html">Eje · torsión</a>  elementos soldados a eje.</li>
+            <li data-i18n="weld.nextLi3Html" data-i18n-html><a href="calc-beam.html">Vigas  flexin</a>  vigas con soldadura en apoyo.</li>
+          </ul>
+        </nav>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label" data-i18n="weld.presetsLabel">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="weldPresetsBar"></div>
+        </div>
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title" data-i18n="weld.diagTitle">Esquema de junta y cotas</p>
+              <svg id="weldDiagram" xmlns="http://www.w3.org/2000/svg" data-i18n="weld.diagAriaLabel" data-i18n-attr="aria-label" aria-label="Diagrama soldadura"></svg>
+              <p class="lab-diagram-caption" data-i18n="weld.diagCaptionHtml" data-i18n-html>
+                Garganta <strong>a</strong>, cateto <strong>h</strong>, longitud <strong>l</strong> y carga <strong>F</strong>. Esquema didáctico según tipo de junta.
+              </p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field">
+                <label for="weldMode" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="weld.labelMode">Modo de soldadura</span>
+                </label>
+                <select id="weldMode">
+                  <option value="fillet" data-i18n="weld.optFillet">Soldadura de filete</option>
+                  <option value="butt" data-i18n="weld.optButt">Soldadura a tope</option>
+                </select>
+                <p class="lab-field-help" data-i18n="weld.helpModeHtml" data-i18n-html>
+                  <strong>Filete</strong>: cordn triangular. <strong>Tope</strong>: unión a tope con penetración completa (modelo simplificado).
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="weldJointType" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="weld.labelJointType">Tipo de junta</span>
+                </label>
+                <select id="weldJointType">
+                  <option value="T" data-i18n="weld.optT">Junta en T</option>
+                  <option value="lap" data-i18n="weld.optLap">Solape</option>
+                  <option value="corner" data-i18n="weld.optCorner">Esquina</option>
+                  <option value="butt" data-i18n="weld.optButtJoint">A tope</option>
+                </select>
+                <p class="lab-field-help" data-i18n="weld.helpJointTypeHtml" data-i18n-html>
+                  <strong>T</strong>: placa vertical sobre base. <strong>Solape</strong>: chapas superpuestas. <strong>Esquina</strong> o <strong>a tope</strong> según geometra.
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="weldElectrode" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="weld.labelElectrode">Electrodo</span>
+                </label>
+                <select id="weldElectrode">
+                  <option value="E35" data-i18n="weld.optE35">E35</option>
+                  <option value="E42" selected data-i18n="weld.optE42">E42</option>
+                  <option value="E50" data-i18n="weld.optE50">E50</option>
+                  <option value="custom" data-i18n="weld.optCustom">Personalizado</option>
+                </select>
+                <div class="lab-field" id="weldCustomAdmRow" hidden>
+                  <label for="weldCustomAdm" class="lab-field__label-row">
+                    <span class="lab-field__label-text" data-i18n="weld.labelCustomAdm">&tau;<sub>adm</sub> personalizado (MPa)</span>
+                  </label>
+                  <input inputmode="decimal" id="weldCustomAdm" type="number" step="any" min="10" value="100" />
+                </div>
+                <p class="lab-field-help" data-i18n="weld.helpElectrodeHtml" data-i18n-html>
+                  Categora <strong>E35/E42/E50</strong> con límites orientativos de <strong>?</strong> y <strong>?</strong>.
+                </p>
+              </div>
+              <div class="lab-field" data-weld-fillet>
+                <label for="weldCateto" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="weld.labelCathetus">Cateto h (mm)</span>
+                </label>
+                <input inputmode="decimal" id="weldCateto" type="number" step="any" min="1" value="6" />
+                <p class="lab-field-help" data-i18n="weld.helpCathetusHtml" data-i18n-html>
+                  Cateto del cordn (mm). Garganta <strong>a ≈ 0,7h</strong>. Compruebe <strong>h<sub>min</sub></strong> según espesor t.
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="weldLength" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="weld.labelLength">Longitud cordn l (mm)</span>
+                </label>
+                <input inputmode="decimal" id="weldLength" type="number" step="any" min="5" value="120" />
+                <p class="lab-field-help" data-i18n="weld.helpLengthHtml" data-i18n-html>
+                  Longitud nominal del cordn. Efectiva <strong>l<sub>eff</sub> = l − 2h</strong> (filete).
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="weldThickness" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="weld.labelThickness">Espesor plancha t (mm)</span>
+                </label>
+                <input inputmode="decimal" id="weldThickness" type="number" step="any" min="0.5" value="10" />
+                <p class="lab-field-help" data-i18n="weld.helpThicknessHtml" data-i18n-html>
+                  Espesor de chapa más fina (mm). Determina cateto mínimo recomendado.
+                </p>
+              </div>
+              <div class="lab-field">
+                <label for="weldForce" class="lab-field__label-row">
+                  <span class="lab-field-ico" title="Fuerza">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v14M8 14l4 4 4-4"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="weld.labelForce">Fuerza F (N)</span>
+                </label>
+                <input inputmode="decimal" id="weldForce" type="number" step="any" min="0" value="25000" />
+                <p class="lab-field-help" data-i18n="weld.helpForceHtml" data-i18n-html>
+                  Fuerza <strong>F</strong> sobre la junta (N).
+                </p>
+              </div>
+              <div class="lab-field" data-weld-butt hidden>
+                <label for="weldShear" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="weld.labelShear">Cortante V (N)</span>
+                </label>
+                <input inputmode="decimal" id="weldShear" type="number" step="any" min="0" value="0" />
+              </div>
+              <div class="lab-field" data-weld-fillet>
+                <label for="weldMoment" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="weld.labelMoment">Momento M (Nm)</span>
+                </label>
+                <input inputmode="decimal" id="weldMoment" type="number" step="any" min="0" value="0" placeholder="0 = omitir" />
+                <p class="lab-field-help" data-i18n="weld.helpMomentHtml" data-i18n-html>
+                  Momento flector <strong>M</strong> (Nm). <strong>0</strong> si no aplica.
+                </p>
+              </div>
+              <div class="lab-field" id="weldMomentArmRow" data-weld-fillet hidden>
+                <label for="weldMomentArm" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="weld.labelMomentArm">Brazo z (mm)</span>
+                </label>
+                <input inputmode="decimal" id="weldMomentArm" type="number" step="any" min="1" value="50" />
+                <p class="lab-field-help" data-i18n="weld.helpMomentArmHtml" data-i18n-html>
+                  Distancia del centro de gravedad del grupo de cordones al eje del momento.
+                </p>
+              </div>
+              <div class="lab-field" data-weld-fillet>
+                <label for="weldCords" class="lab-field__label-row">
+                  <span class="lab-field__label-text" data-i18n="weld.labelCords">Número de cordones</span>
+                </label>
+                <select id="weldCords">
+                  <option value="1" data-i18n="weld.optOneCord">1 cordn</option>
+                  <option value="2" selected data-i18n="weld.optTwoCords">2 cordones</option>
+                </select>
+              </div>
+              <div class="lab-field lab-field--wide">
+                <details class="lab-results-details lab-results-details--chevron-end">
+                  <summary data-i18n="weld.electrodeTableSummary">Electrodos orientativos (límites admisibles)</summary>
+                  <div class="lab-table-wrap">
+                    <table class="lab-table">
+                      <thead>
+                        <tr>
+                          <th data-i18n="weld.tableThCat">Cat.</th>
+                          <th data-i18n="weld.tableThSigma">σ<sub>adm</sub></th>
+                          <th data-i18n="weld.tableThTau">τ<sub>adm</sub></th>
+                          <th data-i18n="weld.tableThSteel">Acero ref.</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td data-i18n="weld.tableRowE35">E35</td>
+                          <td data-i18n="weld.tableRowE35Sigma">140 MPa</td>
+                          <td data-i18n="weld.tableRowE35Tau">84 MPa</td>
+                          <td data-i18n="weld.tableRowE35Steel">S235</td>
+                        </tr>
+                        <tr>
+                          <td data-i18n="weld.tableRowE42">E42</td>
+                          <td data-i18n="weld.tableRowE42Sigma">175 MPa</td>
+                          <td data-i18n="weld.tableRowE42Tau">105 MPa</td>
+                          <td data-i18n="weld.tableRowE42Steel">S275/S355</td>
+                        </tr>
+                        <tr>
+                          <td data-i18n="weld.tableRowE50">E50</td>
+                          <td data-i18n="weld.tableRowE50Sigma">210 MPa</td>
+                          <td data-i18n="weld.tableRowE50Tau">126 MPa</td>
+                          <td data-i18n="weld.tableRowE50Steel">S355/S420</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </details>
+              </div>
+            </div>
+          </div>
+          <div class="lab-calc-layout__out lab-calc-layout__out--panel">
+            <div id="weldHero"></div>
+            <div id="weldAlerts" class="lab-alerts"></div>
+            <div class="lab-results-wrap" id="weldResultsWrap">
+              <div class="lab-results-computing" aria-hidden="true">
+                <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">
+                  <path fill="#0f766e" d="M32 8l2.2 4.4 4.9-1.3 1.3 4.9 4.4 2.2-2.2 4.4 1.3 4.9-4.9 1.3-2.2 4.4-4.4-2.2-4.9 1.3-1.3-4.9-4.4-2.2 2.2-4.4-1.3-4.9 4.9-1.3 4.4-2.2zm0 10a14 14 0 100 28 14 14 0 000-28z"/>
+                </svg>
+                <span class="lab-results-computing__label" data-i18n="weld.recalculating">Recalculando</span>
+              </div>
+              <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked">
+                <summary data-i18n="weld.summaryFull">Resultado completo</summary>
+                <div class="lab-results" id="weldResults"></div>
+              </details>
+              <div class="lab-results-actions">
+                <button type="button" class="lab-btn lab-btn--block" id="weldCopyResults" data-i18n="weld.copyResults">Copiar resultados</button>
+              </div>
+            </div>
+            <p class="lab-related-hint" data-i18n="weld.relatedHintHtml" data-i18n-html>
+              Unin desmontable? <a href="calc-bolts-iso898.html">Tornillera ISO 898 ?</a>
+            </p>
+            <div id="labPurchaseSuggestions" hidden></div>
+            <div class="lab-results-share lab-results-share--footer" id="weldShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="weldCopyLinkBtn" data-i18n="weld.copyLink">Copiar enlace</button>
+              <div class="lab-copy-toast" id="weldCopyToast" role="status" data-i18n="weld.copyToast">Enlace copiado!</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+    
+    
+    
+    
+    </main>
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
+    <script type="module" src="js/ui/calcWeldJointPage.js"></script>
+    <script type="module" src="js/ui/labDonationFooter.js"></script>
+  </body>
+</html>

@@ -1,5 +1,5 @@
 /**
- * Cliente Supabase: Next.js (`process.env.NEXT_PUBLIC_*`), Vite (`import.meta.env`), o p·gina est·tica
+ * Cliente Supabase: Next.js (`process.env.NEXT_PUBLIC_*`), Vite (`import.meta.env`), o p√°gina est√°tica
  * (`globalThis.__SUPABASE_URL__` / `__SUPABASE_ANON_KEY__`).
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.8';
@@ -37,7 +37,7 @@ const supabaseAnonKey = publicEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY');
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn(
-    '[supabase] Configura NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY (o en HTML est·tico: globalThis.__SUPABASE_URL__ / __SUPABASE_ANON_KEY__).',
+    '[supabase] Configura NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY (o en HTML est√°tico: globalThis.__SUPABASE_URL__ / __SUPABASE_ANON_KEY__).',
   );
 }
 

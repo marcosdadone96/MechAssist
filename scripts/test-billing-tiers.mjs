@@ -1,5 +1,5 @@
 /**
- * Comprobacin local de deteccin de planes (Starter / Ilimitado / desbloqueo 1 EUR).
+ * ComprobaciÂn local de detecciÂn de planes (Starter / Ilimitado / desbloqueo 1 EUR).
  * Ejecutar: node scripts/test-billing-tiers.mjs
  */
 import { createRequire } from 'module';

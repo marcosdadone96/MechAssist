@@ -70,5 +70,5 @@ export function localizedIsoFitRec(r, lang) {
 
 /** @param {'es'|'en'} lang */
 export function isoRecTableNoteSuffix(lang) {
-  return lang === 'en' ? 'Suggested Ø' : 'Ø sugerido';
+  return lang === 'en' ? 'Suggested Ã˜' : 'Ã˜ sugerido';
 }

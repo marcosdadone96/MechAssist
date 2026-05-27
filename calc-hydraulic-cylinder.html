@@ -193,8 +193,8 @@
       <section class="lab-panel lab-panel--accent">
         <header class="lab-calc-page-head">
           <h2 data-i18n="hydCyl.h2">Cilindro hidráulico — fuerza, caudal y seguridad estructural</h2>
-          <p class="lab-scope-note" data-i18n="fluids.scopeNote">
-            Cálculo orientativo para dimensionado previo. Confirma siempre con catálogo de fabricante y normativa aplicable (ISO 4413 / ISO 4414).
+          <p class="lab-safety-notice" data-i18n="fluids.safetyNotice">
+            Cálculo orientativo para pre-dimensionado. Confirme presiones, caudales y dimensiones de componentes con el catálogo del fabricante y la normativa aplicable (ISO 4413 / ISO 4414).
           </p>
           <p class="lab-calc-hero-lead" data-i18n="hydCyl.heroLead">
             Fuerza de empuje/tracción, caudal, pandeo del vástago (Euler) y espesor mínimo de tubo para operar con seguridad a la presión de trabajo.
@@ -245,6 +245,17 @@
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field lab-field--wide">
+                <label for="hcCalcMode" data-i18n="hydCyl.labelCalcMode">Modo de trabajo</label>
+                <select id="hcCalcMode">
+                  <option value="diagnostic" selected data-i18n="hydCyl.optDiagnostic">Diagnóstico — cilindro instalado → comprobar fuerza y pandeo</option>
+                  <option value="design" data-i18n="hydCyl.optDesign">Diseño — fuerza requerida → calcular diámetro mínimo</option>
+                </select>
+                <div class="lab-field-help lab-field-help--hc-modes" id="hcCalcModeHelp">
+                  <p class="hc-calc-mode-help__line hc-calc-mode-help__line--active" data-hc-mode="diagnostic" data-i18n="hydCyl.helpCalcModeDiagnosticHtml" data-i18n-html><strong>Diagnóstico:</strong> introduce diámetro de pistón, vástago, presión y carga → comprueba fuerza disponible, pandeo Euler y espesor de tubo.</p>
+                  <p class="hc-calc-mode-help__line" data-hc-mode="design" data-i18n="hydCyl.helpCalcModeDesignHtml" data-i18n-html><strong>Diseño:</strong> fuerza requerida y presión de trabajo → obtienes el diámetro mínimo de pistón recomendado (serie ISO) y el resto de comprobaciones.</p>
+                </div>
+              </div>
+              <div class="lab-field lab-field--wide">
                 <label for="hcLabTier" data-i18n="hydCyl.labelLabTier">Nivel de detalle memoria</label>
                 <select id="hcLabTier">
                   <option value="basic" selected data-i18n="hydCyl.optLabBasic">Aula (básico)</option>
@@ -270,15 +281,6 @@
                     <span class="hint" data-i18n="hydCyl.hintOilTemp">Para trazabilidad; viscosidad no recalculada aquí</span>
                   </div>
                 </div>
-              </div>
-              <div class="lab-field lab-field--wide">
-                <label for="hcMode" data-i18n="hydCyl.labelMode">¿Qué quieres calcular?</label>
-                <select id="hcMode">
-                  <option value="design" selected data-i18n="hydCyl.optDesign">Diseñar nueva máquina</option>
-                  <option value="diagnostic" data-i18n="hydCyl.optDiagnostic">Diagnosticar máquina existente</option>
-                </select>
-                <span class="hint" data-i18n="hydCyl.hintMode">Diseño o flujo inverso</span>
-                <p class="lab-field-help" data-i18n="hydCyl.helpMode">Diseño: carga objetivo y dimensionado. Diagnóstico: presión y diámetro reales para obtener fuerza/tonelaje disponible.</p>
               </div>
               <div class="lab-field">
                 <label for="hcPressureBar" data-i18n="hydCyl.labelPressure">Presión de trabajo (bar)</label>
@@ -395,16 +397,52 @@
           </div>
 
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
+            <div
+              class="lab-units-bar"
+              role="group"
+              data-i18n-attrs="aria-label=fluids.unitsAriaLabel data-lab-convert-title=fluids.convertTitle data-lab-convert-tip=fluids.convertTip"
+              aria-label="Unidades de los resultados"
+              data-lab-convert-categories="pressure"
+              data-lab-convert-title="Conversor (fluidos)"
+              data-lab-convert-tip="Presión en bar, MPa o psi; caudal en L/min o m³/h en los resultados."
+            >
+              <span class="lab-units-bar__title" data-i18n="fluids.unitsBarTitle">Cómo ver los resultados</span>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl" data-i18n="fluids.lblPressure">Presión</span>
+                <select id="labUnitPressure" class="lab-units-bar__select">
+                  <option value="bar" data-i18n="fluids.optBar">bar</option>
+                  <option value="mpa" data-i18n="fluids.optMpa">MPa</option>
+                  <option value="psi" data-i18n="fluids.optPsi">psi</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl" data-i18n="fluids.lblFlow">Caudal</span>
+                <select id="labUnitFlow" class="lab-units-bar__select">
+                  <option value="Lmin" data-i18n="fluids.optLmin">L/min</option>
+                  <option value="m3h" data-i18n="fluids.optM3h">m³/h</option>
+                </select>
+              </label>
+            </div>
+
             <details class="lab-fluid-formulas" id="hcFormulasBlock">
               <summary data-i18n="hydCyl.formulasSummary">Memoria de cálculo, fórmulas y supuestos</summary>
               <div id="hcFormulaBody" class="lab-fluid-formulas__body"></div>
             </details>
             <div id="hcResults" class="lab-results"></div>
+            <div class="lab-results-actions">
+              <button type="button" class="lab-btn lab-btn--block" id="hcCopyResults" data-i18n="fluids.copyResults">Copiar resultados</button>
+              <div class="lab-copy-toast" id="hcCopyToast" role="status" data-i18n="fluids.copyToast">¡Copiado!</div>
+            </div>
+
             <div id="hcAdvisor" class="lab-alerts"></div>
             <div id="hcVerdictSummary" class="hc-verdict-summary" aria-live="polite"></div>
             <p id="hcSealInfo" class="lab-small-print"></p>
             <p id="hcVerdict" class="lab-verdict lab-verdict--ok" data-i18n="hydCyl.verdictDefault">SISTEMA APTO</p>
             <div id="labFluidPdfMountHc" class="premium-pdf-mount"></div>
+            <div class="lab-results-share lab-results-share--footer" id="hcShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="hcCopyLinkBtn" data-i18n="hydCyl.copyLink">Copiar enlace</button>
+              <span class="lab-copy-toast" id="hcCopyLinkToast" role="status" data-i18n="hydCyl.copyToast">¡Enlace copiado!</span>
+            </div>
           </div>
         </div>
       </section>

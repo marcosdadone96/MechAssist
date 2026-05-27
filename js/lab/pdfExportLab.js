@@ -1,6 +1,6 @@
 /**
- * Exportaciùn PDF compartida ù calculadoras del laboratorio (calc-*).
- * jsPDF vùa CDN UMD (sin duplicar lùgica en cada pùgina).
+ * Exportacion PDF compartida ÔøΩ calculadoras del laboratorio (calc-*).
+ * jsPDF via CDN UMD (sin duplicar logica en cada pagina).
  */
 
 import { svgToPngData } from '../services/reportPdfExport.js';
@@ -45,7 +45,7 @@ async function loadJsPDF() {
       if (globalThis.jspdf?.jsPDF) resolve(globalThis.jspdf.jsPDF);
       else reject(new Error('jsPDF no disponible'));
     };
-    s.onerror = () => reject(new Error('No se pudo cargar jsPDF. Compruebe la conexiùn.'));
+    s.onerror = () => reject(new Error('No se pudo cargar jsPDF. Compruebe la conexi\u00f3n.'));
     document.head.appendChild(s);
   });
 }
@@ -56,21 +56,24 @@ function langEs() {
 
 function sanitizePdfText(value) {
   let out = String(value ?? '');
-  out = out.replace(/[ùùùù?ù?ùùùù???]/g, (m) => {
-    const map = {
-      'ù': ' - ',
-      'ù': '- ',
-      'ù': '-',
-      'ù': '-',
-      '?': '-',
-      'ù': 'x',
-      'ù': ' deg',
-      '?': '->',
-      '?': '<=',
-      '?': '>=',
-    };
-    return map[m] || ' ';
-  });
+  out = out
+    .replace(/\u00b7/g, ' ')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/[\u00d7\u00d8\u03c4\u03b7\u03bc\u03c9\u2248\u2264\u2265\u2192]/g, (ch) => {
+      const map = {
+        '\u00d7': 'x',
+        '\u00d8': 'D',
+        '\u03c4': 'tau',
+        '\u03b7': 'eta',
+        '\u03bc': 'mu',
+        '\u03c9': 'omega',
+        '\u2248': '~',
+        '\u2264': '<=',
+        '\u2265': '>=',
+        '\u2192': '->',
+      };
+      return map[ch] || ' ';
+    });
   out = out.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
   out = out.replace(/[^\x20-\x7E\n]/g, ' ');
   return out.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
@@ -93,7 +96,8 @@ function statusLabel(status, en) {
   if (status === 'ok') return en ? 'OK' : 'APTO';
   if (status === 'warn') return en ? 'REVIEW' : 'REVISAR';
   if (status === 'error') return en ? 'NOT OK' : 'NO APTO';
-  return 'ù';
+  // em dash fallback for PDF (Helvetica)
+  return '\u2014';
 }
 
 /**
@@ -239,7 +243,7 @@ export function collectLabCatalogResultRows(scope) {
       .slice(1)
       .map((c) => sanitizePdfText(c.textContent))
       .filter(Boolean)
-      .join(' ù ');
+      .join(' \u00b7 ');
     if (label && value) rows.push({ label, value });
   });
   return rows;
@@ -507,7 +511,7 @@ export function mountLabPdfExportButton(opts) {
     const en = !langEs();
     const premium = isPremiumEffective();
     const checkout = 'checkout.html';
-    const tip = en ? 'Requires Pro plan ù View plans ?' : 'Requiere plan Pro ù Ver planes ?';
+    const tip = en ? 'Requires Pro plan \u2014 View plans \u2192' : 'Requiere plan Pro \u2014 Ver planes \u2192';
     const btnLabel = en ? 'Export PDF report' : 'Exportar informe PDF';
 
     if (!premium) {
@@ -584,7 +588,7 @@ export function mountLabPdfExportButton(opts) {
         }
 
         if (verdictStatus && results.length && !results.some((r) => r.status)) {
-          results = [{ label: en ? 'Overall verdict' : 'Veredicto global', value: 'ù', status: verdictStatus }, ...results];
+          results = [{ label: en ? 'Overall verdict' : 'Veredicto global', value: '\u2014', status: verdictStatus }, ...results];
         }
 
         await exportLabCalcPdf({

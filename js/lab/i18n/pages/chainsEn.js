@@ -2,6 +2,8 @@
 export const CHAINS_EN = {
   'chains.docTitle': 'Roller chain calculator \u2014 TheMechAssist',
   'chains.h2': 'Roller chain \u00b7 two sprockets',
+  'chains.safetyNotice':
+    'Indicative calculation per ISO 606. Confirm pitch, strand count and lubrication with manufacturer catalogue. Chain length does not replace true centre-to-centre layout.',
   'chains.heroLead':
     'Kinematics per DIN\u00a08187\u00a0/\u00a0ISO\u00a0606: pitch diameters, ratio, length in pitches, line speed, and articulation and lubrication alerts.',
   'chains.seoSummary': 'Expanded context and usage notes',

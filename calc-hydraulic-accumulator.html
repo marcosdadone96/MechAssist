@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" data-i18n="hacc.metaDesc" data-i18n-attr="content" content="Dimensionado orientativo de acumuladores hidráulicos: volumen nominal, energía almacenada y tiempo de descarga." />
+    <title data-i18n="hacc.docTitle">Acumulador hidráulico — volumen, energía y descarga — TheMechAssist</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
+    <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
+    <link rel="canonical" href="https://www.themechassist.com/calc-hydraulic-accumulator.html" id="mdr-canonical" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.themechassist.com/calc-hydraulic-accumulator.html" />
+    <meta property="og:title" data-i18n="hacc.docTitle" data-i18n-attr="content" content="Acumulador hidráulico — TheMechAssist" />
+    <meta property="og:description" data-i18n="hacc.metaDesc" data-i18n-attr="content" content="Volumen nominal, energía y descarga." />
+    <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+    <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
+  </head>
+  <body class="lab-body">
+    <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
+      </a>
+      <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
+      </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="lab-main">
+      <section class="lab-panel lab-panel--accent">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="hacc.h2">Acumulador hidráulico — volumen, energía y descarga</h2>
+          <p class="lab-safety-notice" data-i18n="hacc.safetyNotice">
+            Cálculo orientativo según PED 2014/68/UE e ISO 4413. Verifique con el fabricante y someta a inspección reglamentaria.
+          </p>
+          <p class="lab-calc-hero-lead" data-i18n="hacc.heroLead">
+            Calcule el volumen nominal necesario, la energía almacenada, el caudal de descarga y el tiempo de vaciado para acumuladores de vejiga, émbolo o membrana.
+          </p>
+          <details class="lab-calc-seo">
+            <summary data-i18n="hacc.seoSummary">Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro" data-i18n="hacc.calcSeoIntro">
+              Herramienta de predimensionado para acumuladores oleodinámicos. Calcula el volumen nominal mediante la ley politrópica (isoterma n=1 o adiabática n=1,4), la energía almacenada y el perfil de descarga antes de seleccionar la referencia comercial Bosch, Parker o Hydac.
+            </p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="hacc.helpSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help" data-i18n="hacc.methodBodyHtml" data-i18n-html>
+                Ley politrópica: <strong>p·Vⁿ = cte</strong>. Isoterma (n=1): ciclos lentos &gt; 5 min. Adiabática (n=1,4): ciclos rápidos &lt; 1 min. Ratio p₂/p₁ ≤ 4 recomendado; alerta si &gt; 4.
+              </p>
+            </div>
+          </details>
+        </header>
+
+        <nav class="lab-next-steps" data-i18n="fluids.nextStepsAccLi_aria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="fluids.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="fluids.nextStepsAccLi1Html" data-i18n-html><a href="calc-hydraulic-pump.html">Bomba hidráulica</a> — caudal de recarga del acumulador.</li>
+            <li data-i18n="fluids.nextStepsAccLi2Html" data-i18n-html><a href="calc-hydraulic-cylinder.html">Cilindro hidráulico</a> — actuador alimentado por el acumulador.</li>
+            <li data-i18n="fluids.nextStepsAccLi3Html" data-i18n-html><a href="fluids-hub.html">Hub hidráulica</a> — más calculadoras.</li>
+          </ul>
+        </nav>
+
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label" data-i18n="fluids.presetsLabel">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="haPresetsBar"></div>
+        </div>
+
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled fluid-calc fluid-calc--accumulator" data-module="hydraulic-accumulator">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title" data-i18n="hacc.diagTitle">Sección transversal · se actualiza con el tipo</p>
+              <svg id="haDiagram" xmlns="http://www.w3.org/2000/svg" data-i18n="hacc.diagAriaLabel" data-i18n-attr="aria-label" aria-label="Sección acumulador hidráulico"></svg>
+              <p class="lab-diagram-caption" data-i18n="hacc.diagCaption">Esquema orientativo; consulte el manual del fabricante para dimensiones exactas.</p>
+            </div>
+          </div>
+
+          <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field lab-field--wide">
+                <label for="haCalcMode" data-i18n="hacc.labelCalcMode">Modo de cálculo</label>
+                <select id="haCalcMode">
+                  <option value="design" selected data-i18n="hacc.optDesign">Diseño — volumen útil necesario → volumen nominal</option>
+                  <option value="diagnostic" data-i18n="hacc.optDiagnostic">Diagnóstico — acumulador instalado → verificar energía y descarga</option>
+                </select>
+                <div class="lab-field-help lab-field-help--hacc-modes" id="haCalcModeHelp">
+                  <p class="hp-calc-mode-help__line hp-calc-mode-help__line--active" data-ha-mode="design" data-i18n="hacc.helpCalcModeDesignHtml" data-i18n-html><strong>Diseño:</strong> introduzca el volumen útil requerido y las presiones → el modelo calcula el volumen nominal mínimo.</p>
+                  <p class="hp-calc-mode-help__line" data-ha-mode="diagnostic" data-i18n="hacc.helpCalcModeDiagnosticHtml" data-i18n-html><strong>Diagnóstico:</strong> introduzca el volumen nominal instalado → verifique energía almacenada y tiempo de descarga.</p>
+                </div>
+              </div>
+
+              <div class="lab-field lab-field--wide">
+                <label for="haType" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="hacc.icoType" data-i18n-attr="title" title="Tipo de acumulador">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="3"/><path d="M10 9h4M10 15h4"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="hacc.labelType">Tipo de acumulador</span>
+                </label>
+                <select id="haType">
+                  <option value="bladder" selected data-i18n="hacc.optBladder">Vejiga (bladder)</option>
+                  <option value="piston" data-i18n="hacc.optPiston">Émbolo (piston)</option>
+                  <option value="diaphragm" data-i18n="hacc.optDiaphragm">Membrana (diaphragm)</option>
+                </select>
+                <p class="lab-field-help" data-i18n="hacc.helpTypeHtml" data-i18n-html><strong>Vejiga</strong>: respuesta rápida, hasta ~350 bar. <strong>Émbolo</strong>: grandes volúmenes, ciclos lentos. <strong>Membrana</strong>: volúmenes pequeños, respuesta muy rápida.</p>
+              </div>
+
+              <div class="lab-field lab-field--wide">
+                <label for="haProcess" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="hacc.icoProcess" data-i18n-attr="title" title="Proceso politrópico">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 Q8 6 12 12 Q16 18 20 6"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="hacc.labelProcess">Proceso del gas</span>
+                </label>
+                <select id="haProcess">
+                  <option value="isothermal" selected data-i18n="hacc.optIsothermal">Isotermo (n=1) — ciclos lentos &gt; 5 min</option>
+                  <option value="adiabatic" data-i18n="hacc.optAdiabatic">Adiabático (n=1,4) — ciclos rápidos &lt; 1 min</option>
+                </select>
+                <p class="lab-field-help" data-i18n="hacc.helpProcessHtml" data-i18n-html>Use <strong>isotermo</strong> para prensas de ciclo largo y <strong>adiabático</strong> para acumuladores de emergencia o suspensión activa.</p>
+              </div>
+
+              <div class="lab-field">
+                <label for="haP0" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="hacc.icoP0" data-i18n-attr="title" title="Presión precarga N₂">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="hacc.labelP0">Presión de precarga N₂ — p₀ (bar)</span>
+                </label>
+                <input inputmode="decimal" id="haP0" type="number" min="1" step="any" value="75" />
+                <span class="hint" data-i18n="hacc.hintP0">0,9 × p₁ típico</span>
+                <p class="lab-field-help" data-i18n="hacc.helpP0Html" data-i18n-html>La precarga de nitrógeno debe ser <strong>p₀ = 0,85–0,9 × p₁</strong> para evitar que la vejiga toque el fondo a p₁.</p>
+              </div>
+
+              <div class="lab-field">
+                <label for="haP1" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="hacc.icoP1" data-i18n-attr="title" title="Presión mínima">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M4 20V8l8-4 8 4v12"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="hacc.labelP1">Presión mínima de trabajo — p₁ (bar)</span>
+                </label>
+                <input inputmode="decimal" id="haP1" type="number" min="1" step="any" value="100" />
+                <span class="hint" data-i18n="hacc.hintP1">Umbral de descarga</span>
+                <p class="lab-field-help" data-i18n="hacc.helpP1Html" data-i18n-html>Presión mínima a la que el sistema acepta fluido del acumulador. Debe ser <strong>p₁ &gt; p₀</strong>.</p>
+              </div>
+
+              <div class="lab-field">
+                <label for="haP2" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="hacc.icoP2" data-i18n-attr="title" title="Presión máxima">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M8 8h8M9 20h6"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="hacc.labelP2">Presión máxima de carga — p₂ (bar)</span>
+                </label>
+                <input inputmode="decimal" id="haP2" type="number" min="1" step="any" value="200" />
+                <span class="hint" data-i18n="hacc.hintP2">Presión bomba</span>
+                <p class="lab-field-help" data-i18n="hacc.helpP2Html" data-i18n-html>Presión máxima del circuito (tarado de la limitadora). El ratio <strong>p₂/p₁ ≤ 4</strong> se recomienda para vejiga; alerta si se supera.</p>
+              </div>
+
+              <div class="lab-field" id="haDeltaVField">
+                <label for="haDeltaV" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="hacc.icoDeltaV" data-i18n-attr="title" title="Volumen útil">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="10" rx="2"/><path d="M9 8V6M15 8V6"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="hacc.labelDeltaV">Volumen útil requerido — ΔV (L)</span>
+                </label>
+                <input inputmode="decimal" id="haDeltaV" type="number" min="0.01" step="any" value="5" />
+                <span class="hint" data-i18n="hacc.hintDeltaV">Caudal × tiempo ciclo</span>
+                <p class="lab-field-help" data-i18n="hacc.helpDeltaVHtml" data-i18n-html>Volumen de aceite que debe suministrar el acumulador en un ciclo. Ejemplo: 10 L/min × 30 s = 5 L.</p>
+              </div>
+
+              <div class="lab-field" id="haVnomField" hidden>
+                <label for="haVnom" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="hacc.icoVnom" data-i18n-attr="title" title="Volumen nominal">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 12h16"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="hacc.labelVnom">Volumen nominal instalado (L)</span>
+                </label>
+                <select id="haVnom">
+                  <option value="1">1 L</option>
+                  <option value="2">2 L</option>
+                  <option value="4">4 L</option>
+                  <option value="6">6 L</option>
+                  <option value="10" selected>10 L</option>
+                  <option value="16">16 L</option>
+                  <option value="20">20 L</option>
+                  <option value="32">32 L</option>
+                  <option value="50">50 L</option>
+                </select>
+                <span class="hint" data-i18n="hacc.hintVnom">Serie comercial Hydac / Parker</span>
+                <p class="lab-field-help" data-i18n="hacc.helpVnomHtml">Tamaños nominales de la serie comercial estándar.</p>
+              </div>
+
+              <div class="lab-field">
+                <label for="haTempC" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="hacc.icoTemp" data-i18n-attr="title" title="Temperatura">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v12"/><circle cx="12" cy="18" r="4"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="hacc.labelTemp">Temperatura de trabajo (°C)</span>
+                </label>
+                <input inputmode="decimal" id="haTempC" type="number" min="-20" max="150" step="any" value="40" />
+                <span class="hint" data-i18n="hacc.hintTemp">−20 a 150 °C</span>
+                <p class="lab-field-help" data-i18n="hacc.helpTempHtml" data-i18n-html>Afecta a la densidad del aceite y a la expansión del nitrógeno (corrección de Boyle–Charles en modo proyecto).</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="lab-calc-layout__out lab-calc-layout__out--panel">
+            <div class="lab-units-bar" role="group" data-i18n-attrs="aria-label=fluids.unitsAriaLabel" aria-label="Unidades de resultado" data-lab-convert-categories="pressure">
+              <span class="lab-units-bar__title" data-i18n="fluids.unitsBarTitle">Cómo ver los resultados</span>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl" data-i18n="fluids.lblPressure">Presión</span>
+                <select id="labUnitPressure" class="lab-units-bar__select">
+                  <option value="bar" data-i18n="fluids.optBar">bar</option>
+                  <option value="mpa" data-i18n="fluids.optMpa">MPa</option>
+                  <option value="psi" data-i18n="fluids.optPsi">psi</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl" data-i18n="fluids.lblVolume">Volumen</span>
+                <select id="labUnitVolume" class="lab-units-bar__select">
+                  <option value="L" data-i18n="fluids.optLitres">L</option>
+                  <option value="gal" data-i18n="fluids.optGal">gal (US)</option>
+                </select>
+              </label>
+            </div>
+
+            <details class="lab-fluid-formulas" id="haFormulasBlock">
+              <summary data-i18n="hacc.formulasSummary">Memoria de cálculo y supuestos</summary>
+              <div id="haFormulaBody" class="lab-fluid-formulas__body"></div>
+            </details>
+
+            <div id="haResults" class="lab-results"></div>
+            <div id="haAdvisor" class="lab-alerts"></div>
+            <div id="haVerdictSummary" class="hc-verdict-summary" aria-live="polite"></div>
+            <p id="haVerdict" class="lab-verdict lab-verdict--ok"></p>
+
+            <div class="lab-results-actions">
+              <button type="button" class="lab-btn lab-btn--block" id="haCopyResults" data-i18n="hacc.copyResults">Copiar resultados</button>
+            </div>
+            <div class="lab-results-share lab-results-share--footer" id="haShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="haCopyLinkBtn" data-i18n="hacc.copyLink">Copiar enlace</button>
+              <span class="lab-copy-toast" id="haCopyLinkToast" role="status" data-i18n="hacc.linkCopied">¡Enlace copiado!</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
+    <script type="module" src="js/ui/hydraulicAccumulatorPage.js"></script>
+    <script type="module" src="js/ui/labDonationFooter.js"></script>
+  </body>
+</html>

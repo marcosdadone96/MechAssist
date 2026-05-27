@@ -209,8 +209,8 @@
       <section class="lab-panel lab-panel--accent">
         <header class="lab-calc-page-head">
           <h2 data-i18n="pneuCyl.h2">Cilindro neumático — fuerza, consumo y estabilidad</h2>
-          <p class="lab-scope-note" data-i18n="pneuCyl.scopeNote">
-            Cálculo orientativo para dimensionado previo. Confirma siempre con catálogo de fabricante y normativa aplicable (ISO 4413 / ISO 4414).
+          <p class="lab-safety-notice" data-i18n="fluids.safetyNotice">
+            Cálculo orientativo para pre-dimensionado. Confirme presiones, caudales y dimensiones de componentes con el catálogo del fabricante y la normativa aplicable (ISO 4413 / ISO 4414).
           </p>
           <p class="lab-calc-hero-lead" data-i18n="pneuCyl.heroLead">
             Fuerza útil por áreas y presión, consumo de aire libre por ciclo y pandeo del vástago — diseño o diagnóstico, con modo proyecto opcional.
@@ -420,16 +420,52 @@
           </div>
 
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
+            <div
+              class="lab-units-bar"
+              role="group"
+              data-i18n-attrs="aria-label=fluids.unitsAriaLabel data-lab-convert-title=fluids.convertTitle data-lab-convert-tip=fluids.convertTip"
+              aria-label="Unidades de los resultados"
+              data-lab-convert-categories="pressure"
+              data-lab-convert-title="Conversor (fluidos)"
+              data-lab-convert-tip="Presión en bar, MPa o psi; caudal en L/min o m³/h en los resultados."
+            >
+              <span class="lab-units-bar__title" data-i18n="fluids.unitsBarTitle">Cómo ver los resultados</span>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl" data-i18n="fluids.lblPressure">Presión</span>
+                <select id="labUnitPressure" class="lab-units-bar__select">
+                  <option value="bar" data-i18n="fluids.optBar">bar</option>
+                  <option value="mpa" data-i18n="fluids.optMpa">MPa</option>
+                  <option value="psi" data-i18n="fluids.optPsi">psi</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl" data-i18n="fluids.lblFlow">Caudal</span>
+                <select id="labUnitFlow" class="lab-units-bar__select">
+                  <option value="Lmin" data-i18n="fluids.optLmin">L/min</option>
+                  <option value="m3h" data-i18n="fluids.optM3h">m³/h</option>
+                </select>
+              </label>
+            </div>
+
             <details class="lab-fluid-formulas" id="pcFormulasBlock">
               <summary data-i18n="pneuCyl.formulasSummary">Memoria de cálculo, fórmulas y supuestos</summary>
               <div id="pcFormulaBody" class="lab-fluid-formulas__body"></div>
             </details>
             <div id="pcResults" class="lab-results"></div>
+            <div class="lab-results-actions">
+              <button type="button" class="lab-btn lab-btn--block" id="pcCopyResults" data-i18n="fluids.copyResults">Copiar resultados</button>
+              <div class="lab-copy-toast" id="pcCopyToast" role="status" data-i18n="fluids.copyToast">¡Copiado!</div>
+            </div>
+
             <div id="pcAdvisor" class="lab-alerts"></div>
             <p id="pcRodThreadInfo" class="lab-small-print"></p>
             <p id="pcVerdict" class="lab-verdict lab-verdict--ok" data-i18n="pneuCyl.verdictOk">SISTEMA APTO</p>
             <div id="pcVerdictSummary" class="pc-verdict-summary" aria-live="polite"></div>
             <div id="labFluidPdfMountPc" class="premium-pdf-mount"></div>
+            <div class="lab-results-share lab-results-share--footer" id="pcShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="pcCopyLinkBtn" data-i18n="pneuCyl.copyLink">Copiar enlace</button>
+              <span class="lab-copy-toast" id="pcCopyLinkToast" role="status" data-i18n="pneuCyl.copyToast">¡Enlace copiado!</span>
+            </div>
           </div>
         </div>
       </section>

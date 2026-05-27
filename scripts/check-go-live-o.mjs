@@ -1,5 +1,5 @@
 /**
- * Fase O ù verificaciones automatizadas pre-deploy.
+ * Fase O ¬ù verificaciones automatizadas pre-deploy.
  * Ejecutar: node scripts/check-go-live-o.mjs
  * QA manual en navegador: docs/go-live-qa-o-manual.md
  */
@@ -24,6 +24,8 @@ const CATALOG = JSON.parse(fs.readFileSync('config/calc-unlock-catalog.json', 'u
 /** slug -> expected module script fragment */
 const PAGE_MODULE = {
   'calc-gears.html': 'calcGearsPage.js',
+  'calc-worm-gear.html': 'calcWormGearPage.js',
+  'calc-fatigue.html': 'calcFatiguePage.js',
   'calc-belts.html': 'calcBeltsPage.js',
   'calc-chains.html': 'calcChainsPage.js',
   'calc-bearings.html': 'calcBearingsPage.js',
@@ -34,6 +36,7 @@ const PAGE_MODULE = {
   'calc-seeger.html': 'calcSeegerPage.js',
   'calc-couplings.html': 'couplingsPage.js',
   'calc-bolts-iso898.html': 'boltsIsoPage.js',
+  'calc-bolt-shear.html': 'calcBoltShearPage.js',
   'calc-gearmotor-inertia.html': 'gearmotorInertiaPage.js',
   'calc-compression-spring.html': 'compressionSpringPage.js',
   'transmission-canvas.html': 'transmissionCanvasAppEntry',
@@ -49,6 +52,8 @@ const PAGE_MODULE = {
   'calc-hydraulic-pump.html': 'hydraulicPumpPage.js',
   'calc-hydraulic-cylinder.html': 'hydraulicCylinderPage.js',
   'calc-hydraulic-press.html': 'hydraulicPressPage.js',
+  'calc-hydraulic-valve.html': 'hydraulicValvePage.js',
+  'calc-hydraulic-accumulator.html': 'hydraulicAccumulatorPage.js',
   'calc-pneumatic-cylinder.html': 'pneumaticCylinderPage.js',
 };
 
@@ -69,7 +74,7 @@ function runNode(rel) {
   return ok;
 }
 
-console.log('=== Fase O ù checks automatizados ===\n');
+console.log('=== Fase O ¬ù checks automatizados ===\n');
 
 for (const rel of SUB_CHECKS) {
   runNode(rel);

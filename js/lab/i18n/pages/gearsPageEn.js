@@ -4,6 +4,8 @@ export const GEARS_PAGE_EN = {
   'gear.metaDesc':
     'ISO 53-style geometry, ratio and indicative strength (simplified AGMA-style) for spur and helical cylindrical gears (normal module, helix angle \u03b2). Gearbox predesign. Free online.',
   'gear.h2': 'Cylindrical spur & helical gears \u00b7 design and kinematics',
+  'gear.safetyNotice':
+    'Indicative calculation per AGMA 2001. SF and SH factors are estimates; final sizing requires certified material data, machining quality and real lubrication conditions.',
   'gear.heroLead':
     'Centre distance, ratio, pitch-line speed and an indicative strength check from normal module, tooth counts, helix angle \u03b2 (0 = spur) and face width.',
   'gear.methodSummary': 'Methodology and model limits',

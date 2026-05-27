@@ -1,5 +1,5 @@
 /**
- * Reglas de validación numérica para calculadoras de máquinas (cintas, elevadores, bombas).
+ * Reglas de validaciÃ³n numÃ©rica para calculadoras de mÃ¡quinas (cintas, elevadores, bombas).
  * Campos opcionales (resistencia adicional, masa de banda = 0) usan optional: true.
  */
 

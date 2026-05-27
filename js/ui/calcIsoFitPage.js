@@ -31,6 +31,7 @@ import {
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getLabLang } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { ISO_FIT_PAGE_EN } from '../lab/i18n/pages/isoFitPageEn.js';
@@ -529,3 +530,4 @@ watchLangAndApply(ISO_FIT_PAGE_EN, {
     scheduleIsoRecalc();
   },
 });
+initInfoChipPopovers(document);

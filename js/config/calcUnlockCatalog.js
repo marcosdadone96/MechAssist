@@ -1,5 +1,5 @@
 /**
- * Calculadoras elegibles para desbloqueo puntual (1 € / 30 días).
+ * Calculadoras elegibles para desbloqueo puntual (1 ï¿½ / 30 dï¿½as).
  * Fuente: config/calc-unlock-catalog.json (mantener sincronizado con el webhook).
  */
 import catalogJson from '../../config/calc-unlock-catalog.json' with { type: 'json' };

@@ -13,6 +13,8 @@ export const ROLLER_CONVEYOR_EN = {
     'This tool maps load distribution on free or driven rollers, pitch and line speed into drag force and power at the drive zone, using the same dashboard workflow as flat belts for easy comparison. It suits picking, controlled accumulation and parcel lines where throughput changes brushless motor duty. Plant engineers can check whether a heavier EUR pallet forces zone drives instead of under-table belt propulsion.',
   'rollerConv.heroLead':
     'Horizontal line with rolling resistance and extra drag. Same workflow as flat belt: results panel and schematic on the right.',
+  'rollerConv.safetyNoticeHtml':
+    '<strong>Notice:</strong> Indicative sizing calculation. Confirm roller speed limits, dynamic loads and roller pitch with the manufacturer and applicable safety standards.',
   'rollerConv.diagramSvgAria': 'Motorized roller conveyor schematic',
   'rollerConv.helpSummary': 'Quick guide to each quantity',
   'rollerConv.helpBodyHtml': `<p class="help-details__lead muted">

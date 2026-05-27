@@ -9,8 +9,8 @@ export const SHAFT_PAGE_EN = {
   'shaft.heroLeadHtml':
     'Get the <strong>minimum diameter</strong> for pure torsion or, in advanced mode, equivalent stress with <strong>M</strong> and <strong>Kt</strong> (Von Mises / Tresca). Compare with a commercial \u00d8 or diagnose an installed shaft.',
   'shaft.seoSummary': 'Expanded context and usage notes',
-  'shaft.seoIntro':
-    'This module estimates the diameter of a solid shaft under pure torsion first and, in advanced mode, combined bending and torque via Von Mises or Tresca equivalent stress with indicative concentration factors. The result is a pre-design step before detailed fatigue analysis or corporate standards. Typical for machine designers and maintenance when replacing a shaft or validating a power upgrade.',
+  'shaft.calcSeoIntro':
+    'This module estimates the required diameter of a solid shaft under pure torsion first and, in advanced mode, combined bending moment and torque via Von Mises or Tresca equivalent stress with indicative stress concentration factors. The result is a pre-design step before detailed fatigue analysis or your project standard. Machine designers and maintenance engineers use it when replacing a shaft or validating a power upgrade. For example, you can size a gearbox output shaft before ordering machining when the driven pulley and belt load change.',
   'shaft.helpSummary': 'Methodology and model limits',
   'shaft.helpBodyHtml':
     '<strong>Design</strong> mode: torsion with <strong>\u03c4 = 16T/(\u03c0d\u00b3)</strong> and comparison with a commercial \u00d8. <strong>Advanced</strong> mode: Von Mises or Tresca equivalent with indicative <strong>M</strong> and <strong>Kt</strong>. Does not include detailed fatigue or real keyway/thread concentrations; use as pre-design and validate with your standard.',

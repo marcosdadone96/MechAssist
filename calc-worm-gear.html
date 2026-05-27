@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="worm.docTitle">Tornillo sin fin y corona — TheMechAssist</title>
+    <meta name="description" data-i18n="worm.metaDesc" data-i18n-attr="content" content="Relación i, ángulo de avance, eficiencia y autobloqueo en tornillo sin fin y corona." />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
+    <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
+    <link rel="canonical" href="https://www.themechassist.com/calc-worm-gear.html" id="mdr-canonical" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.themechassist.com/calc-worm-gear.html" />
+    <meta property="og:title" data-i18n="worm.docTitle" data-i18n-attr="content" content="Tornillo sin fin y corona — TheMechAssist" />
+    <meta property="og:description" data-i18n="worm.metaDesc" data-i18n-attr="content" content="Relación, γ, eficiencia y autobloqueo." />
+    <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lab.css" />
+    <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
+  </head>
+  <body class="lab-body">
+    <header class="site-nav site-nav--sticky">
+      <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
+        <img class="site-nav__logo" src="logo-themechassist.svg" width="40" height="40" alt="TheMechAssist" decoding="async" />
+        <span class="site-nav__title" aria-hidden="true">The<em>MechAssist</em></span>
+      </a>
+      <nav class="site-nav__center" data-i18n="aria.siteNav" data-i18n-attr="aria-label">
+        <a class="site-nav__link site-nav__link--hub" href="transmission-lab.html" data-i18n="nav.hubLab">Laboratorio de transmisión</a>
+        <a class="site-nav__link site-nav__link--hub" href="machines-hub.html" data-i18n="nav.hubMachines">Máquinas</a>
+        <a class="site-nav__link site-nav__link--hub" href="fluids-hub.html" data-i18n="nav.hubFluids">Hidráulica</a>
+        <a class="site-nav__link" href="my-gearmotors.html"><span data-i18n="nav.myGearmotors">Mis motorreductores</span> <span class="premium-flag">Pro</span></a>
+      </nav>
+      <div class="site-nav__end">
+        <a class="site-nav__link site-nav__link--plans" href="index.html#hub-pricing" data-nav-plans data-i18n="nav.plans">Planes</a>
+        <div id="hub-header-auth-slot" class="site-nav__auth"></div>
+        <a class="site-nav__link site-nav__link--feedback" href="feedback.html" data-i18n="nav.feedback">Sugerencias</a>
+        <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
+          <span class="site-nav__lang-sep" aria-hidden="true">·</span>
+          <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
+    </header>
+    <main class="lab-main">
+      <section class="lab-panel lab-panel--accent">
+        <header class="lab-calc-page-head">
+          <h2 data-i18n="worm.h2">Tornillo sin fin y corona · cinemática</h2>
+          <p class="lab-safety-notice" data-i18n="worm.safetyNotice">Cálculo orientativo. Confirme geometría, materiales y eficiencia con datos del fabricante.</p>
+          <p class="lab-calc-hero-lead" data-i18n="worm.heroLead">Relación i, ángulo de avance γ, eficiencia, autobloqueo, distancia entre ejes y par de salida.</p>
+          <details class="lab-calc-seo">
+            <summary data-i18n="worm.seoSummary">Contexto ampliado y notas de uso</summary>
+            <p class="calc-seo-intro" data-i18n="worm.calcSeoIntro">Predimensionado de reductor tornillo–corona con módulo axial, entradas del tornillo y dientes de corona.</p>
+          </details>
+          <details class="lab-calc-help">
+            <summary class="lab-calc-help__summary" data-i18n="worm.methodSummary">Metodología y límites del modelo</summary>
+            <div class="lab-calc-help__body">
+              <p class="lab-lead lab-lead--in-help" data-i18n="worm.methodBodyHtml" data-i18n-html>i = z₂/nw; γ = arctan(nw·mx/d₁); η = tanγ/tan(γ+φ′).</p>
+            </div>
+          </details>
+        </header>
+        <nav class="lab-next-steps" data-i18n="worm.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
+          <h3 class="lab-next-steps__title" data-i18n="worm.nextStepsTitle">Siguiente paso habitual</h3>
+          <ul class="lab-next-steps__list">
+            <li data-i18n="worm.nextLi1Html" data-i18n-html><a href="calc-shaft.html">Eje · torsión</a> — diámetro con T₂.</li>
+            <li data-i18n="worm.nextLi2Html" data-i18n-html><a href="calc-bearings.html">Rodamientos · L10</a> — apoyos axiales.</li>
+            <li data-i18n="worm.nextLi3Html" data-i18n-html><a href="calc-gears.html">Engranajes cilíndricos</a> — comparar reducción paralela.</li>
+          </ul>
+        </nav>
+        <div class="lab-presets-row">
+          <span class="lab-presets-row__label" data-i18n="worm.presetsLabel">Ejemplos típicos:</span>
+          <div class="lab-presets-bar" id="wgPresetsBar"></div>
+        </div>
+        <div class="lab-calc-layout lab-calc-layout--with-diag lab-calc-layout--panelled">
+          <div class="lab-calc-layout__diagram">
+            <div class="lab-diagram-wrap lab-diagram-wrap--elevated">
+              <p class="lab-diagram-wrap__title" data-i18n="worm.diagTitle">Vista esquemática · se actualiza al cambiar los datos</p>
+              <svg id="wgDiagram" xmlns="http://www.w3.org/2000/svg" data-i18n="worm.diagAriaLabel" data-i18n-attr="aria-label" aria-label="Diagrama tornillo y corona"></svg>
+              <p class="lab-diagram-caption" data-i18n="worm.diagCaptionHtml" data-i18n-html>Cotas <strong>d₁</strong>, <strong>d₂</strong> y <strong>a</strong> orientativas.</p>
+            </div>
+          </div>
+          <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
+            <div class="lab-grid lab-grid--2">
+              <div class="lab-field lab-field--wide">
+                <label for="wgCalcMode" data-i18n="worm.labelCalcMode">Modo de trabajo</label>
+                <select id="wgCalcMode">
+                  <option value="design" data-i18n="worm.optDesign">Diseño — objetivo de reducción → módulo y entradas</option>
+                  <option value="diagnostic" selected data-i18n="worm.optDiagnostic">Diagnóstico — par instalado → verificar γ y eficiencia</option>
+                </select>
+                <div class="lab-field-help lab-field-help--worm-modes" id="wgCalcModeHelp">
+                  <p class="worm-calc-mode-help__line" data-worm-mode="design" data-i18n="worm.helpCalcModeDesignHtml" data-i18n-html><strong>Diseño:</strong> relación objetivo → sugiere nw, z₂ y módulo.</p>
+                  <p class="worm-calc-mode-help__line worm-calc-mode-help__line--active" data-worm-mode="diagnostic" data-i18n="worm.helpCalcModeDiagnosticHtml" data-i18n-html><strong>Diagnóstico:</strong> módulo y geometría instalados → γ, η y autobloqueo.</p>
+                </div>
+              </div>
+              <div class="lab-field" id="wgTargetField">
+                <label for="wgTargetI" data-i18n="worm.labelTargetI">Relación objetivo i (diseño)</label>
+                <input inputmode="decimal" id="wgTargetI" type="number" min="5" step="any" value="40" />
+                <p class="lab-field-help" data-i18n="worm.helpTargetIHtml" data-i18n-html>Objetivo <strong>i = z₂/nw</strong>.</p>
+              </div>
+              <div class="lab-field">
+                <label for="wgMx" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="worm.icoMx" data-i18n-attr="title" title="Módulo">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18h16M7 18V9M12 18V6M17 18v-5"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="worm.labelMx">Módulo axial mₓ (mm)</span>
+                </label>
+                <input inputmode="decimal" id="wgMx" type="number" step="0.5" min="0.5" value="3" />
+                <p class="lab-field-help" data-i18n="worm.helpMxHtml" data-i18n-html><strong>mₓ</strong> axial con coeficiente <strong>q</strong> ISO 3408.</p>
+              </div>
+              <div class="lab-field">
+                <label for="wgNw" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="worm.icoNw" data-i18n-attr="title" title="Entradas">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16"/><path d="M12 4v16"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="worm.labelNw">Entradas del tornillo n<sub>w</sub></span>
+                </label>
+                <select id="wgNw">
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="4">4</option>
+                </select>
+                <p class="lab-field-help" data-i18n="worm.helpNwHtml" data-i18n-html><strong>i = z₂/nw</strong>.</p>
+              </div>
+              <div class="lab-field">
+                <label for="wgZ2" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="worm.icoZ2" data-i18n-attr="title" title="Corona">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="worm.labelZ2">Dientes de corona z₂</span>
+                </label>
+                <input id="wgZ2" type="number" min="20" value="40" />
+                <p class="lab-field-help" data-i18n="worm.helpZ2Html" data-i18n-html>Mínimo ~20 dientes en este modelo.</p>
+              </div>
+              <div class="lab-field">
+                <label for="wgMat" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="worm.icoMat" data-i18n-attr="title" title="Material">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18c2-4 10-4 12 0"/><path d="M8 10c2-2 6-2 8 0"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="worm.labelMat">Material tornillo</span>
+                </label>
+                <select id="wgMat">
+                  <option value="steel_c45" selected data-i18n="worm.optMatC45">Acero templado C45</option>
+                  <option value="steel_16mncr5" data-i18n="worm.optMat16Mn">Acero 16MnCr5</option>
+                  <option value="bronze_al" data-i18n="worm.optMatBronze">Bronce Al / acero</option>
+                </select>
+                <p class="lab-field-help" data-i18n="worm.helpMatHtml" data-i18n-html>Orientativo; ajuste μ según lubricación.</p>
+              </div>
+              <div class="lab-field">
+                <label for="wgN1" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="worm.icoN1" data-i18n-attr="title" title="RPM">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M16 8l2-4M12 8v4l3 2"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="worm.labelN1">Velocidad entrada n₁ (RPM)</span>
+                </label>
+                <input inputmode="decimal" id="wgN1" type="number" min="0" value="1450" />
+                <p class="lab-field-help" data-i18n="worm.helpN1Html" data-i18n-html><strong>n₂ = n₁/i</strong>.</p>
+              </div>
+              <div class="lab-field">
+                <label for="wgPower" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="worm.icoPower" data-i18n-attr="title" title="Potencia">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="worm.labelPower">Potencia entrada P (kW)</span>
+                </label>
+                <input inputmode="decimal" id="wgPower" type="number" step="0.01" min="0.01" value="1.5" />
+                <p class="lab-field-help" data-i18n="worm.helpPowerHtml" data-i18n-html><strong>T₁ = 9550·P/n₁</strong> N·m.</p>
+              </div>
+              <div class="lab-field">
+                <label for="wgGammaOut" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="worm.icoGamma" data-i18n-attr="title" title="Gamma">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18h12"/><path d="M5 18L15 8"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="worm.labelGamma">Ángulo de avance γ (°) — calculado</span>
+                </label>
+                <input id="wgGammaOut" type="text" readonly value="5.71" class="lab-field--readonly" />
+                <p class="lab-field-help" data-i18n="worm.helpGammaHtml" data-i18n-html><strong>γ = arctan(nw·mx/d₁)</strong>.</p>
+              </div>
+              <div class="lab-field">
+                <label for="wgFriction" class="lab-field__label-row">
+                  <span class="lab-field-ico" data-i18n="worm.icoFriction" data-i18n-attr="title" title="Fricción">
+                    <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18c2-4 10-4 12 0"/></svg>
+                  </span>
+                  <span class="lab-field__label-text" data-i18n="worm.labelFriction">Coef. fricción μ</span>
+                </label>
+                <input inputmode="decimal" id="wgFriction" type="number" step="0.01" min="0.01" max="0.2" value="0.05" />
+                <span class="hint" data-i18n="worm.hintFriction">0,03–0,12 según lubricación</span>
+                <p class="lab-field-help" data-i18n="worm.helpFrictionHtml" data-i18n-html>Autobloqueo si <strong>γ ≤ arctan(μ)</strong>.</p>
+              </div>
+            </div>
+          </div>
+          <div class="lab-calc-layout__out lab-calc-layout__out--panel">
+            <div class="lab-units-bar" role="group" data-i18n-attrs="aria-label=worm.unitsAriaLabel data-lab-convert-title=worm.convertTitle data-lab-convert-tip=worm.convertTip" aria-label="Unidades" data-lab-convert-categories="length" data-lab-convert-title="Conversor (tornillo sin fin)" data-lab-convert-tip="Longitudes en mm; pares en N·m.">
+              <span class="lab-units-bar__title" data-i18n="worm.unitsBarTitle">Cómo ver los resultados</span>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl" data-i18n="worm.lblLength">Distancias</span>
+                <select id="labUnitLength" class="lab-units-bar__select">
+                  <option value="mm" data-i18n="worm.optMmShop">mm (taller)</option>
+                  <option value="cm" data-i18n="worm.optCm">cm</option>
+                  <option value="in" data-i18n="worm.optIn">in</option>
+                </select>
+              </label>
+              <label class="lab-units-bar__field">
+                <span class="lab-units-bar__lbl" data-i18n="worm.lblTorque">Par</span>
+                <select id="labUnitTorque" class="lab-units-bar__select">
+                  <option value="Nm" data-i18n="worm.optNm">N·m</option>
+                  <option value="Nmm" data-i18n="worm.optNmm">N·mm</option>
+                  <option value="lbfft" data-i18n="worm.optLbfft">lbf·ft</option>
+                </select>
+              </label>
+            </div>
+            <div id="wgHero"></div>
+            <details class="lab-results-details lab-results-details--chevron-end">
+              <summary data-i18n="worm.summaryPerElement">Resultados por elemento</summary>
+              <div id="wgElementResults" class="lab-element-columns"></div>
+            </details>
+            <div id="wgAlerts" class="lab-alerts"></div>
+            <div id="wgAdvisorPanel" hidden></div>
+            <div class="lab-results-wrap" id="wgResultsWrap">
+              <div class="lab-results-computing" aria-hidden="true">
+                <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true"><path fill="#0f766e" d="M32 8l2.2 4.4 4.9-1.3 1.3 4.9 4.4 2.2-2.2 4.4 1.3 4.9-4.9 1.3-2.2 4.4-4.4-2.2-4.9 1.3-1.3-4.9-4.4-2.2 2.2-4.4-1.3-4.9 4.9-1.3 4.4-2.2zm0 10a14 14 0 100 28 14 14 0 000-28z"/></svg>
+                <span class="lab-results-computing__label" data-i18n="worm.recalculating">Recalculando</span>
+              </div>
+              <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked">
+                <summary data-i18n="worm.summaryFull">Resultado completo</summary>
+                <div class="lab-results" id="wgResults"></div>
+              </details>
+              <div class="lab-results-actions">
+                <button type="button" class="lab-btn lab-btn--block" id="wgCopyResults" data-i18n="worm.copyResults">Copiar resultados</button>
+              </div>
+            </div>
+            <div class="lab-results-share lab-results-share--footer" id="wgShareLinkWrap" aria-live="polite">
+              <button type="button" class="lab-btn lab-btn--text" id="wgCopyLinkBtn" data-i18n="worm.copyLink">Copiar enlace</button>
+              <div class="lab-copy-toast" id="wgCopyToast" role="status" data-i18n="worm.copyToast">¡Enlace copiado!</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script>
+      globalThis.__SUPABASE_URL__ = 'https://ytdtsqxhqfuzzcblidiy.supabase.co';
+      globalThis.__SUPABASE_ANON_KEY__ = 'sb_publishable_HQqMGXjb5zO1Jp_Hn9eXmA_NA0Htl41';
+    </script>
+    <script type="module" src="js/ui/homeI18n.js"></script>
+    <script type="module" src="js/ui/hubFreemium.js"></script>
+    <script type="module" src="js/ui/calcWormGearPage.js"></script>
+    <script type="module" src="js/ui/labDonationFooter.js"></script>
+  </body>
+</html>

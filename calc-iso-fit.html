@@ -98,7 +98,7 @@
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-field">
               <label for="isoD" class="lab-field__label-row">
-                <span class="lab-field__label-text" data-i18n="iso.labelD">Diámetro nominal d (mm)</span>
+                <span class="lab-field__label-text" data-i18n="iso.labelD">Diámetro nominal d (mm) <span class="info-chip" title="Diámetro de referencia del eje al que se aplica el ajuste. En el sistema ISO, es el mismo para eje y agujero." aria-label="Ayuda diámetro nominal">?</span></span>
               </label>
               <input id="isoD" type="number" min="1" max="500" step="any" value="25" />
               <p class="lab-field-help" data-i18n="iso.fieldHelpD">Rango tabulado en esta demo: 1 a 500 mm.</p>
@@ -131,25 +131,25 @@
             <div class="lab-grid lab-grid--2">
               <div class="lab-field">
                 <label for="isoHoleLetter" class="lab-field__label-row">
-                  <span class="lab-field__label-text" data-i18n="iso.labelHole">Agujero (letra)</span>
+                  <span class="lab-field__label-text" data-i18n="iso.labelHole">Agujero (letra) <span class="info-chip" title="Sistema agujero-base (H): el agujero mantiene la tolerancia H y el eje varía. Sistema eje-base (h): el eje mantiene h y el agujero varía. H es más común." aria-label="Ayuda sistema de ajuste">?</span></span>
                 </label>
                 <select id="isoHoleLetter"></select>
               </div>
               <div class="lab-field">
                 <label for="isoHoleIt" class="lab-field__label-row">
-                  <span class="lab-field__label-text">Agujero IT</span>
+                  <span class="lab-field__label-text">Agujero IT <span class="info-chip" title="Grado de tolerancia: IT5-IT7 para ajustes de precisión (rodamientos, engranajes). IT8-IT10 para ajustes deslizantes. IT11+ para holguras amplias." aria-label="Ayuda calidad IT">?</span></span>
                 </label>
                 <select id="isoHoleIt"></select>
               </div>
               <div class="lab-field">
                 <label for="isoShaftLetter" class="lab-field__label-row">
-                  <span class="lab-field__label-text" data-i18n="iso.labelShaft">Eje (letra)</span>
+                  <span class="lab-field__label-text" data-i18n="iso.labelShaft">Eje (letra) <span class="info-chip" title="Sistema agujero-base (H): el agujero mantiene la tolerancia H y el eje varía. Sistema eje-base (h): el eje mantiene h y el agujero varía. H es más común." aria-label="Ayuda sistema de ajuste">?</span></span>
                 </label>
                 <select id="isoShaftLetter"></select>
               </div>
               <div class="lab-field">
                 <label for="isoShaftIt" class="lab-field__label-row">
-                  <span class="lab-field__label-text">Eje IT</span>
+                  <span class="lab-field__label-text">Eje IT <span class="info-chip" title="Grado de tolerancia: IT5-IT7 para ajustes de precisión (rodamientos, engranajes). IT8-IT10 para ajustes deslizantes. IT11+ para holguras amplias." aria-label="Ayuda calidad IT">?</span></span>
                 </label>
                 <select id="isoShaftIt"></select>
               </div>

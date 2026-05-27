@@ -1,5 +1,5 @@
 /**
- * labToast.js — Notificaciones toast no bloqueantes para el laboratorio.
+ * labToast.js Â— Notificaciones toast no bloqueantes para el laboratorio.
  * Sin dependencias externas.
  */
 

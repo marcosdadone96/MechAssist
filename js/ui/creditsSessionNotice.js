@@ -1,5 +1,5 @@
 /**
- * Aviso informativo (una vez por pestaña) antes del primer cobro de sesión de cálculo.
+ * Aviso informativo (una vez por pestaÃ±a) antes del primer cobro de sesiÃ³n de cÃ¡lculo.
  */
 import { FEATURES } from '../config/features.js';
 import { creditsAmountFromBalance, getCreditCosts } from '../config/credits.js';
@@ -91,7 +91,7 @@ export function showCreditsSessionNoticeToast(balance) {
 }
 
 /**
- * Muestra el aviso como máximo una vez por sesión del navegador, si hay saldo para al menos una sesión.
+ * Muestra el aviso como mÃ¡ximo una vez por sesiÃ³n del navegador, si hay saldo para al menos una sesiÃ³n.
  * @param {{ balance?: import('../services/creditsApi.js').CreditsBalance | null, unlimited?: boolean } | null} cached
  */
 export function maybeShowCreditsSessionNotice(cached) {

@@ -170,4 +170,6 @@ export const HYDRAULIC_PUMP_EN = {
   'hpump.vgUse46': 'General industrial use',
   'hpump.vgUse68': 'High-pressure systems',
   'hpump.vgUse100': 'High temperature / outdoor',
+  'hpump.copyLink': 'Copy link',
+  'hpump.copyToast': 'Link copied!',
 };

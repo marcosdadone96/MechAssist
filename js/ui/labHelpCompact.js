@@ -108,6 +108,11 @@ export function mountCompactLabFieldHelp(root = document) {
     const { helpP, hintEl } = findFieldHelpSources(field);
     if (!helpP && !hintEl) return;
 
+    const labelRow =
+      field.querySelector(':scope > label.lab-field__label-row') ||
+      field.querySelector(':scope > label');
+    if (labelRow?.querySelector('.lab-help-hover--field')) return;
+
     const label =
       field.querySelector(':scope > label.lab-field__label-row') ||
       field.querySelector(':scope > label');

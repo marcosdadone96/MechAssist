@@ -69,6 +69,9 @@
       <section class="lab-panel lab-panel--accent">
         <header class="lab-calc-page-head">
           <h2 data-i18n="gear.h2">Engranajes cilíndricos rectos y helicoidales · diseño y cinemática</h2>
+          <p class="lab-safety-notice" data-i18n="gear.safetyNotice">
+            Cálculo orientativo según AGMA 2001. Los factores SF y SH son estimaciones; el dimensionado final requiere datos de material certificados, calidad de mecanizado y condiciones de lubricación reales.
+          </p>
           <p class="lab-calc-hero-lead" data-i18n="gear.heroLead">
             Distancia entre ejes, relación, velocidad en primitivo y comprobación orientativa (AGMA simplificado) a partir de módulo normal, dientes, ángulo de hélice β (0 = recto) y ancho de cara.
           </p>
@@ -363,6 +366,7 @@
               <div id="gElementResults" class="lab-element-columns"></div>
             </details>
             <div id="gAlerts" class="lab-alerts"></div>
+            <div id="gAdvisorPanel" hidden></div>
             <div class="lab-results-wrap" id="gResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true">

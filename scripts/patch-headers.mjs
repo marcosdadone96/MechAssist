@@ -22,7 +22,7 @@ const SNIPPET_SUB = `    <header class="site-nav site-nav--sticky">
         <div id="hub-header-auth-slot" class="site-nav__auth"></div>
         <div class="site-nav__lang hub-lang" role="group" aria-label="Selector de idioma" data-i18n="aria.langSelector" data-i18n-attr="aria-label">
           <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="es">ES</button>
-          <span class="site-nav__lang-sep" aria-hidden="true">ù</span>
+          <span class="site-nav__lang-sep" aria-hidden="true">¬ù</span>
           <button type="button" class="hub-lang__btn site-nav__lang-btn" data-lang="en">EN</button>
         </div>
       </div>

@@ -3,7 +3,12 @@ import {
   mountLabPresetsBar,
   revalidateAllBoundInputs,
   syncInputValidationResultsGate,
+  updateLabShareVisibility,
+  wireLabCopyLink,
+  wireLabCopyResultsButton,
 } from './labCalcUx.js';
+import { bindFluidLabUnitSelectors, formatFlowLmin, formatPressureBar } from '../lab/fluidLabUnitPrefs.js';
+import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
 import { mountCompactLabFieldHelp, refreshCompactLabFieldHelp } from './labHelpCompact.js';
 import { readLabNumber } from '../utils/labInputParse.js';
@@ -13,12 +18,15 @@ import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { HYDRAULIC_CYLINDER_EN } from '../lab/i18n/pages/hydCylEn.js';
 import { FLUIDS_HUB_UX_EN } from '../lab/i18n/pages/fluidsHubUxEn.js';
 
+const BORE_STD_MM = [32, 40, 50, 63, 80, 100, 125, 160];
+const FORCE_DESIGN_SF = 1.25;
+
 const HC_PRESETS = [
   {
     label: 'Pinza · Ø63',
     labelKey: 'hydCyl.preset1',
     values: {
-      hcMode: 'design',
+      hcCalcMode: 'design',
       hcLabTier: 'basic',
       hcPressureBar: 160,
       hcBoreMm: 63,
@@ -35,7 +43,7 @@ const HC_PRESETS = [
     label: 'Elevación · Ø100',
     labelKey: 'hydCyl.preset2',
     values: {
-      hcMode: 'design',
+      hcCalcMode: 'design',
       hcLabTier: 'basic',
       hcPressureBar: 180,
       hcBoreMm: 100,
@@ -52,7 +60,7 @@ const HC_PRESETS = [
     label: 'Diagnóstico · Ø80',
     labelKey: 'hydCyl.preset3',
     values: {
-      hcMode: 'diagnostic',
+      hcCalcMode: 'diagnostic',
       hcLabTier: 'basic',
       hcPressureBar: 200,
       hcBoreMm: 80,
@@ -90,6 +98,27 @@ function getLang() {
   return getCurrentLang();
 }
 
+function getHcCalcMode() {
+  const el = document.getElementById('hcCalcMode');
+  return el instanceof HTMLSelectElement ? el.value : 'diagnostic';
+}
+
+function nearestBoreMmAtOrAbove(mm) {
+  const v = Number(mm);
+  if (!Number.isFinite(v)) return BORE_STD_MM[3];
+  for (const b of BORE_STD_MM) {
+    if (b >= v - 0.01) return b;
+  }
+  return BORE_STD_MM[BORE_STD_MM.length - 1];
+}
+
+function minBoreMmFromLoadKg(loadKg, pBar, sf = FORCE_DESIGN_SF) {
+  const loadN = loadKg * G;
+  const pPa = pBar * 1e5;
+  const areaM2 = (loadN * sf) / Math.max(1, pPa);
+  return Math.sqrt((4 * areaM2) / Math.PI) * 1000;
+}
+
 function applyHydraulicCylinderDocumentChrome() {
   document.documentElement.lang = getCurrentLang() === 'en' ? 'en' : 'es';
 }
@@ -117,6 +146,7 @@ const I18N = {
     mFsBuck: 'FS pandeo',
     mVsPneu: 'Comparativa vs neumatica 6 bar',
     mCapacity: 'Capacidad de empuje',
+    mMinBore: 'Diámetro mínimo recomendado',
     detailsSub1: 'A_piston / A_anular (retorno más rápido)',
     detailsSub2: 'pandeo + espesor',
     alertSpeed: 'Control de velocidad',
@@ -206,6 +236,7 @@ const I18N = {
     mFsBuck: 'Buckling SF',
     mVsPneu: 'Comparison vs pneumatic 6 bar',
     mCapacity: 'Push capacity',
+    mMinBore: 'Minimum recommended bore',
     detailsSub1: 'A_piston / A_annular (faster retract)',
     detailsSub2: 'buckling + wall',
     alertSpeed: 'Speed control',
@@ -437,9 +468,8 @@ function renderHcVerdictSummary(opts) {
 
 function computeAndRenderCore() {
   if (syncInputValidationResultsGate(document.getElementById('hcResults'))) return;
-  const mode = document.getElementById('hcMode') instanceof HTMLSelectElement
-    ? document.getElementById('hcMode').value
-    : 'design';
+  const calcMode = getHcCalcMode();
+  const isDesign = calcMode === 'design';
 
   const boreEarlyEl = document.getElementById('hcBoreMm');
   const boreEarly = boreEarlyEl instanceof HTMLSelectElement ? Number(boreEarlyEl.value) : 63;
@@ -461,11 +491,29 @@ function computeAndRenderCore() {
   };
 
   const pBar = need(readLabNumber('hcPressureBar', 1, 500, t('inpPressureBar')));
-  const boreMm = need(readLabNumber('hcBoreMm', 16, 2000, t('inpBore')));
-  const rodMm = need(readLabNumber('hcRodMm', 8, 2000, t('inpRod')));
   const strokeMm = need(readLabNumber('hcStrokeMm', 20, 10000, t('inpStroke')));
   const loadInput = document.getElementById('hcLoadKg');
-  const loadKgUser = mode === 'design'
+  let boreMm;
+  let rodMm;
+  let boreMinMm = NaN;
+  if (isDesign) {
+    const loadKgDesign = need(readLabNumber('hcLoadKg', 0.1, 1e9, t('inpLoad')));
+    boreMinMm = minBoreMmFromLoadKg(loadKgDesign, pBar);
+    boreMm = nearestBoreMmAtOrAbove(boreMinMm);
+    const rods = ISO_3320_RODS_BY_BORE[Math.round(boreMm)] || [Math.round(boreMm * 0.45)];
+    rodMm = rods[0];
+    const boreEl = document.getElementById('hcBoreMm');
+    if (boreEl instanceof HTMLSelectElement) {
+      boreEl.value = String(boreMm);
+      setRodOptionsForBore(Math.round(boreMm), Math.round(rodMm));
+      syncHcWallSelectOptions(Math.round(boreMm));
+    }
+  } else {
+    boreMm = need(readLabNumber('hcBoreMm', 16, 2000, t('inpBore')));
+    rodMm = need(readLabNumber('hcRodMm', 8, 2000, t('inpRod')));
+    boreMinMm = boreMm;
+  }
+  const loadKgUser = isDesign
     ? need(readLabNumber('hcLoadKg', 0.1, 1e9, t('inpLoad')))
     : 0;
   const vTarget = need(readLabNumber('hcTargetSpeedMs', 0.001, 10, t('inpSpeed')));
@@ -478,6 +526,7 @@ function computeAndRenderCore() {
 
   if (errors.length) {
     results.innerHTML = '';
+    updateLabShareVisibility('hcShareLinkWrap', 'hcResults');
     if (sealInfo instanceof HTMLElement) sealInfo.textContent = '';
     if (formulaBody instanceof HTMLElement) formulaBody.innerHTML = '';
     const vsEl = document.getElementById('hcVerdictSummary');
@@ -517,18 +566,19 @@ function computeAndRenderCore() {
   const areaAnn = Math.max(1e-9, areaPiston - areaRod);
   const areaRatio = areaPiston / areaAnn;
 
-  const forcePushN = pPa * areaPiston * (mode === 'diagnostic' ? ETA_DIAG : 1);
-  const forcePullN = pPa * areaAnn * (mode === 'diagnostic' ? ETA_DIAG : 1);
-  if (mode === 'diagnostic') {
+  const forcePushN = pPa * areaPiston * (!isDesign ? ETA_DIAG : 1);
+  const forcePullN = pPa * areaAnn * (!isDesign ? ETA_DIAG : 1);
+  if (!isDesign) {
     loadN = Math.max(1, forcePushN * 0.7);
     if (loadInput instanceof HTMLInputElement) {
-      loadInput.value = fmt((forcePushN / G), 1);
+      loadInput.value = fmt(forcePushN / G, 1);
       loadInput.readOnly = true;
       loadInput.setAttribute('aria-readonly', 'true');
     }
   } else if (loadInput instanceof HTMLInputElement) {
     loadInput.readOnly = false;
     loadInput.setAttribute('aria-readonly', 'false');
+    loadN = loadKgUser * G;
   }
   const loadKg = loadN / G;
   const forceRatioPush = forcePushN / loadN;
@@ -564,7 +614,20 @@ function computeAndRenderCore() {
   const marginPct = (forceRatioPush - 1) * 100;
 
   const keyMetrics = [
-    metric(mode === 'diagnostic' ? t('mPushDiag') : t('mPush'), mode === 'diagnostic' ? `${fmt(forcePushN / (1000 * G), 2)} t` : `${fmt(forcePushN, 0)} N`, mode === 'diagnostic' ? `${fmt(forcePushN, 0)} N` : `${fmt(forcePushN / 1000, 1)} kN`),
+    ...(isDesign
+      ? [
+          metric(
+            t('mMinBore'),
+            `${fmt(boreMm, 0)} mm`,
+            `${fmt(boreMinMm, 1)} mm ${getLang() === 'en' ? 'theoretical · ISO' : 'teórico · ISO'} ${fmt(boreMm, 0)}`,
+          ),
+        ]
+      : []),
+    metric(
+      !isDesign ? t('mPushDiag') : t('mPush'),
+      !isDesign ? `${fmt(forcePushN / (1000 * G), 2)} t` : `${fmt(forcePushN, 0)} N`,
+      !isDesign ? `${fmt(forcePushN, 0)} N` : `${fmt(forcePushN / 1000, 1)} kN`,
+    ),
     metric(t('mPull'), `${fmt(forcePullN, 0)} N`, `${fmt(forcePullN / 1000, 1)} kN`),
     metric(t('mSpeed'), `${fmt(vReal, 3)} m/s`, `Q bomba ${fmt(qPumpLmin, 1)} L/min`),
     metric(t('mArea'), `${fmt(areaRatio, 3)} x`, t('detailsSub1')),
@@ -572,9 +635,9 @@ function computeAndRenderCore() {
   ].join('');
 
   const extraMetrics = [
-    metric(t('mFlowReq'), `${fmt(qReqLmin, 2)} L/min`, `v = ${fmt(vTarget, 3)} m/s`),
+    metric(t('mFlowReq'), formatFlowLmin(qReqLmin), `v = ${fmt(vTarget, 3)} m/s`),
     metric(t('mPortSpeed'), `${fmt(vPort, 2)} m/s`, `D port ${fmt(portDiaMm, 1)} mm`),
-    metric(t('mQout'), `${fmt(qOutRetractLmin, 2)} L/min`, 'rod-side outlet'),
+    metric(t('mQout'), formatFlowLmin(qOutRetractLmin), 'rod-side outlet'),
     metric(t('mEuler'), `${fmt(pCrN, 0)} N`, `FS ${fmt(fsBuckling, 2)}x`),
     metric(t('mTmin'), `${fmt(tReqMm, 2)} mm`, `real ${fmt(wallRealMm, 2)} mm`),
     metric(t('mTstd'), `${fmt(tRecommendedMm, 1)} mm`, 'std series'),
@@ -650,7 +713,7 @@ function computeAndRenderCore() {
   if (vReal > vTarget * 1.05) {
     alerts.push(`<div class="lab-alert lab-alert--warn"><div class="lab-alert__body"><strong>${t('alertSpeed')}:</strong> ${t('alertSpeedBody', { v: fmt(vTarget, 3) })}</div></div>`);
   }
-  if (mode === 'diagnostic' && pBar > 250) {
+  if (!isDesign && pBar > 250) {
     alerts.push(`<div class="lab-alert lab-alert--danger"><div class="lab-alert__body">${t('alertDiagPressure')}</div></div>`);
   }
   if (tooThinByCode) {
@@ -678,7 +741,7 @@ function computeAndRenderCore() {
     alerts.push(`<div class="lab-alert lab-alert--warn"><div class="lab-alert__body"><strong>${t('alertReturn')}:</strong> ${t('alertReturnBody', { q: fmt(qOutRetractLmin, 1) })}</div></div>`);
   }
   alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body"><strong>${t('alertCompare')}:</strong> ${t('alertCompareBody', { x: fmt(hydraulicVsPneumatic, 2) })}</div></div>`);
-  if (mode === 'diagnostic') {
+  if (!isDesign) {
     alerts.push(`<div class="lab-alert lab-alert--info"><div class="lab-alert__body">${t('alertDiagMode', { v: fmt(fsStruct, 2) })}</div></div>`);
   }
   advisor.innerHTML = alerts.join('');
@@ -689,7 +752,7 @@ function computeAndRenderCore() {
     sealInfo.textContent = t('sealInfo', { b: boreTag, r: rodTag, m: sealMaterial });
   }
 
-  const forceOk = mode === 'diagnostic' ? true : forceRatioPush >= 1.25;
+  const forceOk = !isDesign ? true : forceRatioPush >= FORCE_DESIGN_SF;
   const bucklingOk = fsBuckling >= 3.5;
   const tubeOk = fsTube >= 2.0 && !tooThinByCode;
   const fsDrivenBy = fsTube <= fsBuckling ? 'tubo' : 'pandeo';
@@ -729,7 +792,7 @@ function computeAndRenderCore() {
   verdict.textContent = verdictText;
 
   renderHcVerdictSummary({
-    mode,
+    mode: isDesign ? 'design' : 'diagnostic',
     forceOk,
     bucklingOk,
     tubeOk,
@@ -754,7 +817,7 @@ function computeAndRenderCore() {
       { title: 'FS', value: `${fmt(fsStruct, 2)}`, subtitle: langPdf === 'en' ? 'structural' : 'estructural' },
     ],
     inputRows: [
-      { label: 'mode', value: mode },
+      { label: 'mode', value: calcMode },
       { label: 'tier', value: labTierHc },
       { label: 'p', value: `${fmt(pBar, 1)} bar` },
       { label: 'D/d', value: `${fmt(boreMm, 0)} / ${fmt(rodMm, 0)} mm` },
@@ -773,6 +836,7 @@ function computeAndRenderCore() {
       ? 'Educational tool. Validate with manufacturer and applicable standards.'
       : 'Herramienta educativa. Validar con fabricante y normativa.',
   };
+  updateLabShareVisibility('hcShareLinkWrap', 'hcResults');
 }
 
 function syncHcLabTierUi() {
@@ -784,28 +848,40 @@ function syncHcLabTierUi() {
   revalidateAllBoundInputs();
 }
 
-function syncModeUi() {
-  const mode = document.getElementById('hcMode') instanceof HTMLSelectElement
-    ? document.getElementById('hcMode').value
-    : 'design';
+function syncHcCalcModeUi() {
+  const calcMode = getHcCalcMode();
+  const isDesign = calcMode === 'design';
   const flowGroup = document.getElementById('hcGroupFlowSizing');
   if (flowGroup instanceof HTMLElement) {
-    flowGroup.classList.toggle('hc-field-group--open', mode === 'design');
+    flowGroup.classList.toggle('hc-field-group--open', isDesign);
   }
+  const boreField = document.getElementById('hcBoreMm')?.closest('.lab-field');
+  const rodField = document.getElementById('hcRodMm')?.closest('.lab-field');
+  if (boreField instanceof HTMLElement) boreField.hidden = isDesign;
+  if (rodField instanceof HTMLElement) rodField.hidden = isDesign;
   const loadField = document.getElementById('hcLoadKg')?.closest('.lab-field');
   if (loadField instanceof HTMLElement) {
-    loadField.classList.toggle('lab-field--auto', mode === 'diagnostic');
+    loadField.classList.toggle('lab-field--auto', !isDesign);
     const hint = loadField.querySelector('.hint');
     const help = loadField.querySelector('.lab-field-help');
     if (hint) {
-      hint.textContent = mode === 'diagnostic'
+      hint.textContent = !isDesign
         ? (getLang() === 'en' ? 'Calculated automatically' : 'Calculado automáticamente')
-        : (getLang() === 'en' ? 'External mechanical load' : 'Carga mecánica externa');
+        : (getLang() === 'en' ? 'Required mechanical load' : 'Carga mecánica requerida');
     }
     if (help) {
-      help.textContent = mode === 'diagnostic' ? t('fieldHelpLoadDiag') : t('fieldHelpLoadDesign');
+      help.textContent = !isDesign ? t('fieldHelpLoadDiag') : t('fieldHelpLoadDesign');
     }
   }
+  const helpWrap = document.getElementById('hcCalcModeHelp');
+  if (helpWrap instanceof HTMLElement) {
+    helpWrap.querySelectorAll('[data-hc-mode]').forEach((el) => {
+      if (!(el instanceof HTMLElement)) return;
+      const on = el.getAttribute('data-hc-mode') === calcMode;
+      el.classList.toggle('hc-calc-mode-help__line--active', on);
+    });
+  }
+  revalidateAllBoundInputs();
 }
 
 const computeAndRender = wrapCalcRefresh(computeAndRenderCore);
@@ -820,7 +896,7 @@ const computeAndRender = wrapCalcRefresh(computeAndRenderCore);
   'hcPortDiaMm',
   'hcWallMm',
   'hcSealMaterial',
-  'hcMode',
+  'hcCalcMode',
   'hcLabTier',
   'hcEulerLengthFactor',
   'hcOilTempC',
@@ -832,8 +908,8 @@ const computeAndRender = wrapCalcRefresh(computeAndRenderCore);
   }
 });
 
-document.getElementById('hcMode')?.addEventListener('change', () => {
-  syncModeUi();
+document.getElementById('hcCalcMode')?.addEventListener('change', () => {
+  syncHcCalcModeUi();
   computeAndRender();
 });
 
@@ -859,7 +935,7 @@ document.getElementById('hcBoreMm')?.addEventListener('change', () => {
 })();
 applyHydraulicCylinderDocumentChrome();
 syncHcLabTierUi();
-syncModeUi();
+syncHcCalcModeUi();
 mountCompactLabFieldHelp();
 
 bindInputValidation([
@@ -883,16 +959,26 @@ watchLangAndApply({ ...HYDRAULIC_CYLINDER_EN, ...FLUIDS_HUB_UX_EN }, {
     applyHydraulicCylinderDocumentChrome();
     refreshCompactLabFieldHelp();
     syncHcLabTierUi();
-    syncModeUi();
+    syncHcCalcModeUi();
     computeAndRender();
   },
   onEsRestored: () => {
     applyHydraulicCylinderDocumentChrome();
     refreshCompactLabFieldHelp();
     syncHcLabTierUi();
-    syncModeUi();
+    syncHcCalcModeUi();
     computeAndRender();
   },
+});
+
+injectLabUnitConverterIfNeeded();
+mountLabUnitConverter();
+bindFluidLabUnitSelectors(computeAndRender);
+
+wireLabCopyLink('hcCopyLinkBtn', 'hcCopyLinkToast');
+wireLabCopyResultsButton('hcCopyResults', {
+  moduleTitle: getLang() === 'en' ? 'Hydraulic cylinder' : 'Cilindro hidr\u00e1ulico',
+  toastId: 'hcCopyToast',
 });
 
 mountLabFluidPdfExportBar(document.getElementById('labFluidPdfMountHc'), {

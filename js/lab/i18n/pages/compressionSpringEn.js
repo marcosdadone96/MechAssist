@@ -2,6 +2,8 @@
 export const COMPRESSION_SPRING_EN = {
   'spring.docTitle': 'Compression spring calculator \u2014 TheMechAssist',
   'spring.h2': 'Helical compression spring \u00b7 design and check (DIN 2089 style)',
+  'spring.safetyNotice':
+    'Indicative results. They do not replace detailed calculation with actual manufacturer data or prototype validation.',
   'spring.heroLead':
     'Stiffness <strong>k</strong>, service (<strong>s<sub>op</sub></strong> or <strong>F<sub>op</sub></strong>), Wahl stress <strong>K</strong>, educational buckling and solid <strong>F<sub>n</sub></strong>; simplified material data.',
   'spring.helpSummary': 'Methodology and model limits',

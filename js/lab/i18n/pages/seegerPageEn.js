@@ -2,6 +2,8 @@
 export const SEEGER_PAGE_EN = {
   'seeger.docTitle': 'Seeger retaining rings calculator \u2014 TheMechAssist',
   'seeger.h2': 'Seeger rings (circlips) \u2014 DIN 471 and DIN 472',
+  'seeger.safetyNotice':
+    'Indicative results. They do not replace detailed calculation with actual manufacturer data or prototype validation.',
   'seeger.heroLead':
     'Designation and groove dimensions from shaft or bore \u00d8 (3\u2013100 mm extract); indicative axial force. Verify with drawing and manufacturer.',
   'seeger.preset1': 'Shaft \u00d825 \u00b7 steel',

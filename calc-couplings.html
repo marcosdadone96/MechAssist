@@ -50,6 +50,9 @@
       <section class="lab-panel lab-panel--accent">
         <header class="lab-calc-page-head">
           <h2 data-i18n="coup.h2">Acoplamientos industriales · selección por catálogo</h2>
+          <p class="lab-safety-notice" data-i18n="coup.safetyNotice">
+            Catálogo demostrativo. T_nom y dimensiones son valores de ejemplo — consulte siempre la hoja técnica oficial del fabricante (Lovejoy, KTR, Flender, etc.) antes de adquirir o instalar.
+          </p>
           <p class="lab-data-note" data-i18n="coup.dataNoteHtml" data-i18n-html>
             <strong>Datos de muestra:</strong> modelos tipo Lovejoy / KTR / Flender con T<sub>nom</sub> orientativo. Para pedido, use ficha oficial del fabricante.
           </p>
@@ -111,15 +114,15 @@
                 <input inputmode="decimal" id="cpRpm" type="number" min="1" step="any" value="1455" />
               </div>
               <div class="lab-field">
-                <label for="cpK" data-i18n="coup.labelK">Factor de servicio K</label>
+                <label for="cpK" data-i18n="coup.labelK">Factor de servicio K <span class="info-chip" title="Factor que multiplica el par nominal según el tipo de carga. Arranques frecuentes: Ks 1.5-2.0. Carga uniforme: Ks 1.0-1.25. Ref: catálogo fabricante." aria-label="Ayuda factor de servicio">?</span></label>
                 <input id="cpK" type="number" min="1" step="0.05" value="1.5" />
               </div>
               <div class="lab-field">
-                <label for="cpBrand" data-i18n="coup.labelBrand">Fabricante / familia</label>
+                <label for="cpBrand" data-i18n="coup.labelBrand">Fabricante / familia <span class="info-chip" title="Elástico de mandíbula: amortiguación de picos, fácil mantenimiento. Disco: alta rigidez, precisión. Oldham: compensa desalineación." aria-label="Ayuda tipo de acoplamiento">?</span></label>
                 <select id="cpBrand"></select>
               </div>
               <div class="lab-field lab-field--wide">
-                <label for="cpSeries" data-i18n="coup.labelSeries">Modelo (serie)</label>
+                <label for="cpSeries" data-i18n="coup.labelSeries">Modelo (serie) <span class="info-chip" title="Par transmitido en servicio. Si no se conoce, calcular desde la calculadora de ejes o motorreductor." aria-label="Ayuda par nominal">?</span></label>
                 <select id="cpSeries"></select>
                 <p id="cpSeriesPreview" class="lab-small-print" aria-live="polite"></p>
               </div>
@@ -178,7 +181,9 @@
             </details>
           </div>
           <div class="lab-calc-layout__out lab-calc-layout__out--panel">
-            <div class="lab-results-wrap">
+            <div id="cpHero"></div>
+            <div id="cpMotorRuler"></div>
+            <div class="lab-results-wrap" id="cpResults">
               <div id="cpOut" class="lab-catalog-verdict"></div>
               <details class="lab-results-details lab-results-details--chevron-end lab-results-details--stacked" open>
                 <summary data-i18n="coup.summaryFull">Resultado completo</summary>

@@ -3,15 +3,32 @@
  */
 
 export const FLUIDS_HUB_UX_EN = {
+  'fluids.safetyNotice':
+    'Indicative pre-sizing calculation. Confirm pressures, flow rates and component dimensions with the manufacturer catalogue and applicable standards (ISO 4413 / ISO 4414).',
+  'fluids.unitsBarTitle': 'How to read the results',
+  'fluids.unitsAriaLabel': 'Result units',
+  'fluids.convertTitle': 'Unit converter (fluids)',
+  'fluids.convertTip': 'Pressure in bar, MPa or psi; flow in L/min or m\u00b3/h in the results panel.',
+  'fluids.lblPressure': 'Pressure',
+  'fluids.optBar': 'bar',
+  'fluids.optMpa': 'MPa',
+  'fluids.optPsi': 'psi',
+  'fluids.lblFlow': 'Flow rate',
+  'fluids.optLmin': 'L/min',
+  'fluids.optM3h': 'm\u00b3/h',
+  'fluids.copyResults': 'Copy results',
+  'fluids.copyToast': 'Copied!',
   'fluids.presetsLabel': 'Typical examples:',
 
   'fluids.hubNextStepsAria': 'Suggested calculation workflow',
   'fluids.hubNextStepsTitle': 'Suggested workflow',
   'fluids.hubNextStepsLead':
-    'Typical order when sizing a new oleohydraulic line: actuator, pump, press (if applicable), then pneumatic peripherals.',
+    'Typical order when sizing a new oleohydraulic line: actuator, valves, pump, press (if applicable), then pneumatic peripherals.',
   'fluids.hubNextStepsLi1Html':
     '<a href="calc-hydraulic-cylinder.html">Hydraulic cylinder</a> \u2014 force, flow and rod buckling at the actuator.',
   'fluids.hubNextStepsLi2Html':
+    '<a href="calc-hydraulic-valve.html">Hydraulic valves</a> \u2014 Kv, pressure drop and heat.',
+  'fluids.hubNextStepsLi5Html':
     '<a href="calc-hydraulic-pump.html">Hydraulic pump</a> \u2014 flow, power and line losses for the circuit.',
   'fluids.hubNextStepsLi3Html':
     '<a href="calc-hydraulic-press.html">Hydraulic press</a> \u2014 tonnage, cycle time and pump demand.',
@@ -48,4 +65,15 @@ export const FLUIDS_HUB_UX_EN = {
     '<a href="calc-bearings.html">Bearings \u00b7 L10</a> \u2014 life at rod guides when load is known.',
   'fluids.nextStepsPcLi3Html':
     '<a href="fluids-hub.html">Fluids hub</a> \u2014 other fluid-power calculators.',
+
+  'fluids.lblVolume': 'Volume',
+  'fluids.optLitres': 'L',
+  'fluids.optGal': 'gal (US)',
+  'fluids.nextStepsAccLi_aria': 'Usual next step',
+  'fluids.nextStepsAccLi1Html':
+    '<a href="calc-hydraulic-pump.html">Hydraulic pump</a> \u2014 pump recharge flow for the accumulator.',
+  'fluids.nextStepsAccLi2Html':
+    '<a href="calc-hydraulic-cylinder.html">Hydraulic cylinder</a> \u2014 actuator fed by the accumulator.',
+  'fluids.nextStepsAccLi3Html':
+    '<a href="fluids-hub.html">Fluids hub</a> \u2014 all fluid-power calculators.',
 };

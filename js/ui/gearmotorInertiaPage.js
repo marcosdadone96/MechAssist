@@ -7,6 +7,8 @@ import {
   bindInputValidation,
   revalidateAllBoundInputs,
   mountLabPresetsBar,
+  renderMotorPowerRuler,
+  renderResultHero,
   syncInputValidationResultsGate,
   wireLabCopyLink,
   wireLabCopyResultsButton,
@@ -144,7 +146,13 @@ function drawChart(motor, T_load, n_op) {
 }
 
 function render() {
-  if (syncInputValidationResultsGate(document.getElementById('gmResults'))) return;
+  if (syncInputValidationResultsGate(document.getElementById('gmResults'))) {
+    const gmHero = document.getElementById('gmHero');
+    if (gmHero) gmHero.innerHTML = '';
+    const gmMotorRuler = document.getElementById('gmMotorRuler');
+    if (gmMotorRuler) gmMotorRuler.innerHTML = '';
+    return;
+  }
   const Jload = parseFloat(document.getElementById('gmJload')?.value || '');
   const iRatio = parseFloat(document.getElementById('gmIratio')?.value || '');
   const jExtInput = document.getElementById('gmJext');
@@ -169,6 +177,31 @@ function render() {
   const okT = Tm >= Tload * 1.05;
 
   drawChart(motor, Tload, nOp);
+
+  const gmVerdict = !okJ || !okT ? 'error' : 'ok';
+  const gmHero = document.getElementById('gmHero');
+  if (gmHero) {
+    gmHero.innerHTML = renderResultHero(
+      [
+        {
+          label: bx('Inercia reflejada J_ref', 'Reflected inertia J_ref'),
+          display: `${JextUse.toExponential(3)} kg·m²`,
+          hint: bx('Inercia de carga vista en el eje rápido del motor.', 'Load inertia referred to motor fast shaft.'),
+        },
+        {
+          label: bx('Relación J_ext/J_mot', 'Ratio J_ext/J_mot'),
+          display: `${ratio.toFixed(2)} / ${motor.J_ratio_max}`,
+          hint: okJ ? bx('Dentro del límite definido.', 'Within defined limit.') : bx('Supera el límite.', 'Exceeds limit.'),
+        },
+      ],
+      { verdict: gmVerdict },
+    );
+  }
+  const gmMotorRuler = document.getElementById('gmMotorRuler');
+  if (gmMotorRuler) {
+    const pKw = nOp > 0 && Tload > 0 ? (Tload * ((2 * Math.PI * nOp) / 60)) / 1000 : 0;
+    gmMotorRuler.innerHTML = pKw > 0 ? renderMotorPowerRuler(pKw) : '';
+  }
 
   out.innerHTML = `
     <p class="lab-verdict ${okJ ? 'lab-verdict--ok' : 'lab-verdict--err'}">

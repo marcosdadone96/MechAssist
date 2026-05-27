@@ -1,5 +1,5 @@
 /**
- * Una sesin de clculo facturada por ventana (evita cobrar cada reclculo automtico).
+ * Una sesiÂn de cÂlculo facturada por ventana (evita cobrar cada recÂlculo automÂtico).
  */
 import {
   calcSlugFromPath,
@@ -135,7 +135,7 @@ export async function ensurePdfExportCharged() {
   const cached = getCachedCreditsState();
   if (cached?.unlimited || isCalcSlugUnlocked(calcSlug, cached)) return { allowed: true };
   if (cached?.starter && (cached.balance?.pdfCountMonth ?? 0) < (cached.balance?.limits?.starterPdfPerMonth ?? 30)) {
-    /* starter: primeros PDF del mes sin crditos si bajo lmite  servidor decide */
+    /* starter: primeros PDF del mes sin crÂditos si bajo lÂmite Â servidor decide */
   }
 
   const idempotencyKey = `pdf:${calcSlug}:${Date.now()}`;
@@ -155,7 +155,7 @@ export async function ensurePdfExportCharged() {
 }
 
 /**
- * Ejecuta fn solo si hay sesin de clculo (o ilimitado). Para pginas sin runCalcWithIndustrialFeedback.
+ * Ejecuta fn solo si hay sesiÂn de cÂlculo (o ilimitado). Para pÂginas sin runCalcWithIndustrialFeedback.
  * @param {() => void} fn
  */
 export async function withCalcCredits(fn) {

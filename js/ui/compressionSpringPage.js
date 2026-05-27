@@ -552,33 +552,21 @@ function computeCore() {
       : 'ok';
   const springVerdict = level === 'danger' ? 'error' : level === 'warn' ? 'warn' : 'ok';
 
-  const heroItems = [];
-  heroItems.push({
-    label: uxCopy('k - rigidez', 'k - stiffness'),
-    display: `${fmt(k, 3)} N/mm`,
-    hint: 'k = G*d^4 / (8*Dm^3*n). G en N/mm^2; d y Dm en mm.',
-  });
-  if (tauOp != null && Fop != null) {
-    heroItems.push({
-      label: uxCopy('Servicio: F_op y tau', 'Service: F_op and tau'),
-      display: `${fmt(Fop, 0)} N | ${fmt(tauOp, 1)} MPa`,
-      hint: `s_op = ${fmt(sOp ?? 0, 2)} mm. Comparar tau/tau_adm = ${fmt(ratioOp ?? 0, 2)}.`,
-    });
-  } else {
-    heroItems.push({
-      label: uxCopy('Servicio (opc.)', 'Service (opt.)'),
-      display: uxCopy('Indique s_op o F_op', 'Enter s_op or F_op'),
+  const heroItems = [
+    {
+      label: uxCopy('k (N/mm)', 'k (N/mm)'),
+      display: `${fmt(k, 3)} N/mm`,
+      hint: 'k = G·d⁴ / (8·Dm³·n)',
+    },
+    {
+      label: uxCopy('Carga máxima F_max', 'Maximum load F_max'),
+      display: `${fmt(Fn, 0)} N`,
       hint: uxCopy(
-        'Sin servicio solo se evalua bloqueo (Fn) y pandeo respecto a s_max.',
-        'Without service only solid (Fn) and buckling vs s_max are checked.',
+        `A s_max = ${fmt(Math.max(0, sMax), 2)} mm (bloqueo orientativo).`,
+        `At s_max = ${fmt(Math.max(0, sMax), 2)} mm (indicative solid).`,
       ),
-    });
-  }
-  heroItems.push({
-    label: uxCopy('Bloqueo: Fn y tau', 'Solid: Fn and tau'),
-    display: `${fmt(Fn, 0)} N | ${fmt(tauBlock, 1)} MPa`,
-    hint: `s_max = ${fmt(Math.max(0, sMax), 2)} mm. tau/tau_adm = ${fmt(ratioBlock, 2)}.`,
-  });
+    },
+  ];
   if (heroEl) heroEl.innerHTML = renderResultHero(heroItems, { verdict: springVerdict });
 
   const buckNote = bucklingFailBlock || bucklingFailOp

@@ -25,6 +25,7 @@ import {
   labAlert,
   metricHtml,
   mountLabPresetsBar,
+  renderMotorPowerRuler,
   renderResultHero,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
@@ -374,6 +375,12 @@ function refreshCore() {
             'Includes slip model on the driven pulley (V / flat / Poly-V).',
           );
     const bv = beltLabFinalVerdict(r);
+    const bMotorRuler = document.getElementById('bMotorRuler');
+    if (bMotorRuler) {
+      const pKw = readOptionalNonNeg('bPowerKw');
+      bMotorRuler.innerHTML = pKw != null && pKw > 0 ? renderMotorPowerRuler(pKw) : '';
+    }
+
     heroEl.innerHTML = renderResultHero(
       [
       {

@@ -1,0 +1,110 @@
+/** English strings for calc-beam.html (`beam.*`). ASCII-safe. */
+export const BEAM_PAGE_EN = {
+  'beam.docTitle': 'Beam bending & deflection calculator \u2014 TheMechAssist',
+  'beam.metaDesc':
+    'Max deflection, bending moment, shear and normal stress for simply-supported, cantilever and fixed beams. Rectangular, circular, I and T sections. Free online.',
+  'beam.h2': 'Beam \u00b7 bending, deflection and stress',
+  'beam.safetyNotice':
+    'Indicative calculation using Euler-Bernoulli beam theory. Results are for predesign only; final structural sizing requires certified loads, material data and applicable codes (EN 1993, AISC).',
+  'beam.heroLead':
+    'Maximum deflection, bending moment, shear force and normal stress from span, section and load. Static loading only.',
+  'beam.seoSummary': 'Expanded context and usage notes',
+  'beam.calcSeoIntro':
+    'This calculator applies classical Euler-Bernoulli beam theory to give maximum deflection, bending moment, shear force and normal stress for three common beam configurations (simply-supported, cantilever, fixed-fixed) under point or distributed static loads. Useful for predesign of structural members, machine frames and conveyor supports before full FEA validation.',
+  'beam.stdSectionsSummary': 'Standard section dimensions (IPE/HEA, indicative)',
+  'beam.thProfile': 'Profile',
+  'beam.helpSummary': 'Methodology and model limits',
+  'beam.methodBodyHtml':
+    'Classical <strong>Euler-Bernoulli</strong> beam theory: plane sections remain plane; valid for slender beams (L/h &gt; 10). Shear deformation neglected. Fixed-fixed case uses the exact indeterminate solution. Stress check: <strong>\u03c3 = M/W</strong> at outer fibre; shear: \u03c4 = 1.5V/A for rectangular sections.',
+  'beam.nextStepsTitle': 'Typical next step',
+  'beam.nextStepsAria': 'Typical next step',
+  'beam.nextLi1Html': '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 if the beam also carries torque.',
+  'beam.nextLi2Html': '<a href="calc-weld-joint.html">Welded joint</a> \u2014 if beam ends are welded.',
+  'beam.nextLi3Html': '<a href="calc-bolts-iso898.html">Bolts ISO 898</a> \u2014 bolted connections.',
+  'beam.presetsLabel': 'Typical examples:',
+  'beam.preset1': 'Corridor beam \u2014 central point load',
+  'beam.preset2': 'Cantilever shelf \u2014 distributed load',
+  'beam.preset3': 'IPE 200 beam \u2014 point load',
+  'beam.diagTitle': 'Schematic view \u00b7 updates as inputs change',
+  'beam.diagAriaLabel': 'Beam bending diagram',
+  'beam.diagCaptionHtml':
+    'Dashed curve: deflected shape. Dimensions indicative only; not a structural drawing.',
+  'beam.labelBeamType': 'Beam type',
+  'beam.optSimply': 'Simply supported',
+  'beam.optCantilever': 'Cantilever',
+  'beam.optFixedBoth': 'Fixed\u2013fixed (approx.)',
+  'beam.labelLoadType': 'Load type',
+  'beam.optPointCenter': 'Point load at centre',
+  'beam.optPointCustom': 'Point load at position a',
+  'beam.optDistributed': 'Uniform load on full span',
+  'beam.optDistributedPartial': 'Partial uniform load',
+  'beam.labelSection': 'Cross-section',
+  'beam.optRect': 'Rectangular b \u00d7 h',
+  'beam.optCirc': 'Solid circular',
+  'beam.optHollow': 'Hollow circular',
+  'beam.optI': 'I-section',
+  'beam.optT': 'T-section',
+  'beam.labelMaterial': 'Elastic modulus E',
+  'beam.optSteel': 'Steel',
+  'beam.optStainless': 'Stainless steel',
+  'beam.optAluminum': 'Aluminium',
+  'beam.optCastIron': 'Cast iron',
+  'beam.optTimber': 'Timber (indicative)',
+  'beam.optCustomE': 'Custom E',
+  'beam.labelECustom': 'E (MPa)',
+  'beam.labelSpan': 'Span L (m)',
+  'beam.labelLoad': 'Load F (N) or q (N/m)',
+  'beam.labelLoadPos': 'Position a from left support (m)',
+  'beam.labelLoadPosB': 'End of distributed load b (m)',
+  'beam.labelWidth': 'Width b (mm)',
+  'beam.labelHeight': 'Height h (mm)',
+  'beam.labelDiam': 'Diameter d (mm)',
+  'beam.labelDiamExt': 'Outer diameter (mm)',
+  'beam.labelDiamInt': 'Inner diameter (mm)',
+  'beam.labelFlangeW': 'Flange width b_f (mm)',
+  'beam.labelTotalH': 'Total height h (mm)',
+  'beam.labelWebT': 'Web thickness t_w (mm)',
+  'beam.labelFlangeT': 'Flange thickness t_f (mm)',
+  'beam.labelSigAdm': 'Allowable stress \u03c3_adm (MPa, 0 = omit)',
+  'beam.helpBeamTypeHtml':
+    '<strong>Simply supported</strong>: two supports. <strong>Cantilever</strong>: one fixed end. <strong>Fixed\u2013fixed</strong>: simplified indeterminate model.',
+  'beam.helpLoadTypeHtml':
+    '<strong>F</strong> point load (N) or <strong>q</strong> distributed (N/m). Set position <strong>a</strong> when applicable.',
+  'beam.helpSectionHtml':
+    'Dimensions in <strong>mm</strong>. I/T sections: web and flanges per catalogue or custom.',
+  'beam.helpSpanHtml':
+    'Span <strong>L</strong> between supports (m). For cantilever, free length from the fixed end.',
+  'beam.helpLoadHtml':
+    '<strong>F</strong> for point loads (N). <strong>q</strong> for distributed loads (N/m).',
+  'beam.helpSigAdmHtml':
+    'Indicative allowable normal stress. <strong>0</strong> omits the stress usage check.',
+  'beam.helpWidthHtml':
+    'Rectangular section width <strong>b</strong> (mm).',
+  'beam.helpHeightHtml':
+    'Rectangular section height <strong>h</strong> (mm).',
+  'beam.helpDiamHtml':
+    'Solid circular section diameter <strong>d</strong> (mm).',
+  'beam.helpLoadPosHtml':
+    'Distance <strong>a</strong> from left support to load (m).',
+  'beam.helpMaterialHtml':
+    'Elastic modulus <strong>E</strong>. Choose custom for another value.',
+  'beam.unitsBarTitle': 'How to read the results',
+  'beam.unitsLength': 'Length',
+  'beam.unitsForce': 'Force',
+  'beam.unitsPressure': 'Stress',
+  'beam.optMm': 'mm',
+  'beam.optCm': 'cm',
+  'beam.optM': 'm',
+  'beam.optN': 'N',
+  'beam.optKN': 'kN',
+  'beam.optMpa': 'MPa',
+  'beam.optKpa': 'kPa',
+  'beam.optNmm2': 'N/mm\u00b2',
+  'beam.copyResults': 'Copy results',
+  'beam.copyLink': 'Copy link',
+  'beam.copyToast': 'Link copied!',
+  'beam.recalculating': 'Recalculating',
+  'beam.summaryFull': 'Full result',
+  'beam.relatedHintHtml':
+    'Full transmission sizing? <a href="machines-hub.html">Calculate the driven machine \u2192</a>',
+};

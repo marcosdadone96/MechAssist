@@ -179,10 +179,16 @@ const dict = {
     'hub.fluids.hydPress.title': 'Prensa hidr\u00e1ulica',
     'hub.fluids.hydPress.desc':
       'Fuerza de prensado y par\u00e1metros de circuito orientativos. M\u00f3dulos avanzados requieren plan Pro.',
+    'hub.fluids.hydValve.title': 'V\u00e1lvulas hidr\u00e1ulicas',
+    'hub.fluids.hydValve.desc':
+      'Kv, ca\u00edda de presi\u00f3n y calor disipado. Limitadora, reductora y caudal (orientativo).',
+    'hub.fluids.accumulator.title': 'Acumulador hidr\u00e1ulico',
+    'hub.fluids.accumulator.desc':
+      'Volumen nominal, energ\u00eda almacenada y tiempo de descarga (vejiga, \u00e9mbolo o membrana).',
     'hub.fluids.soonCompressor.title': 'Compresor neum\u00e1tico',
     'hub.fluids.soonCompressor.desc': 'M\u00f3dulo en preparaci\u00f3n.',
-    'hub.fluids.soonValves.title': 'V\u00e1lvulas y distribuci\u00f3n',
-    'hub.fluids.soonValves.desc': 'M\u00f3dulo en preparaci\u00f3n.',
+    'hub.fluids.soonAccumulator.title': 'Acumulador hidr\u00e1ulico',
+    'hub.fluids.soonAccumulator.desc': 'M\u00f3dulo en preparaci\u00f3n.',
     'hub.lab.eyebrow': 'Laboratorio de transmisi\u00f3n',
     'hub.lab.title': 'Laboratorio de transmisi\u00f3n',
     'hub.lab.startHint':
@@ -203,11 +209,17 @@ const dict = {
     'hub.lab.chains.title': 'Cadenas y pi\u00f1ones',
     'hub.lab.chains.desc':
       'Paso, z\u2081, z\u2082, n\u2081 \u2014 \u03c9\u2082, v lineal, frecuencia de articulaci\u00f3n; efecto poligonal y lubricaci\u00f3n por v.',
+    'hub.lab.worm.title': 'Tornillo sin fin y corona',
+    'hub.lab.worm.desc':
+      'i, d\u2081, d\u2082, \u03b3, \u03b7 y autobloqueo; par y n\u2082 en salida. Dise\u00f1o o diagn\u00f3stico (ISO 3408 orientativo).',
     'hub.lab.bearingsL10.title': 'Rodamientos \u00b7 L10',
     'hub.lab.bearingsL10.desc':
       'Carga din\u00e1mica C, carga equivalente P \u2014 vida nominal b\u00e1sica (ISO simplificada). \u00dasalo cuando ya tienes C del cat\u00e1logo.',
     'hub.lab.shaft.title': 'Eje \u00b7 torsi\u00f3n',
     'hub.lab.shaft.desc': 'Par y tensi\u00f3n admisible \u2014 di\u00e1metro m\u00ednimo orientativo (macizo).',
+    'hub.lab.fatigue.title': 'Fatiga \u00b7 diagrama de Goodman',
+    'hub.lab.fatigue.desc':
+      'S_e, n_f (Goodman, Gerber, Soderberg), n_y y diagrama \u03c3_a vs \u03c3_m interactivo. Dise\u00f1o o diagn\u00f3stico.',
     'hub.lab.keys.title': 'Chavetas DIN 6885',
     'hub.lab.keys.desc': 'Autocompletar b\u00d7h por \u00d8 eje; aplastamiento con L y material (C45/inox).',
     'hub.lab.isoFit.title': 'Ajustes ISO 286',
@@ -224,9 +236,21 @@ const dict = {
       'P, n, K \u2014 par de dise\u00f1o vs T nom Lovejoy/KTR/Flender (demo); error y modelo superior sugerido.',
     'hub.lab.bolts.title': 'Torniller\u00eda ISO 898-1',
     'hub.lab.bolts.desc': 'M6\u2013M36, 8.8/10.9/12.9; precarga y par de apriete; aptitud vs fuerza de tracci\u00f3n.',
+    'hub.lab.boltShear.title': 'Cortante en torniller\u00eda',
+    'hub.lab.boltShear.desc':
+      'Cortante, aplastamiento y deslizamiento; patr\u00f3n con reparto exc\u00e9ntrico. Complementa ISO 898-1 (tracci\u00f3n).',
     'hub.lab.gearmotor.title': 'Motor \u00b7 inercia J',
     'hub.lab.gearmotor.desc':
       'Cat\u00e1logo demo de motorreductores, relaci\u00f3n J<sub>ext</sub>/J<sub>mot</sub> y gr\u00e1fico par motor vs carga.',
+    'hub.lab.beam.title': 'Vigas \u00b7 flexi\u00f3n',
+    'hub.lab.beam.desc':
+      'Flecha, momento y tensi\u00f3n en vigas est\u00e1ticas. Secciones rectangular, circular, I y T.',
+    'hub.lab.pscrew.title': 'Tornillo de potencia \u00b7 Tr',
+    'hub.lab.pscrew.desc':
+      'Par de avance, rendimiento y autobloqueo en husillo trapezoidal ISO 2904.',
+    'hub.lab.weld.title': 'Uniones soldadas',
+    'hub.lab.weld.desc':
+      'Filete y a tope: tensi\u00f3n en garganta, factor de uso y cateto m\u00ednimo orientativo.',
     'hub.lab.spring.title': 'Muelle helicoidal compresi\u00f3n \u00b7 DIN 2089',
     'hub.lab.spring.desc':
       'k, F\u2099, \u03c4 con factor de Wahl; esquema SVG din\u00e1mico, gr\u00e1fico F\u2013s y simulaci\u00f3n Pro por deslizador. M\u00f3dulos avanzados requieren plan Pro.',
@@ -574,10 +598,16 @@ const dict = {
     'hub.fluids.hydPress.title': 'Hydraulic press',
     'hub.fluids.hydPress.desc':
       'Clamping force and indicative circuit parameters. Advanced sections require a Pro plan.',
+    'hub.fluids.hydValve.title': 'Hydraulic valves',
+    'hub.fluids.hydValve.desc':
+      'Kv, pressure drop and heat dissipation. Relief, reducing and flow control (indicative).',
+    'hub.fluids.accumulator.title': 'Hydraulic accumulator',
+    'hub.fluids.accumulator.desc':
+      'Nominal volume, stored energy and discharge time (bladder, piston or diaphragm).',
     'hub.fluids.soonCompressor.title': 'Pneumatic compressor',
     'hub.fluids.soonCompressor.desc': 'Module in preparation.',
-    'hub.fluids.soonValves.title': 'Valves and distribution',
-    'hub.fluids.soonValves.desc': 'Module in preparation.',
+    'hub.fluids.soonAccumulator.title': 'Hydraulic accumulator',
+    'hub.fluids.soonAccumulator.desc': 'Module in preparation.',
     'hub.lab.eyebrow': 'Transmission lab',
     'hub.lab.title': 'Transmission lab',
     'hub.lab.startHint':
@@ -598,11 +628,17 @@ const dict = {
     'hub.lab.chains.title': 'Roller chains & sprockets',
     'hub.lab.chains.desc':
       'Pitch, z\u2081, z\u2082, n\u2081 \u2014 \u03c9\u2082, line speed, articulation frequency; polygonal effect and lubrication by v.',
+    'hub.lab.worm.title': 'Worm gear & wheel',
+    'hub.lab.worm.desc':
+      'i, d\u2081, d\u2082, \u03b3, \u03b7 and self-locking; output torque and n\u2082. Design or diagnostic mode (indicative ISO 3408).',
     'hub.lab.bearingsL10.title': 'Rolling bearings \u00b7 L10',
     'hub.lab.bearingsL10.desc':
       'Dynamic rating C, equivalent load P \u2014 basic rating life (simplified ISO). Use when C already comes from a catalogue.',
     'hub.lab.shaft.title': 'Shaft \u00b7 torsion',
     'hub.lab.shaft.desc': 'Torque and allowable shear \u2014 indicative minimum solid diameter.',
+    'hub.lab.fatigue.title': 'Fatigue \u00b7 Goodman diagram',
+    'hub.lab.fatigue.desc':
+      'S_e, n_f (Goodman, Gerber, Soderberg), n_y and interactive \u03c3_a vs \u03c3_m diagram. Design or diagnostic mode.',
     'hub.lab.keys.title': 'Keys DIN 6885',
     'hub.lab.keys.desc': 'Auto b\u00d7h from shaft diameter; crushing check with L and material (C45/stainless).',
     'hub.lab.isoFit.title': 'ISO 286 fits',
@@ -619,9 +655,21 @@ const dict = {
       'P, n, K \u2014 design torque vs Lovejoy/KTR/Flender nominal T (demo); mismatch and suggested upsize.',
     'hub.lab.bolts.title': 'Bolting ISO 898-1',
     'hub.lab.bolts.desc': 'M6\u2013M36, 8.8/10.9/12.9; preload and tightening torque; suitability vs tensile load.',
+    'hub.lab.boltShear.title': 'Bolt shear & bearing',
+    'hub.lab.boltShear.desc':
+      'Shear, bearing and slip; eccentric pattern sharing. Complements ISO 898-1 (tension).',
     'hub.lab.gearmotor.title': 'Motor \u00b7 inertia J',
     'hub.lab.gearmotor.desc':
       'Demo geared-motor catalogue, J_ext/J_mot ratio and motor torque vs load chart.',
+    'hub.lab.beam.title': 'Beams \u00b7 bending',
+    'hub.lab.beam.desc':
+      'Deflection, moment and stress in static beams. Rectangular, circular, I and T sections.',
+    'hub.lab.pscrew.title': 'Power screw \u00b7 Tr',
+    'hub.lab.pscrew.desc':
+      'Raising torque, efficiency and self-locking for ISO 2904 trapezoidal lead screws.',
+    'hub.lab.weld.title': 'Welded joints',
+    'hub.lab.weld.desc':
+      'Fillet and butt welds: throat stress, usage factor and indicative minimum leg size.',
     'hub.lab.spring.title': 'Helical compression spring \u00b7 DIN 2089',
     'hub.lab.spring.desc':
       'k, F\u2099, \u03c4 with Wahl factor; live SVG, F\u2013s chart and Pro slider simulation. Advanced sections require a Pro plan.',
@@ -672,7 +720,7 @@ const dict = {
       'Estimated <strong>Q4 2026</strong>. <a href="feedback.html?topic=roadmap">Notify me when ready</a>.',
     'hub.fluids.soonCompressor.descHtml':
       'Estimated <strong>Q3 2026</strong>. <a href="feedback.html?topic=roadmap">Notify me when ready</a>.',
-    'hub.fluids.soonValves.descHtml':
+    'hub.fluids.soonAccumulator.descHtml':
       'Estimated <strong>Q4 2026</strong>. <a href="feedback.html?topic=roadmap">Notify me when ready</a>.',
     'lab.gears': 'Gears',
     'lab.belts': 'Belts',

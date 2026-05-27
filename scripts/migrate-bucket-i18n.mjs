@@ -33,8 +33,8 @@ for (const [chip, tip] of Object.entries(chipMap)) {
 
 // Discharge chip (no data-be-chip)
 html = html.replace(
-  /<span class="info-chip" title="Centrífuga para materiales fluidos/,
-  '<span class="info-chip" data-i18n-attrs="title=beConv.tipDischarge" title="Centrífuga para materiales fluidos',
+  /<span class="info-chip" title="CentrÃ­fuga para materiales fluidos/,
+  '<span class="info-chip" data-i18n-attrs="title=beConv.tipDischarge" title="CentrÃ­fuga para materiales fluidos',
 );
 
 fs.writeFileSync(path, html);

@@ -22,11 +22,13 @@ import {
   renderResultHero,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
+  renderLabAdvisorInsights,
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
   wireLabCopyResultsButton,
 } from './labCalcUx.js';
+import { buildBearingsAdvisorInsights } from '../services/iaAdvisor.js';
 import { commerceIdForBearingC } from '../data/commerceCatalog.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
@@ -264,7 +266,10 @@ function refreshCore() {
 
   renderBearingSectionDiagram(document.getElementById('brgDiagram'), { type });
 
-  if (syncInputValidationResultsGate(document.getElementById('brgResults'))) return;
+  if (syncInputValidationResultsGate(document.getElementById('brgResults'))) {
+    renderLabAdvisorInsights('brgAdvisorPanel', []);
+    return;
+  }
 
   const pOverC =
     mode === 'diagnostic' && pRaw != null && cRaw != null && pRaw > cRaw;
@@ -531,6 +536,28 @@ function refreshCore() {
     metrics: { energyEfficiencyPct: null, materialUtilizationPct: null },
   });
   setLabPurchaseFromShoppingLines(document.getElementById('labPurchaseSuggestions'), shoppingLines);
+
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  const cUse =
+    mode === 'design' && cRequired_N != null && Number.isFinite(cRequired_N)
+      ? cRequired_N
+      : cRaw;
+  const cpRatio =
+    pRaw != null && pRaw > 0 && cUse != null && Number.isFinite(cUse) ? cUse / pRaw : undefined;
+  const nRef = type === 'roller' ? 12000 : 20000;
+  renderLabAdvisorInsights(
+    'brgAdvisorPanel',
+    buildBearingsAdvisorInsights(
+      {
+        cpRatio,
+        L10_hours: r.nominalLife_hours ?? undefined,
+        speed_rpm: r.speed_rpm,
+        nRef_rpm: nRef,
+        lang: advLang,
+      },
+      { lang: advLang },
+    ),
+  );
 
   updateLabShareVisibility('brgShareLinkWrap', 'brgResults');
   brgUrl.serializeToUrl();

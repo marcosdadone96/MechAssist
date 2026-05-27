@@ -6,7 +6,7 @@ import { isPremiumViaQueryProUiAllowed } from '../config/features.js';
 import { buildRegisterUrlWithNextCheckout } from '../services/proCheckoutFlow.js';
 
 /**
- * @param {string} paywallRootId — id del contenedor (p. ej. studioPaywall, txPaywall)
+ * @param {string} paywallRootId Â— id del contenedor (p. ej. studioPaywall, txPaywall)
  */
 export function patchLabPaywallQueryProLink(paywallRootId) {
   const root = document.getElementById(paywallRootId);

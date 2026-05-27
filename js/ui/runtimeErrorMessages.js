@@ -1,12 +1,12 @@
 /**
- * Mensajes de error genÈricos para el usuario (sin detalles tÈcnicos).
+ * Mensajes de error gen√©ricos para el usuario (sin detalles t√©cnicos).
  */
 
 /** @param {boolean} [en] */
 export function genericReloadErrorMessage(en) {
   return en
     ? 'Something went wrong. Try reloading the page.'
-    : 'Algo saliÛ mal. Intenta recargar la p·gina.';
+    : 'Algo sali√≥ mal. Intenta recargar la p√°gina.';
 }
 
 /**
