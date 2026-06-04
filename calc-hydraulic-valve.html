@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" data-i18n="hvalve.metaDesc" data-i18n-attr="content" content="Dimensionado orientativo de válvulas hidráulicas: Kv, caída de presión y potencia disipada." />
+    <meta name="description" data-i18n="hvalve.metaDesc" data-i18n-attr="content" content="Calculadora de válvulas hidráulicas: coeficiente Kv, caída de presión y calor disipado. Válvulas de control, limitadoras y reductoras. IEC 60534 / ISO 4422 orientativo." />
     <title data-i18n="hvalve.docTitle">Válvulas hidráulicas — control de presión y caudal — TheMechAssist</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -12,13 +12,42 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/calc-hydraulic-valve.html" />
     <meta property="og:title" data-i18n="hvalve.docTitle" data-i18n-attr="content" content="Válvulas hidráulicas — TheMechAssist" />
-    <meta property="og:description" data-i18n="hvalve.metaDesc" data-i18n-attr="content" content="Kv, caída de presión y calor disipado." />
+    <meta property="og:description" data-i18n="hvalve.metaDesc" data-i18n-attr="content" content="Calculadora de válvulas hidráulicas: coeficiente Kv, caída de presión y calor disipado. Válvulas de control, limitadoras y reductoras. IEC 60534 / ISO 4422 orientativo." />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:description" data-i18n="hvalve.metaDesc" data-i18n-attr="content" content="Calculadora de válvulas hidráulicas: coeficiente Kv, caída de presión y calor disipado. Válvulas de control, limitadoras y reductoras. IEC 60534 / ISO 4422 orientativo." />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Válvulas hidráulicas",
+  "description": "Calculadora de válvulas hidráulicas: coeficiente Kv, caída de presión y calor disipado. Válvulas de control, limitadoras y reductoras. IEC 60534 / ISO 4422 orientativo.",
+  "url": "https://www.themechassist.com/calc-hydraulic-valve.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body class="lab-body">
     <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -128,7 +157,7 @@
                   <span class="lab-field-ico" title="Caudal">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h12"/><path d="M14 8l4 4-4 4"/></svg>
                   </span>
-                  <span class="lab-field__label-text" data-i18n="hvalve.labelQ">Caudal Q (L/min)</span>
+                  <span class="lab-field__label-text" data-i18n="hvalve.labelQ">Caudal Q (L/min) <span class="info-chip" title="Caudal volumétrico del fluido (L/min). Convertir: 1 L/min = 0.001 m³/min = 0.06 m³/h." aria-label="Ayuda caudal">?</span></span>
                 </label>
                 <input inputmode="decimal" id="hvQ" type="number" min="0.1" step="any" value="40" />
                 <span class="hint" data-i18n="hvalve.hintQ">Caudal de aceite</span>
@@ -164,7 +193,7 @@
                   <span class="lab-field-ico" title="Viscosidad">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18c2-4 10-4 12 0"/><path d="M8 10c2-2 6-2 8 0"/></svg>
                   </span>
-                  <span class="lab-field__label-text" data-i18n="hvalve.labelVisc">Viscosidad cinemática (cSt)</span>
+                  <span class="lab-field__label-text" data-i18n="hvalve.labelVisc">Viscosidad cinemática (cSt) <span class="info-chip" title="Densidad del fluido hidráulico. Aceite HLP46: 870 kg/m³. Agua: 1000 kg/m³. HLP32: 860 kg/m³." aria-label="Ayuda densidad del fluido">?</span></span>
                 </label>
                 <input inputmode="decimal" id="hvVisc" type="number" min="1" step="any" value="46" />
                 <span class="hint" data-i18n="hvalve.hintVisc">VG46 típico</span>
@@ -182,7 +211,7 @@
               </div>
 
               <div class="lab-field" id="hvDnField" hidden>
-                <label for="hvDn" data-i18n="hvalve.labelDn">Tamaño nominal DN (instalado)</label>
+                <label for="hvDn" data-i18n="hvalve.labelDn">Tamaño nominal DN (instalado) <span class="info-chip" title="Coeficiente de caudal Kv (m³/h a Δp=1 bar, agua). Dato del fabricante (catálogo de válvulas). Kv mayor → más caudal a igual presión." aria-label="Ayuda coeficiente Kv">?</span></label>
                 <select id="hvDn">
                   <option value="6">DN 6</option>
                   <option value="10" selected>DN 10</option>
@@ -236,6 +265,7 @@
           </div>
         </div>
       </section>
+    <div id="labPurchaseSuggestions" hidden></div>
     </main>
 
     <script>

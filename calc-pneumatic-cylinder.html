@@ -180,7 +180,35 @@
         font-weight: 800;
       }
     </style>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Cilindro neumático",
+  "description": "Fuerza, consumo de aire y tiempos de carrera. Cálculo orientativo con presión y rendimiento.",
+  "url": "https://www.themechassist.com/calc-pneumatic-cylinder.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -451,6 +479,7 @@
               <summary data-i18n="pneuCyl.formulasSummary">Memoria de cálculo, fórmulas y supuestos</summary>
               <div id="pcFormulaBody" class="lab-fluid-formulas__body"></div>
             </details>
+            <div id="pcHero" class="lab-results-hero-mount" aria-live="polite"></div>
             <div id="pcResults" class="lab-results"></div>
             <div class="lab-results-actions">
               <button type="button" class="lab-btn lab-btn--block" id="pcCopyResults" data-i18n="fluids.copyResults">Copiar resultados</button>

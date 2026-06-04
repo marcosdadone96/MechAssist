@@ -13,6 +13,7 @@ import {
   metricHtml,
   mountLabPresetsBar,
   renderResultHero,
+  renderLabAdvisorInsights,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
   updateLabShareVisibility,
@@ -23,6 +24,7 @@ import {
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { buildBeamAdvisorInsights } from '../services/iaAdvisor.js';
 import { getLabLang } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { BEAM_PAGE_EN } from '../lab/i18n/pages/beamPageEn.js';
@@ -241,7 +243,10 @@ function refreshCore() {
   const state = readBeamState();
   paintBeamDiagram(state);
 
-  if (syncInputValidationResultsGate(results)) return;
+  if (syncInputValidationResultsGate(results)) {
+    renderLabAdvisorInsights('beamAdvisorPanel', []);
+    return;
+  }
 
   const r = computeBeamAnalysis({
     beamType: state.beamType,
@@ -273,6 +278,7 @@ function refreshCore() {
     }
     if (results) results.innerHTML = '';
     paintBeamDiagram(state);
+    renderLabAdvisorInsights('beamAdvisorPanel', []);
     updateLabShareVisibility('beamShareLinkWrap', 'beamResults');
     if (!beamUrl.hydrating) beamUrl.serializeToUrl();
     return;
@@ -398,6 +404,22 @@ function refreshCore() {
   }
 
   paintBeamDiagram(state, { delta_mm: r.delta_max_mm, M_max: r.M_max });
+
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  renderLabAdvisorInsights(
+    'beamAdvisorPanel',
+    buildBeamAdvisorInsights(
+      {
+        deflection_mm: r.delta_max_mm,
+        L_mm: state.span_m * 1000,
+        sigma_MPa: r.sigma_max,
+        sigma_adm: state.sigAdm_MPa,
+        beamType: state.beamType,
+        lang: advLang,
+      },
+      { lang: advLang },
+    ),
+  );
 
   updateLabShareVisibility('beamShareLinkWrap', 'beamResults');
   if (!beamUrl.hydrating) beamUrl.serializeToUrl();

@@ -21,6 +21,7 @@ import {
   mountLabPresetsBar,
   renderLabFinalVerdictBanner,
   renderResultHero,
+  renderLabAdvisorInsights,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
   updateLabShareVisibility,
@@ -31,11 +32,13 @@ import {
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { collectLabInputRows, collectLabResultRows } from '../services/labPdfPayload.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getLabLang } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { ISO_FIT_PAGE_EN } from '../lab/i18n/pages/isoFitPageEn.js';
 import { isoRecTableNoteSuffix, localizedIsoFitRec } from '../lab/i18n/runtime/iso286RecRuntime.js';
+import { buildIsoFitAdvisorInsights } from '../services/iaAdvisor.js';
 
 function bx(es, en) {
   return getLabLang() === 'en' ? en : es;
@@ -236,6 +239,7 @@ function refreshCore() {
       alertsEl.innerHTML = parts.join('');
     }
     if (box) box.innerHTML = '';
+    renderLabAdvisorInsights('isoAdvisorPanel', []);
     updateLabShareVisibility('isoShareLinkWrap', 'isoResults');
     isoUrl.serializeToUrl();
     return;
@@ -403,6 +407,22 @@ function refreshCore() {
     metrics: { energyEfficiencyPct: null, materialUtilizationPct: null },
   });
 
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  const interferenceMm =
+    r.fitKind === 'interference' ? Math.max(0, -Math.min(jMax, jMin)) / 1000 : 0;
+  renderLabAdvisorInsights(
+    'isoAdvisorPanel',
+    buildIsoFitAdvisorInsights(
+      {
+        fit_type: r.fitKind,
+        interference_mm: interferenceMm,
+        d_mm: r.dNom,
+        lang: advLang,
+      },
+      { lang: advLang },
+    ),
+  );
+
   updateLabShareVisibility('isoShareLinkWrap', 'isoResults');
   isoUrl.serializeToUrl();
 }
@@ -513,9 +533,21 @@ wireLabCopyResultsButton('isoCopyResults', {
 });
 revalidateAllBoundInputs();
 runLabCalcBoot(wrap, refreshCore);
-mountLabCloudSaveBar(bx('Ajustes ISO 286', 'ISO 286 fits'), {
-  norm: 'ISO 286-1 · ajustes agujero-eje',
+function buildInputsArray() {
+  return collectLabInputRows(document.querySelector('main'));
+}
+
+function buildResultsArray() {
+  return collectLabResultRows(document.querySelector('main'));
+}
+
+mountLabCloudSaveBar(bx('Ajustes ISO 286-1', 'ISO fits 286-1'), {
+  norm: 'ISO 286-1 \u00b7 ajustes y tolerancias m\u00e9tricas',
   svgSelector: '#isoDiagram',
+  getData: () => ({
+    inputs: buildInputsArray(),
+    results: buildResultsArray(),
+  }),
 });
 watchLangAndApply(ISO_FIT_PAGE_EN, {
   reloadOnEs: false,

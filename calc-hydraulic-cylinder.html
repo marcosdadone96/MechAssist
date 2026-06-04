@@ -164,7 +164,35 @@
       }
       /* Móvil: esquema claro, sin solape */
     </style>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Cilindro hidráulico",
+  "description": "Fuerza, sección, caudal y velocidad en cilindro de doble efecto. Parámetros de circuito orientativos.",
+  "url": "https://www.themechassist.com/calc-hydraulic-cylinder.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Force, buckling, tube wall, ISO 3320 standard sizes"
+}
+</script>
+</head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -428,6 +456,7 @@
               <summary data-i18n="hydCyl.formulasSummary">Memoria de cálculo, fórmulas y supuestos</summary>
               <div id="hcFormulaBody" class="lab-fluid-formulas__body"></div>
             </details>
+            <div id="hcHero" class="lab-results-hero-mount" aria-live="polite"></div>
             <div id="hcResults" class="lab-results"></div>
             <div class="lab-results-actions">
               <button type="button" class="lab-btn lab-btn--block" id="hcCopyResults" data-i18n="fluids.copyResults">Copiar resultados</button>

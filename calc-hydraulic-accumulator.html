@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" data-i18n="hacc.metaDesc" data-i18n-attr="content" content="Dimensionado orientativo de acumuladores hidráulicos: volumen nominal, energía almacenada y tiempo de descarga." />
+    <meta name="description" data-i18n="hacc.metaDesc" data-i18n-attr="content" content="Cálculo de acumulador hidráulico: volumen nominal, energía almacenada y verificación de vejiga, émbolo y membrana. Presiones de precarga P0, trabajo P1/P2. ISO 4126 orientativo." />
     <title data-i18n="hacc.docTitle">Acumulador hidráulico — volumen, energía y descarga — TheMechAssist</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -12,13 +12,42 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/calc-hydraulic-accumulator.html" />
     <meta property="og:title" data-i18n="hacc.docTitle" data-i18n-attr="content" content="Acumulador hidráulico — TheMechAssist" />
-    <meta property="og:description" data-i18n="hacc.metaDesc" data-i18n-attr="content" content="Volumen nominal, energía y descarga." />
+    <meta property="og:description" data-i18n="hacc.metaDesc" data-i18n-attr="content" content="Cálculo de acumulador hidráulico: volumen nominal, energía almacenada y verificación de vejiga, émbolo y membrana. Presiones de precarga P0, trabajo P1/P2. ISO 4126 orientativo." />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:description" data-i18n="hacc.metaDesc" data-i18n-attr="content" content="Cálculo de acumulador hidráulico: volumen nominal, energía almacenada y verificación de vejiga, émbolo y membrana. Presiones de precarga P0, trabajo P1/P2. ISO 4126 orientativo." />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Acumulador hidráulico",
+  "description": "Cálculo de acumulador hidráulico: volumen nominal, energía almacenada y verificación de vejiga, émbolo y membrana. Presiones de precarga P0, trabajo P1/P2. ISO 4126 orientativo.",
+  "url": "https://www.themechassist.com/calc-hydraulic-accumulator.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body class="lab-body">
     <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -140,7 +169,7 @@
                   <span class="lab-field-ico" data-i18n="hacc.icoP0" data-i18n-attr="title" title="Presión precarga N₂">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>
                   </span>
-                  <span class="lab-field__label-text" data-i18n="hacc.labelP0">Presión de precarga N₂ — p₀ (bar)</span>
+                  <span class="lab-field__label-text" data-i18n="hacc.labelP0">Presión de precarga N₂ — p₀ (bar) <span class="info-chip" title="Presión de precarga de nitrógeno (bar). Debe ser ≥ 0.9 · P_min de trabajo para evitar colapso de la vejiga. Fabricante recomienda 90% de P_mín." aria-label="Ayuda presión de precarga">?</span></span>
                 </label>
                 <input inputmode="decimal" id="haP0" type="number" min="1" step="any" value="75" />
                 <span class="hint" data-i18n="hacc.hintP0">0,9 × p₁ típico</span>
@@ -164,7 +193,7 @@
                   <span class="lab-field-ico" data-i18n="hacc.icoP2" data-i18n-attr="title" title="Presión máxima">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M8 8h8M9 20h6"/></svg>
                   </span>
-                  <span class="lab-field__label-text" data-i18n="hacc.labelP2">Presión máxima de carga — p₂ (bar)</span>
+                  <span class="lab-field__label-text" data-i18n="hacc.labelP2">Presión máxima de carga — p₂ (bar) <span class="info-chip" title="Presión máxima de trabajo P2 (bar). Determinada por la válvula de alivio del circuito hidráulico." aria-label="Ayuda presión máxima">?</span></span>
                 </label>
                 <input inputmode="decimal" id="haP2" type="number" min="1" step="any" value="200" />
                 <span class="hint" data-i18n="hacc.hintP2">Presión bomba</span>
@@ -188,7 +217,7 @@
                   <span class="lab-field-ico" data-i18n="hacc.icoVnom" data-i18n-attr="title" title="Volumen nominal">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 12h16"/></svg>
                   </span>
-                  <span class="lab-field__label-text" data-i18n="hacc.labelVnom">Volumen nominal instalado (L)</span>
+                  <span class="lab-field__label-text" data-i18n="hacc.labelVnom">Volumen nominal instalado (L) <span class="info-chip" title="Volumen geométrico total del acumulador (L). Este es el parámetro que se calcula o verifica." aria-label="Ayuda volumen nominal">?</span></span>
                 </label>
                 <select id="haVnom">
                   <option value="1">1 L</option>
@@ -244,6 +273,7 @@
               <div id="haFormulaBody" class="lab-fluid-formulas__body"></div>
             </details>
 
+            <div id="haHero" class="lab-results-hero-mount" aria-live="polite"></div>
             <div id="haResults" class="lab-results"></div>
             <div id="haAdvisor" class="lab-alerts"></div>
             <div id="haVerdictSummary" class="hc-verdict-summary" aria-live="polite"></div>
@@ -259,6 +289,7 @@
           </div>
         </div>
       </section>
+    <div id="labPurchaseSuggestions" hidden></div>
     </main>
 
     <script>

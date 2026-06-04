@@ -14,6 +14,7 @@ import {
   wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { collectLabInputRows, collectLabResultRows } from '../services/labPdfPayload.js';
 import { withCalcCredits } from '../services/creditSession.js';
 import { isCreditsSystemEnabled } from '../config/credits.js';
 import { DEEP_GROOVE_SERIES } from '../data/skfFagDeepGroove.js';
@@ -297,9 +298,21 @@ wireLabCopyResultsButton('bcCopyResults', {
 revalidateAllBoundInputs();
 if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
 else render();
-mountLabCloudSaveBar(bx('Cat\u00e1logo rodamientos', 'Bearing catalogue'), {
-  norm: 'ISO 15 · rodamientos de bolas de surco profundo (catálogo)',
+function buildInputsArray() {
+  return collectLabInputRows(document.querySelector('main'));
+}
+
+function buildResultsArray() {
+  return collectLabResultRows(document.querySelector('main'));
+}
+
+mountLabCloudSaveBar(bx('Cat\u00e1logo rodamientos SKF/FAG', 'Bearing catalogue SKF/FAG'), {
+  norm: 'ISO 281 \u00b7 cat\u00e1logo rodamientos de bolas series 62xx/63xx',
   svgSelector: '#bcDiagram',
+  getData: () => ({
+    inputs: buildInputsArray(),
+    results: buildResultsArray(),
+  }),
 });
 watchLangAndApply(BEARING_CATALOG_EN, {
   reloadOnEs: false,

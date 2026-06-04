@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="worm.docTitle">Tornillo sin fin y corona — TheMechAssist</title>
-    <meta name="description" data-i18n="worm.metaDesc" data-i18n-attr="content" content="Relación i, ángulo de avance, eficiencia y autobloqueo en tornillo sin fin y corona." />
+    <meta name="description" data-i18n="worm.metaDesc" data-i18n-attr="content" content="Calculadora de tornillo sin fin y corona: relación de transmisión, ángulo de avance, eficiencia y condición de autobloqueo. Parámetros ISO 14521 orientativos. Con diagrama SVG." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
@@ -12,13 +12,42 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/calc-worm-gear.html" />
     <meta property="og:title" data-i18n="worm.docTitle" data-i18n-attr="content" content="Tornillo sin fin y corona — TheMechAssist" />
-    <meta property="og:description" data-i18n="worm.metaDesc" data-i18n-attr="content" content="Relación, γ, eficiencia y autobloqueo." />
+    <meta property="og:description" data-i18n="worm.metaDesc" data-i18n-attr="content" content="Calculadora de tornillo sin fin y corona: relación de transmisión, ángulo de avance, eficiencia y condición de autobloqueo. Parámetros ISO 14521 orientativos. Con diagrama SVG." />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:description" data-i18n="worm.metaDesc" data-i18n-attr="content" content="Calculadora de tornillo sin fin y corona: relación de transmisión, ángulo de avance, eficiencia y condición de autobloqueo. Parámetros ISO 14521 orientativos. Con diagrama SVG." />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Tornillo sin fin y corona",
+  "description": "Calculadora de tornillo sin fin y corona: relación de transmisión, ángulo de avance, eficiencia y condición de autobloqueo. Parámetros ISO 14521 orientativos. Con diagrama SVG.",
+  "url": "https://www.themechassist.com/calc-worm-gear.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body class="lab-body">
     <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -59,6 +88,7 @@
             </div>
           </details>
         </header>
+        <div id="wgAdvisorPanel" hidden></div>
         <nav class="lab-next-steps" data-i18n="worm.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
           <h3 class="lab-next-steps__title" data-i18n="worm.nextStepsTitle">Siguiente paso habitual</h3>
           <ul class="lab-next-steps__list">
@@ -214,7 +244,6 @@
               <div id="wgElementResults" class="lab-element-columns"></div>
             </details>
             <div id="wgAlerts" class="lab-alerts"></div>
-            <div id="wgAdvisorPanel" hidden></div>
             <div class="lab-results-wrap" id="wgResultsWrap">
               <div class="lab-results-computing" aria-hidden="true">
                 <svg class="lab-gear-spin" viewBox="0 0 64 64" aria-hidden="true"><path fill="#0f766e" d="M32 8l2.2 4.4 4.9-1.3 1.3 4.9 4.4 2.2-2.2 4.4 1.3 4.9-4.9 1.3-2.2 4.4-4.4-2.2-4.9 1.3-1.3-4.9-4.4-2.2 2.2-4.4-1.3-4.9 4.9-1.3 4.4-2.2zm0 10a14 14 0 100 28 14 14 0 000-28z"/></svg>
@@ -228,6 +257,7 @@
                 <button type="button" class="lab-btn lab-btn--block" id="wgCopyResults" data-i18n="worm.copyResults">Copiar resultados</button>
               </div>
             </div>
+            <div id="labPurchaseSuggestions" hidden></div>
             <div class="lab-results-share lab-results-share--footer" id="wgShareLinkWrap" aria-live="polite">
               <button type="button" class="lab-btn lab-btn--text" id="wgCopyLinkBtn" data-i18n="worm.copyLink">Copiar enlace</button>
               <div class="lab-copy-toast" id="wgCopyToast" role="status" data-i18n="worm.copyToast">¡Enlace copiado!</div>

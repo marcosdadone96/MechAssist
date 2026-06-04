@@ -4,6 +4,11 @@
     "description": "Cálculo orientativo de potencia, altura y caudal en elevador de cangilones. Módulo Pro TheMechAssist.",
     "canonical": "https://www.themechassist.com/bucket-elevator.html"
   },
+  "calc-gears.html": {
+    "title": "Calculadora de engranajes cilíndricos rectos y helicoidales — TheMechAssist",
+    "description": "Geometría ISO 53, relación y resistencia orientativa en engranajes cilíndricos rectos y helicoidales (módulo normal, ángulo β). Predimensionado de reductores. Gratis online.",
+    "canonical": "https://www.themechassist.com/calc-gears.html"
+  },
   "calc-bearings-catalog.html": {
     "title": "Rodamientos 62xx — catálogo — TheMechAssist",
     "description": "Vida L10h con C del catálogo demo (series 6000/6200/6300). Selección orientativa de rodamiento rígido de bolas.",
@@ -31,17 +36,17 @@
   },
   "calc-beam.html": {
     "title": "Vigas · flexión y flecha — TheMechAssist",
-    "description": "Flecha, momento flector y tensión en vigas estáticas. Secciones rectangular, circular, I y T.",
+    "description": "Flecha máxima, momento flector y tensión en vigas estáticas. Viga simple, biapoyada y empotrada. Secciones rectangular, circular, I y T. Modelo Euler-Bernoulli. Gratis.",
     "canonical": "https://www.themechassist.com/calc-beam.html"
   },
   "calc-power-screw.html": {
     "title": "Tornillo de potencia trapezoidal — TheMechAssist",
-    "description": "Par de avance, rendimiento y autobloqueo en husillo ISO 2904 (Tr).",
+    "description": "Husillo trapezoidal Tr: par de avance, rendimiento y verificación de autobloqueo. Presión específica en flancos. DIN 103 / ISO 2904. Materiales acero/bronce. Pre-dimensionado orientativo.",
     "canonical": "https://www.themechassist.com/calc-power-screw.html"
   },
   "calc-weld-joint.html": {
     "title": "Uniones soldadas — TheMechAssist",
-    "description": "Comprobación orientativa de cordones de filete y soldaduras a tope.",
+    "description": "Comprobación de cordones de filete y soldaduras a tope según EN 1993-1-8 (orientativo). Tensión en garganta, factor de uso y cateto mínimo. Modelo educativo para pre-dimensionado.",
     "canonical": "https://www.themechassist.com/calc-weld-joint.html"
   },
   "calc-compression-spring.html": {
@@ -100,9 +105,14 @@
     "canonical": "https://www.themechassist.com/car-lift-screw.html"
   },
   "centrifugal-pump.html": {
-    "title": "Bomba centrífuga — TheMechAssist",
-    "description": "Curva, punto de operación, potencia y NPSH orientativos. Pro; no sustituye datos de fabricante.",
+    "title": "Bomba centr\u00edfuga \u2014 TheMechAssist",
+    "description": "Curva, punto de operaci\u00f3n, potencia y NPSH orientativos. Pro; no sustituye datos de fabricante.",
     "canonical": "https://www.themechassist.com/centrifugal-pump.html"
+  },
+  "extruder.html": {
+    "title": "Extrusora de husillo \u2014 TheMechAssist",
+    "description": "Calculadora de extrusora de husillo simple: caudal m\u00e1sico kg/h, contrapresi\u00f3n de boquilla y potencia de motor IEC. HDPE, PP, LDPE, ABS, PVC. Modelo Power-Law (Rauwendaal). Boquilla circular y anular.",
+    "canonical": "https://www.themechassist.com/extruder.html"
   },
   "cookie-preferences.html": {
     "title": "Preferencias de cookies — TheMechAssist",
@@ -145,13 +155,13 @@
     "canonical": "https://www.themechassist.com/traction-elevator.html"
   },
   "transmission-canvas.html": {
-    "title": "Lienzo técnico multieje — TheMechAssist",
-    "description": "Editor de transmisiones multieje con propagación de par y rpm. Función Pro TheMechAssist.",
+    "title": "Diseñador de transmisiones multieje — TheMechAssist",
+    "description": "Diseñador multieje de transmisiones con propagación de par y rpm, geometría de correas y validaciones en vivo. Función Pro TheMechAssist.",
     "canonical": "https://www.themechassist.com/transmission-canvas.html"
   },
   "transmission-studio.html": {
-    "title": "Transmission Studio — TheMechAssist",
-    "description": "Herramienta avanzada de transmisión y cinemática en TheMechAssist.",
+    "title": "Estudio modular de transmisión Pro — TheMechAssist",
+    "description": "Cadena cinemática modular: engranajes, correas y cadenas en un solo flujo. Herramienta Pro TheMechAssist.",
     "canonical": "https://www.themechassist.com/transmission-studio.html"
   },
   "register.html": {
@@ -191,27 +201,32 @@
   },
   "calc-hydraulic-valve.html": {
     "title": "Válvulas hidráulicas — TheMechAssist",
-    "description": "Kv, caída de presión y calor en válvulas limitadoras, reductoras y de caudal.",
+    "description": "Calculadora de válvulas hidráulicas: coeficiente Kv, caída de presión y calor disipado. Válvulas de control, limitadoras y reductoras. IEC 60534 / ISO 4422 orientativo.",
     "canonical": "https://www.themechassist.com/calc-hydraulic-valve.html"
   },
   "calc-hydraulic-accumulator.html": {
     "title": "Acumulador hidráulico — TheMechAssist",
-    "description": "Volumen nominal, energía almacenada y tiempo de descarga en acumuladores de vejiga, émbolo o membrana.",
+    "description": "Cálculo de acumulador hidráulico: volumen nominal, energía almacenada y verificación de vejiga, émbolo y membrana. Presiones de precarga P0, trabajo P1/P2. ISO 4126 orientativo.",
     "canonical": "https://www.themechassist.com/calc-hydraulic-accumulator.html"
+  },
+  "calc-pneumatic-compressor.html": {
+    "title": "Compresor neumático — dimensionado — TheMechAssist",
+    "description": "Dimensionado de compresor neumático: caudal corregido (Nl/min), potencia de motor IEC, volumen de caldeirín. Pistón, tornillo y paletas giratorias. ISO 1217 orientativo. Con selector IEC.",
+    "canonical": "https://www.themechassist.com/calc-pneumatic-compressor.html"
   },
   "calc-worm-gear.html": {
     "title": "Tornillo sin fin y corona — TheMechAssist",
-    "description": "Relación i, ángulo de avance, eficiencia y autobloqueo.",
+    "description": "Calculadora de tornillo sin fin y corona: relación de transmisión, ángulo de avance, eficiencia y condición de autobloqueo. Parámetros ISO 14521 orientativos. Con diagrama SVG.",
     "canonical": "https://www.themechassist.com/calc-worm-gear.html"
   },
   "calc-fatigue.html": {
     "title": "Fatiga — Diagrama de Goodman — TheMechAssist",
-    "description": "Goodman, Gerber y Soderberg con diagrama σ_a vs σ_m interactivo.",
+    "description": "Diagrama de Goodman modificado, Gerber y Soderberg interactivo. Calcula factor de seguridad a fatiga con concentración de tensiones Kf, factores Ka·Kb·Kc y límite de fatiga corregido Se.",
     "canonical": "https://www.themechassist.com/calc-fatigue.html"
   },
   "calc-bolt-shear.html": {
     "title": "Cortante en tornillería — TheMechAssist",
-    "description": "Cortante, aplastamiento y deslizamiento en uniones atornilladas.",
+    "description": "Uniones atornilladas a cortante: tensión de corte, aplastamiento y resistencia al deslizamiento. Clases ISO 898-1 8.8, 10.9, 12.9. Grupos de tornillos con excentricidad. VDI 2230 orientativo.",
     "canonical": "https://www.themechassist.com/calc-bolt-shear.html"
   }
 }

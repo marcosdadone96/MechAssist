@@ -2,6 +2,7 @@ import {
   bindInputValidation,
   mountLabPresetsBar,
   revalidateAllBoundInputs,
+  renderResultHero,
   syncInputValidationResultsGate,
   updateLabShareVisibility,
   wireLabCopyLink,
@@ -384,7 +385,11 @@ function computeAndRenderCore() {
   updatePressDiagramTitle(nCols);
   renderPressDiagram(document.getElementById('hpPressDiagram'), pistonPreview, forceTonPreview, nCols);
 
-  if (syncInputValidationResultsGate(document.getElementById('hppResults'))) return;
+  const hero = document.getElementById('hppHero');
+  if (syncInputValidationResultsGate(document.getElementById('hppResults'))) {
+    if (hero instanceof HTMLElement) hero.innerHTML = '';
+    return;
+  }
 
   const results = document.getElementById('hppResults');
   const advisor = document.getElementById('hppAdvisor');
@@ -453,6 +458,7 @@ function computeAndRenderCore() {
 
   if (errors.length) {
     results.innerHTML = '';
+    if (hero instanceof HTMLElement) hero.innerHTML = '';
     updateLabShareVisibility('hppShareLinkWrap', 'hppResults');
     const note = document.getElementById('hppApproachDynamicNote');
     if (note instanceof HTMLElement) note.textContent = '';
@@ -509,6 +515,24 @@ function computeAndRenderCore() {
   const fsEulerCol = labTier === 'project' && Number.isFinite(pCrColN) ? pCrColN / Math.max(1, forcePerColN) : NaN;
 
   renderPressDiagram(document.getElementById('hpPressDiagram'), pistonUseMm, tonReal, nColsValid);
+
+  const F = forceN;
+  const M = (9550 * motorKw) / 1500;
+  if (hero instanceof HTMLElement) {
+    hero.innerHTML = renderResultHero(
+      [
+        {
+          label: en ? 'Pressing force F' : 'Fuerza de prensado F',
+          display: `${F.toFixed(0)} N`,
+        },
+        {
+          label: en ? 'Motor torque M' : 'Par motor M',
+          display: `${M.toFixed(1)} N\u00b7m`,
+        },
+      ],
+      { verdict: F > 0 && M > 0 ? 'ok' : 'warn' },
+    );
+  }
 
   const mainCards = [
     metric(

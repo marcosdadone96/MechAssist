@@ -389,3 +389,49 @@ export const BUCKET_PRESET_BY_ID = Object.freeze({
     },
   },
 });
+
+export const EXTRUDER_PRESET_BY_ID = Object.freeze({
+  hdpe_pipe: {
+    values: {
+      extD: 45,
+      extLD: 25,
+      extH: 3.5,
+      extPhi: 17.7,
+      extN: 60,
+      extTb: 200,
+      extMaterial: 'hdpe',
+      extDieType: 'circular',
+      extDieD: 20,
+      extDieL: 80,
+    },
+  },
+  pp_profile: {
+    values: {
+      extD: 60,
+      extLD: 28,
+      extH: 4.5,
+      extPhi: 17.7,
+      extN: 80,
+      extTb: 230,
+      extMaterial: 'pp',
+      extDieType: 'circular',
+      extDieD: 15,
+      extDieL: 60,
+    },
+  },
+  hdpe_insitu: {
+    values: {
+      extD: 50,
+      extLD: 30,
+      extH: 4.0,
+      extPhi: 17.7,
+      extN: 45,
+      extTb: 210,
+      extMaterial: 'hdpe',
+      extDieType: 'annular',
+      extDieD: 30,
+      extDieDi: 20,
+      extDieL: 120,
+    },
+  },
+});

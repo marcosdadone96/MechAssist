@@ -27,6 +27,7 @@ import {
   mountLabPresetsBar,
   renderMotorPowerRuler,
   renderResultHero,
+  renderLabAdvisorInsights,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
   updateLabShareVisibility,
@@ -36,7 +37,7 @@ import {
 import { commerceIdForBeltSelection } from '../data/commerceCatalog.js';
 import { emitEngineeringSnapshot } from '../services/engineeringSnapshot.js';
 import { setLabPurchaseFromShoppingLines } from './labPurchaseSuggestions.js';
-import { metricsFromBeltType } from '../services/iaAdvisor.js';
+import { buildAdvisorInsights, metricsFromBeltType } from '../services/iaAdvisor.js';
 import { bindCommerceFilteredSelect } from './commerceSelectBind.js';
 import { bootSmartDashboardIfEnabled, isSmartLabDashboardActive } from './smartDashboardBoot.js';
 import { LAB_AFFILIATE } from '../config/labAffiliate.js';
@@ -358,7 +359,10 @@ function refreshCore() {
   const r = computeBeltDriveTransmission(p);
   renderBeltDriveDiagram(document.getElementById('bDiagram'), r);
 
-  if (syncInputValidationResultsGate(document.getElementById('bResults'))) return;
+  if (syncInputValidationResultsGate(document.getElementById('bResults'))) {
+    renderLabAdvisorInsights('bAdvisorPanel', []);
+    return;
+  }
 
   const bt = r.beltType;
 
@@ -779,6 +783,12 @@ function refreshCore() {
           'Amazon search links are informational only. You can configure an affiliate ID in site settings.',
         ),
   });
+
+  const lang = getLabLang() === 'en' ? 'en' : 'es';
+  renderLabAdvisorInsights(
+    'bAdvisorPanel',
+    buildAdvisorInsights({ belt: { beltType: bt, powerKw: pKw } }, { lang }),
+  );
 
   updateLabShareVisibility('bShareLinkWrap', 'bResults');
   beltUrl.serializeToUrl();

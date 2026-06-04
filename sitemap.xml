@@ -17,6 +17,7 @@
   <url><loc>https://www.themechassist.com/calc-hydraulic-pump.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.themechassist.com/calc-hydraulic-valve.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.themechassist.com/calc-hydraulic-accumulator.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.themechassist.com/calc-pneumatic-compressor.html</loc><lastmod>2026-05-19</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.themechassist.com/calc-iso-fit.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.themechassist.com/calc-keys-din6885.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.themechassist.com/calc-pneumatic-cylinder.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
@@ -44,4 +45,9 @@
   <url><loc>https://www.themechassist.com/calc-beam.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.themechassist.com/calc-power-screw.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.themechassist.com/calc-weld-joint.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url>
+    <loc>https://www.themechassist.com/extruder.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

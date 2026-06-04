@@ -8,13 +8,16 @@ import {
   mountLabPresetsBar,
   renderMotorPowerRuler,
   renderResultHero,
+  renderLabAdvisorInsights,
   updateLabShareVisibility,
   wireLabCopyLink,
   wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { collectLabInputRows, collectLabResultRows } from '../services/labPdfPayload.js';
 import { withCalcCredits } from '../services/creditSession.js';
 import { isCreditsSystemEnabled } from '../config/credits.js';
+import { buildCouplingsAdvisorInsights } from '../services/iaAdvisor.js';
 import { COUPLING_BRANDS } from '../data/couplingsCatalog.js';
 import { renderCouplingAssemblyDiagram } from '../lab/diagramCatalogModules.js';
 import { getLabLang } from '../lab/i18n/labLang.js';
@@ -160,7 +163,10 @@ const CP_PRESETS = [
 ];
 
 function render() {
-  if (syncInputValidationResultsGate(document.getElementById('cpResults'))) return;
+  if (syncInputValidationResultsGate(document.getElementById('cpResults'))) {
+    renderLabAdvisorInsights('cpAdvisorPanel', []);
+    return;
+  }
   const P = parseFloat((document.getElementById('cpPower')?.value || '0').replace(',', '.'));
   const n = parseFloat((document.getElementById('cpRpm')?.value || '0').replace(',', '.'));
   const K = parseFloat((document.getElementById('cpK')?.value || '1.25').replace(',', '.'));
@@ -254,6 +260,15 @@ function render() {
       'Demonstration catalogue data. Final selection must use the manufacturer official catalogue and actual duty.',
     )}</p>`;
 
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  renderLabAdvisorInsights(
+    'cpAdvisorPanel',
+    buildCouplingsAdvisorInsights(
+      { t_design: T_des, t_nom: row.T_nom_Nm, lang: advLang },
+      { lang: advLang },
+    ),
+  );
+
   updateLabShareVisibility('cpShareLinkWrap', 'cpOut');
   serializeCouplingUrl();
 }
@@ -310,9 +325,21 @@ wireLabCopyResultsButton('cpCopyResults', {
 
 if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
 else render();
-mountLabCloudSaveBar(bx('Acoplamientos', 'Couplings'), {
-  norm: 'Catálogo fabricante (datos demostrativos)',
+function buildInputsArray() {
+  return collectLabInputRows(document.querySelector('main'));
+}
+
+function buildResultsArray() {
+  return collectLabResultRows(document.querySelector('main'));
+}
+
+mountLabCloudSaveBar(bx('Acoplamientos mec\u00e1nicos', 'Mechanical couplings'), {
+  norm: 'Cat\u00e1logo orientativo \u00b7 acoplamientos el\u00e1sticos',
   svgSelector: '#cpDiagram',
+  getData: () => ({
+    inputs: buildInputsArray(),
+    results: buildResultsArray(),
+  }),
 });
 watchLangAndApply(COUPLINGS_EN, {
   reloadOnEs: false,

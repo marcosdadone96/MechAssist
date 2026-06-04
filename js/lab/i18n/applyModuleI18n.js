@@ -79,13 +79,9 @@ function captureEsSnapshots() {
 }
 
 /**
- * @param {Record<string, string>} dict
+ * @param {Record<string, string>} merged
  */
-export function applyModuleTranslations(dict) {
-  captureEsSnapshots();
-  if (getLabLang() !== 'en') return;
-  const merged = { ...HOME_NAV_EN, ...dict };
-
+function applyDictToDom(merged) {
   document.querySelectorAll('[data-be-i18n]').forEach((el) => {
     const key = el.getAttribute('data-be-i18n');
     if (!key) return;
@@ -123,6 +119,27 @@ export function applyModuleTranslations(dict) {
       setElementI18nText(el, txt);
     }
   });
+}
+
+/**
+ * Apply Spanish copy to the DOM, then reset ES snapshots (use before watchLangAndApply
+ * when the HTML default text may be corrupted).
+ * @param {Record<string, string>} dict
+ */
+export function seedModuleEsFromDict(dict) {
+  applyDictToDom(dict);
+  esSnapshots.clear();
+  snapshotsReady = false;
+  captureEsSnapshots();
+}
+
+/**
+ * @param {Record<string, string>} dict
+ */
+export function applyModuleTranslations(dict) {
+  captureEsSnapshots();
+  if (getLabLang() !== 'en') return;
+  applyDictToDom({ ...HOME_NAV_EN, ...dict });
 }
 
 /** Restore Spanish text from snapshots (for elements with data-i18n). */

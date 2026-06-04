@@ -18,11 +18,38 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Transmission Studio — TheMechAssist" />
 
-    <title>Transmission Studio — TheMechAssist</title>
+    <title data-i18n="studio.docTitle">Transmission Studio — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Estudio modular de transmisión Pro",
+  "description": "Cadena cinemática modular: engranajes, correas y cadenas en un solo flujo. Herramienta Pro TheMechAssist.",
+  "url": "https://www.themechassist.com/transmission-studio.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "EUR",
+    "description": "Requires Pro subscription"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Modular kinematic chain builder"
+}
+</script>
+</head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -49,12 +76,12 @@
 
     <div id="studioPaywall" class="studio-paywall" hidden>
       <div class="studio-paywall__card">
-        <h2 style="margin: 0 0 0.5rem; font-size: 1.1rem">Estudio modular — Pro</h2>
-        <p style="margin: 0 0 1rem; font-size: 0.88rem; line-height: 1.5; color: #475569">
+        <h2 style="margin: 0 0 0.5rem; font-size: 1.1rem" data-i18n="studio.paywallTitle">Estudio modular — Pro</h2>
+        <p style="margin: 0 0 1rem; font-size: 0.88rem; line-height: 1.5; color: #475569" data-i18n="studio.paywallDesc" data-i18n-html>
           Encadene etapas de engranajes, correas y cadenas con un solo flujo de velocidad. Cree una cuenta, complete el paso de pago (simulado en demo) y tendrá Pro en este navegador.
         </p>
         <p style="margin: 0 0 0.75rem; font-size: 0.82rem">
-          <button type="button" id="studioActivateDemo" class="lab-btn" style="width: 100%; margin-bottom: 0.65rem">
+          <button type="button" id="studioActivateDemo" class="lab-btn" style="width: 100%; margin-bottom: 0.65rem" data-i18n="studio.paywallBtn">
             Continuar con Pro
           </button>
           <span style="color: #64748b">Si no tiene cuenta, se abrirá el registro y luego la página de pago. Solo esta pestaña, sin guardar licencia:</span>
@@ -92,7 +119,7 @@
             </div>
             <div class="studio-chip studio-chip--belt" draggable="true" data-studio-type="belt" title="Transmisión por correa">
               <span class="studio-chip__icon" aria-hidden="true">◎</span>
-              <span class="studio-chip__text">Correa</span>
+              <span class="studio-chip__text" data-i18n="studio.blockBelt">Correa</span>
               <span class="studio-chip__sub">d₁, d₂, C</span>
             </div>
             <div class="studio-chip studio-chip--chain" draggable="true" data-studio-type="chain" title="Transmisión por cadena">
@@ -124,7 +151,7 @@
 
           <div class="studio-workbench__toolbar">
             <div class="lab-field studio-workbench__n0">
-              <label for="stN0">n entrada</label>
+              <label for="stN0" data-i18n="studio.labelN0">n entrada</label>
               <div class="studio-n0-wrap">
                 <input id="stN0" type="number" min="1" step="any" value="1455" />
                 <span class="studio-n0-unit">rpm</span>
@@ -150,8 +177,8 @@
             <summary>Datos técnicos (JSON)</summary>
             <pre id="studioJson" class="studio-json-pre"></pre>
           </details>
-          <button type="button" class="lab-btn studio-copy-btn" id="studioCopy">Copiar JSON</button>
-          <button type="button" class="lab-btn studio-copy-btn" id="studioCloudSave" style="margin-top: 0.5rem">
+          <button type="button" class="lab-btn studio-copy-btn" id="studioCopy" data-i18n="studio.btnCopyJson">Copiar JSON</button>
+          <button type="button" class="lab-btn studio-copy-btn" id="studioCloudSave" style="margin-top: 0.5rem" data-i18n="studio.btnCloudSave">
             Guardar en la nube
           </button>
         </aside>

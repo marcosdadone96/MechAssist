@@ -117,6 +117,13 @@ const dict = {
     'nav.hubFluids': 'Hidr\u00e1ulica',
     'nav.myGearmotors': 'Mis motorreductores',
     'nav.mySavedCalcs': 'Mis c\u00e1lculos guardados',
+    'err404.h1': 'P\u00e1gina no encontrada',
+    'err404.lead': 'La URL que buscas no existe o fue movida.',
+    'err404.searchPlaceholder': 'Buscar calculadora\u2026',
+    'err404.searchAria': 'Buscar calculadora',
+    'err404.resultsAria': 'Resultados de b\u00fasqueda',
+    'err404.homeBtn': 'Ir al inicio',
+    'err404.hubsTitle': 'O explora por \u00e1rea',
     'zone.machines': 'M\u00e1quinas',
     'zone.machinesIntro':
       'Transporte, elevaci\u00f3n y bombas: potencias y fuerzas para validar concepto antes del detalle CAD.',
@@ -185,6 +192,9 @@ const dict = {
     'hub.fluids.accumulator.title': 'Acumulador hidr\u00e1ulico',
     'hub.fluids.accumulator.desc':
       'Volumen nominal, energ\u00eda almacenada y tiempo de descarga (vejiga, \u00e9mbolo o membrana).',
+    'hub.fluids.compressor.title': 'Compresor neum\u00e1tico',
+    'hub.fluids.compressor.desc':
+      'Caudal corregido, potencia, motor IEC y volumen de calder\u00edn (pist\u00f3n, tornillo o paletas).',
     'hub.fluids.soonCompressor.title': 'Compresor neum\u00e1tico',
     'hub.fluids.soonCompressor.desc': 'M\u00f3dulo en preparaci\u00f3n.',
     'hub.fluids.soonAccumulator.title': 'Acumulador hidr\u00e1ulico',
@@ -281,6 +291,9 @@ const dict = {
     'hub.machines.carLift.title': 'Elevador de veh\u00edculos',
     'hub.machines.carLift.desc':
       'Mecanismo y cargas para plataformas de elevaci\u00f3n tipo tornillo. M\u00f3dulos avanzados requieren plan Pro.',
+    'hub.machines.extruder.title': 'Extrusora de husillo',
+    'hub.machines.extruder.desc':
+      'Caudal m\u00e1sico, presi\u00f3n de boquilla y potencia de motor. HDPE, PP, LDPE, ABS, PVC.',
     'hub.machines.soonExtruder.title': 'Extrusor',
     'hub.machines.soonExtruder.desc': 'M\u00f3dulo en preparaci\u00f3n.',
     'hub.machines.soonFan.title': 'Ventilador industrial',
@@ -291,7 +304,7 @@ const dict = {
       '\u00bfRodamientos? Si ya tienes la carga din\u00e1mica C del cat\u00e1logo, abre L10. Si quieres elegir la referencia en series 62xx, usa el m\u00f3dulo de cat\u00e1logo.',
     'page.transmissionLab.docTitle': 'Laboratorio de transmisi\u00f3n \u2014 TheMechAssist',
     'page.transmissionLab.metaDesc':
-      'Engranajes, correas, cadenas, rodamientos, ejes, chavetas, ajustes ISO, Seeger, acoplamientos y torniller\u00eda: calculadoras con diagramas. TheMechAssist.',
+      '19 calculadoras de transmisi\u00f3n mec\u00e1nica: engranajes, correas, cadenas, rodamientos, ejes, chavetas, ajustes ISO, fatiga, vigas, soldadura y m\u00e1s. Normas AGMA, ISO, DIN. Mayoritariamente gratuitas.',
     'page.machinesHub.docTitle': 'M\u00e1quinas y transporte \u2014 TheMechAssist',
     'page.machinesHub.metaDesc':
       'Calculadoras para cintas, rodillos, bombas centr\u00edfugas, elevadores, tornillo y ascensores: potencias, tensiones y par\u00e1metros orientativos.',
@@ -535,6 +548,13 @@ const dict = {
     'nav.hubFluids': 'Hydraulics',
     'nav.myGearmotors': 'My gearmotors',
     'nav.mySavedCalcs': 'My saved calculations',
+    'err404.h1': 'Page not found',
+    'err404.lead': "The URL you're looking for doesn't exist or was moved.",
+    'err404.searchPlaceholder': 'Search calculators\u2026',
+    'err404.searchAria': 'Search calculators',
+    'err404.resultsAria': 'Search results',
+    'err404.homeBtn': 'Go to home',
+    'err404.hubsTitle': 'Or browse by area',
     'zone.machines': 'Machines',
     'zone.machinesIntro':
       'Conveying, lifting and pumps: powers and forces to validate a concept before deep CAD work.',
@@ -550,7 +570,7 @@ const dict = {
     'fluids.pump': 'Hydraulic pump',
     'fluids.pumpMeta': 'Curve, power and selection',
     'fluids.compressor': 'Pneumatic compressor',
-    'fluids.compressorMeta': 'Calculator coming soon',
+    'fluids.compressorMeta': 'Flow, power and receiver sizing',
     'fluids.cylinder': 'Pneumatic cylinder',
     'fluids.cylinderMeta': 'Force, flow and timing',
     'fluids.hydraulicCylinder': 'Hydraulic cylinder',
@@ -604,6 +624,9 @@ const dict = {
     'hub.fluids.accumulator.title': 'Hydraulic accumulator',
     'hub.fluids.accumulator.desc':
       'Nominal volume, stored energy and discharge time (bladder, piston or diaphragm).',
+    'hub.fluids.compressor.title': 'Pneumatic compressor',
+    'hub.fluids.compressor.desc':
+      'Corrected flow, power, IEC motor and receiver volume (piston, screw or vane).',
     'hub.fluids.soonCompressor.title': 'Pneumatic compressor',
     'hub.fluids.soonCompressor.desc': 'Module in preparation.',
     'hub.fluids.soonAccumulator.title': 'Hydraulic accumulator',
@@ -697,6 +720,9 @@ const dict = {
     'hub.machines.carLift.title': 'Vehicle lift',
     'hub.machines.carLift.desc':
       'Mechanism and loads for screw-type vehicle platforms. Advanced sections require a Pro plan.',
+    'hub.machines.extruder.title': 'Single-screw extruder',
+    'hub.machines.extruder.desc':
+      'Throughput, die back-pressure and motor power. HDPE, PP, LDPE, ABS, PVC.',
     'hub.machines.soonExtruder.title': 'Extruder',
     'hub.machines.soonExtruder.desc': 'Module in preparation.',
     'hub.machines.soonFan.title': 'Industrial fan',
@@ -707,7 +733,7 @@ const dict = {
       'Bearings? If you already have dynamic load C from a catalogue, open L10. To pick a 62xx reference, use the catalogue module.',
     'page.transmissionLab.docTitle': 'Transmission lab \u2014 TheMechAssist',
     'page.transmissionLab.metaDesc':
-      'Gears, belts, chains, bearings, shafts, keys, ISO fits, retaining rings, couplings and bolting: calculators with diagrams. TheMechAssist.',
+      '19 mechanical transmission calculators: gears, belts, chains, bearings, shafts, keys, ISO fits, fatigue, beams, welded joints and more. AGMA, ISO, DIN standards. Mostly free.',
     'page.machinesHub.docTitle': 'Machines & bulk handling \u2014 TheMechAssist',
     'page.machinesHub.metaDesc':
       'Belt, roller, centrifugal pump, bucket elevator, screw conveyor and lift calculators: power, tension and indicative parameters.',

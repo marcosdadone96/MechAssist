@@ -17,6 +17,7 @@ import {
   labAlert,
   metricHtml,
   renderResultHero,
+  renderLabAdvisorInsights,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
   uxCopy,
@@ -30,6 +31,7 @@ import { canUseLabProjectTier } from '../services/accessTier.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { COMPRESSION_SPRING_EN } from '../lab/i18n/pages/compressionSpringEn.js';
 import { LAB_LANG_EVENT } from '../lab/i18n/labLang.js';
+import { buildSpringAdvisorInsights } from '../services/iaAdvisor.js';
 
 /** @type {object | null} */
 let springPdfSnapshot = null;
@@ -350,7 +352,10 @@ function endsLabel(v) {
 }
 
 function computeCore() {
-  if (syncInputValidationResultsGate(document.getElementById('springResults'))) return;
+  if (syncInputValidationResultsGate(document.getElementById('springResults'))) {
+    renderLabAdvisorInsights('csAdvisorPanel', []);
+    return;
+  }
 
   const purchaseMount = document.getElementById('labPurchaseSuggestions');
   const u = getLabUnitPrefs();
@@ -478,6 +483,7 @@ function computeCore() {
     });
     if (subEl) subEl.innerHTML = '';
     setLabPurchaseSuggestions(purchaseMount, { rows: [] });
+    renderLabAdvisorInsights('csAdvisorPanel', []);
     return;
   }
 
@@ -523,6 +529,7 @@ function computeCore() {
     });
     if (subEl) subEl.innerHTML = '';
     setLabPurchaseSuggestions(purchaseMount, { rows: [] });
+    renderLabAdvisorInsights('csAdvisorPanel', []);
     return;
   }
 
@@ -812,6 +819,23 @@ function computeCore() {
   }
 
   if (advisor) advisor.innerHTML = alertParts.join('');
+
+  const advLang = getCurrentLang() === 'en' ? 'en' : 'es';
+  const sfSpring = ratioGovern > 0 ? 1 / ratioGovern : NaN;
+  const solidClearance = sOp != null ? Math.max(0, sMax - sOp) : Math.max(0, sMax);
+  renderLabAdvisorInsights(
+    'csAdvisorPanel',
+    buildSpringAdvisorInsights(
+      {
+        sf: sfSpring,
+        solid_clearance_mm: solidClearance,
+        slenderness_ratio: buck.w,
+        stress_ratio: ratioGovern,
+        lang: advLang,
+      },
+      { lang: advLang },
+    ),
+  );
 
   const formulaLines = [
     `C = Dm/d = ${fmt(C, 3)}; K (Wahl) = ${fmt(K, 4)}`,

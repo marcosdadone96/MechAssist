@@ -13,6 +13,7 @@ import {
   wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { collectLabInputRows, collectLabResultRows } from '../services/labPdfPayload.js';
 import { withCalcCredits } from '../services/creditSession.js';
 import { isCreditsSystemEnabled } from '../config/credits.js';
 import {
@@ -240,9 +241,21 @@ wireLabCopyResultsButton('kyCopyResults', {
 
 if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
 else render();
-mountLabCloudSaveBar(bx('Chavetas paralelas DIN 6885', 'Parallel keys DIN 6885'), {
-  norm: 'DIN 6885 · chavetas paralelas',
+function buildInputsArray() {
+  return collectLabInputRows(document.querySelector('main'));
+}
+
+function buildResultsArray() {
+  return collectLabResultRows(document.querySelector('main'));
+}
+
+mountLabCloudSaveBar(bx('Chavetas DIN 6885', 'Keys DIN 6885'), {
+  norm: 'DIN 6885 \u00b7 chavetas de ajuste planas',
   svgSelector: '#kyDiagram',
+  getData: () => ({
+    inputs: buildInputsArray(),
+    results: buildResultsArray(),
+  }),
 });
 watchLangAndApply(KEYS_DIN_EN, {
   reloadOnEs: false,

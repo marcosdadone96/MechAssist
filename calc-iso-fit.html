@@ -22,7 +22,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Ajustes ISO 286",
+  "description": "Límites y juego o apriete a partir de agujero, eje, letra e IT. Extracto 1–500 mm con esquema de zonas.",
+  "url": "https://www.themechassist.com/calc-iso-fit.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -50,6 +78,10 @@
       <section class="lab-panel">
         <header class="lab-calc-page-head">
           <h2 data-i18n="iso.h2">Ajustes ISO 286-1 (extracto 1-500 mm)</h2>
+          <div class="lab-safety-notice" role="note">
+            <strong>Nota:</strong>
+            <span data-i18n="isoFit.safetyNotice">Extracto docente ISO 286-1 (rango 1–500 mm). No sustituye la norma completa ni la política de inspección de su empresa. Para tolerancias de precisión (IT5-IT7) consulte siempre el taller de metrología.</span>
+          </div>
           <p class="lab-calc-hero-lead" data-i18n="iso.heroLead" data-i18n-html>
             Límites y tipo de ajuste (juego, transición, apriete) a partir de Ø nominal, posición de tolerancia e IT — extracto docente, no sustituye la norma completa.
           </p>
@@ -68,6 +100,7 @@
             </div>
           </details>
         </header>
+        <div id="isoAdvisorPanel" hidden></div>
         <nav class="lab-next-steps" data-i18n="iso.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
           <h3 class="lab-next-steps__title" data-i18n="iso.nextStepsTitle">Siguiente paso habitual</h3>
           <ul class="lab-next-steps__list">
@@ -188,6 +221,7 @@
           </div>
         </div>
       </section>
+    <div id="labPurchaseSuggestions" hidden></div>
     </main>
 
     <script>

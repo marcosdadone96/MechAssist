@@ -103,7 +103,35 @@
         }
       }
     </style>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Anillos Seeger DIN 471/472",
+  "description": "Designación y cotas de ranura a partir de diámetro de eje o alojamiento. Esquema de montaje.",
+  "url": "https://www.themechassist.com/calc-seeger.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -154,6 +182,7 @@
             </div>
           </details>
         </header>
+        <div id="sgAdvisorPanel" hidden></div>
         <nav class="lab-next-steps" data-i18n="seeger.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
           <h3 class="lab-next-steps__title" data-i18n="seeger.nextStepsTitle">Siguiente paso habitual</h3>
           <ul class="lab-next-steps__list">
@@ -307,6 +336,7 @@
           </div>
         </div>
       </section>
+    <div id="labPurchaseSuggestions" hidden></div>
     </main>
 
     <script>

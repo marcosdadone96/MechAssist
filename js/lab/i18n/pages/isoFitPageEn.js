@@ -4,6 +4,8 @@ export const ISO_FIT_PAGE_EN = {
   'iso.h2': 'ISO 286-1 fits (extract 1\u2013500 mm)',
   'iso.heroLead':
     'Limits and fit type (clearance, transition, interference) from nominal \u00d8, tolerance position and IT \u2014 educational extract, not a full standard replacement.',
+  'isoFit.safetyNotice':
+    'Teaching extract per ISO 286-1 (1\u2013500 mm range). Does not replace the full standard or your company\'s inspection policy. For precision tolerances (IT5-IT7) always consult your metrology department.',
   'iso.preset1': 'H7/g6 \u00b7 \u00d825',
   'iso.preset2': 'H7/k6 \u00b740',
   'iso.preset3': 'JS7/h6 \u00b828',

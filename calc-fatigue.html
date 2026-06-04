@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="fatigue.docTitle">Fatiga — diagrama de Goodman — TheMechAssist</title>
-    <meta name="description" data-i18n="fatigue.metaDesc" data-i18n-attr="content" content="Goodman, Gerber y Soderberg con diagrama interactivo σ_a vs σ_m." />
+    <meta name="description" data-i18n="fatigue.metaDesc" data-i18n-attr="content" content="Diagrama de Goodman modificado, Gerber y Soderberg interactivo. Calcula factor de seguridad a fatiga con concentración de tensiones Kf, factores Ka·Kb·Kc y límite de fatiga corregido Se." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
@@ -12,13 +12,42 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/calc-fatigue.html" />
     <meta property="og:title" data-i18n="fatigue.docTitle" data-i18n-attr="content" content="Fatiga — Goodman — TheMechAssist" />
-    <meta property="og:description" data-i18n="fatigue.metaDesc" data-i18n-attr="content" content="Diagrama de Goodman interactivo." />
+    <meta property="og:description" data-i18n="fatigue.metaDesc" data-i18n-attr="content" content="Diagrama de Goodman modificado, Gerber y Soderberg interactivo. Calcula factor de seguridad a fatiga con concentración de tensiones Kf, factores Ka·Kb·Kc y límite de fatiga corregido Se." />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:description" data-i18n="fatigue.metaDesc" data-i18n-attr="content" content="Diagrama de Goodman modificado, Gerber y Soderberg interactivo. Calcula factor de seguridad a fatiga con concentración de tensiones Kf, factores Ka·Kb·Kc y límite de fatiga corregido Se." />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Fatiga — Diagrama de Goodman",
+  "description": "Diagrama de Goodman modificado, Gerber y Soderberg interactivo. Calcula factor de seguridad a fatiga con concentración de tensiones Kf, factores Ka·Kb·Kc y límite de fatiga corregido Se.",
+  "url": "https://www.themechassist.com/calc-fatigue.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body class="lab-body">
     <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -59,6 +88,7 @@
             </div>
           </details>
         </header>
+        <div id="ftAdvisorPanel" hidden></div>
         <nav class="lab-next-steps" data-i18n="fatigue.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
           <h3 class="lab-next-steps__title" data-i18n="fatigue.nextStepsTitle">Siguiente paso habitual</h3>
           <ul class="lab-next-steps__list">
@@ -103,12 +133,12 @@
                 <p class="lab-field-help" data-i18n="fatigue.helpLoadTypeHtml" data-i18n-html>Informativo; introduzca σ_m y σ_a equivalentes.</p>
               </div>
               <div class="lab-field">
-                <label for="ftSigmaM" data-i18n="fatigue.labelSigmaM">Tensión media σ_m (MPa)</label>
+                <label for="ftSigmaM" data-i18n="fatigue.labelSigmaM">Tensión media σ_m (MPa) <span class="info-chip" title="Tensión media σ_m: componente estática del ciclo. Positiva en tracción. Para flexión rotativa: 0." aria-label="Ayuda tensión media">?</span></label>
                 <input inputmode="decimal" id="ftSigmaM" type="number" min="0" value="80" />
                 <p class="lab-field-help" data-i18n="fatigue.helpSigmaMHtml" data-i18n-html><strong>σ_m</strong> en la sección crítica.</p>
               </div>
               <div class="lab-field" id="ftSigmaAField">
-                <label for="ftSigmaA" data-i18n="fatigue.labelSigmaA">Tensión alternante σ_a (MPa)</label>
+                <label for="ftSigmaA" data-i18n="fatigue.labelSigmaA">Tensión alternante σ_a (MPa) <span class="info-chip" title="Tensión alternante σ_a: semirango del ciclo. En flexión rotativa pura = tensión máxima del ciclo." aria-label="Ayuda tensión alternante">?</span></label>
                 <input inputmode="decimal" id="ftSigmaA" type="number" min="0" value="120" />
                 <span class="hint" data-i18n="fatigue.hintSigmaADesign">Opcional en diseño</span>
                 <p class="lab-field-help" data-i18n="fatigue.helpSigmaAHtml" data-i18n-html><strong>σ_a</strong> alternante (MPa).</p>
@@ -124,17 +154,17 @@
                 <p class="lab-field-help" data-i18n="fatigue.helpMaterialHtml" data-i18n-html>Rellena <strong>S_u</strong> y <strong>S_y</strong>; personalizado para editar.</p>
               </div>
               <div class="lab-field">
-                <label for="ftSu" data-i18n="fatigue.labelSu">Resistencia a tracción S_u (MPa)</label>
+                <label for="ftSu" data-i18n="fatigue.labelSu">Resistencia a tracción S_u (MPa) <span class="info-chip" title="Resistencia última a tracción. Acero estructural: 400–600 MPa. 42CrMo4: 900–1100 MPa." aria-label="Ayuda resistencia a tracción">?</span></label>
                 <input inputmode="decimal" id="ftSu" type="number" min="50" value="510" />
                 <p class="lab-field-help" data-i18n="fatigue.helpSuHtml" data-i18n-html>S′ ≈ 0,5·S_u.</p>
               </div>
               <div class="lab-field">
-                <label for="ftSy" data-i18n="fatigue.labelSy">Límite elástico S_y (MPa)</label>
+                <label for="ftSy" data-i18n="fatigue.labelSy">Límite elástico S_y (MPa) <span class="info-chip" title="Límite elástico (yield strength). Suele ser 0.6–0.9 de Su según material y tratamiento." aria-label="Ayuda límite elástico">?</span></label>
                 <input inputmode="decimal" id="ftSy" type="number" min="30" value="355" />
                 <p class="lab-field-help" data-i18n="fatigue.helpSyHtml" data-i18n-html>Soderberg y fluencia.</p>
               </div>
               <div class="lab-field">
-                <label for="ftKa" data-i18n="fatigue.labelKa">Factor acabado K_a</label>
+                <label for="ftKa" data-i18n="fatigue.labelKa">Factor acabado K_a <span class="info-chip" title="Factor de superficie. Mecanizado Ra&lt;0.8µm: 0.9–1.0. Laminado en frío: 0.8. Forjado: 0.5–0.7." aria-label="Ayuda factor de superficie">?</span></label>
                 <input inputmode="decimal" id="ftKa" type="number" step="0.01" min="0.1" max="2" value="0.8" />
                 <p class="lab-field-help" data-i18n="fatigue.helpKaHtml" data-i18n-html>Factor de superficie (Marin).</p>
                 <table class="lab-catalog-table" style="margin-top:0.45rem">
@@ -148,7 +178,7 @@
                 </table>
               </div>
               <div class="lab-field">
-                <label for="ftKb" data-i18n="fatigue.labelKb">Factor tamaño K_b</label>
+                <label for="ftKb" data-i18n="fatigue.labelKb">Factor tamaño K_b <span class="info-chip" title="Factor de tamaño. d&lt;8mm: 1.0. d=50mm: 0.85. d=100mm: 0.75 (aprox. Shigley)." aria-label="Ayuda factor de tamaño">?</span></label>
                 <input inputmode="decimal" id="ftKb" type="number" step="0.01" min="0.1" max="2" value="0.9" />
                 <p class="lab-field-help" data-i18n="fatigue.helpKbHtml" data-i18n-html>Factor de tamaño (0,6–1).</p>
               </div>
@@ -158,7 +188,7 @@
                 <p class="lab-field-help" data-i18n="fatigue.helpKcHtml" data-i18n-html>0,814 ≈ 99 % fiabilidad.</p>
               </div>
               <div class="lab-field">
-                <label for="ftKf" data-i18n="fatigue.labelKf">Factor concentración K_f</label>
+                <label for="ftKf" data-i18n="fatigue.labelKf">Factor concentración K_f <span class="info-chip" title="Factor concentración fatiga. Sin entalla: 1.0. Chavetero: 1.6–2.0. Agujero transversal: 2.0–3.0." aria-label="Ayuda factor de concentración">?</span></label>
                 <input inputmode="decimal" id="ftKf" type="number" step="0.01" min="1" max="6" value="1.5" />
                 <p class="lab-field-help" data-i18n="fatigue.helpKfHtml" data-i18n-html>Sobre <strong>σ_a</strong> (entalla, radio, chaveta).</p>
               </div>
@@ -206,6 +236,7 @@
                 <button type="button" class="lab-btn lab-btn--block" id="ftCopyResults" data-i18n="fatigue.copyResults">Copiar resultados</button>
               </div>
             </div>
+            <div id="labPurchaseSuggestions" hidden></div>
             <div class="lab-results-share lab-results-share--footer" id="ftShareLinkWrap" aria-live="polite">
               <button type="button" class="lab-btn lab-btn--text" id="ftCopyLinkBtn" data-i18n="fatigue.copyLink">Copiar enlace</button>
               <div class="lab-copy-toast" id="ftCopyToast" role="status" data-i18n="fatigue.copyToast">¡Enlace copiado!</div>

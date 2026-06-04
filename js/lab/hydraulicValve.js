@@ -1,6 +1,6 @@
-/** Indicative hydraulic valve sizing — Kv, pressure drop, heat. */
+/** Indicative hydraulic valve sizing  Kv, pressure drop, heat. */
 
-/** Kv in L/min / sqrt(bar) — based on Bosch/Parker/Hydac NG-series catalog data */
+/** Kv in L/min / sqrt(bar)  based on Bosch/Parker/Hydac NG-series catalog data */
 export const HV_DN_KV_TABLE = [
   { dn: 6, kv: 10 },
   { dn: 10, kv: 20 },
@@ -14,8 +14,8 @@ export const HV_DN_KV_TABLE = [
  * @returns {number} bar
  */
 /**
- * ?P [bar] = (Q [L/min] / Kv [L/min/?bar])²
- * Standard hydraulic valve formula (Q = Kv·??P).
+ * ?P [bar] = (Q [L/min] / Kv [L/min/?bar])
+ * Standard hydraulic valve formula (Q = Kv??P).
  */
 export function deltaPFromFlowKv(qLmin, kv) {
   const kvSafe = Math.max(1e-6, kv);
@@ -76,7 +76,7 @@ export function workingZone(deltaPBar) {
  */
 export function computeHydraulicValve(p) {
   const q = Math.max(0, p.qLmin);
-  let kvUsed = Math.max(1e-6, p.kvInstalled ?? 0);
+  let kvUsed = p.kvInstalled ?? 0;
   let dnRec = p.dnInstalled ?? 0;
 
   let targetDeltaP = 5;
@@ -89,7 +89,7 @@ export function computeHydraulicValve(p) {
     const pick = pickNominalDn(kvUsed);
     dnRec = pick.dn;
     kvUsed = pick.kv;
-  } else if (!kvUsed && dnRec) {
+  } else if (dnRec) {
     const row = HV_DN_KV_TABLE.find((r) => r.dn === dnRec);
     kvUsed = row ? row.kv : HV_DN_KV_TABLE[1].kv;
   } else if (!kvUsed) {

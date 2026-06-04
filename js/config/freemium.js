@@ -29,6 +29,7 @@ export const PRO_MACHINE_APP_PATHS = new Set([
   'screw-conveyor.html',
   'traction-elevator.html',
   'car-lift-screw.html',
+  'extruder.html',
 ]);
 
 /** Pro en hubs y badges: m\u00e1quinas Pro + lienzo. */

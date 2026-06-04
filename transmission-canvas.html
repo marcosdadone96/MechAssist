@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Editor de transmisiones multieje con propagación de par y rpm. Función Pro TheMechAssist." />
+    <meta name="description" content="Diseñador multieje de transmisiones con propagación de par y rpm. Función Pro TheMechAssist." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -12,17 +12,44 @@
     <link rel="canonical" href="https://www.themechassist.com/transmission-canvas.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/transmission-canvas.html" id="mdr-og-url" />
-    <meta property="og:title" content="Lienzo técnico multieje — TheMechAssist" />
-    <meta property="og:description" content="Editor de transmisiones multieje con propagación de par y rpm. Función Pro TheMechAssist." />
+    <meta property="og:title" content="Diseñador de transmisiones multieje — TheMechAssist" />
+    <meta property="og:description" content="Diseñador multieje de transmisiones con propagación de par y rpm. Función Pro TheMechAssist." />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Lienzo técnico multieje — TheMechAssist" />
+    <meta name="twitter:title" content="Diseñador de transmisiones multieje — TheMechAssist" />
 
-    <title>Lienzo técnico multieje — TheMechAssist</title>
+    <title data-i18n="canvas.docTitle">Diseñador de transmisiones multieje — TheMechAssist</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Diseñador de transmisiones multieje",
+  "description": "Diseñador multieje de transmisiones con propagación de par y rpm, geometría de correas y validaciones en vivo. Función Pro TheMechAssist.",
+  "url": "https://www.themechassist.com/transmission-canvas.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "EUR",
+    "description": "Requires Pro subscription"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Multi-shaft design, n/T propagation, belt geometry"
+}
+</script>
+</head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -49,12 +76,12 @@
 
     <div id="txPaywall" class="studio-paywall" hidden>
       <div class="studio-paywall__card">
-        <h2 style="margin: 0 0 0.5rem; font-size: 1.1rem">Lienzo técnico — Pro</h2>
-        <p style="margin: 0 0 1rem; font-size: 0.88rem; line-height: 1.5; color: #475569">
+        <h2 style="margin: 0 0 0.5rem; font-size: 1.1rem" data-i18n="canvas.paywallTitle">Lienzo técnico — Pro</h2>
+        <p style="margin: 0 0 1rem; font-size: 0.88rem; line-height: 1.5; color: #475569" data-i18n="canvas.paywallDesc" data-i18n-html>
           Diseño multieje con arrastre, acoplamiento magnético de engranajes, trazado de correa y validaciones orientativas. Registro y paso de pago (simulado en demo) para desbloquear Pro.
         </p>
         <p style="margin: 0 0 0.75rem; font-size: 0.82rem">
-          <button type="button" id="txActivateDemo" class="lab-btn" style="width: 100%; margin-bottom: 0.65rem">Continuar con Pro</button>
+          <button type="button" id="txActivateDemo" class="lab-btn" style="width: 100%; margin-bottom: 0.65rem" data-i18n="canvas.paywallBtn">Continuar con Pro</button>
           <span style="color: #64748b">Sin cuenta: registro y luego checkout. Solo esta pestaña, sin guardar licencia:</span>
           <a href="transmission-canvas.html?pro=1" style="font-weight: 700; color: #0d9488">?pro=1</a>
           <span style="color: #64748b"> en la URL.</span>
@@ -76,9 +103,9 @@
 
       <div class="tx-workspace-head">
         <div class="tx-tabs" role="tablist" aria-label="Área de trabajo">
-          <button type="button" class="tx-tab tx-tab--active" role="tab" aria-selected="true" data-tx-tab="gears" id="txTabGears">Engranajes</button>
-          <button type="button" class="tx-tab" role="tab" aria-selected="false" data-tx-tab="belts" id="txTabBelts">Poleas y correas</button>
-          <button type="button" class="tx-tab" role="tab" aria-selected="false" data-tx-tab="chains" id="txTabChains">Piñones y cadenas</button>
+          <button type="button" class="tx-tab tx-tab--active" role="tab" aria-selected="true" data-tx-tab="gears" id="txTabGears" data-i18n="canvas.tabGears">Engranajes</button>
+          <button type="button" class="tx-tab" role="tab" aria-selected="false" data-tx-tab="belts" id="txTabBelts" data-i18n="canvas.tabBelts">Poleas y correas</button>
+          <button type="button" class="tx-tab" role="tab" aria-selected="false" data-tx-tab="chains" id="txTabChains" data-i18n="canvas.tabChains">Piñones y cadenas</button>
         </div>
         <div class="tx-motor-dashboard">
           <div class="tx-motor-dashboard__card">
@@ -91,7 +118,7 @@
                 </svg>
               </span>
               <div class="lab-field tx-motor-dashboard__input">
-                <label for="txN0">n motor (rpm)</label>
+                <label for="txN0" data-i18n="canvas.labelN0">n motor (rpm)</label>
                 <input id="txN0" type="number" min="1" step="any" value="1455" />
               </div>
             </div>
@@ -104,15 +131,19 @@
                 </svg>
               </span>
               <div class="lab-field tx-motor-dashboard__input">
-                <label for="txT0">T motor (N·m)</label>
+                <label for="txT0" data-i18n="canvas.labelT0">T motor (N·m)</label>
                 <input id="txT0" type="number" min="0.01" step="any" value="28" />
               </div>
             </div>
           </div>
           <div class="tx-motor-dashboard__actions">
-            <button type="button" class="lab-btn tx-btn--secondary" id="txMarkMotor">Marcar motor</button>
-            <button type="button" class="lab-btn tx-btn--report" id="txSendReport">Enviar informe técnico</button>
-            <button type="button" class="lab-btn tx-btn--secondary" id="txCloudSave">Guardar en la nube</button>
+            <button type="button" class="lab-btn tx-btn--ghost" id="txLoadExample" data-i18n="canvas.btnLoadExample">Cargar ejemplo</button>
+            <button type="button" class="lab-btn tx-btn--secondary" id="txMarkMotor" data-i18n="canvas.btnMarkMotor">Marcar motor</button>
+            <button type="button" class="lab-btn tx-btn--report" id="txSendReport" data-i18n="canvas.btnSendReport">Enviar informe técnico</button>
+            <button type="button" class="lab-btn tx-btn--secondary" id="txCloudSave" data-i18n="canvas.btnCloudSave">Guardar en la nube</button>
+            <button type="button" class="lab-btn tx-btn--ghost" id="txExportJson" data-i18n="canvas.btnExportJson" title="Descargar esquema como archivo JSON">Exportar JSON</button>
+            <button type="button" class="lab-btn tx-btn--ghost" id="txImportJson" data-i18n="canvas.btnImportJson" title="Cargar esquema desde archivo JSON">Importar JSON</button>
+            <input type="file" id="txImportFile" accept=".json,application/json" style="display:none" aria-hidden="true" />
           </div>
         </div>
       </div>
@@ -131,11 +162,11 @@
               <strong>Cerrar correa</strong> pasa a sólido. «Elegir orden» + <strong>clic corto</strong> por polea para secuencia manual.
             </p>
             <div class="tx-toolbar__row tx-toolbar__row--wrap">
-              <button type="button" class="lab-btn tx-btn--secondary" id="txBeltMode">Elegir orden correa</button>
-              <button type="button" class="lab-btn tx-btn--secondary" id="txBeltManual">Trazado manual tangente</button>
+              <button type="button" class="lab-btn tx-btn--secondary" id="txBeltMode" data-i18n="canvas.btnBeltMode">Elegir orden correa</button>
+              <button type="button" class="lab-btn tx-btn--secondary" id="txBeltManual" data-i18n="canvas.btnBeltManual">Trazado manual tangente</button>
             </div>
             <div class="tx-toolbar__row tx-toolbar__row--wrap">
-              <label class="tx-belt-kind-label" for="txBeltKind">Tipo de correa</label>
+              <label class="tx-belt-kind-label" for="txBeltKind" data-i18n="canvas.labelBeltKind">Tipo de correa</label>
               <select id="txBeltKind" class="tx-belt-kind-select">
                 <option value="v">Trapezoidal (V)</option>
                 <option value="sync">Síncrona (dentada)</option>
@@ -143,11 +174,11 @@
               </select>
             </div>
             <div class="tx-toolbar__row tx-toolbar__row--wrap" id="txSyncPitchRow">
-              <label class="tx-belt-kind-label" for="txSyncPitch">Paso síncrono p (mm)</label>
+              <label class="tx-belt-kind-label" for="txSyncPitch" data-i18n="canvas.labelSyncPitch">Paso síncrono p (mm)</label>
               <input id="txSyncPitch" type="number" min="2" step="0.5" value="8" class="tx-sync-pitch-input" />
             </div>
             <div class="tx-toolbar__row tx-toolbar__row--wrap">
-              <button type="button" class="lab-btn" id="txFinishBelt">Cerrar correa</button>
+              <button type="button" class="lab-btn" id="txFinishBelt" data-i18n="canvas.btnFinishBelt">Cerrar correa</button>
             </div>
             <p id="txPickHint" class="tx-pick-hint"></p>
           </div>
@@ -159,8 +190,8 @@
               <strong>clic corto</strong> define la secuencia.
             </p>
             <div class="tx-toolbar__row">
-              <button type="button" class="lab-btn tx-btn--secondary" id="txChainMode">Elegir orden cadena</button>
-              <button type="button" class="lab-btn" id="txFinishChain">Cerrar cadena</button>
+              <button type="button" class="lab-btn tx-btn--secondary" id="txChainMode" data-i18n="canvas.btnChainMode">Elegir orden cadena</button>
+              <button type="button" class="lab-btn" id="txFinishChain" data-i18n="canvas.btnFinishChain">Cerrar cadena</button>
             </div>
             <p id="txPickHintChain" class="tx-pick-hint"></p>
           </div>
@@ -176,14 +207,14 @@
               <button type="button" class="lab-btn tx-btn--ghost tx-zoom-fit" id="txZoomFit" title="Encajar vista">Encajar</button>
             </div>
           </div>
-          <p class="tx-canvas-hint">Rueda: zoom · Flechas: pan · Espacio <strong>2400×1400 mm</strong>. Clic = selección y arrastre · <strong>doble clic</strong> = panel de propiedades (no bloquea «Marcar motor»).</p>
+          <p class="tx-canvas-hint" data-i18n="canvas.canvasHint" data-i18n-html>Rueda: zoom · Flechas: pan · Espacio <strong>2400×1400 mm</strong>. Clic = selección y arrastre · <strong>doble clic</strong> = panel de propiedades (no bloquea «Marcar motor»).</p>
           <div class="tx-canvas-stack">
             <div id="txBeltEngHud" class="tx-belt-eng-hud" hidden aria-live="polite"></div>
             <div class="tx-float-toolbar" role="toolbar" aria-label="Herramientas del lienzo">
-              <button type="button" class="tx-float-toolbar__btn" id="txAddGear" title="Añadir engranaje">⌗</button>
-              <button type="button" class="tx-float-toolbar__btn" id="txAddPulley" title="Añadir polea">◎</button>
-              <button type="button" class="tx-float-toolbar__btn" id="txAddSprocket" title="Añadir piñón">⛓</button>
-              <button type="button" class="tx-float-toolbar__btn tx-float-toolbar__btn--wide" id="txClearActiveTab" title="Vaciar área actual">Limpiar</button>
+              <button type="button" class="tx-float-toolbar__btn" id="txAddGear" title="Añadir engranaje" data-i18n-attrs="title=canvas.tipAddGear">⌗</button>
+              <button type="button" class="tx-float-toolbar__btn" id="txAddPulley" title="Añadir polea" data-i18n-attrs="title=canvas.tipAddPulley">◎</button>
+              <button type="button" class="tx-float-toolbar__btn" id="txAddSprocket" title="Añadir piñón" data-i18n-attrs="title=canvas.tipAddSprocket">⛓</button>
+              <button type="button" class="tx-float-toolbar__btn tx-float-toolbar__btn--wide" id="txClearActiveTab" title="Vaciar área actual" data-i18n-attrs="title=canvas.tipClear">Limpiar</button>
             </div>
             <div class="tx-svg-wrap" id="txSvgWrap" tabindex="0">
               <svg id="txSvg" xmlns="http://www.w3.org/2000/svg" aria-label="Lienzo de transmisión" class="tx-svg tx-svg--blueprint"></svg>
@@ -192,17 +223,17 @@
         </section>
 
         <aside class="lab-panel tx-hud">
-          <h2 class="studio-aside-title">Chequeo de entradas</h2>
+          <h2 class="studio-aside-title" data-i18n="canvas.hudInputChecks">Chequeo de entradas</h2>
           <div id="txInputChecks" class="tx-checks"></div>
           <details class="tx-formulas-details">
-            <summary class="studio-aside-title">Fórmulas en vivo</summary>
+            <summary class="studio-aside-title" data-i18n="canvas.hudFormulas">Fórmulas en vivo</summary>
             <div id="txFormulas" class="tx-formulas"></div>
           </details>
-          <h2 class="studio-aside-title" style="margin-top: 1rem">Veredicto</h2>
+          <h2 class="studio-aside-title" style="margin-top: 1rem" data-i18n="canvas.hudVerdict">Veredicto</h2>
           <div id="txVerdict" class="tx-verdict-strip tx-verdict-strip--ok"></div>
           <h2 class="studio-aside-title" style="margin-top: 1rem">Resultados por elemento</h2>
           <div id="txElementResults" class="tx-element-grid"></div>
-          <h2 class="studio-aside-title" style="margin-top: 1rem">Correas y cadenas</h2>
+          <h2 class="studio-aside-title" style="margin-top: 1rem" data-i18n="canvas.hudRuns">Correas y cadenas</h2>
           <div id="txRunResults" class="tx-checks"></div>
           <p class="tx-small-print" style="margin-top: 0.75rem">
             Modelos simplificados (Lewis/Hertz orientativos, longitudes comerciales demo, carga cadena estimada). Valide siempre con normas ISO/AGMA y catálogo del fabricante.
@@ -214,7 +245,7 @@
         <button type="button" class="tx-drawer__backdrop" id="txDrawerBackdrop" tabindex="-1" aria-label="Cerrar panel de propiedades"></button>
         <aside class="tx-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="txDrawerTitle">
           <div class="tx-drawer__head">
-            <h2 id="txDrawerTitle" class="tx-drawer__title">Propiedades del elemento</h2>
+            <h2 id="txDrawerTitle" class="tx-drawer__title" data-i18n="canvas.drawerTitle">Propiedades del elemento</h2>
             <button type="button" class="tx-drawer__close" id="txDrawerClose" aria-label="Cerrar">×</button>
           </div>
           <div id="txProps" class="tx-drawer__body"></div>

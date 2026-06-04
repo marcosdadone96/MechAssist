@@ -92,6 +92,13 @@ export const MACHINE_HUB_UX_EN = {
   'machineHub.nextStepsPumpLi3Html':
     '<a href="calc-hydraulic-pump.html">Hydraulic pump</a> \u2014 if you also need to size the circuit pump.',
 
+  'machineHub.nextStepsExtruderLi1Html':
+    '<a href="calc-gears.html">Electric motor drive</a> \u2014 size the drive using the calculated power.',
+  'machineHub.nextStepsExtruderLi2Html':
+    '<a href="calc-shaft.html">Shaft \u00b7 torsion</a> \u2014 calculate the screw shaft under extrusion torque.',
+  'machineHub.nextStepsExtruderLi3Html':
+    '<a href="calc-bearings.html">Bearings \u00b7 L10</a> \u2014 thrust bearing absorbing screw reaction force.',
+
   'machineHub.uxPresetsTitle': 'Typical cases (one click)',
   'machineHub.uxPresetsLead':
     'Fills coherent example values for a quick RFQ; you can fine-tune afterwards.',

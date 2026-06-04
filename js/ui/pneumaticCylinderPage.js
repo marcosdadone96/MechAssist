@@ -2,6 +2,7 @@ import {
   bindInputValidation,
   mountLabPresetsBar,
   revalidateAllBoundInputs,
+  renderResultHero,
   syncInputValidationResultsGate,
   updateLabShareVisibility,
   wireLabCopyLink,
@@ -667,7 +668,11 @@ function renderCylinderDiagram(svg, strokeMm, rodMm, boreMm, cylinderType = 'dou
 }
 
 function computeAndRenderCore() {
-  if (syncInputValidationResultsGate(document.getElementById('pcResults'))) return;
+  const hero = document.getElementById('pcHero');
+  if (syncInputValidationResultsGate(document.getElementById('pcResults'))) {
+    if (hero instanceof HTMLElement) hero.innerHTML = '';
+    return;
+  }
   const calcMode = document.getElementById('pcMode') instanceof HTMLSelectElement
     ? document.getElementById('pcMode').value
     : 'design';
@@ -740,6 +745,7 @@ function computeAndRenderCore() {
 
   if (errors.length) {
     results.innerHTML = '';
+    if (hero instanceof HTMLElement) hero.innerHTML = '';
     updateLabShareVisibility('pcShareLinkWrap', 'pcResults');
     if (formulaBody instanceof HTMLElement) formulaBody.innerHTML = '';
     if (rodThreadInfo instanceof HTMLElement) rodThreadInfo.textContent = '';
@@ -804,6 +810,24 @@ function computeAndRenderCore() {
 
   syncPcDiagramLegend(cylinderType);
   renderCylinderDiagram(document.getElementById('pcDiagram'), strokeMm, rodMm, boreMm, cylinderType);
+
+  const Fa = forceRealAdvN;
+  const Qair = nlMin;
+  if (hero instanceof HTMLElement) {
+    hero.innerHTML = renderResultHero(
+      [
+        {
+          label: pcLang() === 'en' ? 'Advance force F_a' : 'Fuerza avance F_a',
+          display: `${Fa.toFixed(0)} N`,
+        },
+        {
+          label: pcLang() === 'en' ? 'Air consumption' : 'Consumo aire',
+          display: `${Qair.toFixed(1)} Nl/min`,
+        },
+      ],
+      { verdict: Fa > 0 && Qair > 0 ? 'ok' : 'warn' },
+    );
+  }
 
   const estSpeed = (2 * strokeM * cyclesMin) / 60;
 

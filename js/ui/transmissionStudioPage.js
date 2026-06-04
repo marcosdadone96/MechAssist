@@ -2,6 +2,9 @@
  * Estudio modular Pro: lienzo con arrastre, N poleas / N ruedas cadena / tren reconfigurable.
  */
 
+import { getCurrentLang } from '../config/locales.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { STUDIO_EN } from '../lab/i18n/pages/studioEn.js';
 import { insertCalculoMecanico } from '../services/calculosMecanicosSave.js';
 import { renderStudioSchematic } from './studioSchematic.js';
 import {
@@ -22,6 +25,11 @@ import {
 } from '../lab/studioKinematics.js';
 
 const DND_TYPE = 'application/x-mdt-studio';
+
+/** @param {string} es @param {string} en */
+function st(es, en) {
+  return getCurrentLang() === 'en' ? en : es;
+}
 
 /** @typedef {{ id: number; type: 'gear_train'; module_mm: number; gears: { z: number }[] }} GearTrainStage */
 /** @typedef {{ id: number; type: 'belt'; d1?: number; d2?: number; center_mm?: number; pulleys?: { d: number }[]; spans_mm?: number[] }} BeltStage */
@@ -50,24 +58,33 @@ function readN0() {
 function labelForStage(s) {
   if (s.type === 'gear_train') {
     const zs = s.gears.map((g) => g.z).join(' · ');
-    return `Tren m=${s.module_mm} mm · ${s.gears.length} ruedas · z: ${zs}`;
+    return st(
+      `Tren m=${s.module_mm} mm · ${s.gears.length} ruedas · z: ${zs}`,
+      `Gear train m=${s.module_mm} mm · ${s.gears.length} gears · z: ${zs}`,
+    );
   }
   if (s.type === 'belt') {
     normalizeBeltStage(s);
     const ds = s.pulleys.map((p) => p.d.toFixed(0)).join(', ');
     const cs = s.spans_mm.map((c) => Number(c).toFixed(0)).join(', ');
-    return `Correa ${s.pulleys.length} poleas · Ø mm: ${ds} · C mm: ${cs}`;
+    return st(
+      `Correa ${s.pulleys.length} poleas · Ø mm: ${ds} · C mm: ${cs}`,
+      `Belt ${s.pulleys.length} pulleys · Ø mm: ${ds} · C mm: ${cs}`,
+    );
   }
   normalizeChainStage(s);
   const zs = s.sprockets.map((g) => g.z).join(', ');
   const cs = s.spans_mm.map((c) => Number(c).toFixed(0)).join(', ');
-  return `Cadena ${s.sprockets.length} ruedas · z: ${zs} · C mm: ${cs}`;
+  return st(
+    `Cadena ${s.sprockets.length} ruedas · z: ${zs} · C mm: ${cs}`,
+    `Chain ${s.sprockets.length} sprockets · z: ${zs} · C mm: ${cs}`,
+  );
 }
 
 function shortTimelineLabel(s) {
-  if (s.type === 'gear_train') return 'Tren';
-  if (s.type === 'belt') return 'Correa';
-  return 'Cadena';
+  if (s.type === 'gear_train') return st('Tren', 'Train');
+  if (s.type === 'belt') return st('Correa', 'Belt');
+  return st('Cadena', 'Chain');
 }
 
 function addStageByType(t) {
@@ -125,12 +142,12 @@ function updateDropZoneChrome() {
   const hint = dz.querySelector('.studio-dropzone__hint');
   if (stages.length) {
     dz.classList.add('studio-dropzone--has-stages');
-    if (title) title.textContent = 'Suelte otra ficha para añadir al final';
-    if (hint) hint.textContent = 'Reordene las etapas arrastrando las pastillas de la cinta inferior.';
+    if (title) title.textContent = st('Suelte otra ficha para añadir al final', STUDIO_EN['studio.dropTitleMore']);
+    if (hint) hint.textContent = st('Reordene las etapas arrastrando las pastillas de la cinta inferior.', STUDIO_EN['studio.dropHintMore']);
   } else {
     dz.classList.remove('studio-dropzone--has-stages');
-    if (title) title.textContent = 'Suelte aquí un componente';
-    if (hint) hint.textContent = 'O haga clic en una ficha de la paleta (acceso rápido).';
+    if (title) title.textContent = st('Suelte aquí un componente', STUDIO_EN['studio.dropTitleEmpty']);
+    if (hint) hint.textContent = st('O haga clic en una ficha de la paleta (acceso rápido).', STUDIO_EN['studio.dropHintEmpty']);
   }
 }
 
@@ -250,14 +267,29 @@ function updateSummary() {
 
   /** @type {Array<{level:'ok'|'warn'|'err', text:string}>} */
   const checks = [];
-  if (!(Number.isFinite(n0) && n0 > 0)) checks.push({ level: 'err', text: 'n entrada debe ser mayor que 0 rpm.' });
-  if (!stages.length) checks.push({ level: 'warn', text: 'No hay etapas en el lienzo.' });
+  if (!(Number.isFinite(n0) && n0 > 0)) checks.push({ level: 'err', text: st('n entrada debe ser mayor que 0 rpm.', STUDIO_EN['studio.checkN0']) });
+  if (!stages.length) checks.push({ level: 'warn', text: st('No hay etapas en el lienzo.', STUDIO_EN['studio.checkNoStages']) });
   for (const s of stages) {
-    if (s.type === 'gear_train' && s.gears.some((g) => !Number.isFinite(g.z) || g.z < 6)) checks.push({ level: 'err', text: `Tren ${s.id}: dientes inválidos (z < 6).` });
-    if (s.type === 'belt' && s.pulleys.some((p) => !Number.isFinite(p.d) || p.d <= 0)) checks.push({ level: 'err', text: `Correa ${s.id}: diámetros inválidos.` });
-    if (s.type === 'chain' && s.sprockets.some((sp) => !Number.isFinite(sp.z) || sp.z < 6)) checks.push({ level: 'err', text: `Cadena ${s.id}: dientes inválidos (z < 6).` });
+    if (s.type === 'gear_train' && s.gears.some((g) => !Number.isFinite(g.z) || g.z < 6)) {
+      checks.push({
+        level: 'err',
+        text: st(`Tren ${s.id}: dientes inválidos (z < 6).`, STUDIO_EN['studio.checkGearZ'].replace('{id}', String(s.id))),
+      });
+    }
+    if (s.type === 'belt' && s.pulleys.some((p) => !Number.isFinite(p.d) || p.d <= 0)) {
+      checks.push({
+        level: 'err',
+        text: st(`Correa ${s.id}: diámetros inválidos.`, STUDIO_EN['studio.checkBeltD'].replace('{id}', String(s.id))),
+      });
+    }
+    if (s.type === 'chain' && s.sprockets.some((sp) => !Number.isFinite(sp.z) || sp.z < 6)) {
+      checks.push({
+        level: 'err',
+        text: st(`Cadena ${s.id}: dientes inválidos (z < 6).`, STUDIO_EN['studio.checkChainZ'].replace('{id}', String(s.id))),
+      });
+    }
   }
-  if (!checks.length) checks.push({ level: 'ok', text: 'Entradas coherentes. Cálculo resuelto.' });
+  if (!checks.length) checks.push({ level: 'ok', text: st('Entradas coherentes. Cálculo resuelto.', STUDIO_EN['studio.checkOk']) });
 
   function stageElementsHtml(r) {
     const s = r.stage;
@@ -268,7 +300,7 @@ function updateSummary() {
           const zPrev = s.gears[idx - 1].z;
           nCurrent = -(nCurrent * zPrev) / g.z;
         }
-        return `<div class="studio-stage-el"><div class="studio-stage-el__t">Rueda ${idx + 1}</div><div class="studio-stage-el__v">z=${g.z}<br>n=${nCurrent.toFixed(1)} rpm</div></div>`;
+        return `<div class="studio-stage-el"><div class="studio-stage-el__t">${esc(st(`Rueda ${idx + 1}`, STUDIO_EN['studio.wheelN'].replace('{n}', String(idx + 1))))}</div><div class="studio-stage-el__v">z=${g.z}<br>n=${nCurrent.toFixed(1)} rpm</div></div>`;
       });
       return `<div class="studio-stage-elements">${els.join('')}</div>`;
     }
@@ -276,7 +308,7 @@ function updateSummary() {
       const d1 = s.pulleys[0]?.d || 1;
       const els = s.pulleys.map((p, idx) => {
         const nEl = r.n_in * (d1 / Math.max(1, p.d));
-        return `<div class="studio-stage-el"><div class="studio-stage-el__t">Polea ${idx + 1}</div><div class="studio-stage-el__v">D=${p.d.toFixed(0)} mm<br>n=${nEl.toFixed(1)} rpm</div></div>`;
+        return `<div class="studio-stage-el"><div class="studio-stage-el__t">${esc(st(`Polea ${idx + 1}`, STUDIO_EN['studio.pulleyN'].replace('{n}', String(idx + 1))))}</div><div class="studio-stage-el__v">D=${p.d.toFixed(0)} mm<br>n=${nEl.toFixed(1)} rpm</div></div>`;
       });
       return `<div class="studio-stage-elements">${els.join('')}</div>`;
     }
@@ -290,8 +322,10 @@ function updateSummary() {
 
   if (cardsEl) {
     if (!rows.length) {
-      cardsEl.innerHTML =
-        '<div class="studio-empty-results">Arrastre componentes al lienzo para ver velocidades, relaciones <em>i</em> y el producto cinemático.</div>';
+      cardsEl.innerHTML = `<div class="studio-empty-results">${st(
+        'Arrastre componentes al lienzo para ver velocidades, relaciones <em>i</em> y el producto cinemático.',
+        'Drag components to the canvas to see speeds, ratios <em>i</em> and the kinematic product.',
+      )}</div>`;
     } else {
       const stageBlocks = rows
         .map(
@@ -302,7 +336,7 @@ function updateSummary() {
             <span class="studio-stage-result__title">${esc(labelForStage(r.stage))}</span>
           </div>
           <div class="studio-stage-result__body">
-            <span class="studio-kv"><abbr title="Relación de transmisión">i</abbr> = <strong>${r.ratio.toFixed(4)}</strong></span>
+            <span class="studio-kv"><abbr title="${esc(st('Relación de transmisión', 'Transmission ratio'))}">i</abbr> = <strong>${r.ratio.toFixed(4)}</strong></span>
             <span class="studio-kv"><var>n</var>: <strong>${r.n_in.toFixed(1)}</strong> → <strong>${r.n_out.toFixed(1)}</strong> rpm</span>
           </div>
           ${stageElementsHtml(r)}
@@ -316,17 +350,17 @@ function updateSummary() {
         </div>
         <div class="studio-metric-row">
           <div class="studio-metric-card studio-metric-card--in">
-            <span class="studio-metric-card__label">Entrada</span>
+            <span class="studio-metric-card__label">${esc(st('Entrada', STUDIO_EN['studio.labelEntry']))}</span>
             <span class="studio-metric-card__value">${n0.toFixed(1)}</span>
             <span class="studio-metric-card__unit">rpm</span>
           </div>
           <div class="studio-metric-card studio-metric-card--ratio">
-            <span class="studio-metric-card__label">ω<sub>sal</sub>/ω<sub>ent</sub></span>
+            <span class="studio-metric-card__label">${st('ω<sub>sal</sub>/ω<sub>ent</sub>', STUDIO_EN['studio.labelTotalRatio'])}</span>
             <span class="studio-metric-card__value">${total_ratio.toFixed(4)}</span>
             <span class="studio-metric-card__unit">—</span>
           </div>
           <div class="studio-metric-card studio-metric-card--out">
-            <span class="studio-metric-card__label">Salida</span>
+            <span class="studio-metric-card__label">${esc(st('Salida', STUDIO_EN['studio.labelExit']))}</span>
             <span class="studio-metric-card__value">${n_final.toFixed(1)}</span>
             <span class="studio-metric-card__unit">rpm</span>
           </div>
@@ -412,8 +446,8 @@ function render() {
             <div style="display:flex;align-items:flex-end">
               ${
                 s.gears.length > 2
-                  ? `<button type="button" class="studio-remove-gear" data-rm-gear="${s.id}" data-idx="${idx}" style="font-size:0.65rem;padding:0.25rem 0.5rem;border:1px solid #fca5a5;background:#fef2f2;color:#991b1b;border-radius:4px;cursor:pointer">Quitar</button>`
-                  : '<span style="font-size:0.7rem;color:#94a3b8">Mín. 2 ruedas</span>'
+                  ? `<button type="button" class="studio-remove-gear" data-rm-gear="${s.id}" data-idx="${idx}" style="font-size:0.65rem;padding:0.25rem 0.5rem;border:1px solid #fca5a5;background:#fef2f2;color:#991b1b;border-radius:4px;cursor:pointer">${esc(st('Quitar', STUDIO_EN['studio.remove']))}</button>`
+                  : `<span style="font-size:0.7rem;color:#94a3b8">${esc(st('Mín. 2 ruedas', 'Min. 2 gears'))}</span>`
               }
             </div>
           </div>`,
@@ -421,8 +455,8 @@ function render() {
           .join('');
         return `
         <div class="studio-block ${mod}" data-id="${s.id}">
-          <h4>Tren de engranajes <button type="button" class="studio-remove" data-rm="${s.id}">Quitar</button></h4>
-          <p style="margin:0 0 0.5rem;font-size:0.72rem;color:#64748b">Contacto en primitivos · intercale ruedas antes de la salida para tensar o cambiar sentido.</p>
+          <h4>${esc(st('Tren de engranajes', STUDIO_EN['studio.gearTrainTitle']))} <button type="button" class="studio-remove" data-rm="${s.id}">${esc(st('Quitar', STUDIO_EN['studio.remove']))}</button></h4>
+          <p style="margin:0 0 0.5rem;font-size:0.72rem;color:#64748b">${esc(st('Contacto en primitivos · intercale ruedas antes de la salida para tensar o cambiar sentido.', 'Mesh on pitch circles · insert gears before the output to tension or reverse direction.'))}</p>
           <div class="lab-field" style="max-width:160px;margin-bottom:0.5rem">
             <label>m (mm)</label>
             <input type="number" min="0.25" step="0.25" data-k="module_mm" data-id="${s.id}" value="${s.module_mm}" />
@@ -453,8 +487,8 @@ function render() {
           .join('');
         return `
         <div class="studio-block ${mod}" data-id="${s.id}">
-          <h4>Correa (${s.pulleys.length} poleas) <button type="button" class="studio-remove" data-rm="${s.id}">Quitar</button></h4>
-          <p style="margin:0 0 0.5rem;font-size:0.72rem;color:#64748b">Serpentín en el esquema; relación global Ø motriz / Ø conducida. Arrastre en la última polea para el tramo final.</p>
+          <h4>${esc(st(`Correa (${s.pulleys.length} poleas)`, STUDIO_EN['studio.beltTitle'].replace('{n}', String(s.pulleys.length))))} <button type="button" class="studio-remove" data-rm="${s.id}">${esc(st('Quitar', STUDIO_EN['studio.remove']))}</button></h4>
+          <p style="margin:0 0 0.5rem;font-size:0.72rem;color:#64748b">${esc(st('Serpentín en el esquema; relación global Ø motriz / Ø conducida. Arrastre en la última polea para el tramo final.', 'Serpentine in the schematic; overall ratio driver Ø / driven Ø. Drag the last pulley for the final span.'))}</p>
           <div class="lab-grid lab-grid--2">${pulleyFields}${spanFields}</div>
           <div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.35rem">
             <button type="button" data-belt-add-mid="${s.id}" style="font-size:0.72rem;padding:0.35rem 0.6rem;border:1px solid #d97706;background:#fffbeb;border-radius:6px;cursor:pointer;font-weight:600;color:#92400e">+ Polea intermedia</button>
@@ -479,10 +513,10 @@ function render() {
         .join('');
       return `
         <div class="studio-block ${mod}" data-id="${s.id}">
-          <h4>Cadena (${s.sprockets.length} ruedas) <button type="button" class="studio-remove" data-rm="${s.id}">Quitar</button></h4>
-          <p style="margin:0 0 0.5rem;font-size:0.72rem;color:#64748b">Mismo paso en todas las ruedas; primitivos ISO en el dibujo.</p>
+          <h4>${esc(st(`Cadena (${s.sprockets.length} ruedas)`, STUDIO_EN['studio.chainTitle'].replace('{n}', String(s.sprockets.length))))} <button type="button" class="studio-remove" data-rm="${s.id}">${esc(st('Quitar', STUDIO_EN['studio.remove']))}</button></h4>
+          <p style="margin:0 0 0.5rem;font-size:0.72rem;color:#64748b">${esc(st('Mismo paso en todas las ruedas; primitivos ISO en el dibujo.', 'Same pitch on all sprockets; ISO pitch diameters in the drawing.'))}</p>
           <div class="lab-field" style="max-width:140px;margin-bottom:0.5rem">
-            <label>Paso p (mm)</label>
+            <label>${esc(st('Paso p (mm)', `${STUDIO_EN['studio.pitchLabel']} p (mm)`))}</label>
             <input type="number" min="4" step="0.01" data-k="pitch_mm" data-id="${s.id}" value="${s.pitch_mm}" />
           </div>
           <div class="lab-grid lab-grid--2">${sprFields}${cFields}</div>
@@ -741,3 +775,17 @@ document.getElementById('studioCloudSave')?.addEventListener('click', async () =
 
 wireCanvasDnD();
 render();
+
+watchLangAndApply(STUDIO_EN, {
+  reloadOnEs: false,
+  onEnApplied: () => {
+    if (stages.length > 0) render();
+    else updateDropZoneChrome();
+    updateSummary();
+  },
+  onEsRestored: () => {
+    if (stages.length > 0) render();
+    else updateDropZoneChrome();
+    updateSummary();
+  },
+});

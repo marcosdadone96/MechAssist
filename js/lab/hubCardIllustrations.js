@@ -167,6 +167,21 @@ export const HUB_CARD_ART = {
     type: 'svg',
     svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#fdf4ff"/><path d="M28 72c8-28 16-28 24 0s16 28 24 0 16-28 24 0 16 28 24 0" stroke="#a855f7" stroke-width="4" fill="none" stroke-linecap="round"/><rect x="24" y="68" width="112" height="6" rx="2" fill="#c084fc" opacity="0.5"/><rect x="24" y="22" width="112" height="6" rx="2" fill="#c084fc" opacity="0.5"/></svg>`,
   },
+  'calc-beam.html': {
+    theme: 'dynamic',
+    type: 'svg',
+    svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#ecfdf5"/><rect x="18" y="42" width="124" height="14" rx="2" fill="#cbd5e1" stroke="#334155" stroke-width="2.2"/><path d="M80 18v22M73 24l7-7 7 7" stroke="#0f766e" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 56v16M132 56v16" stroke="#0d9488" stroke-width="2.6" stroke-linecap="round"/><path d="M22 74 Q80 88 138 74" stroke="#14b8a6" stroke-width="2.2" fill="none" opacity="0.45"/></svg>`,
+  },
+  'calc-power-screw.html': {
+    theme: 'dynamic',
+    type: 'svg',
+    svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#f0fdfa"/><rect x="72" y="12" width="16" height="72" rx="2" fill="#e2e8f0" stroke="#475569" stroke-width="2"/><path d="M64 22h32M62 34h36M64 46h32M62 58h36M64 70h32" stroke="#0f766e" stroke-width="2.2" stroke-linecap="round"/><rect x="48" y="78" width="64" height="8" rx="2" fill="#94a3b8" stroke="#64748b" stroke-width="1.5"/><path d="M80 6v6" stroke="#0d9488" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+  },
+  'calc-weld-joint.html': {
+    theme: 'join',
+    type: 'svg',
+    svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#fffbeb"/><rect x="20" y="64" width="120" height="12" rx="2" fill="#cbd5e1" stroke="#475569" stroke-width="2"/><rect x="68" y="26" width="24" height="38" rx="1" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/><path d="M68 64 L68 54 L48 64 Z" fill="#d97706" stroke="#b45309" stroke-width="1.8" stroke-linejoin="round"/><path d="M92 64 L112 64 L92 54 Z" fill="#d97706" stroke="#b45309" stroke-width="1.8" stroke-linejoin="round"/><path d="M32 70h96" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/></svg>`,
+  },
   'transmission-canvas.html': {
     theme: 'canvas',
     type: 'svg',
@@ -189,6 +204,11 @@ export const HUB_CARD_ART = {
     theme: 'fluid',
     type: 'svg',
     svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#f0f9ff"/><rect x="28" y="32" width="24" height="40" rx="3" fill="#bae6fd" stroke="#0284c7" stroke-width="2"/><rect x="52" y="44" width="56" height="16" rx="2" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2"/><rect x="108" y="32" width="24" height="40" rx="3" fill="#7dd3fc" stroke="#0369a1" stroke-width="2"/><path d="M40 28h8M112 28h8" stroke="#64748b" stroke-width="2" stroke-linecap="round"/></svg>`,
+  },
+  'calc-pneumatic-compressor.html': {
+    theme: 'fluid',
+    type: 'svg',
+    svg: `<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="96" fill="#f0f9ff"/><rect x="22" y="54" width="116" height="26" rx="6" fill="#bae6fd" stroke="#0284c7" stroke-width="2.2"/><rect x="54" y="28" width="52" height="32" rx="3" fill="#7dd3fc" stroke="#0369a1" stroke-width="2"/><path d="M80 14v14" stroke="#0ea5e9" stroke-width="2.5" stroke-linecap="round"/><path d="M66 18l14 10M94 18L80 28" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/><circle cx="46" cy="72" r="8" fill="#fff" stroke="#0284c7" stroke-width="2"/><circle cx="114" cy="72" r="8" fill="#fff" stroke="#0284c7" stroke-width="2"/><circle cx="46" cy="72" r="3" fill="#64748b"/><circle cx="114" cy="72" r="3" fill="#64748b"/></svg>`,
   },
   'calc-hydraulic-cylinder.html': {
     theme: 'fluid',

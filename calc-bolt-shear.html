@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="bshear.docTitle">Cortante en tornillería — TheMechAssist</title>
-    <meta name="description" data-i18n="bshear.metaDesc" data-i18n-attr="content" content="Cortante, aplastamiento y deslizamiento en uniones atornilladas." />
+    <meta name="description" data-i18n="bshear.metaDesc" data-i18n-attr="content" content="Uniones atornilladas a cortante: tensión de corte, aplastamiento y resistencia al deslizamiento. Clases ISO 898-1 8.8, 10.9, 12.9. Grupos de tornillos con excentricidad. VDI 2230 orientativo." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
@@ -12,13 +12,42 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/calc-bolt-shear.html" />
     <meta property="og:title" data-i18n="bshear.docTitle" data-i18n-attr="content" content="Cortante en tornillería — TheMechAssist" />
-    <meta property="og:description" data-i18n="bshear.metaDesc" data-i18n-attr="content" content="Cortante y aplastamiento en tornillos." />
+    <meta property="og:description" data-i18n="bshear.metaDesc" data-i18n-attr="content" content="Uniones atornilladas a cortante: tensión de corte, aplastamiento y resistencia al deslizamiento. Clases ISO 898-1 8.8, 10.9, 12.9. Grupos de tornillos con excentricidad. VDI 2230 orientativo." />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:description" data-i18n="bshear.metaDesc" data-i18n-attr="content" content="Uniones atornilladas a cortante: tensión de corte, aplastamiento y resistencia al deslizamiento. Clases ISO 898-1 8.8, 10.9, 12.9. Grupos de tornillos con excentricidad. VDI 2230 orientativo." />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Cortante en tornillería",
+  "description": "Uniones atornilladas a cortante: tensión de corte, aplastamiento y resistencia al deslizamiento. Clases ISO 898-1 8.8, 10.9, 12.9. Grupos de tornillos con excentricidad. VDI 2230 orientativo.",
+  "url": "https://www.themechassist.com/calc-bolt-shear.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body class="lab-body">
     <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -59,6 +88,7 @@
             </div>
           </details>
         </header>
+        <div id="bsAdvisorPanel" hidden></div>
         <nav class="lab-next-steps" data-i18n="bshear.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
           <h3 class="lab-next-steps__title" data-i18n="bshear.nextStepsTitle">Siguiente paso habitual</h3>
           <ul class="lab-next-steps__list">
@@ -82,12 +112,12 @@
           <div class="lab-calc-layout__inputs lab-calc-layout__inputs--panel">
             <div class="lab-grid lab-grid--2">
               <div class="lab-field">
-                <label for="bsDiam" data-i18n="bshear.labelDiam">Diámetro nominal d (mm)</label>
+                <label for="bsDiam" data-i18n="bshear.labelDiam">Diámetro nominal d (mm) <span class="info-chip" title="Diámetro nominal del tornillo. M8=8mm, M10=10mm, M12=12mm. El área cortante usa el vástago, no la rosca." aria-label="Ayuda diámetro nominal">?</span></label>
                 <input inputmode="decimal" id="bsDiam" type="number" min="4" step="1" value="12" />
                 <p class="lab-field-help" data-i18n="bshear.helpDiamHtml" data-i18n-html>Área bruta <strong>A = πd²/4</strong>.</p>
               </div>
               <div class="lab-field">
-                <label for="bsClass" data-i18n="bshear.labelClass">Clase ISO</label>
+                <label for="bsClass" data-i18n="bshear.labelClass">Clase ISO <span class="info-chip" title="Clase según ISO 898-1. 8.8: Rm≥800 MPa. 10.9: Rm≥1000 MPa. 12.9: Rm≥1200 MPa." aria-label="Ayuda clase ISO">?</span></label>
                 <select id="bsClass">
                   <option value="4.6">4.6</option>
                   <option value="5.6">5.6</option>
@@ -99,7 +129,7 @@
                 <p class="lab-field-help" data-i18n="bshear.helpClassHtml" data-i18n-html><strong>R_p0,2</strong> y <strong>f_ub</strong> (ISO 898-1).</p>
               </div>
               <div class="lab-field">
-                <label for="bsN" data-i18n="bshear.labelN">Nº de tornillos n</label>
+                <label for="bsN" data-i18n="bshear.labelN">Nº de tornillos n <span class="info-chip" title="Número total de tornillos del grupo. La fuerza se reparte a partes iguales (modelo rígido)." aria-label="Ayuda número de tornillos">?</span></label>
                 <input id="bsN" type="number" min="1" max="24" value="4" />
                 <p class="lab-field-help" data-i18n="bshear.helpNHtml" data-i18n-html>Tornillos en el patrón.</p>
               </div>
@@ -112,12 +142,12 @@
                 <p class="lab-field-help" data-i18n="bshear.helpShearPlanesHtml" data-i18n-html>Simple o doble corte por tornillo.</p>
               </div>
               <div class="lab-field">
-                <label for="bsForce" data-i18n="bshear.labelForce">Fuerza de corte total F</label>
+                <label for="bsForce" data-i18n="bshear.labelForce">Fuerza de corte total F <span class="info-chip" title="Fuerza cortante total sobre el grupo. Si hay excentricidad, incluya el par como fuerza equivalente en el tornillo más solicitado." aria-label="Ayuda fuerza de corte">?</span></label>
                 <input inputmode="decimal" id="bsForce" type="number" min="0" value="20000" />
                 <p class="lab-field-help" data-i18n="bshear.helpForceHtml" data-i18n-html>Cortante total en la unión.</p>
               </div>
               <div class="lab-field">
-                <label for="bsThickness" data-i18n="bshear.labelThickness">Espesor chapas t (mm)</label>
+                <label for="bsThickness" data-i18n="bshear.labelThickness">Espesor chapas t (mm) <span class="info-chip" title="Espesor de la placa más delgada en la zona de aplastamiento (bearing)." aria-label="Ayuda espesor de chapas">?</span></label>
                 <input inputmode="decimal" id="bsThickness" type="number" min="0.5" value="10" />
                 <p class="lab-field-help" data-i18n="bshear.helpThicknessHtml" data-i18n-html>Espesor para aplastamiento.</p>
               </div>
@@ -179,6 +209,7 @@
                 <button type="button" class="lab-btn lab-btn--block" id="bsCopyResults" data-i18n="bshear.copyResults">Copiar resultados</button>
               </div>
             </div>
+            <div id="labPurchaseSuggestions" hidden></div>
             <div class="lab-results-share lab-results-share--footer" id="bsShareLinkWrap" aria-live="polite">
               <button type="button" class="lab-btn lab-btn--text" id="bsCopyLinkBtn" data-i18n="bshear.copyLink">Copiar enlace</button>
               <span class="lab-copy-toast" id="bsCopyToast" role="status" data-i18n="bshear.copyToast">¡Enlace copiado!</span>

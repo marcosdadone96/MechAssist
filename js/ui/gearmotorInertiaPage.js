@@ -9,17 +9,20 @@ import {
   mountLabPresetsBar,
   renderMotorPowerRuler,
   renderResultHero,
+  renderLabAdvisorInsights,
   syncInputValidationResultsGate,
   wireLabCopyLink,
   wireLabCopyResultsButton,
 } from './labCalcUx.js';
 import { mountCompactLabFieldHelp } from './labHelpCompact.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { collectLabInputRows, collectLabResultRows } from '../services/labPdfPayload.js';
 import { withCalcCredits } from '../services/creditSession.js';
 import { isCreditsSystemEnabled } from '../config/credits.js';
 import { getLabLang } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { GEARMOTOR_INERTIA_EN } from '../lab/i18n/pages/gearmotorInertiaEn.js';
+import { buildGearmotorAdvisorInsights } from '../services/iaAdvisor.js';
 
 function bx(es, en) {
   return getLabLang() === 'en' ? en : es;
@@ -151,6 +154,7 @@ function render() {
     if (gmHero) gmHero.innerHTML = '';
     const gmMotorRuler = document.getElementById('gmMotorRuler');
     if (gmMotorRuler) gmMotorRuler.innerHTML = '';
+    renderLabAdvisorInsights('gmAdvisorPanel', []);
     return;
   }
   const Jload = parseFloat(document.getElementById('gmJload')?.value || '');
@@ -234,6 +238,12 @@ function render() {
       <div class="gm-summary-item ${okJ ? 'gm-summary-item--ok' : 'gm-summary-item--err'}">${okJ ? '✓' : '✗'} ${bx('Relación de inercias:', 'Inertia ratio:')} Jext/Jmot = ${ratio.toFixed(2)} (${bx('límite', 'limit')} ${motor.J_ratio_max})</div>
       <div class="gm-summary-item ${okT ? 'gm-summary-item--ok' : 'gm-summary-item--err'}">${okT ? '✓' : '✗'} ${bx('Par disponible:', 'Available torque:')} Tm(${nOp.toFixed(0)} rpm) = ${Tm.toFixed(2)} N·m ${bx('vs T carga =', 'vs load T =')} ${Tload.toFixed(2)} N·m</div>
     </div>`;
+
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  renderLabAdvisorInsights(
+    'gmAdvisorPanel',
+    buildGearmotorAdvisorInsights({ J_ratio: ratio, lang: advLang }, { lang: advLang }),
+  );
 }
 
 renderInertiaTransmissionLine(document.getElementById('gmLineDiagram'));
@@ -330,9 +340,21 @@ wireLabCopyLink('gmCopyLinkBtn', 'gmCopyToast');
 
 revalidateAllBoundInputs();
 scheduleGmRender();
-mountLabCloudSaveBar(bx('Inercia motor / carga', 'Motor / load inertia'), {
-  norm: 'Relación J_ext/J_mot · curva de par estimada',
+function buildInputsArray() {
+  return collectLabInputRows(document.querySelector('main'));
+}
+
+function buildResultsArray() {
+  return collectLabResultRows(document.querySelector('main'));
+}
+
+mountLabCloudSaveBar(bx('Inercia motorreductor', 'Gearmotor inertia'), {
+  norm: 'Principio de d\'Alembert \u00b7 inercia reflejada',
   svgSelector: '#gmLineDiagram, #gmChart',
+  getData: () => ({
+    inputs: buildInputsArray(),
+    results: buildResultsArray(),
+  }),
 });
 watchLangAndApply(GEARMOTOR_INERTIA_EN, {
   reloadOnEs: false,

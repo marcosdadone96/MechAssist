@@ -27,6 +27,62 @@ import { insertCalculoMecanico } from '../services/calculosMecanicosSave.js';
 import { showToast } from './toast.js';
 import { CHAIN_CATALOG, chainAssemblyHints, getChainById } from '../lab/chainCatalog.js';
 import { filterChainCatalogRows } from '../data/commerceCatalog.js';
+import { getCurrentLang } from '../config/locales.js';
+import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
+import { CANVAS_EN } from '../lab/i18n/pages/canvasEn.js';
+
+/** Textos ES de fallback para UI dinámica del lienzo. */
+const CV_ES = {
+  'canvas.hudNoElements': 'Sin elementos para mostrar.',
+  'canvas.hudNoBelts': 'Sin correas cerradas. Elija tipo y pulse «Cerrar correa».',
+  'canvas.hudNoChains': 'Sin cadenas cerradas. Use "Cerrar cadena".',
+  'canvas.hudSwitchTab': 'Cambie a Poleas/correas o Piñones/cadenas para ver longitudes.',
+  'canvas.kindGear': 'Rueda',
+  'canvas.kindPulley': 'Polea',
+  'canvas.kindSprocket': 'Piñón',
+  'canvas.menuMotor': 'Marcar como motriz',
+  'canvas.menuIdler': 'Convertir en tensora',
+  'canvas.menuDelete': 'Eliminar',
+  'canvas.pickBeltHint':
+    'Orden de correa: [{ids}]{man} — elija tipo y pulse «Cerrar correa». Clic corto = añadir; arrastre = mover.',
+  'canvas.pickBeltStart': 'Pulse «Elegir orden correa» y haga clic corto en cada polea en secuencia.',
+  'canvas.pickChainHint': 'Orden de cadena: [{ids}] — pulse «Cerrar cadena».',
+  'canvas.pickChainStart': 'Pulse «Elegir orden cadena» para encadenar piñones con clics cortos.',
+  'canvas.verdictOk': 'Sin advertencias',
+  'canvas.verdictWarn': 'Advertencias — revise los elementos marcados',
+  'canvas.verdictErr': 'Error — revise los elementos marcados',
+  'canvas.autoCorrect': 'Corregir módulo automáticamente',
+  'canvas.autoCorrectTangents': 'Auto-corregir tangentes',
+  'canvas.propsNone': 'Doble clic en un elemento del lienzo para editar propiedades.',
+  'canvas.propsSelect': 'Seleccione un elemento en el lienzo.',
+  'canvas.propsBtnMotor': 'Definir como Entrada (Motor)',
+  'canvas.commOk': 'Longitud comercial OK',
+  'canvas.commDelta': 'Comercial más cercana: {L} mm (Δ{d} mm)',
+  'canvas.zoomFit': 'Encajar',
+  'canvas.formulaNoMotor': 'Defina un **motor**: seleccione un elemento y pulse Marcar motor.',
+  'canvas.canvasHint':
+    'Rueda: zoom · Flechas: pan · Espacio 2400×1400 mm. Clic = selección y arrastre · doble clic = panel de propiedades.',
+  'canvas.labelZ': 'Número de dientes z',
+  'canvas.labelModule': 'Módulo m (mm)',
+  'canvas.labelFaceWidth': 'Ancho de cara b (mm)',
+  'canvas.labelDiameter': 'Diámetro d (mm)',
+  'canvas.btnLoadExample': 'Cargar ejemplo',
+  'canvas.btnExportJson': 'Exportar JSON',
+  'canvas.btnImportJson': 'Importar JSON',
+};
+
+/** @param {string} key @param {Record<string, string>} [params] */
+function cv(key, params = {}) {
+  const text = getCurrentLang() === 'en' ? CANVAS_EN[key] || key : CV_ES[key] || key;
+  return String(text).replace(/\{(\w+)\}/g, (_, k) => params[k] ?? '');
+}
+
+function beltCommStatusTxt(comm) {
+  if (!comm) return 'n/a';
+  return comm.ok
+    ? cv('canvas.commOk')
+    : cv('canvas.commDelta', { L: comm.L_nom.toFixed(0), d: comm.delta_mm.toFixed(1) });
+}
 
 /** @type {'gears'|'belts'|'chains'} */
 let activeTab = 'gears';
@@ -50,7 +106,395 @@ let manualEdgeSigns = [];
 
 const BASE_W = 2400;
 const BASE_H = 1400;
+const TX_ONBOARDING_KEY = 'tx_has_seen_example';
 let viewPanZoom = { cx: BASE_W / 2, cy: BASE_H / 2, zoom: 1 };
+
+function txIsEn() {
+  return localStorage.getItem('mdr-home-lang') === 'en';
+}
+
+/** @param {string} es @param {string} en */
+function txText(es, en) {
+  return txIsEn() ? en : es;
+}
+
+function refreshAfterStateLoad() {
+  propsDirty = true;
+  propsDrawerOpen = false;
+  updateZoomLabel();
+  clampViewCenter();
+  beltModeBtn?.classList.toggle('tx-btn--active', mode === 'belt');
+  chainModeBtn?.classList.toggle('tx-btn--active', mode === 'chain');
+}
+
+function buildCanvasSerializablePayload() {
+  return {
+    version: 1,
+    activeTab,
+    mode,
+    viewPanZoom: { ...viewPanZoom },
+    state: JSON.parse(JSON.stringify(state)),
+  };
+}
+
+function exportCanvasAsJson() {
+  const payload = {
+    ...buildCanvasSerializablePayload(),
+    exportedAt: new Date().toISOString(),
+    app: 'TheMechAssist · Lienzo técnico',
+  };
+
+  const json = JSON.stringify(payload, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `transmision-${date}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Esquema descargado como JSON.', { variant: 'success', duration: 3000 });
+}
+
+/**
+ * @param {string} jsonText
+ * @param {{ skipConfirm?: boolean }} [opts]
+ */
+function importCanvasFromJson(jsonText, opts = {}) {
+  let payload;
+  try {
+    payload = JSON.parse(jsonText);
+  } catch (_) {
+    showToast('Error: el archivo no es un JSON válido.', { variant: 'error', duration: 5000 });
+    return false;
+  }
+
+  if (!payload || typeof payload !== 'object' || !payload.state || !Array.isArray(payload.state.nodes)) {
+    showToast('Error: el archivo no tiene el formato esperado (falta state.nodes).', {
+      variant: 'error',
+      duration: 5000,
+    });
+    return false;
+  }
+
+  if (!opts.skipConfirm && state.nodes.length > 0) {
+    if (!window.confirm('¿Reemplazar el lienzo actual con el esquema importado?')) return false;
+  }
+
+  try {
+    const fresh = createInitialState();
+    Object.assign(state, fresh, JSON.parse(JSON.stringify(payload.state)));
+
+    if (payload.viewPanZoom && typeof payload.viewPanZoom === 'object') {
+      Object.assign(viewPanZoom, payload.viewPanZoom);
+    }
+
+    const tab = payload.activeTab;
+    if (tab === 'gears' || tab === 'belts' || tab === 'chains') {
+      switchTab(tab);
+    } else {
+      switchTab('gears');
+    }
+
+    if (payload.mode === 'belt' || payload.mode === 'chain' || payload.mode === 'none') {
+      mode = payload.mode;
+    } else {
+      mode = 'none';
+    }
+
+    refreshAfterStateLoad();
+    showToast('Esquema importado correctamente.', { variant: 'success', duration: 3000 });
+    return true;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    showToast(`Error al restaurar el estado: ${msg}`, { variant: 'error', duration: 5000 });
+    return false;
+  }
+}
+
+function tryRestoreCanvasFromSession() {
+  const restoreRaw = sessionStorage.getItem('tx_import_state');
+  if (!restoreRaw || new URLSearchParams(location.search).get('restore') !== '1') return false;
+  sessionStorage.removeItem('tx_import_state');
+  const ok = importCanvasFromJson(restoreRaw, { skipConfirm: true });
+  if (ok) localStorage.setItem(TX_ONBOARDING_KEY, '1');
+  return ok;
+}
+
+function loadExampleState() {
+  state.nodes = [];
+  state.meshes = [];
+  state.beltRuns = [];
+  state.chainRuns = [];
+  state.nextId = 1;
+  state.selectedId = null;
+  state.beltPickOrder = [];
+  state.chainPickOrder = [];
+  mode = 'none';
+  beltModeBtn?.classList.remove('tx-btn--active');
+  chainModeBtn?.classList.remove('tx-btn--active');
+
+  const motorId = addNode(state, 'gear', 400, 700);
+  const motorNode = state.nodes.find((n) => n.id === motorId);
+  if (motorNode) {
+    motorNode.z = 20;
+    motorNode.module_mm = 2.5;
+  }
+  setMotor(state, motorId);
+
+  const driven1Id = addNode(state, 'gear', 500, 700);
+  const drivenNode = state.nodes.find((n) => n.id === driven1Id);
+  if (drivenNode) {
+    drivenNode.z = 60;
+    drivenNode.module_mm = 2.5;
+  }
+  state.meshes.push({ a: motorId, b: driven1Id });
+
+  const pulley1Id = addNode(state, 'pulley', 500, 900);
+  const p1Node = state.nodes.find((n) => n.id === pulley1Id);
+  if (p1Node) {
+    p1Node.d_mm = 80;
+    p1Node.pulleyRole = 'driven';
+  }
+
+  const pulley2Id = addNode(state, 'pulley', 900, 900);
+  const p2Node = state.nodes.find((n) => n.id === pulley2Id);
+  if (p2Node) {
+    p2Node.d_mm = 200;
+    p2Node.pulleyRole = 'driven';
+  }
+
+  state.beltRuns.push({
+    id: state.nextId++,
+    nodeIds: [pulley1Id, pulley2Id],
+    kind: 'v',
+    centerOverride_mm: 0,
+  });
+
+  if (inpN instanceof HTMLInputElement) inpN.value = '1455';
+  if (inpT instanceof HTMLInputElement) inpT.value = '28';
+
+  viewPanZoom.zoom = 0.6;
+  viewPanZoom.cx = 650;
+  viewPanZoom.cy = 800;
+  clampViewCenter();
+}
+
+function finishOnboardingTour() {
+  localStorage.setItem(TX_ONBOARDING_KEY, '1');
+  document.getElementById('txOnboarding')?.remove();
+}
+
+/**
+ * @param {HTMLElement} target
+ * @param {DOMRect} rect
+ * @param {'above'|'left'|'below'} place
+ */
+function positionOnboardingTooltip(tip, arrow, target, rect, place) {
+  const margin = 12;
+  const tipRect = tip.getBoundingClientRect();
+  let top = 0;
+  let left = 0;
+  arrow.className = 'tx-onboard__arrow';
+  if (place === 'above') {
+    top = rect.top - tipRect.height - margin;
+    left = rect.left + rect.width / 2 - tipRect.width / 2;
+    arrow.classList.add('tx-onboard__arrow--down');
+    arrow.style.left = `${Math.min(tipRect.width - 16, Math.max(16, rect.left + rect.width / 2 - left))}px`;
+    arrow.style.top = `${tipRect.height}px`;
+  } else if (place === 'left') {
+    top = rect.top + rect.height / 2 - tipRect.height / 2;
+    left = rect.left - tipRect.width - margin;
+    arrow.classList.add('tx-onboard__arrow--right');
+    arrow.style.left = `${tipRect.width}px`;
+    arrow.style.top = `${Math.min(tipRect.height - 16, Math.max(16, rect.top + rect.height / 2 - top))}px`;
+  } else {
+    top = rect.bottom + margin;
+    left = rect.left + rect.width / 2 - tipRect.width / 2;
+    arrow.classList.add('tx-onboard__arrow--up');
+    arrow.style.left = `${Math.min(tipRect.width - 16, Math.max(16, rect.left + rect.width / 2 - left))}px`;
+    arrow.style.top = '0px';
+  }
+  const pad = 8;
+  left = Math.min(window.innerWidth - tipRect.width - pad, Math.max(pad, left));
+  top = Math.min(window.innerHeight - tipRect.height - pad, Math.max(pad, top));
+  tip.style.top = `${top}px`;
+  tip.style.left = `${left}px`;
+}
+
+function showOnboardingTour() {
+  if (document.getElementById('txOnboarding')) return;
+
+  const steps = [
+    {
+      target: () =>
+        document.getElementById('txAddGear')?.closest('.tx-float-toolbar') ||
+        document.getElementById('txAddGear'),
+      text: txText(
+        'A\u00f1ade engranajes, poleas y pi\u00f1ones con estos botones o haz clic en el lienzo',
+        'Add gears, pulleys and sprockets with these buttons or click on the canvas',
+      ),
+      place: /** @type {'above'} */ ('above'),
+    },
+    {
+      target: () => document.getElementById('txVerdict'),
+      text: txText(
+        'El veredicto y los resultados se actualizan en tiempo real mientras dise\u00f1as',
+        'Verdict and results update in real time as you design',
+      ),
+      place: /** @type {'left'} */ ('left'),
+    },
+    {
+      target: () => document.getElementById('txMarkMotor'),
+      text: txText(
+        'Selecciona un elemento y pulsa este bot\u00f3n para definir la entrada de velocidad',
+        'Select an element and press this button to define the speed input',
+      ),
+      place: /** @type {'below'} */ ('below'),
+    },
+  ];
+
+  const root = document.createElement('div');
+  root.id = 'txOnboarding';
+  root.setAttribute('role', 'dialog');
+  root.setAttribute('aria-modal', 'true');
+  root.innerHTML = `
+    <style>
+      #txOnboarding {
+        position: fixed;
+        inset: 0;
+        z-index: 9990;
+        pointer-events: auto;
+        background: rgba(0, 0, 0, 0.45);
+        font-family: Inter, system-ui, sans-serif;
+      }
+      #txOnboarding .tx-onboard__skip {
+        position: fixed;
+        top: 12px;
+        right: 16px;
+        z-index: 9992;
+        font-size: 12px;
+        color: #64748b;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        pointer-events: auto;
+        padding: 6px 10px;
+      }
+      #txOnboarding .tx-onboard__skip:hover { color: #0f172a; }
+      #txOnboarding .tx-onboard__tip {
+        position: fixed;
+        z-index: 9991;
+        max-width: 280px;
+        padding: 1rem 1.25rem;
+        background: #fff;
+        border-radius: 12px;
+        font-size: 13px;
+        line-height: 1.45;
+        color: #0f172a;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 200ms ease;
+      }
+      #txOnboarding .tx-onboard__tip--visible { opacity: 1; }
+      #txOnboarding .tx-onboard__arrow {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: 8px solid transparent;
+      }
+      #txOnboarding .tx-onboard__arrow--down {
+        border-top-color: #fff;
+        border-bottom: none;
+        transform: translateX(-50%);
+      }
+      #txOnboarding .tx-onboard__arrow--up {
+        border-bottom-color: #fff;
+        border-top: none;
+        transform: translateX(-50%);
+      }
+      #txOnboarding .tx-onboard__arrow--right {
+        border-left-color: #fff;
+        border-right: none;
+        transform: translateY(-50%);
+      }
+      #txOnboarding .tx-onboard__count {
+        display: block;
+        margin-top: 0.65rem;
+        text-align: right;
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+      }
+    </style>
+    <button type="button" class="tx-onboard__skip">${txText('Saltar tour', 'Skip tour')}</button>
+    <div class="tx-onboard__tip" id="txOnboardTip">
+      <span id="txOnboardText"></span>
+      <span class="tx-onboard__count" id="txOnboardCount"></span>
+      <span class="tx-onboard__arrow" id="txOnboardArrow" aria-hidden="true"></span>
+    </div>
+  `;
+  document.body.appendChild(root);
+
+  const skipBtn = root.querySelector('.tx-onboard__skip');
+  const tip = /** @type {HTMLElement} */ (root.querySelector('#txOnboardTip'));
+  const textEl = /** @type {HTMLElement} */ (root.querySelector('#txOnboardText'));
+  const countEl = /** @type {HTMLElement} */ (root.querySelector('#txOnboardCount'));
+  const arrow = /** @type {HTMLElement} */ (root.querySelector('#txOnboardArrow'));
+
+  let step = 0;
+
+  const renderStep = () => {
+    const cfg = steps[step];
+    const el = cfg.target();
+    if (!(el instanceof HTMLElement)) {
+      step += 1;
+      if (step >= steps.length) finishOnboardingTour();
+      else renderStep();
+      return;
+    }
+    textEl.textContent = cfg.text;
+    countEl.textContent = `${step + 1} / ${steps.length}`;
+    tip.classList.remove('tx-onboard__tip--visible');
+    const rect = el.getBoundingClientRect();
+    requestAnimationFrame(() => {
+      positionOnboardingTooltip(tip, arrow, el, rect, cfg.place);
+      tip.classList.add('tx-onboard__tip--visible');
+    });
+  };
+
+  const advance = () => {
+    step += 1;
+    if (step >= steps.length) finishOnboardingTour();
+    else renderStep();
+  };
+
+  root.addEventListener('click', (ev) => {
+    if (ev.target === skipBtn) {
+      finishOnboardingTour();
+      return;
+    }
+    advance();
+  });
+  skipBtn?.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    finishOnboardingTour();
+  });
+
+  renderStep();
+}
+
+function bootFirstVisitOnboarding() {
+  if (localStorage.getItem(TX_ONBOARDING_KEY)) return;
+  loadExampleState();
+  refreshAfterStateLoad();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => showOnboardingTour());
+  });
+}
 const ZOOM_MIN = 0.25;
 const ZOOM_MAX = 5;
 
@@ -156,9 +600,9 @@ function showNodeContextMenu(node, clientX, clientY) {
   menu.style.left = `${clientX}px`;
   menu.style.top = `${clientY}px`;
   menu.innerHTML = `
-    <button type="button" class="tx-node-menu__btn" data-tx-menu="motor" title="Marcar como motriz">⚙</button>
-    <button type="button" class="tx-node-menu__btn" data-tx-menu="idler" title="Convertir en tensora">◎</button>
-    <button type="button" class="tx-node-menu__btn tx-node-menu__btn--danger" data-tx-menu="delete" title="Eliminar">🗑</button>
+    <button type="button" class="tx-node-menu__btn" data-tx-menu="motor" title="${cv('canvas.menuMotor')}">⚙</button>
+    <button type="button" class="tx-node-menu__btn" data-tx-menu="idler" title="${cv('canvas.menuIdler')}">◎</button>
+    <button type="button" class="tx-node-menu__btn tx-node-menu__btn--danger" data-tx-menu="delete" title="${cv('canvas.menuDelete')}">🗑</button>
   `;
   document.body.appendChild(menu);
   openContextMenu = menu;
@@ -235,10 +679,14 @@ function renderElementColumns(kin) {
     .filter((n) => kindVisibleInTab(n.kind))
     .sort((a, b) => (a.isMotor === b.isMotor ? a.id - b.id : a.isMotor ? -1 : 1));
   if (!vis.length) {
-    hudElements.innerHTML = '<div class="tx-check tx-check--warn">Sin elementos para mostrar.</div>';
+    hudElements.innerHTML = `<div class="tx-check tx-check--warn">${esc(cv('canvas.hudNoElements'))}</div>`;
     return;
   }
-  const kindLabel = { gear: 'Rueda', pulley: 'Polea', sprocket: 'Piñón' };
+  const kindLabel = {
+    gear: cv('canvas.kindGear'),
+    pulley: cv('canvas.kindPulley'),
+    sprocket: cv('canvas.kindSprocket'),
+  };
   const motorN = readMotorInputs().n;
   hudElements.innerHTML = vis
     .map((n, idx) => {
@@ -274,7 +722,7 @@ function renderRunResults() {
   crossedPulleyIds.clear();
   if (activeTab === 'belts') {
     if (!state.beltRuns.length) {
-      hudRuns.innerHTML = '<div class="tx-check tx-check--warn">Sin correas cerradas. Elija tipo y pulse «Cerrar correa».</div>';
+      hudRuns.innerHTML = `<div class="tx-check tx-check--warn">${esc(cv('canvas.hudNoBelts'))}</div>`;
       return;
     }
     hudRuns.innerHTML = state.beltRuns
@@ -288,7 +736,7 @@ function renderRunResults() {
           .map((id) => state.nodes.find((n) => n.id === id))
           .filter((n) => n?.kind === 'pulley' && n.pulleyRole === 'idler')
           .map((n) => `${n.id}: ${n.idlerWrapSide === 'inside' ? 'interior' : 'exterior'}`);
-        const comm = bk === 'v' && s.comm ? `${s.comm.L_nom.toFixed(0)} mm (${s.comm.ok ? 'OK' : `Δ ${s.comm.delta_mm.toFixed(1)} mm`})` : 'n/a';
+        const comm = bk === 'v' && s.comm ? `${s.comm.L_nom.toFixed(0)} mm (${beltCommStatusTxt(s.comm)})` : 'n/a';
         return `<div class="tx-check tx-check--ok">
           <strong>Correa ${esc(br.id)}</strong> (${txtKind}${idlerTxt})<br/>
           L geom: <strong>${s.geo.length_mm.toFixed(1)} mm</strong> · L efectiva: <strong>${s.Leff.toFixed(1)} mm</strong><br/>
@@ -301,7 +749,7 @@ function renderRunResults() {
   }
   if (activeTab === 'chains') {
     if (!state.chainRuns.length) {
-      hudRuns.innerHTML = '<div class="tx-check tx-check--warn">Sin cadenas cerradas. Use "Cerrar cadena".</div>';
+      hudRuns.innerHTML = `<div class="tx-check tx-check--warn">${esc(cv('canvas.hudNoChains'))}</div>`;
       return;
     }
     hudRuns.innerHTML = state.chainRuns
@@ -316,7 +764,7 @@ function renderRunResults() {
       .join('');
     return;
   }
-  hudRuns.innerHTML = '<div class="tx-check tx-check--warn">Cambie a Poleas/correas o Piñones/cadenas para ver longitudes.</div>';
+  hudRuns.innerHTML = `<div class="tx-check tx-check--warn">${esc(cv('canvas.hudSwitchTab'))}</div>`;
 }
 
 function pointInPolygon(pt, poly) {
@@ -605,7 +1053,7 @@ function updateHud(kin, verdict) {
           .map((it) => `<span class="tx-state-badge tx-state-badge--${it.level}">${esc(it.level.toUpperCase())}</span>`)
           .join('')}
       </div>
-      ${hasCross ? '<button type="button" class="lab-btn tx-btn--secondary" data-tx-auto-correct="1">Auto-corregir tangentes</button>' : ''}
+      ${hasCross ? `<button type="button" class="lab-btn tx-btn--secondary" data-tx-auto-correct="1">${esc(cv('canvas.autoCorrectTangents'))}</button>` : ''}
       ${verdict.items.map((it) => `<p class="tx-verdict-line">${esc(it.text)}</p>`).join('')}
     `;
     hudVerdict.querySelector('[data-tx-auto-correct="1"]')?.addEventListener('click', () => {
@@ -625,9 +1073,9 @@ function updateHud(kin, verdict) {
   }
   if (hudPickChain) {
     if (activeTab === 'chains' && mode === 'chain') {
-      hudPickChain.textContent = `Orden de cadena: [${state.chainPickOrder.join(', ')}] — pulse «Cerrar cadena».`;
+      hudPickChain.textContent = cv('canvas.pickChainHint', { ids: state.chainPickOrder.join(', ') });
     } else if (activeTab === 'chains') {
-      hudPickChain.textContent = 'Pulse «Elegir orden cadena» para encadenar piñones con clics cortos.';
+      hudPickChain.textContent = cv('canvas.pickChainStart');
     } else {
       hudPickChain.textContent = '';
     }
@@ -1401,13 +1849,13 @@ function syncPropsPanel() {
     return;
   }
   if (!selectedMatchesTab()) {
-    propsPanel.innerHTML = `<p class="tx-muted">Doble clic en un elemento del lienzo para editar propiedades.</p>`;
+    propsPanel.innerHTML = `<p class="tx-muted">${esc(cv('canvas.propsNone'))}</p>`;
     updateDrawerOpen();
     return;
   }
   const node = state.nodes.find((n) => n.id === state.selectedId);
   if (!node) {
-    propsPanel.innerHTML = '<p class="tx-muted">Seleccione un elemento en el lienzo.</p>';
+    propsPanel.innerHTML = `<p class="tx-muted">${esc(cv('canvas.propsSelect'))}</p>`;
     updateDrawerOpen();
     return;
   }
@@ -1419,7 +1867,7 @@ function syncPropsPanel() {
     const eff = Number.isFinite(node.meshEff_pct) ? node.meshEff_pct : 98.5;
     propsPanel.innerHTML = `
       <div class="tx-props-head">Configuracion: Engranaje #${node.id}</div>
-      <button type="button" class="lab-btn tx-btn--motor-primary" data-tx-p="setMotorInput">Definir como Entrada (Motor)</button>
+      <button type="button" class="lab-btn tx-btn--motor-primary" data-tx-p="setMotorInput">${esc(cv('canvas.propsBtnMotor'))}</button>
       <div class="lab-grid lab-grid--2 tx-props-grid">
         <div class="lab-field">${labelWithHelp('z dientes', 'Numero de dientes del engranaje. Afecta relacion de transmision y diametro primitivo.')}<input type="number" min="6" data-tx-p="z" value="${node.z}" /></div>
         <div class="lab-field">${labelWithHelp('m (mm)', 'Modulo en mm. Para engranar, pares conectados deben compartir modulo.')}<input type="number" min="0.25" step="0.25" data-tx-p="m" value="${node.module_mm}" /></div>
@@ -1440,7 +1888,7 @@ function syncPropsPanel() {
     const bkRun = br?.kind ?? 'v';
     propsPanel.innerHTML = `
       <div class="tx-props-head">Configuracion: Polea #${node.id}</div>
-      <button type="button" class="lab-btn tx-btn--motor-primary" data-tx-p="setMotorInput">Definir como Entrada (Motor)</button>
+      <button type="button" class="lab-btn tx-btn--motor-primary" data-tx-p="setMotorInput">${esc(cv('canvas.propsBtnMotor'))}</button>
       <div class="lab-grid lab-grid--2 tx-props-grid">
       <div class="lab-field">${labelWithHelp('Ø primitivo (mm)', 'Diametro de paso de la polea. Define relacion de velocidad con la polea enlazada.')}
         <input type="number" min="10" data-tx-p="d" value="${node.d_mm}" />
@@ -1506,7 +1954,7 @@ function syncPropsPanel() {
         }
         ${
           bkRun === 'v' && bsum.comm
-            ? `<div>Comercial demo: <strong>${bsum.comm.L_nom.toFixed(0)} mm</strong> (${bsum.comm.ok ? 'OK' : `Δ ${bsum.comm.delta_mm.toFixed(1)} mm`})</div>`
+            ? `<div>Comercial demo: <strong>${bsum.comm.L_nom.toFixed(0)} mm</strong> (${beltCommStatusTxt(bsum.comm)})</div>`
             : ''
         }
       </div>`
@@ -1529,7 +1977,7 @@ function syncPropsPanel() {
     const cVal = csum?.cDist ?? 0;
     propsPanel.innerHTML = `
       <div class="tx-props-head">Configuracion: Piñon #${node.id}</div>
-      <button type="button" class="lab-btn tx-btn--motor-primary" data-tx-p="setMotorInput">Definir como Entrada (Motor)</button>
+      <button type="button" class="lab-btn tx-btn--motor-primary" data-tx-p="setMotorInput">${esc(cv('canvas.propsBtnMotor'))}</button>
       <div class="lab-grid lab-grid--2 tx-props-grid">
       <div class="lab-field">${labelWithHelp('z dientes', 'Numero de dientes del pinon. Influye en velocidad, par y efecto poligonal.')}<input type="number" min="6" data-tx-p="z" value="${node.z}" /></div>
       <div class="lab-field lab-field--wide">${labelWithHelp('Cadena ISO/ANSI', 'Seleccione el paso de cadena comercial para longitud en pasos y verificacion de cierre.')}<select data-tx-p="chain">${opts}</select></div>
@@ -2058,9 +2506,7 @@ document.getElementById('txCloudSave')?.addEventListener('click', async () => {
   /** @type {Record<string, unknown>} */
   let datos_entrada;
   try {
-    datos_entrada = JSON.parse(
-      JSON.stringify({ activeTab, mode, viewPanZoom, state }),
-    );
+    datos_entrada = JSON.parse(JSON.stringify(buildCanvasSerializablePayload()));
   } catch (_) {
     datos_entrada = { error: 'serialization_failed' };
   }
@@ -2076,6 +2522,25 @@ document.getElementById('txCloudSave')?.addEventListener('click', async () => {
     datos_entrada,
     resultados,
   });
+});
+
+document.getElementById('txExportJson')?.addEventListener('click', exportCanvasAsJson);
+
+document.getElementById('txImportJson')?.addEventListener('click', () => {
+  document.getElementById('txImportFile')?.click();
+});
+
+document.getElementById('txImportFile')?.addEventListener('change', (e) => {
+  const file = e.target instanceof HTMLInputElement ? e.target.files?.[0] : null;
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    if (typeof ev.target?.result === 'string') {
+      importCanvasFromJson(ev.target.result);
+    }
+  };
+  reader.readAsText(file);
+  if (e.target instanceof HTMLInputElement) e.target.value = '';
 });
 
 document.getElementById('txSendReport')?.addEventListener('click', async () => {
@@ -2114,8 +2579,37 @@ document.getElementById('txSendReport')?.addEventListener('click', async () => {
 document.getElementById('txBeltKind')?.addEventListener('change', refreshSyncPitchRowVisibility);
 refreshSyncPitchRowVisibility();
 
+const loadExampleBtn = document.getElementById('txLoadExample');
+if (loadExampleBtn instanceof HTMLButtonElement) {
+  loadExampleBtn.textContent = txText('Cargar ejemplo', 'Load example');
+  loadExampleBtn.addEventListener('click', () => {
+    const msg = txText(
+      '\u00bfReemplazar el lienzo actual con el ejemplo?',
+      'Replace the current canvas with the example?',
+    );
+    if (!window.confirm(msg)) return;
+    loadExampleState();
+    refreshAfterStateLoad();
+  });
+}
+
 updateZoomLabel();
 bindTransmissionSvgDelegation();
-switchTab('gears');
-fitViewToContent();
+if (tryRestoreCanvasFromSession()) {
+  // Diseño restaurado desde my-saved-calcs o sessionStorage.
+} else {
+  switchTab('gears');
+  if (localStorage.getItem(TX_ONBOARDING_KEY)) {
+    fitViewToContent();
+  } else {
+    bootFirstVisitOnboarding();
+  }
+}
+
+watchLangAndApply(CANVAS_EN, {
+  reloadOnEs: false,
+  onEnApplied: refreshHudI18n,
+  onEsRestored: refreshHudI18n,
+});
+
 requestAnimationFrame(frame);

@@ -30,7 +30,35 @@
     <meta name="twitter:title" data-i18n="incConv.twitterTitle" data-i18n-attr="content" content="Cinta inclinada — TheMechAssist" />
     <link rel="stylesheet" href="css/app.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Cinta inclinada",
+  "description": "Tensión, potencia y factor de uso en transportador en pendiente. Comprobación orientativa de motorreductor.",
+  "url": "https://www.themechassist.com/inclined-conveyor.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body>
     <div id="runtimeError" class="runtime-error runtime-error--js" hidden role="alert"></div>
         <header class="site-nav site-nav--sticky">
@@ -61,6 +89,9 @@
         <header class="flat-sidebar__head">
           <p class="flat-sidebar__eyebrow">TheMechAssist</p>
           <h2 class="flat-sidebar__title"><span data-i18n="incConv.h2">Cinta inclinada</span></h2>
+          <p class="machine-calc-notice" role="note" data-i18n="machineHub.indicativeNotice" data-i18n-html>
+            <strong>Resultados orientativos.</strong> No sustituyen proyecto de ingeniería ni cumplimiento normativo.
+          </p>
           <details class="flat-sidebar-intro">
             <summary class="flat-sidebar-intro__summary" data-i18n="incConv.introSummary">
               Descripción y alcance de la calculadora

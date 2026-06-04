@@ -10,6 +10,7 @@ import {
   mountLabPresetsBar,
   revalidateAllBoundInputs,
   renderResultHero,
+  renderLabAdvisorInsights,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
   syncInputValidationResultsGate,
@@ -20,6 +21,13 @@ import {
 import { getLabLang, LAB_LANG_EVENT } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { BOLT_SHEAR_PAGE_EN } from '../lab/i18n/pages/boltShearPageEn.js';
+import { collectLabInputRows, collectLabResultRows } from '../services/labPdfPayload.js';
+import { buildBoltShearAdvisorInsights } from '../services/iaAdvisor.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
+
+function bx(es, en) {
+  return getLabLang() === 'en' ? en : es;
+}
 
 const BSHEAR_PRESETS = [
   {
@@ -271,7 +279,54 @@ function refreshCore() {
     alerts.innerHTML = parts.join('');
   }
 
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  renderLabAdvisorInsights(
+    'bsAdvisorPanel',
+    buildBoltShearAdvisorInsights(
+      {
+        sf_shear: r.nf_shear_max,
+        sf_bearing: r.nf_bearing,
+        has_friction: read('bsMu', 0) > 0,
+        lang: advLang,
+      },
+      { lang: advLang },
+    ),
+  );
+
   updateLabShareVisibility('bsShareLinkWrap', 'bsResults');
+}
+
+function buildBoltShearInputsArray() {
+  const scope = document.querySelector('main.lab-main');
+  return scope ? collectLabInputRows(scope) : [];
+}
+
+function buildBoltShearResultsArray() {
+  const scope = document.querySelector('main.lab-main');
+  if (!scope) return [];
+  /** @type {Array<{ label: string; value: string }>} */
+  const rows = [];
+  scope.querySelectorAll('.lab-result-hero__cell').forEach((cell) => {
+    const label = cell.querySelector('.lab-result-hero__label');
+    const value = cell.querySelector('.lab-result-hero__value');
+    if (label && value) {
+      rows.push({ label: label.textContent.trim(), value: value.textContent.trim() });
+    }
+  });
+  document.getElementById('bsCheckTable')?.querySelectorAll('.lab-check-table tbody tr').forEach((tr) => {
+    const cells = [...tr.querySelectorAll('td')];
+    if (cells.length < 2) return;
+    rows.push({
+      label: cells[0].textContent.trim(),
+      value: cells
+        .slice(1)
+        .map((c) => c.textContent.trim())
+        .filter(Boolean)
+        .join(' \u00b7 '),
+    });
+  });
+  rows.push(...collectLabResultRows(scope));
+  return rows;
 }
 
 const resultsWrap = document.getElementById('bsResultsWrap');
@@ -334,6 +389,15 @@ watchLangAndApply(BOLT_SHEAR_PAGE_EN, {
 wireLabCopyLink('bsCopyLinkBtn', 'bsCopyToast');
 wireLabCopyResultsButton('bsCopyResults', {
   moduleTitle: bsT('moduleLabel'),
+});
+
+mountLabCloudSaveBar(bx('Tornillo a cortante', 'Bolt in shear'), {
+  norm: 'VDI 2230 \u00b7 tornillo a cortante y aplastamiento',
+  svgSelector: '#bsDiagram',
+  getData: () => ({
+    inputs: buildBoltShearInputsArray(),
+    results: buildBoltShearResultsArray(),
+  }),
 });
 
 window.addEventListener(LAB_LANG_EVENT, scheduleRecalc);

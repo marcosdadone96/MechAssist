@@ -3,12 +3,15 @@ import {
   labAlert,
   mountLabPresetsBar,
   revalidateAllBoundInputs,
+  renderResultHero,
   syncInputValidationResultsGate,
   updateLabShareVisibility,
   uxCopy,
   wireLabCopyLink,
   wireLabCopyResultsButton,
 } from './labCalcUx.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { collectLabInputRows, collectLabResultRows } from '../services/labPdfPayload.js';
 import { bindFluidLabUnitSelectors, formatPressureBar } from '../lab/fluidLabUnitPrefs.js';
 import { injectLabUnitConverterIfNeeded, mountLabUnitConverter } from '../lab/labUnitConvert.js';
 import { wrapCalcRefresh } from './creditsPageBoot.js';
@@ -72,6 +75,23 @@ let lastResultRaw = null;
 
 function getLang() {
   return getCurrentLang();
+}
+
+function bx(es, en) {
+  return getLang() === 'en' ? en : es;
+}
+
+function haT(key) {
+  const full = key.startsWith('hacc.') ? key : `hacc.${key}`;
+  const en = getLang() === 'en';
+  if (en && HYDRAULIC_ACCUMULATOR_EN[full]) return HYDRAULIC_ACCUMULATOR_EN[full];
+  const ES = {
+    'hacc.heroVol': 'Volumen nominal',
+    'hacc.heroVolHint': 'Tama\u00f1o nominal comercial elegido',
+    'hacc.heroE': 'Energ\u00eda almacenada E',
+    'hacc.heroEHint': 'Modelo de gas politr\u00f3pico (orientativo)',
+  };
+  return ES[full] || HYDRAULIC_ACCUMULATOR_EN[full] || full;
 }
 
 function val(id, fallback = '') {
@@ -464,6 +484,7 @@ const computeAndRender = wrapCalcRefresh(function computeAndRenderCore() {
     verdict.textContent = uxCopy('Revise los valores.', 'Check input values.');
     const resultsEl = document.getElementById('haResults');
     if (resultsEl instanceof HTMLElement) resultsEl.innerHTML = '';
+    clearHaHero();
     updateLabShareVisibility('haShareLinkWrap', 'haResults');
     return;
   }
@@ -493,6 +514,7 @@ const computeAndRender = wrapCalcRefresh(function computeAndRenderCore() {
     verdict.textContent = uxCopy('Revise los valores.', 'Check input values.');
     const resultsEl = document.getElementById('haResults');
     if (resultsEl instanceof HTMLElement) resultsEl.innerHTML = '';
+    clearHaHero();
     updateLabShareVisibility('haShareLinkWrap', 'haResults');
     return;
   }
@@ -635,3 +657,20 @@ watchLangAndApply({ ...HYDRAULIC_ACCUMULATOR_EN, ...FLUIDS_HUB_UX_EN }, {
 syncCalcModeUi();
 revalidateAllBoundInputs();
 computeAndRender();
+
+function buildInputsArray() {
+  return collectLabInputRows(document.querySelector('main'));
+}
+
+function buildResultsArray() {
+  return collectLabResultRows(document.querySelector('main'));
+}
+
+mountLabCloudSaveBar(bx('Acumulador hidr\u00e1ulico', 'Hydraulic accumulator'), {
+  norm: 'ISO 4126 orientativo \u00b7 acumuladores hidr\u00e1ulicos',
+  svgSelector: '#haDiagram',
+  getData: () => ({
+    inputs: buildInputsArray(),
+    results: buildResultsArray(),
+  }),
+});

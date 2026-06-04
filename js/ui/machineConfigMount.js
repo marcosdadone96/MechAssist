@@ -115,6 +115,7 @@ function getToolKey() {
   if (p.includes('traction-elevator')) return 'traction';
   if (p.includes('car-lift-screw')) return 'carLift';
   if (p.includes('centrifugal-pump')) return 'pump';
+  if (p.includes('extruder')) return 'extruder';
   if (p.includes('flat-conveyor')) return 'flat';
   if (p.includes('inclined-conveyor')) return 'inclined';
   return 'machine';
@@ -130,8 +131,9 @@ function getTipoMaquinaLabel(tool) {
     bucket: 'Elevador de cangilones',
     traction: 'Elevador de tracción',
     carLift: 'Ascensor de tornillo',
-    pump: 'Bomba centrífuga',
-    machine: 'Máquina',
+    pump: 'Bomba centr\u00edfuga',
+    extruder: 'Extrusora de husillo',
+    machine: 'M\u00e1quina',
   };
   return map[tool] || map.machine;
 }

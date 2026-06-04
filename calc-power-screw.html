@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="pscrew.docTitle">Tornillo de potencia trapezoidal ISO 2904 — TheMechAssist</title>
-    <meta name="description" data-i18n="pscrew.metaDesc" data-i18n-attr="content" content="Par de avance, rendimiento y autobloqueo en husillo trapezoidal ISO 2904 (Tr). Predimensionado orientativo." />
+    <meta name="description" data-i18n="pscrew.metaDesc" data-i18n-attr="content" content="Husillo trapezoidal Tr: par de avance, rendimiento y verificación de autobloqueo. Presión específica en flancos. DIN 103 / ISO 2904. Materiales acero/bronce. Pre-dimensionado orientativo." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
     <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
@@ -12,14 +12,43 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/calc-power-screw.html" />
     <meta property="og:title" data-i18n="pscrew.docTitle" data-i18n-attr="content" content="Tornillo de potencia trapezoidal ISO 2904 — TheMechAssist" />
-    <meta property="og:description" data-i18n="pscrew.metaDesc" data-i18n-attr="content" content="Par de avance, rendimiento y autobloqueo en husillo trapezoidal ISO 2904 (Tr)." />
+    <meta property="og:description" data-i18n="pscrew.metaDesc" data-i18n-attr="content" content="Husillo trapezoidal Tr: par de avance, rendimiento y verificación de autobloqueo. Presión específica en flancos. DIN 103 / ISO 2904. Materiales acero/bronce. Pre-dimensionado orientativo." />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" data-i18n="pscrew.docTitle" data-i18n-attr="content" content="Tornillo de potencia trapezoidal ISO 2904 — TheMechAssist" />
+    <meta name="twitter:description" data-i18n="pscrew.metaDesc" data-i18n-attr="content" content="Husillo trapezoidal Tr: par de avance, rendimiento y verificación de autobloqueo. Presión específica en flancos. DIN 103 / ISO 2904. Materiales acero/bronce. Pre-dimensionado orientativo." />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Tornillo de potencia trapezoidal",
+  "description": "Husillo trapezoidal Tr: par de avance, rendimiento y verificación de autobloqueo. Presión específica en flancos. DIN 103 / ISO 2904. Materiales acero/bronce. Pre-dimensionado orientativo.",
+  "url": "https://www.themechassist.com/calc-power-screw.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body class="lab-body">
     <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -74,6 +103,7 @@
             </div>
           </details>
         </header>
+        <div id="pscrewAdvisorPanel" hidden></div>
         <nav class="lab-next-steps" data-i18n="pscrew.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
           <h3 class="lab-next-steps__title" data-i18n="pscrew.nextStepsTitle">Siguiente paso habitual</h3>
           <ul class="lab-next-steps__list">
@@ -126,7 +156,7 @@
                   <span class="lab-field-ico" title="Diámetro nominal">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><path d="M5 12h14"/></svg>
                   </span>
-                  <span class="lab-field__label-text" data-i18n="pscrew.labelDiam">Diámetro nominal d (mm) </span>
+                  <span class="lab-field__label-text" data-i18n="pscrew.labelDiam">Diámetro nominal d (mm) <span class="info-chip" title="Diámetro nominal del husillo trapezoidal Tr. Tr20: d=20mm. Tr32: d=32mm. El diámetro medio es aprox. d - 0.5·p." aria-label="Ayuda diámetro nominal">?</span></span>
                 </label>
                 <input inputmode="decimal" id="pscrewDiam" type="number" step="any" min="4" value="16" />
                 <p class="lab-field-help" data-i18n="pscrew.helpDiamHtml" data-i18n-html>
@@ -164,7 +194,7 @@
               </div>
               <div class="lab-field" id="pscrewFrictionCustomRow" hidden>
                 <label for="pscrewFrictionCustom" class="lab-field__label-row">
-                  <span class="lab-field__label-text" data-i18n="pscrew.labelMuCustom">μ (personalizado)</span>
+                  <span class="lab-field__label-text" data-i18n="pscrew.labelMuCustom">μ (personalizado) <span class="info-chip" title="Coeficiente de rozamiento en el filete. Acero/bronce lubricado: 0.08–0.12. Sin lubricación: 0.15–0.25." aria-label="Ayuda coeficiente de rozamiento">?</span></span>
                 </label>
                 <input inputmode="decimal" id="pscrewFrictionCustom" type="number" step="0.01" min="0.01" max="0.5" value="0.12" />
               </div>
@@ -173,7 +203,7 @@
                   <span class="lab-field-ico" title="Carga axial">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v14M8 14l4 4 4-4"/></svg>
                   </span>
-                  <span class="lab-field__label-text" data-i18n="pscrew.labelLoad">Carga axial F (N)</span>
+                  <span class="lab-field__label-text" data-i18n="pscrew.labelLoad">Carga axial F (N) <span class="info-chip" title="Fuerza axial a vencer F (N). En prensas: fuerza de prensado. En posicionadores: carga + rozamiento lateral estimado." aria-label="Ayuda carga axial">?</span></span>
                 </label>
                 <input inputmode="decimal" id="pscrewLoad" type="number" step="any" min="0" value="20000" />
                 <p class="lab-field-help" data-i18n="pscrew.helpLoadHtml" data-i18n-html>
@@ -191,7 +221,7 @@
               </div>
               <div class="lab-field">
                 <label for="pscrewNutTurns" class="lab-field__label-row">
-                  <span class="lab-field__label-text" data-i18n="pscrew.labelNutTurns">Espiras activas en tuerca</span>
+                  <span class="lab-field__label-text" data-i18n="pscrew.labelNutTurns">Espiras activas en tuerca <span class="info-chip" title="Espiras en contacto de la tuerca. Más espiras reducen la presión específica (p &lt; p_adm)." aria-label="Ayuda espiras en tuerca">?</span></span>
                 </label>
                 <input inputmode="decimal" id="pscrewNutTurns" type="number" step="1" min="1" value="5" />
                 <p class="lab-field-help" data-i18n="pscrew.helpNutTurnsHtml" data-i18n-html>

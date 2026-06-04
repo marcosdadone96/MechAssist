@@ -8,6 +8,7 @@ import {
   bindInputValidation,
   mountLabPresetsBar,
   revalidateAllBoundInputs,
+  renderResultHero,
   syncInputValidationResultsGate,
   updateLabShareVisibility,
   wireLabCopyLink,
@@ -549,7 +550,11 @@ function renderHpVerdictSummary(opts) {
 }
 
 function computeAndRenderCore() {
-  if (syncInputValidationResultsGate(document.getElementById('hpResults'))) return;
+  const hero = document.getElementById('hpHero');
+  if (syncInputValidationResultsGate(document.getElementById('hpResults'))) {
+    if (hero instanceof HTMLElement) hero.innerHTML = '';
+    return;
+  }
   const mode = val('hpMode', 'design');
   const type = val('hpType', 'gear');
   const pUnit = val('hpPressureUnit', 'bar');
@@ -615,6 +620,7 @@ function computeAndRenderCore() {
 
   if (errors.length) {
     results.innerHTML = '';
+    if (hero instanceof HTMLElement) hero.innerHTML = '';
     updateLabShareVisibility('hpumpShareLinkWrap', 'hpResults');
     if (formulaBody instanceof HTMLElement) formulaBody.innerHTML = '';
     const vsErr = document.getElementById('hpVerdictSummary');
@@ -705,6 +711,24 @@ function computeAndRenderCore() {
 
   renderPumpDiagram(document.getElementById('hpDiagram'), type === 'vane' || type === 'piston' ? type : 'gear');
   renderPipeDiagram(document.getElementById('hpPipeDiagram'), dpBar);
+
+  const Q = qRealLmin;
+  const P = pAbsKw;
+  if (hero instanceof HTMLElement) {
+    hero.innerHTML = renderResultHero(
+      [
+        {
+          label: getLang() === 'en' ? 'Flow Q' : 'Caudal Q',
+          display: `${Q.toFixed(2)} L/min`,
+        },
+        {
+          label: getLang() === 'en' ? 'Power P' : 'Potencia P',
+          display: `${P.toFixed(2)} kW`,
+        },
+      ],
+      { verdict: Q > 0 && P > 0 ? 'ok' : 'warn' },
+    );
+  }
 
   const mainCards = [
     metric(tr('mQReal'), `${fmt(qRealLmin, 2)} L/min`, `eta_v ${fmt(preset.etaV * 100, 1)} %`),

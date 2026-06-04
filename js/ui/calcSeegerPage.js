@@ -11,6 +11,7 @@ import {
   metricHtml,
   mountLabPresetsBar,
   renderResultHero,
+  renderLabAdvisorInsights,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
   updateLabShareVisibility,
@@ -23,6 +24,7 @@ import { bootSmartDashboardIfEnabled } from './smartDashboardBoot.js';
 import { lookupSeeger } from '../lab/seegerDinTables.js';
 import { renderSeegerDiagram } from '../lab/diagramSeeger.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { collectLabInputRows, collectLabResultRows } from '../services/labPdfPayload.js';
 import { initInfoChipPopovers } from './infoChipPopover.js';
 import { getLabLang } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
@@ -141,7 +143,10 @@ function refreshCore() {
     });
   }
 
-  if (syncInputValidationResultsGate(document.getElementById('sgResults'))) return;
+  if (syncInputValidationResultsGate(document.getElementById('sgResults'))) {
+    renderLabAdvisorInsights('sgAdvisorPanel', []);
+    return;
+  }
 
   if (!hit.row || !Number.isFinite(d)) {
     if (heroEl) heroEl.innerHTML = '';
@@ -171,6 +176,7 @@ function refreshCore() {
       shoppingLines: [],
       metrics: [],
     });
+    renderLabAdvisorInsights('sgAdvisorPanel', []);
     updateLabShareVisibility('sgShareLinkWrap', 'sgResults');
     sgUrl.serializeToUrl();
     return;
@@ -321,6 +327,19 @@ function refreshCore() {
     ],
   });
 
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  renderLabAdvisorInsights(
+    'sgAdvisorPanel',
+    buildSeegerAdvisorInsights(
+      {
+        axial_load_n: faxWork ?? NaN,
+        rated_load_n: faxAdm,
+        lang: advLang,
+      },
+      { lang: advLang },
+    ),
+  );
+
   updateLabShareVisibility('sgShareLinkWrap', 'sgResults');
   sgUrl.serializeToUrl();
 }
@@ -396,9 +415,21 @@ wireLabCopyResultsButton('sgCopyResults', {
 });
 revalidateAllBoundInputs();
 runLabCalcBoot(wrap, refreshCore);
-mountLabCloudSaveBar(bx('Anillos el\u00e1sticos (Seeger)', 'Seeger retaining rings'), {
-  norm: 'DIN 471 (eje) · DIN 472 (agujero)',
+function buildInputsArray() {
+  return collectLabInputRows(document.querySelector('main'));
+}
+
+function buildResultsArray() {
+  return collectLabResultRows(document.querySelector('main'));
+}
+
+mountLabCloudSaveBar(bx('Arandelas Seeger DIN 471/472', 'Seeger rings DIN 471/472'), {
+  norm: 'DIN 471 / DIN 472 \u00b7 arandelas de retenci\u00f3n',
   svgSelector: '#sgDiagram',
+  getData: () => ({
+    inputs: buildInputsArray(),
+    results: buildResultsArray(),
+  }),
 });
 watchLangAndApply(SEEGER_PAGE_EN, {
   reloadOnEs: false,

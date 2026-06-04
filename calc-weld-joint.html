@@ -4,18 +4,48 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="weld.docTitle">Uniones soldadas filete y a tope — TheMechAssist</title>
-    <meta name="description" data-i18n="weld.metaDesc" data-i18n-attr="content" content="Comprobación orientativa de cordones de filete y soldaduras a tope. Modelo educativo EN 1993-1-8." />
+    <meta name="description" data-i18n="weld.metaDesc" data-i18n-attr="content" content="Comprobación de cordones de filete y soldaduras a tope según EN 1993-1-8 (orientativo). Tensión en garganta, factor de uso y cateto mínimo. Modelo educativo para pre-dimensionado." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
     <link rel="canonical" href="https://www.themechassist.com/calc-weld-joint.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/calc-weld-joint.html" />
     <meta property="og:title" data-i18n="weld.docTitle" data-i18n-attr="content" content="Uniones soldadas filete y a tope — TheMechAssist" />
+    <meta property="og:description" data-i18n="weld.metaDesc" data-i18n-attr="content" content="Comprobación de cordones de filete y soldaduras a tope según EN 1993-1-8 (orientativo). Tensión en garganta, factor de uso y cateto mínimo. Modelo educativo para pre-dimensionado." />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:description" data-i18n="weld.metaDesc" data-i18n-attr="content" content="Comprobación de cordones de filete y soldaduras a tope según EN 1993-1-8 (orientativo). Tensión en garganta, factor de uso y cateto mínimo. Modelo educativo para pre-dimensionado." />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Uniones soldadas",
+  "description": "Comprobación de cordones de filete y soldaduras a tope según EN 1993-1-8 (orientativo). Tensión en garganta, factor de uso y cateto mínimo. Modelo educativo para pre-dimensionado.",
+  "url": "https://www.themechassist.com/calc-weld-joint.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body class="lab-body">
     <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -70,6 +100,7 @@
             </div>
           </details>
         </header>
+        <div id="weldAdvisorPanel" hidden></div>
         <nav class="lab-next-steps" data-i18n="weld.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
           <h3 class="lab-next-steps__title" data-i18n="weld.nextStepsTitle">Siguiente paso habitual</h3>
           <ul class="lab-next-steps__list">
@@ -142,7 +173,7 @@
               </div>
               <div class="lab-field" data-weld-fillet>
                 <label for="weldCateto" class="lab-field__label-row">
-                  <span class="lab-field__label-text" data-i18n="weld.labelCathetus">Cateto h (mm)</span>
+                  <span class="lab-field__label-text" data-i18n="weld.labelCathetus">Cateto h (mm) <span class="info-chip" title="Cateto del cordón de filete h (mm). La garganta efectiva es a = 0.707·h. Mínimo recomendado: 3–4 mm." aria-label="Ayuda cateto">?</span></span>
                 </label>
                 <input inputmode="decimal" id="weldCateto" type="number" step="any" min="1" value="6" />
                 <p class="lab-field-help" data-i18n="weld.helpCathetusHtml" data-i18n-html>
@@ -151,7 +182,7 @@
               </div>
               <div class="lab-field">
                 <label for="weldLength" class="lab-field__label-row">
-                  <span class="lab-field__label-text" data-i18n="weld.labelLength">Longitud cordn l (mm)</span>
+                  <span class="lab-field__label-text" data-i18n="weld.labelLength">Longitud cordn l (mm) <span class="info-chip" title="Longitud total del cordón. Para cordón perimetral: suma de todos los tramos activos." aria-label="Ayuda longitud del cordón">?</span></span>
                 </label>
                 <input inputmode="decimal" id="weldLength" type="number" step="any" min="5" value="120" />
                 <p class="lab-field-help" data-i18n="weld.helpLengthHtml" data-i18n-html>
@@ -172,7 +203,7 @@
                   <span class="lab-field-ico" title="Fuerza">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v14M8 14l4 4 4-4"/></svg>
                   </span>
-                  <span class="lab-field__label-text" data-i18n="weld.labelForce">Fuerza F (N)</span>
+                  <span class="lab-field__label-text" data-i18n="weld.labelForce">Fuerza F (N) <span class="info-chip" title="Fuerza axial (normal al plano del cordón). Tracción positiva, compresión negativa." aria-label="Ayuda fuerza">?</span></span>
                 </label>
                 <input inputmode="decimal" id="weldForce" type="number" step="any" min="0" value="25000" />
                 <p class="lab-field-help" data-i18n="weld.helpForceHtml" data-i18n-html>

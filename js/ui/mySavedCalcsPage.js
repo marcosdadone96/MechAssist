@@ -33,6 +33,7 @@ const TX = {
     thType: 'Tipo',
     thActions: 'Acciones',
     viewJson: 'Ver JSON',
+    openInCanvas: 'Abrir en Canvas',
     delete: 'Eliminar',
     deleteConfirm: '\u00bfEliminar esta fila de la nube? No se puede deshacer.',
     dialogClose: 'Cerrar',
@@ -55,6 +56,7 @@ const TX = {
     thType: 'Type',
     thActions: 'Actions',
     viewJson: 'View JSON',
+    openInCanvas: 'Open in Canvas',
     delete: 'Delete',
     deleteConfirm: 'Delete this row from the cloud? This cannot be undone.',
     dialogClose: 'Close',
@@ -173,6 +175,22 @@ export function mountMySavedCalcsPage() {
         dlgPre.textContent = safeJsonPreview(payload);
         dlg.showModal();
       });
+
+      if (row.tipo_maquina === 'Lienzo de transmisión (canvas)' && row.datos_entrada) {
+        const btnOpen = document.createElement('button');
+        btnOpen.type = 'button';
+        btnOpen.className = 'button button--ghost';
+        btnOpen.textContent = t.openInCanvas;
+        btnOpen.addEventListener('click', () => {
+          try {
+            sessionStorage.setItem('tx_import_state', JSON.stringify(row.datos_entrada));
+            window.location.href = 'transmission-canvas.html?restore=1';
+          } catch (_) {
+            window.alert(lang === 'en' ? 'Could not prepare canvas restore.' : 'No se pudo preparar la restauración del lienzo.');
+          }
+        });
+        td3.appendChild(btnOpen);
+      }
 
       const btnDel = document.createElement('button');
       btnDel.type = 'button';

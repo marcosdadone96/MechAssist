@@ -407,6 +407,541 @@ export function buildShaftAdvisorInsights(ctx, opts = {}) {
   return out;
 }
 
+/**
+ * @param {{ sf?: number, sigma_a?: number, sigma_m?: number, Se?: number, Sut?: number, criterion?: string, lang?: 'es'|'en' }} ctx
+ * @param {{ lang?: 'es'|'en' }} [opts]
+ */
+export function buildFatigueAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const sf = Number(ctx.sf);
+  const sigmaA = Number(ctx.sigma_a);
+  const sigmaM = Number(ctx.sigma_m);
+  const se = Number(ctx.Se);
+  const sut = Number(ctx.Sut);
+
+  if (Number.isFinite(sf) && sf < 1.0) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Outside Goodman diagram' : 'Fuera del diagrama de Goodman',
+      body:
+        lang === 'en'
+          ? 'Operating point is outside the Goodman diagram: predictable fatigue failure. Reduce \u03c3_a or \u03c3_m, or raise S_e with better surface finish.'
+          : 'Punto fuera del diagrama de Goodman: fallo por fatiga predecible. Reducir \u03c3_a o \u03c3_m, o aumentar S_e con mejor acabado superficial.',
+      normRef: 'Shigley / modified Goodman \u2014 indicative.',
+    });
+  } else if (Number.isFinite(sf) && sf < 1.5) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Tight fatigue margin' : 'Margen de fatiga ajustado',
+      body:
+        lang === 'en'
+          ? 'Fatigue safety factor SF < 1.5. Consider a lower stress concentration (K_f) or material with higher S_ut.'
+          : 'Margen de fatiga ajustado (SF < 1.5). Considerar entalla menor (K_f) o material con mayor S_ut.',
+      normRef: ctx.criterion ? String(ctx.criterion) : 'Goodman / Gerber / Soderberg.',
+    });
+  }
+  if (Number.isFinite(sigmaM) && Number.isFinite(sut) && sut > 0 && sigmaM / sut > 0.7) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'High mean stress' : 'Tensi\u00f3n media elevada',
+      body:
+        lang === 'en'
+          ? 'Mean stress > 70% of S_ut. Risk of static yield combined with fatigue. Verify von Mises.'
+          : 'Tensi\u00f3n media elevada (>70% de S_ut). Riesgo de fluencia est\u00e1tica combinada con fatiga. Verificar Von Mises.',
+      normRef: 'Combined static + fatigue \u2014 detailed check recommended.',
+    });
+  }
+  if (Number.isFinite(se) && Number.isFinite(sut) && sut > 0 && se < 0.3 * sut) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'Low corrected endurance limit' : 'S_e muy bajo respecto a S_ut',
+      body:
+        lang === 'en'
+          ? 'S_e is well below 0.3\u00b7S_ut. Review surface and size factors: machined finish with Ra < 1.6 \u00b5m raises K_a noticeably.'
+          : 'S_e muy bajo respecto a S_ut. Revisar factores de superficie y tama\u00f1o: acabado mecanizado con Ra < 1,6 \u00b5m sube K_a notablemente.',
+      normRef: 'Marin factors \u2014 surface finish tables.',
+    });
+  }
+  if (!out.length) {
+    out.push({
+      tone: 'info',
+      title: lang === 'en' ? 'Fatigue advisor' : 'Asesor fatiga',
+      body:
+        lang === 'en'
+          ? 'Safety factor, mean stress and S_e are within typical bands for this quick Goodman check.'
+          : 'Factor de seguridad, tensi\u00f3n media y S_e dentro de bandas t\u00edpicas para esta comprobaci\u00f3n Goodman.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ i?: number, gamma_deg?: number, eta?: number, autoblocking?: boolean, lang?: 'es'|'en' }} ctx
+ * @param {{ lang?: 'es'|'en' }} [opts]
+ */
+export function buildWormGearAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const i = Number(ctx.i);
+  const eta = Number(ctx.eta);
+  const autoblocking = Boolean(ctx.autoblocking);
+
+  if (autoblocking && Number.isFinite(eta) && eta < 0.4) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Self-locking with low efficiency' : 'Autobloqueo con bajo rendimiento',
+      body:
+        lang === 'en'
+          ? 'Self-locking with efficiency < 40%: high heat build-up. Plan oil cooling or limit duty cycles.'
+          : 'Autobloqueo con rendimiento < 40%: alto calentamiento. Prever refrigeraci\u00f3n del aceite o limitaci\u00f3n de ciclos.',
+      normRef: 'ISO 14521 context \u2014 thermal duty indicative.',
+    });
+  }
+  if (Number.isFinite(eta) && eta < 0.5) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'Low worm efficiency' : 'Rendimiento bajo',
+      body:
+        lang === 'en'
+          ? 'Efficiency below 50%. Consider Z1=2 or Z1=4 if self-locking is not required. Synthetic EP oil typically improves \u03b7 by 3\u20135 points.'
+          : 'Rendimiento bajo. Considerar Z1=2 o Z1=4 si no se necesita autobloqueo. Aceite EP sint\u00e9tico mejora \u03b7 en 3\u20135 puntos.',
+      normRef: 'Worm pair lubrication \u2014 manufacturer data.',
+    });
+  }
+  if (Number.isFinite(i) && i > 60) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'High reduction ratio' : 'Relaci\u00f3n de transmisi\u00f3n alta',
+      body:
+        lang === 'en'
+          ? 'Reduction ratio > 60: verify bronze wheel strength \u2014 specific load rises with i.'
+          : 'Relaci\u00f3n de transmisi\u00f3n > 60: verificar resistencia de la corona (bronce) \u2014 la carga espec\u00edfica aumenta con i.',
+      normRef: 'ISO 14521 \u2014 worm wheel contact stress.',
+    });
+  }
+  if (!out.length) {
+    out.push({
+      tone: 'info',
+      title: lang === 'en' ? 'Worm gear advisor' : 'Asesor tornillo sin fin',
+      body:
+        lang === 'en'
+          ? 'Ratio, lead angle, efficiency and self-locking are within typical bands for this screening.'
+          : 'Relaci\u00f3n, \u00e1ngulo de avance, rendimiento y autobloqueo dentro de bandas t\u00edpicas para este cribado.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ deflection_mm?: number, L_mm?: number, sigma_MPa?: number, sigma_adm?: number, beamType?: string, lang?: 'es'|'en' }} ctx
+ * @param {{ lang?: 'es'|'en' }} [opts]
+ */
+export function buildBeamAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const delta = Number(ctx.deflection_mm);
+  const Lmm = Number(ctx.L_mm);
+  const sigma = Number(ctx.sigma_MPa);
+  const sigmaAdm = Number(ctx.sigma_adm);
+
+  if (Number.isFinite(delta) && Number.isFinite(Lmm) && Lmm > 0 && delta / Lmm > 1 / 300) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'High relative deflection' : 'Flecha relativa elevada',
+      body:
+        lang === 'en'
+          ? 'Relative deflection > L/300. Typical industrial beam limit: L/300. For crane runways: L/600.'
+          : 'Flecha relativa > L/300. L\u00edmite t\u00edpico para vigas industriales: L/300. Para puentes gr\u00faa: L/600.',
+      normRef: 'Serviceability limits \u2014 confirm project specification.',
+    });
+  }
+  if (Number.isFinite(sigma) && Number.isFinite(sigmaAdm) && sigmaAdm > 0 && sigma > sigmaAdm) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Stress above allowable' : 'Tensi\u00f3n sobre admisible',
+      body:
+        lang === 'en'
+          ? 'Extreme-fibre stress exceeds the allowable. Increase section inertia or reduce load.'
+          : 'Tensi\u00f3n en fibra extrema supera la admisible. Aumentar inercia de secci\u00f3n o reducir la carga.',
+      normRef: 'Flexure \u2014 confirm code and material.',
+    });
+  } else if (Number.isFinite(sigma) && Number.isFinite(sigmaAdm) && sigmaAdm > 0 && sigma > 0.7 * sigmaAdm) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Stress near allowable' : 'Tensi\u00f3n cerca del admisible',
+      body:
+        lang === 'en'
+          ? 'Stress above 70% of allowable. Tight margin against overloads.'
+          : 'Tensi\u00f3n por encima del 70% del admisible. Margen de seguridad ajustado ante sobrecargas.',
+      normRef: 'Flexure \u2014 allow for load uncertainty.',
+    });
+  }
+  if (!out.length) {
+    out.push({
+      tone: 'info',
+      title: lang === 'en' ? 'Beam advisor' : 'Asesor viga',
+      body:
+        lang === 'en'
+          ? 'Deflection and stress are within typical bands for this quick Euler-Bernoulli check.'
+          : 'Flecha y tensi\u00f3n dentro de bandas t\u00edpicas para esta comprobaci\u00f3n Euler-Bernoulli.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ sf_shear?: number, sf_bearing?: number, has_friction?: boolean, lang?: 'es'|'en' }} ctx
+ */
+export function buildBoltShearAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const sfShear = Number(ctx.sf_shear);
+  const sfBearing = Number(ctx.sf_bearing);
+  const hasFriction = Boolean(ctx.has_friction);
+
+  if (Number.isFinite(sfShear) && sfShear < 1.0) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Shear exceeds allowable' : 'Cortante supera la resistencia admisible',
+      body:
+        lang === 'en'
+          ? 'Shear exceeds allowable resistance. Increase diameter or number of bolts.'
+          : 'Cortante supera la resistencia admisible. Aumentar diámetro o número de tornillos.',
+      normRef: 'ISO 898-1 / VDI 2230 — indicative.',
+    });
+  } else if (Number.isFinite(sfShear) && sfShear < 1.5) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Tight shear margin' : 'Margen a cortante ajustado',
+      body:
+        lang === 'en'
+          ? 'Tight shear margin (SF < 1.5). Consider class 10.9 or more bolts.'
+          : 'Margen a cortante ajustado (SF < 1.5). Considerar clase 10.9 o más tornillos.',
+      normRef: 'Bolt shear — simplified model.',
+    });
+  }
+  if (Number.isFinite(sfBearing) && sfBearing < 1.5) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Low bearing margin' : 'Aplastamiento bajo',
+      body:
+        lang === 'en'
+          ? 'Low bearing margin. Check plate thickness or use a larger washer diameter.'
+          : 'Aplastamiento bajo. Verificar espesor de placa o cambiar a arandela de mayor diámetro.',
+      normRef: 'Bearing on plate — indicative.',
+    });
+  }
+  if (hasFriction && Number.isFinite(sfShear) && sfShear > 3) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'Oversized for shear' : 'Sobredimensionado a cortante',
+      body:
+        lang === 'en'
+          ? 'With friction available, bolts are oversized for shear. Review whether sizing is driven by preload.'
+          : 'Con fricción disponible, los tornillos están sobredimensionados a cortante. Revisar si el dimensionado es por precarga.',
+      normRef: 'Slip-critical joint — friction model.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ utilisation?: number, cateto_mm?: number, weld_type?: string, lang?: 'es'|'en' }} ctx
+ */
+export function buildWeldJointAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const util = Number(ctx.utilisation);
+  const cateto = Number(ctx.cateto_mm);
+  const weldType = String(ctx.weld_type || '');
+
+  if (Number.isFinite(util) && util > 1.0) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Insufficient weld' : 'Cordón de soldadura insuficiente',
+      body:
+        lang === 'en'
+          ? 'Weld leg insufficient. Increase leg size or weld length.'
+          : 'Cordón de soldadura insuficiente. Aumentar cateto o longitud de cordón.',
+      normRef: 'EN 1993-1-8 — indicative.',
+    });
+  } else if (Number.isFinite(util) && util > 0.85) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'High usage factor' : 'Factor de uso elevado',
+      body:
+        lang === 'en'
+          ? 'Usage factor > 85%. Reduced margin against overloads or fatigue.'
+          : 'Factor de uso > 85%. Margen reducido ante sobrecargas o fatiga.',
+      normRef: 'EN 1993-1-8 — indicative.',
+    });
+  }
+  if (Number.isFinite(cateto) && cateto < 3) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'Small leg size' : 'Cateto pequeño',
+      body:
+        lang === 'en'
+          ? 'Leg < 3 mm: difficult execution. Practical minimum recommended: 3–4 mm.'
+          : 'Cateto < 3 mm: dificultad de ejecución. Mínimo práctico recomendado: 3–4 mm.',
+      normRef: 'EN 1993 / AWS D1.1 — workmanship.',
+    });
+  }
+  if (weldType === 'fillet' && Number.isFinite(util) && util < 0.4) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'Oversized fillet' : 'Cordón sobredimensionado',
+      body:
+        lang === 'en'
+          ? 'Weld heavily oversized. Leg may be reduced to save filler metal.'
+          : 'Cordón muy sobredimensionado. Puede reducirse para ahorrar material de aporte.',
+      normRef: 'Fillet weld — economic design.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ autoblocking?: boolean, efficiency?: number, pressure_ratio?: number | null, lang?: 'es'|'en' }} ctx
+ */
+export function buildPowerScrewAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const autoblocking = Boolean(ctx.autoblocking);
+  const eta = Number(ctx.efficiency);
+  const pRatio = ctx.pressure_ratio != null ? Number(ctx.pressure_ratio) : NaN;
+
+  if (autoblocking && Number.isFinite(eta) && eta < 0.35) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Self-locking with low efficiency' : 'Autobloqueo con bajo rendimiento',
+      body:
+        lang === 'en'
+          ? 'Self-locking with efficiency < 35%: high heat dissipation in continuous duty. Plan forced lubrication.'
+          : 'Autobloqueo con rendimiento <35%: alta disipación térmica en operación continua. Prever lubricación forzada.',
+      normRef: 'Power screw — thermal duty indicative.',
+    });
+  }
+  if (Number.isFinite(pRatio) && pRatio > 1.0) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Nut pressure exceeded' : 'Presión en tuerca excesiva',
+      body:
+        lang === 'en'
+          ? 'Flank pressure exceeds allowable. Increase nut thread engagement or reduce load.'
+          : 'Presión específica en flancos supera la admisible. Aumentar espiras de tuerca o reducir carga.',
+      normRef: 'Nut bearing pressure — indicative.',
+    });
+  }
+  if (!autoblocking) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'No self-locking' : 'Sin autobloqueo',
+      body:
+        lang === 'en'
+          ? 'No self-locking: load may run back on its own. Add a brake or use γ < friction angle design.'
+          : 'Sin autobloqueo: la carga puede bajar por sí sola. Añadir freno o usar diseño con γ < φ_fricción.',
+      normRef: 'Lead angle vs friction angle.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ sf?: number, solid_clearance_mm?: number, slenderness_ratio?: number, stress_ratio?: number, lang?: 'es'|'en' }} ctx
+ */
+export function buildSpringAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const sf = Number(ctx.sf);
+  const clearance = Number(ctx.solid_clearance_mm);
+  const slenderness = Number(ctx.slenderness_ratio);
+
+  if (Number.isFinite(sf) && sf < 1.2) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Low torsion safety factor' : 'Margen de seguridad a torsión bajo',
+      body:
+        lang === 'en'
+          ? 'Torsion safety factor < 1.2. Increase wire diameter or reduce load.'
+          : 'Margen de seguridad a torsión <1.2. Aumentar diámetro de alambre o reducir carga.',
+      normRef: 'DIN 2089 / EN 13906 — indicative.',
+    });
+  }
+  if (Number.isFinite(clearance) && clearance < 1) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Low solid clearance' : 'Holgura al sólido baja',
+      body:
+        lang === 'en'
+          ? 'Clearance to solid < 1 mm. Risk of clash at full compression. Increase free length.'
+          : 'Holgura al sólido <1 mm. Riesgo de chocar a pleno apriete. Aumentar longitud libre.',
+      normRef: 'Solid height — assembly margin.',
+    });
+  }
+  if (Number.isFinite(slenderness) && slenderness > 4) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'High slenderness' : 'Esbeltez elevada',
+      body:
+        lang === 'en'
+          ? 'Slenderness ratio > 4. Lateral buckling risk. Guide spring in bore or sleeve.'
+          : 'Relación esbeltez >4. Riesgo de pandeo lateral. Guiar el muelle en espiga o casquillo.',
+      normRef: 'Buckling — educational L0/Dm model.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ J_ratio?: number, lang?: 'es'|'en' }} ctx
+ */
+export function buildGearmotorAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const jRatio = Number(ctx.J_ratio);
+
+  if (Number.isFinite(jRatio) && jRatio > 10) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'High reflected inertia' : 'Inercia reflejada muy alta',
+      body:
+        lang === 'en'
+          ? 'Reflected inertia exceeds 10× rotor inertia. Long acceleration time; motor may saturate.'
+          : 'Inercia reflejada supera 10× la del rotor. Tiempo de aceleración elevado; el motor puede saturarse.',
+      normRef: "d'Alembert — gearmotor selection.",
+    });
+  } else if (Number.isFinite(jRatio) && jRatio > 3) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'Moderate inertia ratio' : 'Inercia reflejada moderada',
+      body:
+        lang === 'en'
+          ? 'Reflected inertia between 3–10× rotor. Verify acceleration time with gearmotor manufacturer.'
+          : 'Inercia reflejada entre 3–10× la del rotor. Verificar tiempo de ciclo de aceleración con el fabricante del motorreductor.',
+      normRef: 'Inertia ratio — manufacturer data.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ sf_tightening?: number, torque_nm?: number, lang?: 'es'|'en' }} ctx
+ */
+export function buildBoltsIsoAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const sf = Number(ctx.sf_tightening);
+  const torque = Number(ctx.torque_nm);
+
+  if (Number.isFinite(sf) && sf < 1.2) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Low tightening margin' : 'Margen de apriete bajo',
+      body:
+        lang === 'en'
+          ? 'Tightening margin < 1.2. Risk of bolt plasticisation.'
+          : 'Margen de apriete <1.2. Riesgo de plastificación del tornillo.',
+      normRef: 'ISO 898-1 / VDI 2230 — indicative preload.',
+    });
+  }
+  if (Number.isFinite(torque) && torque > 0 && Number.isFinite(sf) && sf > 3.0) {
+    out.push({
+      tone: 'tip',
+      title: lang === 'en' ? 'Oversized bolt' : 'Tornillo sobredimensionado',
+      body:
+        lang === 'en'
+          ? 'Bolt heavily oversized. Consider lower grade or smaller diameter.'
+          : 'Tornillo muy sobredimensionado. Considerar clase inferior o diámetro menor.',
+      normRef: 'ISO 898-1 — simplified resistance.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ axial_load_n?: number, rated_load_n?: number, lang?: 'es'|'en' }} ctx
+ */
+export function buildSeegerAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const fax = Number(ctx.axial_load_n);
+  const rated = Number(ctx.rated_load_n);
+
+  if (Number.isFinite(fax) && Number.isFinite(rated) && rated > 0 && fax > 0.8 * rated) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'High axial load' : 'Carga axial elevada',
+      body:
+        lang === 'en'
+          ? 'Axial load > 80% of allowable circlip capacity. Risk of opening or permanent deformation.'
+          : 'Carga axial >80% de la admisible del circlip. Riesgo de apertura o deformación permanente.',
+      normRef: 'DIN 471 / DIN 472 — summary table.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ t_design?: number, t_nom?: number, lang?: 'es'|'en' }} ctx
+ */
+export function buildCouplingsAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const tDes = Number(ctx.t_design);
+  const tNom = Number(ctx.t_nom);
+
+  if (Number.isFinite(tDes) && Number.isFinite(tNom) && tNom > 0 && tDes > 0.9 * tNom) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Torque near nominal' : 'Par cerca del nominal',
+      body:
+        lang === 'en'
+          ? 'Design torque exceeds 90% of coupling nominal torque. Consider a higher-capacity model.'
+          : 'Par de diseño supera el 90% del nominal del acoplamiento. Considerar modelo de mayor capacidad.',
+      normRef: 'Coupling catalogue — demonstration data.',
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {{ fit_type?: string, interference_mm?: number, d_mm?: number, lang?: 'es'|'en' }} ctx
+ */
+export function buildIsoFitAdvisorInsights(ctx, opts = {}) {
+  const lang = opts.lang === 'en' || ctx.lang === 'en' ? 'en' : 'es';
+  /** @type {AdvisorInsight[]} */
+  const out = [];
+  const fitType = String(ctx.fit_type || '');
+  const interference = Number(ctx.interference_mm);
+  const d = Number(ctx.d_mm);
+
+  if (fitType === 'interference' && Number.isFinite(interference) && Number.isFinite(d) && d > 0 && interference > 0.003 * d) {
+    out.push({
+      tone: 'warn',
+      title: lang === 'en' ? 'Heavy interference fit' : 'Apriete pronunciado',
+      body:
+        lang === 'en'
+          ? 'Relative interference > 3‰ of diameter. Verify assembly stresses and need for heating.'
+          : 'Apriete relativo >3‰ del diámetro. Verificar tensiones de montaje y necesidad de calentamiento.',
+      normRef: 'ISO 286-1 — assembly practice.',
+    });
+  }
+  return out;
+}
+
 export function metricsFromBeltType(beltType) {
   const eta = typicalBeltEfficiency(/** @type {any} */ (beltType));
   return {

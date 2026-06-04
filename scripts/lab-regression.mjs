@@ -3,6 +3,7 @@ import { computeAgmaSimplifiedCheck } from '../js/lab/agmaSpurSimplified.js';
 import { computeBeltDriveTransmission } from '../js/lab/beltDrives.js';
 import { computeBearingL10 } from '../js/lab/bearings.js';
 import { computeSolidShaftTorsion } from '../js/lab/shaftTorsion.js';
+import { computeExtruder } from '../js/modules/extruder.js';
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -84,6 +85,25 @@ const tests = [
   run('Shaft zero torque stays zero', () => {
     const r = computeSolidShaftTorsion({ torque_Nm: 0, tauAllow_MPa: 40 });
     approxEqual(r.diameter_min_mm, 0, 1e-9, 'diameter_min_mm');
+  }),
+  run('Extruder HDPE D45 N60 circular', () => {
+    const r = computeExtruder({
+      D_mm: 45,
+      LD: 25,
+      h_mm: 3.5,
+      phi_deg: 17.7,
+      N_rpm: 60,
+      K: 7000,
+      n_idx: 0.45,
+      rho_melt: 760,
+      die_D_mm: 20,
+      die_L_mm: 80,
+      die_type: 'circular',
+    });
+    assert(r.Q_net_kg_h > 30 && r.Q_net_kg_h < 160, `Q_net_kg_h out of range: ${r.Q_net_kg_h}`);
+    assert(r.dP_die_bar > 10 && r.dP_die_bar < 400, `dP_die_bar out of range: ${r.dP_die_bar}`);
+    assert(r.iter_converged === true, 'iter_converged expected true');
+    assert(r.v_extrudate_mms > 0, `v_extrudate_mms expected > 0: ${r.v_extrudate_mms}`);
   }),
 ];
 

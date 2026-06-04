@@ -8,11 +8,14 @@ import {
   createLabUrlSync,
   mountLabPresetsBar,
   renderResultHero,
+  renderLabAdvisorInsights,
   updateLabShareVisibility,
   wireLabCopyLink,
   wireLabCopyResultsButton,
 } from './labCalcUx.js';
+import { buildBoltsIsoAdvisorInsights } from '../services/iaAdvisor.js';
 import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { collectLabInputRows, collectLabResultRows } from '../services/labPdfPayload.js';
 import { withCalcCredits } from '../services/creditSession.js';
 import { isCreditsSystemEnabled } from '../config/credits.js';
 import { BOLT_DIAMETERS, boltRowCatalog } from '../data/metricBoltGrades.js';
@@ -147,6 +150,7 @@ function render() {
   if (syncInputValidationResultsGate(document.getElementById('blResults'))) {
     const blHero = document.getElementById('blHero');
     if (blHero) blHero.innerHTML = '';
+    renderLabAdvisorInsights('blAdvisorPanel', []);
     return;
   }
 
@@ -250,6 +254,19 @@ function render() {
       'Does not replace EN 1993-1-8 or manufacturer tightening specs; preload/torque values are indicative.',
     )}</p>`;
 
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  if (F_N > 0 && Number.isFinite(SF)) {
+    renderLabAdvisorInsights(
+      'blAdvisorPanel',
+      buildBoltsIsoAdvisorInsights(
+        { sf_tightening: SF, torque_nm: T_mu_Nm, lang: advLang },
+        { lang: advLang },
+      ),
+    );
+  } else {
+    renderLabAdvisorInsights('blAdvisorPanel', []);
+  }
+
   updateLabShareVisibility('blShareLinkWrap', 'blOut');
   if (!blUrl.hydrating) blUrl.serializeToUrl();
 }
@@ -288,9 +305,21 @@ mountCompactLabFieldHelp();
 
 if (isCreditsSystemEnabled()) void withCalcCredits(() => render());
 else render();
-mountLabCloudSaveBar(bx('Torniller\u00eda ISO 898', 'ISO 898 bolts'), {
-  norm: 'ISO 898-1 · propiedades mecánicas tornillos',
+function buildInputsArray() {
+  return collectLabInputRows(document.querySelector('main'));
+}
+
+function buildResultsArray() {
+  return collectLabResultRows(document.querySelector('main'));
+}
+
+mountLabCloudSaveBar(bx('Torniller\u00eda ISO 898-1', 'Bolts ISO 898-1'), {
+  norm: 'ISO 898-1 / VDI 2230 \u00b7 torniller\u00eda m\u00e9trica',
   svgSelector: '#blDiagram',
+  getData: () => ({
+    inputs: buildInputsArray(),
+    results: buildResultsArray(),
+  }),
 });
 watchLangAndApply(BOLTS_ISO_EN, {
   reloadOnEs: false,

@@ -18,6 +18,7 @@ import {
   mountLabPresetsBar,
   revalidateAllBoundInputs,
   renderResultHero,
+  renderLabAdvisorInsights,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
   syncInputValidationResultsGate,
@@ -29,6 +30,13 @@ import {
 import { getLabLang, LAB_LANG_EVENT } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { WORM_GEAR_PAGE_EN } from '../lab/i18n/pages/wormGearPageEn.js';
+import { collectLabInputRows, collectLabResultRows } from '../services/labPdfPayload.js';
+import { buildWormGearAdvisorInsights } from '../services/iaAdvisor.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
+
+function bx(es, en) {
+  return getLabLang() === 'en' ? en : es;
+}
 
 const WORM_PRESETS = [
   {
@@ -175,7 +183,10 @@ function refreshCore() {
 
   renderWormGearDiagram(document.getElementById('wgDiagram'), r);
 
-  if (syncInputValidationResultsGate(document.getElementById('wgResults'))) return;
+  if (syncInputValidationResultsGate(document.getElementById('wgResults'))) {
+    renderLabAdvisorInsights('wgAdvisorPanel', []);
+    return;
+  }
 
   const hasCritical = r.selfLocking && r.etaDirectPct < 30;
   const hasWarn = r.selfLocking || r.etaDirectPct < 50;
@@ -279,7 +290,43 @@ function refreshCore() {
     alerts.innerHTML = parts.join('');
   }
 
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  renderLabAdvisorInsights(
+    'wgAdvisorPanel',
+    buildWormGearAdvisorInsights(
+      {
+        i: r.i,
+        gamma_deg: r.gammaDeg,
+        eta: r.etaDirect,
+        autoblocking: r.selfLocking,
+        lang: advLang,
+      },
+      { lang: advLang },
+    ),
+  );
+
   updateLabShareVisibility('wgShareLinkWrap', 'wgResults');
+}
+
+function buildWormGearInputsArray() {
+  const scope = document.querySelector('main.lab-main');
+  return scope ? collectLabInputRows(scope) : [];
+}
+
+function buildWormGearResultsArray() {
+  const scope = document.querySelector('main.lab-main');
+  if (!scope) return [];
+  /** @type {Array<{ label: string; value: string }>} */
+  const rows = [];
+  scope.querySelectorAll('.lab-result-hero__cell').forEach((cell) => {
+    const label = cell.querySelector('.lab-result-hero__label');
+    const value = cell.querySelector('.lab-result-hero__value');
+    if (label && value) {
+      rows.push({ label: label.textContent.trim(), value: value.textContent.trim() });
+    }
+  });
+  rows.push(...collectLabResultRows(scope));
+  return rows;
 }
 
 const resultsWrap = document.getElementById('wgResultsWrap');
@@ -353,6 +400,15 @@ watchLangAndApply(WORM_GEAR_PAGE_EN, {
 wireLabCopyLink('wgCopyLinkBtn', 'wgCopyToast');
 wireLabCopyResultsButton('wgCopyResults', {
   moduleTitle: wormT('moduleLabel'),
+});
+
+mountLabCloudSaveBar(bx('Tornillo sin fin y corona', 'Worm gear'), {
+  norm: 'ISO 14521 \u00b7 tornillo sin fin y corona',
+  svgSelector: '#wgDiagram',
+  getData: () => ({
+    inputs: buildWormGearInputsArray(),
+    results: buildWormGearResultsArray(),
+  }),
 });
 
 window.addEventListener(LAB_LANG_EVENT, () => {

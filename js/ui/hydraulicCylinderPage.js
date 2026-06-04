@@ -2,6 +2,7 @@ import {
   bindInputValidation,
   mountLabPresetsBar,
   revalidateAllBoundInputs,
+  renderResultHero,
   syncInputValidationResultsGate,
   updateLabShareVisibility,
   wireLabCopyLink,
@@ -467,7 +468,11 @@ function renderHcVerdictSummary(opts) {
 }
 
 function computeAndRenderCore() {
-  if (syncInputValidationResultsGate(document.getElementById('hcResults'))) return;
+  const hero = document.getElementById('hcHero');
+  if (syncInputValidationResultsGate(document.getElementById('hcResults'))) {
+    if (hero instanceof HTMLElement) hero.innerHTML = '';
+    return;
+  }
   const calcMode = getHcCalcMode();
   const isDesign = calcMode === 'design';
 
@@ -526,6 +531,7 @@ function computeAndRenderCore() {
 
   if (errors.length) {
     results.innerHTML = '';
+    if (hero instanceof HTMLElement) hero.innerHTML = '';
     updateLabShareVisibility('hcShareLinkWrap', 'hcResults');
     if (sealInfo instanceof HTMLElement) sealInfo.textContent = '';
     if (formulaBody instanceof HTMLElement) formulaBody.innerHTML = '';
@@ -610,6 +616,24 @@ function computeAndRenderCore() {
   const hydraulicVsPneumatic = forcePushN / Math.max(1, pneuEqForce);
 
   renderCylinderDiagram(document.getElementById('hcDiagram'), strokeMm, rodMm, boreMm);
+
+  const Fa = forcePushN;
+  const vMmS = vReal * 1000;
+  if (hero instanceof HTMLElement) {
+    hero.innerHTML = renderResultHero(
+      [
+        {
+          label: getLang() === 'en' ? 'Advance force F_a' : 'Fuerza avance F_a',
+          display: `${Fa.toFixed(0)} N`,
+        },
+        {
+          label: getLang() === 'en' ? 'Extend speed v' : 'Vel. extendido v',
+          display: `${vMmS.toFixed(1)} mm/s`,
+        },
+      ],
+      { verdict: Fa > 0 && vMmS > 0 ? 'ok' : 'warn' },
+    );
+  }
 
   const marginPct = (forceRatioPush - 1) * 100;
 

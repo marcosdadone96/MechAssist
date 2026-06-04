@@ -11,6 +11,7 @@ import {
   mountLabPresetsBar,
   revalidateAllBoundInputs,
   renderResultHero,
+  renderLabAdvisorInsights,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
   syncInputValidationResultsGate,
@@ -21,6 +22,13 @@ import {
 import { getLabLang, LAB_LANG_EVENT } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { FATIGUE_PAGE_EN } from '../lab/i18n/pages/fatiguePageEn.js';
+import { collectLabInputRows, collectLabResultRows } from '../services/labPdfPayload.js';
+import { buildFatigueAdvisorInsights } from '../services/iaAdvisor.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
+
+function bx(es, en) {
+  return getLabLang() === 'en' ? en : es;
+}
 
 const FATIGUE_PRESETS = [
   {
@@ -223,7 +231,10 @@ function refreshCore() {
 
   renderFatigueDiagram(document.getElementById('ftDiagram'), r);
 
-  if (syncInputValidationResultsGate(document.getElementById('ftResults'))) return;
+  if (syncInputValidationResultsGate(document.getElementById('ftResults'))) {
+    renderLabAdvisorInsights('ftAdvisorPanel', []);
+    return;
+  }
 
   const gv = r.status === 'unsafe' ? 'error' : r.status === 'tight' ? 'warn' : 'ok';
 
@@ -290,7 +301,45 @@ function refreshCore() {
     alerts.innerHTML = parts.join('');
   }
 
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  renderLabAdvisorInsights(
+    'ftAdvisorPanel',
+    buildFatigueAdvisorInsights(
+      {
+        sf: r.nf_governing,
+        sigma_a: sigmaA,
+        sigma_m: sigmaM,
+        Se: r.Se_MPa,
+        Sut: read('ftSu', 510),
+        criterion: criticalLabel(r.criticalKey),
+        lang: advLang,
+      },
+      { lang: advLang },
+    ),
+  );
+
   updateLabShareVisibility('ftShareLinkWrap', 'ftResults');
+}
+
+function buildFatigueInputsArray() {
+  const scope = document.querySelector('main.lab-main');
+  return scope ? collectLabInputRows(scope) : [];
+}
+
+function buildFatigueResultsArray() {
+  const scope = document.querySelector('main.lab-main');
+  if (!scope) return [];
+  /** @type {Array<{ label: string; value: string }>} */
+  const rows = [];
+  scope.querySelectorAll('.lab-result-hero__cell').forEach((cell) => {
+    const label = cell.querySelector('.lab-result-hero__label');
+    const value = cell.querySelector('.lab-result-hero__value');
+    if (label && value) {
+      rows.push({ label: label.textContent.trim(), value: value.textContent.trim() });
+    }
+  });
+  rows.push(...collectLabResultRows(scope));
+  return rows;
 }
 
 const resultsWrap = document.getElementById('ftResultsWrap');
@@ -366,6 +415,15 @@ watchLangAndApply(FATIGUE_PAGE_EN, {
 wireLabCopyLink('ftCopyLinkBtn', 'ftCopyToast');
 wireLabCopyResultsButton('ftCopyResults', {
   moduleTitle: ftT('moduleLabel'),
+});
+
+mountLabCloudSaveBar(bx('Fatiga \u00b7 Goodman', 'Fatigue \u00b7 Goodman'), {
+  norm: 'Shigley / Goodman modificado \u00b7 fatiga a flexi\u00f3n',
+  svgSelector: '#ftDiagram',
+  getData: () => ({
+    inputs: buildFatigueInputsArray(),
+    results: buildFatigueResultsArray(),
+  }),
 });
 
 window.addEventListener(LAB_LANG_EVENT, () => {

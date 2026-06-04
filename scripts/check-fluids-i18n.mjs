@@ -7,6 +7,7 @@ const pages = [
   { html: 'calc-pneumatic-cylinder.html', en: 'js/lab/i18n/pages/pneumaticCylEn.js', prefix: 'pneuCyl.' },
   { html: 'calc-hydraulic-valve.html', en: 'js/lab/i18n/pages/hydraulicValveEn.js', prefix: 'hvalve.' },
   { html: 'calc-hydraulic-accumulator.html', en: 'js/lab/i18n/pages/hydraulicAccumulatorEn.js', prefix: 'hacc.' },
+  { html: 'calc-pneumatic-compressor.html', en: 'js/lab/i18n/pages/pneumaticCompressorEn.js', prefix: 'comp.' },
   { html: 'fluids-hub.html', en: 'js/lab/i18n/pages/fluidsHubUxEn.js', prefix: 'fluids.' },
 ];
 
@@ -84,7 +85,9 @@ const fluidWrappers = pages
                 ? 'valve'
                 : slug === 'hydraulic-accumulator'
                   ? 'accumulator'
-                  : null;
+                  : slug === 'pneumatic-compressor'
+                    ? 'compressor'
+                    : null;
     return mod && src.includes(`fluid-calc--${mod}`);
   });
 console.log(`fluid-calc--* wrappers on calc pages: ${fluidWrappers ? 'yes' : 'MISSING'}`);

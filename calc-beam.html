@@ -4,18 +4,48 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="beam.docTitle">Vigas · flexión y flecha — TheMechAssist</title>
-    <meta name="description" data-i18n="beam.metaDesc" data-i18n-attr="content" content="Flecha, momento y tensión en vigas estáticas. Secciones rectangular, circular, I y T." />
+    <meta name="description" data-i18n="beam.metaDesc" data-i18n-attr="content" content="Flecha máxima, momento flector y tensión en vigas estáticas. Viga simple, biapoyada y empotrada. Secciones rectangular, circular, I y T. Modelo Euler-Bernoulli. Gratis." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
     <link rel="canonical" href="https://www.themechassist.com/calc-beam.html" id="mdr-canonical" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.themechassist.com/calc-beam.html" />
     <meta property="og:title" data-i18n="beam.docTitle" data-i18n-attr="content" content="Vigas · flexión y flecha — TheMechAssist" />
+    <meta property="og:description" data-i18n="beam.metaDesc" data-i18n-attr="content" content="Flecha máxima, momento flector y tensión en vigas estáticas. Viga simple, biapoyada y empotrada. Secciones rectangular, circular, I y T. Modelo Euler-Bernoulli. Gratis." />
     <meta property="og:image" content="https://www.themechassist.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:description" data-i18n="beam.metaDesc" data-i18n-attr="content" content="Flecha máxima, momento flector y tensión en vigas estáticas. Viga simple, biapoyada y empotrada. Secciones rectangular, circular, I y T. Modelo Euler-Bernoulli. Gratis." />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/lab.css" />
     <script defer src="js/legal/cookiesAndAnalyticsBoot.js"></script>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Vigas · flexión y flecha",
+  "description": "Flecha máxima, momento flector y tensión en vigas estáticas. Viga simple, biapoyada y empotrada. Secciones rectangular, circular, I y T. Modelo Euler-Bernoulli. Gratis.",
+  "url": "https://www.themechassist.com/calc-beam.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body class="lab-body">
     <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -102,6 +132,7 @@
             </div>
           </details>
         </header>
+        <div id="beamAdvisorPanel" hidden></div>
         <nav class="lab-next-steps" data-i18n="beam.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
           <h3 class="lab-next-steps__title" data-i18n="beam.nextStepsTitle">Siguiente paso habitual</h3>
           <ul class="lab-next-steps__list">
@@ -170,7 +201,7 @@
               </div>
               <div class="lab-field">
                 <label for="beamE" class="lab-field__label-row">
-                  <span class="lab-field__label-text" data-i18n="beam.labelMaterial">Mdulo elstico E</span>
+                  <span class="lab-field__label-text" data-i18n="beam.labelMaterial">Mdulo elstico E <span class="info-chip" title="Módulo de Young. Acero: 210 GPa. Aluminio: 70 GPa. Acero inox: 193 GPa. Fundición: 100–170 GPa." aria-label="Ayuda módulo elástico">?</span></span>
                 </label>
                 <select id="beamE">
                   <option value="steel" data-i18n="beam.optSteel">Acero</option>
@@ -192,7 +223,7 @@
                   <span class="lab-field-ico" title="Vano">
                     <svg class="lab-field-ico--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18h16M6 18V8M18 18V8"/></svg>
                   </span>
-                  <span class="lab-field__label-text" data-i18n="beam.labelSpan">Longitud L (m)</span>
+                  <span class="lab-field__label-text" data-i18n="beam.labelSpan">Longitud L (m) <span class="info-chip" title="Luz libre entre apoyos. Influye en la flecha al cubo: duplicar L multiplica la flecha por 8." aria-label="Ayuda luz libre">?</span></span>
                 </label>
                 <input inputmode="decimal" id="beamSpan" type="number" step="0.001" min="0.001" value="3" />
                 <p class="lab-field-help" data-i18n="beam.helpSpanHtml" data-i18n-html>
@@ -201,7 +232,7 @@
               </div>
               <div class="lab-field">
                 <label for="beamLoad" class="lab-field__label-row">
-                  <span class="lab-field__label-text" data-i18n="beam.labelLoad">Carga F (N) o q (N/m)</span>
+                  <span class="lab-field__label-text" data-i18n="beam.labelLoad">Carga F (N) o q (N/m) <span class="info-chip" title="Carga total aplicada. Para carga distribuida introduce el total (N), no la intensidad (N/m)." aria-label="Ayuda carga">?</span></span>
                 </label>
                 <input inputmode="decimal" id="beamLoad" type="number" step="any" min="0" value="5000" />
                 <p class="lab-field-help" data-i18n="beam.helpLoadHtml" data-i18n-html>
@@ -223,14 +254,14 @@
               </div>
               <div class="lab-field" id="beamRectRows">
                 <label for="beamWidth" class="lab-field__label-row">
-                  <span class="lab-field__label-text" data-i18n="beam.labelWidth">Anchura b (mm)</span>
+                  <span class="lab-field__label-text" data-i18n="beam.labelWidth">Anchura b (mm) <span class="info-chip" title="Ancho de la sección transversal b (mm). Para perfil I o T: ancho del ala." aria-label="Ayuda anchura">?</span></span>
                 </label>
                 <input inputmode="decimal" id="beamWidth" type="number" step="any" min="0.1" value="100" />
                 <p class="lab-field-help" data-i18n="beam.helpWidthHtml" data-i18n-html>Anchura <strong>b</strong> de la seccin rectangular (mm).</p>
               </div>
               <div class="lab-field" id="beamRectRows2">
                 <label for="beamHeight" class="lab-field__label-row">
-                  <span class="lab-field__label-text" data-i18n="beam.labelHeight">Altura h (mm)</span>
+                  <span class="lab-field__label-text" data-i18n="beam.labelHeight">Altura h (mm) <span class="info-chip" title="Canto total de la sección h (mm). Para perfil I: altura total incluyendo ambas alas." aria-label="Ayuda altura">?</span></span>
                 </label>
                 <input inputmode="decimal" id="beamHeight" type="number" step="any" min="0.1" value="200" />
                 <p class="lab-field-help" data-i18n="beam.helpHeightHtml" data-i18n-html>Altura <strong>h</strong> de la seccin rectangular (mm).</p>

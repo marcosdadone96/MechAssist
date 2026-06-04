@@ -213,7 +213,35 @@
         color: #334155;
       }
     </style>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Prensa hidráulica",
+  "description": "Fuerza de prensado, presión y diámetro de émbolo. Estimación de exigencia de bomba y caudal.",
+  "url": "https://www.themechassist.com/calc-hydraulic-press.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -464,6 +492,7 @@
               <summary data-i18n="hpress.formulasSummary">Memoria de cálculo, fórmulas y supuestos</summary>
               <div id="hppFormulaBody" class="lab-fluid-formulas__body"></div>
             </details>
+            <div id="hppHero" class="lab-results-hero-mount" aria-live="polite"></div>
             <div id="hppResults" class="lab-results"></div>
             <div class="lab-results-actions">
               <button type="button" class="lab-btn lab-btn--block" id="hppCopyResults" data-i18n="fluids.copyResults">Copiar resultados</button>

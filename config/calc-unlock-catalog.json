@@ -1,7 +1,7 @@
 [
   {
     "slug": "calc-gears.html",
-    "es": "Engranajes cilÔøΩndricos",
+    "es": "Engranajes cilùndricos",
     "en": "Spur gears"
   },
   {
@@ -11,23 +11,23 @@
   },
   {
     "slug": "calc-chains.html",
-    "es": "Cadenas y piÔøΩones",
+    "es": "Cadenas y piùones",
     "en": "Chains and sprockets"
   },
   {
     "slug": "calc-bearings.html",
-    "es": "Rodamientos ÔøΩ vida L10",
-    "en": "Bearings ÔøΩ L10 life"
+    "es": "Rodamientos ù vida L10",
+    "en": "Bearings ù L10 life"
   },
   {
     "slug": "calc-bearings-catalog.html",
-    "es": "Rodamientos ÔøΩ catÔøΩlogo 62xx",
-    "en": "Bearings ÔøΩ 62xx catalog"
+    "es": "Rodamientos ù catùlogo 62xx",
+    "en": "Bearings ù 62xx catalog"
   },
   {
     "slug": "calc-shaft.html",
-    "es": "Eje ÔøΩ torsiÔøΩn",
-    "en": "Shaft ÔøΩ torsion"
+    "es": "Eje ù torsiùn",
+    "en": "Shaft ù torsion"
   },
   {
     "slug": "calc-keys-din6885.html",
@@ -46,28 +46,28 @@
   },
   {
     "slug": "calc-couplings.html",
-    "es": "Acoplamientos ÔøΩ catÔøΩlogo",
-    "en": "Couplings ÔøΩ catalog"
+    "es": "Acoplamientos ù catùlogo",
+    "en": "Couplings ù catalog"
   },
   {
     "slug": "calc-bolts-iso898.html",
-    "es": "TornillerÔøΩa ISO 898-1",
+    "es": "Tornillerùa ISO 898-1",
     "en": "Bolts ISO 898-1"
   },
   {
     "slug": "calc-gearmotor-inertia.html",
-    "es": "Motor ÔøΩ inercia J",
-    "en": "Motor ÔøΩ inertia J"
+    "es": "Motor ù inercia J",
+    "en": "Motor ù inertia J"
   },
   {
     "slug": "calc-compression-spring.html",
-    "es": "Muelle de compresiÔøΩn",
+    "es": "Muelle de compresiùn",
     "en": "Compression spring"
   },
   {
     "slug": "calc-beam.html",
-    "es": "Vigas ÔøΩ flexiÔøΩn",
-    "en": "Beams ÔøΩ bending"
+    "es": "Vigas ù flexiùn",
+    "en": "Beams ù bending"
   },
   {
     "slug": "calc-power-screw.html",
@@ -81,7 +81,7 @@
   },
   {
     "slug": "transmission-canvas.html",
-    "es": "Lienzo tÔøΩcnico multieje",
+    "es": "Lienzo tùcnico multieje",
     "en": "Multi-shaft canvas"
   },
   {
@@ -116,47 +116,55 @@
   },
   {
     "slug": "traction-elevator.html",
-    "es": "Ascensor de tracciÔøΩn",
+    "es": "Ascensor de tracciùn",
     "en": "Traction elevator"
   },
   {
     "slug": "car-lift-screw.html",
-    "es": "Elevador de vehÔøΩculos",
+    "es": "Elevador de vehùculos",
     "en": "Vehicle lift (screw)"
   },
   {
     "slug": "centrifugal-pump.html",
-    "es": "Bomba centrÔøΩfuga",
+    "es": "Bomba centr\u00edfuga",
     "en": "Centrifugal pump"
   },
   {
+    "slug": "extruder.html",
+    "es": "Extrusora de husillo simple",
+    "en": "Single-screw extruder",
+    "block": "machines",
+    "tier": "pro",
+    "norm": "Rauwendaal / Tadmor & Gogos"
+  },
+  {
     "slug": "calc-hydraulic-pump.html",
-    "es": "Bomba hidrÔøΩulica",
+    "es": "Bomba hidrùulica",
     "en": "Hydraulic pump"
   },
   {
     "slug": "calc-hydraulic-cylinder.html",
-    "es": "Cilindro hidrÔøΩulico",
+    "es": "Cilindro hidrùulico",
     "en": "Hydraulic cylinder"
   },
   {
     "slug": "calc-hydraulic-press.html",
-    "es": "Prensa hidrÔøΩulica",
+    "es": "Prensa hidrùulica",
     "en": "Hydraulic press"
   },
   {
     "slug": "calc-pneumatic-cylinder.html",
-    "es": "Cilindro neumÔøΩtico",
+    "es": "Cilindro neumùtico",
     "en": "Pneumatic cylinder"
   },
   {
     "slug": "calc-hydraulic-valve.html",
-    "es": "VÔøΩlvulas hidrÔøΩulicas",
+    "es": "Vùlvulas hidrùulicas",
     "en": "Hydraulic valves"
   },
   {
     "slug": "calc-hydraulic-accumulator.html",
-    "es": "Acumulador hidr√°ulico",
+    "es": "Acumulador hidr·ulico",
     "en": "Hydraulic accumulator"
   },
   {
@@ -166,12 +174,17 @@
   },
   {
     "slug": "calc-fatigue.html",
-    "es": "Fatiga ÔøΩ Diagrama de Goodman",
-    "en": "Fatigue ÔøΩ Goodman diagram"
+    "es": "Fatiga ù Diagrama de Goodman",
+    "en": "Fatigue ù Goodman diagram"
   },
   {
     "slug": "calc-bolt-shear.html",
-    "es": "Cortante en torniller√≠a",
+    "es": "Cortante en tornillerÌa",
     "en": "Bolt shear & bearing"
+  },
+  {
+    "slug": "calc-pneumatic-compressor.html",
+    "es": "Compresor neumùtico",
+    "en": "Pneumatic compressor"
   }
 ]

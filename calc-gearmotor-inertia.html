@@ -63,7 +63,35 @@
       .gm-summary-item--ok { background: #ecfdf5; border-color: #6ee7b7; color: #065f46; }
       .gm-summary-item--err { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
     </style>
-  </head>
+  
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Motor e inercia — Laboratorio",
+  "description": "Relación de inercias y par motor vs carga con catálogo demo. En evolución; resultados orientativos.",
+  "url": "https://www.themechassist.com/calc-gearmotor-inertia.html",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "inLanguage": [
+    "es",
+    "en"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free to use"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "TheMechAssist",
+    "url": "https://www.themechassist.com"
+  },
+  "featureList": "Engineering calculation tool"
+}
+</script>
+</head>
   <body class="lab-body">
         <header class="site-nav site-nav--sticky">
       <a class="site-nav__brand" href="index.html" aria-label="Inicio — TheMechAssist" data-i18n="nav.brandHome" data-i18n-attr="aria-label">
@@ -119,6 +147,7 @@
             </div>
           </details>
         </header>
+        <div id="gmAdvisorPanel" hidden></div>
         <nav class="lab-next-steps" data-i18n="gm.nextStepsAria" data-i18n-attr="aria-label" aria-label="Siguiente paso habitual">
           <h3 class="lab-next-steps__title" data-i18n="gm.nextStepsTitle">Siguiente paso habitual</h3>
           <ul class="lab-next-steps__list">
@@ -254,6 +283,7 @@
           </div>
         </div>
       </section>
+    <div id="labPurchaseSuggestions" hidden></div>
     </main>
 
     <script>

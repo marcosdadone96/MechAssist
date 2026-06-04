@@ -22,6 +22,20 @@ import {
   HV_DN_KV_TABLE,
   renderValveDiagram,
 } from '../lab/hydraulicValve.js';
+import { mountLabCloudSaveBar } from './labCloudSave.js';
+import { collectLabInputRows, collectLabResultRows } from '../services/labPdfPayload.js';
+
+function bx(es, en) {
+  return getCurrentLang() === 'en' ? en : es;
+}
+
+function buildInputsArray() {
+  return collectLabInputRows(document.querySelector('main'));
+}
+
+function buildResultsArray() {
+  return collectLabResultRows(document.querySelector('main'));
+}
 
 const HV_PRESETS = [
   {
@@ -408,4 +422,13 @@ wireLabCopyLink('hvCopyLinkBtn', 'hvCopyLinkToast');
 wireLabCopyResultsButton('hvCopyResults', {
   moduleTitle: getCurrentLang() === 'en' ? 'Hydraulic valve' : 'V\u00e1lvula hidr\u00e1ulica',
   toastId: 'hvCopyToast',
+});
+
+mountLabCloudSaveBar(bx('V\u00e1lvulas hidr\u00e1ulicas \u00b7 Kv', 'Hydraulic valves \u00b7 Kv'), {
+  norm: 'ISO 4422 / IEC 60534 orientativo \u00b7 Kv y ca\u00edda de presi\u00f3n',
+  svgSelector: '#hvDiagram',
+  getData: () => ({
+    inputs: buildInputsArray(),
+    results: buildResultsArray(),
+  }),
 });

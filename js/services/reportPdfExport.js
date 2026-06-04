@@ -842,6 +842,129 @@ export function buildScrewPdfPayload(raw, r) {
   };
 }
 
+/**
+ * @param {object} raw
+ * @param {object} r — computeExtruder
+ */
+export function buildExtruderPdfPayload(raw, r) {
+  const lang = getCurrentLang();
+  const en = lang === 'en';
+  const pick = getBestCatalogPick({
+    power_kW: r.P_iec_kW ?? r.P_design_kW,
+    torque_Nm: r.torqueWithService_Nm,
+    drum_rpm: r.drumRpm ?? raw.N_rpm,
+  });
+  const brandName = pick ? BRANDS.find((b) => b.id === pick.m.brandId)?.name || pick.m.brandId : '';
+
+  return {
+    title: en ? 'Report \u2014 Single-screw extruder' : 'Informe \u2014 Extrusora de husillo simple',
+    fileBase: en
+      ? `extruder-report-${new Date().toISOString().slice(0, 10)}`
+      : `informe-extrusora-${new Date().toISOString().slice(0, 10)}`,
+    timestamp: formatDateTimeLocale(new Date(), lang),
+    requirements: {
+      power_kW: r.P_design_kW,
+      torque_Nm: r.torqueWithService_Nm,
+      drum_rpm: r.drumRpm ?? raw.N_rpm,
+    },
+    inputRows: en
+      ? [
+          { label: 'Screw diameter D', value: `${raw.D_mm} mm` },
+          { label: 'L/D', value: String(raw.LD) },
+          { label: 'Channel depth h', value: `${raw.h_mm} mm` },
+          { label: 'Helix angle', value: `${raw.phi_deg} deg` },
+          { label: 'Screw speed N', value: `${raw.N_rpm} min-1` },
+          { label: 'Barrel temperature', value: `${raw.Tb_C} \u00b0C` },
+          { label: 'Material', value: String(raw.material) },
+          { label: 'Consistency K', value: `${raw.K} Pa\u00b7s^n` },
+          { label: 'Flow index n', value: String(raw.n_idx) },
+          { label: 'Melt density', value: `${raw.rho_melt} kg/m3` },
+          { label: 'Die type', value: String(raw.die_type) },
+          { label: 'Die diameter d', value: `${raw.die_D_mm} mm` },
+          { label: 'Die land L', value: `${raw.die_L_mm} mm` },
+          ...(raw.die_type === 'annular'
+            ? [{ label: 'Mandrel ID', value: `${raw.die_Di_mm} mm` }]
+            : []),
+          { label: 'Service factor', value: String(r.serviceFactorUsed ?? raw.sf) },
+        ]
+      : [
+          { label: 'Di\u00e1metro husillo D', value: `${raw.D_mm} mm` },
+          { label: 'Relaci\u00f3n L/D', value: String(raw.LD) },
+          { label: 'Profundidad canal h', value: `${raw.h_mm} mm` },
+          { label: '\u00c1ngulo h\u00e9lice', value: `${raw.phi_deg} \u00b0` },
+          { label: 'Velocidad husillo N', value: `${raw.N_rpm} min\u207b\u00b9` },
+          { label: 'Temperatura cilindro', value: `${raw.Tb_C} \u00b0C` },
+          { label: 'Material', value: String(raw.material) },
+          { label: 'Consistencia K', value: `${raw.K} Pa\u00b7s^n` },
+          { label: '\u00cdndice flujo n', value: String(raw.n_idx) },
+          { label: 'Densidad fundido', value: `${raw.rho_melt} kg/m\u00b3` },
+          { label: 'Tipo boquilla', value: String(raw.die_type) },
+          { label: 'Di\u00e1metro boquilla d', value: `${raw.die_D_mm} mm` },
+          { label: 'Longitud boquilla L', value: `${raw.die_L_mm} mm` },
+          ...(raw.die_type === 'annular'
+            ? [{ label: '\u00d8 interior mandril', value: `${raw.die_Di_mm} mm` }]
+            : []),
+          { label: 'Factor de servicio', value: String(r.serviceFactorUsed ?? raw.sf) },
+        ],
+    resultRows: en
+      ? [
+          { label: 'Net throughput', value: `${r.Q_net_kg_h.toFixed(2)} kg/h` },
+          { label: 'Drag throughput', value: `${r.Q_drag_kg_h.toFixed(2)} kg/h` },
+          { label: 'Die back-pressure', value: `${r.dP_die_bar.toFixed(2)} bar` },
+          { label: 'Extrudate speed', value: `${r.v_extrudate_mms.toFixed(3)} mm/s` },
+          { label: 'Apparent shear rate', value: `${r.gamma_app_s.toFixed(0)} s-1` },
+          { label: 'Motor power (model)', value: `${r.P_total_kW.toFixed(3)} kW` },
+          { label: 'Design power (x SF)', value: `${r.P_design_kW.toFixed(3)} kW` },
+          { label: 'IEC motor size', value: `${r.P_iec_kW.toFixed(2)} kW (${r.ie_class})` },
+          { label: 'Shear heating', value: `${r.deltaT_K.toFixed(1)} K` },
+          { label: 'Screw torque (steady)', value: `${r.torqueAtDrum_Nm.toFixed(1)} N\u00b7m` },
+        ]
+      : [
+          { label: 'Caudal neto', value: `${r.Q_net_kg_h.toFixed(2)} kg/h` },
+          { label: 'Caudal arrastre', value: `${r.Q_drag_kg_h.toFixed(2)} kg/h` },
+          { label: 'Contrapresi\u00f3n boquilla', value: `${r.dP_die_bar.toFixed(2)} bar` },
+          { label: 'Velocidad extruido', value: `${r.v_extrudate_mms.toFixed(3)} mm/s` },
+          { label: 'Cizalla aparente', value: `${r.gamma_app_s.toFixed(0)} s\u207b\u00b9` },
+          { label: 'Potencia motor (modelo)', value: `${r.P_total_kW.toFixed(3)} kW` },
+          { label: 'Potencia dise\u00f1o (\u00d7 SF)', value: `${r.P_design_kW.toFixed(3)} kW` },
+          { label: 'Motor IEC', value: `${r.P_iec_kW.toFixed(2)} kW (${r.ie_class})` },
+          { label: 'Calent. por cizalla', value: `${r.deltaT_K.toFixed(1)} K` },
+          { label: 'Par husillo (r\u00e9gimen)', value: `${r.torqueAtDrum_Nm.toFixed(1)} N\u00b7m` },
+        ],
+    assumptions: en
+      ? [
+          'Isothermal metering-zone drag-flow model.',
+          'Power-Law die land; no calibrator or draw-down.',
+        ]
+      : [
+          'Modelo isotermo de arrastre en dosificaci\u00f3n.',
+          'Boquilla Power-Law; sin calibrador ni estirado.',
+        ],
+    stepsSummary: [],
+    topMotor: pick
+      ? `${pick.m.code} \u2014 ${brandName} \u00b7 ${pick.m.motor_kW} kW \u00b7 n\u2248${(r.drumRpm ?? raw.N_rpm).toFixed(0)} min\u207b\u00b9`
+      : '\u2014',
+    explanationsBlock: '',
+    dynamicAnalysis: {
+      torqueRunNm: r.torqueAtDrum_Nm,
+      torqueStartNm: r.torqueWithService_Nm,
+      forcePeakN: r.torqueWithService_Nm,
+      massFlowKgS: r.Q_net_kg_h / 3600,
+    },
+    verdict:
+      r.Q_net_kg_h > 0 && r.dP_die_bar < 500
+        ? en
+          ? 'OK'
+          : 'APTO'
+        : en
+          ? 'REVIEW'
+          : 'REVISAR',
+    disclaimer: en
+      ? 'Auto-generated by TheMechAssist. Drag-flow + Power-Law die model; validate with rheometer data and extruder OEM.'
+      : 'Documento generado por TheMechAssist. Modelo arrastre + boquilla Power-Law; valide con re\u00f3metro y fabricante de extrusora.',
+  };
+}
+
 export function buildRollerPdfPayload(raw, r) {
   const d = r.detail || {};
   return {

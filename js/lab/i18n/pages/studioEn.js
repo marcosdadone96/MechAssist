@@ -1,0 +1,68 @@
+/** EN strings for transmission-studio.html (studio.* namespace). ASCII-safe. */
+export const STUDIO_EN = {
+  'studio.docTitle': 'Modular transmission studio \u2014 TheMechAssist',
+  'studio.paywallTitle': 'Modular studio \u00b7 Pro',
+  'studio.paywallDesc':
+    'Chain gear trains, belt drives and chain drives in a single kinematic flow. Create an account and upgrade to Pro to unlock.',
+  'studio.paywallBtn': 'Continue with Pro',
+  'studio.labelN0': 'Input speed n\u2080 (rpm)',
+  'studio.btnCopyJson': 'Copy JSON',
+  'studio.btnCloudSave': 'Save to cloud',
+  'studio.blockGear': 'Gear train',
+  'studio.blockBelt': 'Belt drive',
+  'studio.blockChain': 'Chain drive',
+
+  'studio.labelEntry': 'Entry',
+  'studio.labelExit': 'Exit',
+  'studio.labelRatio': 'Total ratio',
+  'studio.labelSpeed': 'Speed',
+  'studio.labelTorque': 'Torque',
+  'studio.labelTotalRatio': 'Total ratio',
+  'studio.labelTrain': 'Gear train',
+  'studio.labelBelt': 'Belt',
+  'studio.labelChain': 'Chain',
+  'studio.emptyDrop': 'Drop a block here to build the kinematic chain',
+  'studio.dropHint': 'Reorder stages by dragging the pills on the timeline.',
+  'studio.dropAnotherHint': 'Drop another block to add a stage.',
+  'studio.emptyResults':
+    'Drag components to the canvas to see speeds, ratios and the kinematic product.',
+  'studio.pulleyLabel': 'Pulley',
+  'studio.sprocketLabel': 'Sprocket',
+  'studio.gearLabel': 'Gear',
+  'studio.centerLabel': 'Center',
+  'studio.pitchLabel': 'Pitch',
+  'studio.moduleLabel': 'Module',
+
+  'studio.timelineSeq': 'Kinematic sequence',
+  'studio.dropTitleEmpty': 'Drop a component here',
+  'studio.dropHintEmpty': 'Or click a block in the palette (quick access)',
+  'studio.dropTitleMore': 'Drop another block to add at the end',
+  'studio.dropHintMore': 'Reorder stages by dragging the pills on the timeline below.',
+
+  'studio.shortTrain': 'Train',
+  'studio.shortBelt': 'Belt',
+  'studio.shortChain': 'Chain',
+
+  'studio.trainLabel': 'Gear train',
+  'studio.beltLabel': 'Belt drive',
+  'studio.chainLabel': 'Chain drive',
+
+  'studio.checkN0': 'Input speed must be greater than 0 rpm.',
+  'studio.checkNoStages': 'No stages on the canvas.',
+  'studio.checkOk': 'Inputs are consistent. Calculation resolved.',
+  'studio.checkGearZ': 'Gear train {id}: invalid teeth (z < 6).',
+  'studio.checkBeltD': 'Belt {id}: invalid diameters.',
+  'studio.checkChainZ': 'Chain {id}: invalid teeth (z < 6).',
+
+  'studio.wheelN': 'Gear {n}',
+  'studio.pulleyN': 'Pulley {n}',
+  'studio.ratioAbbr': 'i',
+
+  'studio.remove': 'Remove',
+  'studio.min2Gears': 'Min. 2 gears',
+  'studio.gearTrainTitle': 'Gear train',
+  'studio.beltTitle': 'Belt ({n} pulleys)',
+  'studio.chainTitle': 'Chain ({n} sprockets)',
+  'studio.pulleyDia': 'Pulley {n} \u00d8 (mm)',
+  'studio.pitchP': 'Pitch p (mm)',
+};

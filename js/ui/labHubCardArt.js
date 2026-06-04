@@ -14,9 +14,10 @@ export const MACHINE_HUB_SLUGS = new Set([
   'screw-conveyor.html',
   'traction-elevator.html',
   'car-lift-screw.html',
+  'extruder.html',
 ]);
 
-const HUB_ART_VERSION = '7';
+const HUB_ART_VERSION = '9';
 
 /** @type {0|1|2|3} 0=default, 1=calc svg, 2=glyph, 3=machine diagram */
 const ART_TIER = {

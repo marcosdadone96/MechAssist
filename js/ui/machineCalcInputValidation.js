@@ -98,6 +98,23 @@ export const CENTRIFUGAL_PUMP_VALIDATION = [
   { id: 'viscosity', positive: true },
 ];
 
+export const EXTRUDER_VALIDATION = [
+  { id: 'extD', positive: true },
+  { id: 'extLD', positive: true },
+  { id: 'extH', positive: true },
+  { id: 'extPhi', min: 5, max: 35 },
+  { id: 'extN', positive: true },
+  { id: 'extTb', min: 100, max: 320 },
+  { id: 'extK', positive: true },
+  { id: 'extN_idx', min: 0.1, max: 1.0 },
+  { id: 'extRho', positive: true },
+  { id: 'extDieD', positive: true },
+  { id: 'extDieL', positive: true },
+  { id: 'extDieDi', min: 0.5, optional: true },
+  { id: 'extServiceFactor', min: 1, max: 3, optional: true },
+  { id: 'extDailyHours', min: 0.5, max: 24, optional: true },
+];
+
 export const TRACTION_ELEVATOR_VALIDATION = [
   { id: 'teQ', min: 0 },
   { id: 'teMc', min: 0 },

@@ -12,6 +12,7 @@ import {
   metricHtml,
   mountLabPresetsBar,
   renderResultHero,
+  renderLabAdvisorInsights,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
   updateLabShareVisibility,
@@ -26,6 +27,7 @@ import { getCurrentUser } from '../services/localAuth.js';
 import { getLabLang } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { POWER_SCREW_PAGE_EN } from '../lab/i18n/pages/powerScrewPageEn.js';
+import { buildPowerScrewAdvisorInsights } from '../services/iaAdvisor.js';
 
 function bx(es, en) {
   return getLabLang() === 'en' ? en : es;
@@ -162,6 +164,7 @@ function refreshCore() {
     }
     if (results) results.innerHTML = '';
     paintPscrewDiagram(st);
+    renderLabAdvisorInsights('pscrewAdvisorPanel', []);
     updateLabShareVisibility('pscrewShareLinkWrap', 'pscrewResults');
     if (!pscrewUrl.hydrating) pscrewUrl.serializeToUrl();
     return;
@@ -243,6 +246,20 @@ function refreshCore() {
   }
 
   paintPscrewDiagram(st);
+
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  renderLabAdvisorInsights(
+    'pscrewAdvisorPanel',
+    buildPowerScrewAdvisorInsights(
+      {
+        autoblocking: r.selfLocking,
+        efficiency: r.eta_raise,
+        pressure_ratio: r.usageP,
+        lang: advLang,
+      },
+      { lang: advLang },
+    ),
+  );
 
   updateLabShareVisibility('pscrewShareLinkWrap', 'pscrewResults');
   if (!pscrewUrl.hydrating) pscrewUrl.serializeToUrl();

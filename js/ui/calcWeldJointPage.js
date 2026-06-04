@@ -11,6 +11,7 @@ import {
   metricHtml,
   mountLabPresetsBar,
   renderResultHero,
+  renderLabAdvisorInsights,
   runCalcWithIndustrialFeedback,
   runLabCalcBoot,
   updateLabShareVisibility,
@@ -23,6 +24,7 @@ import { mountLabCloudSaveBar } from './labCloudSave.js';
 import { getLabLang } from '../lab/i18n/labLang.js';
 import { watchLangAndApply } from '../lab/i18n/applyModuleI18n.js';
 import { WELD_JOINT_PAGE_EN } from '../lab/i18n/pages/weldJointPageEn.js';
+import { buildWeldJointAdvisorInsights } from '../services/iaAdvisor.js';
 
 function bx(es, en) {
   return getLabLang() === 'en' ? en : es;
@@ -160,6 +162,7 @@ function refreshCore() {
     if (alerts) alerts.innerHTML = labAlert('error', bx('Geometr\u00eda de cord\u00f3n no v\u00e1lida.', 'Invalid weld geometry.'));
     if (results) results.innerHTML = '';
     renderWeldDiagram(document.getElementById('weldDiagram'), { mode, jointType: 'T', cathetus_mm: 6 });
+    renderLabAdvisorInsights('weldAdvisorPanel', []);
     updateLabShareVisibility('weldShareLinkWrap', 'weldResults');
     if (!weldUrl.hydrating) weldUrl.serializeToUrl();
     return;
@@ -275,6 +278,20 @@ function refreshCore() {
       );
     }
   }
+
+  const advLang = getLabLang() === 'en' ? 'en' : 'es';
+  renderLabAdvisorInsights(
+    'weldAdvisorPanel',
+    buildWeldJointAdvisorInsights(
+      {
+        utilisation: usage,
+        cateto_mm: mode === 'fillet' ? r.h : readNum('weldCateto', 6),
+        weld_type: mode,
+        lang: advLang,
+      },
+      { lang: advLang },
+    ),
+  );
 
   updateLabShareVisibility('weldShareLinkWrap', 'weldResults');
   if (!weldUrl.hydrating) weldUrl.serializeToUrl();
