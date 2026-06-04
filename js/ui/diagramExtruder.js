@@ -218,7 +218,7 @@ export function renderExtruderDiagram(svgId, inputs, results) {
     'text-anchor': 'end',
     'font-size': '10',
     fill: '#334155',
-  }).textContent = `${inputs.Tb_C ?? '—'} °C`;
+  }).textContent = `${inputs.Tb_C ?? '\u2014'} \u00b0C`;
 
   el(root, 'line', {
     x1: xBarrel + barrelW * 0.35,

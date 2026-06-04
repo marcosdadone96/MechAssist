@@ -11,6 +11,7 @@ import {
   mountProfileMenu,
   wirePlansLinksForLoggedInUser,
 } from './hubProfileMenu.js';
+import { applyBetaOpenAccessDocumentFlags, mountBetaAccessBanner } from './betaAccessUi.js';
 
 function lang() {
   return window.__homeLang === 'en' ? 'en' : 'es';
@@ -162,6 +163,8 @@ function ensureHomeAccountControls() {
 
 applyPublicFreeReleaseHomeUi();
 applyCreditsMachinesHubUi();
+applyBetaOpenAccessDocumentFlags();
+mountBetaAccessBanner(document.getElementById('hub-pricing')?.querySelector('.hub-pricing__head') || document.getElementById('hub-pricing'));
 renderHubProBadges();
 ensureHomeAccountControls();
 wirePlansLinksForLoggedInUser();

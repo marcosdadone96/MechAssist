@@ -6,6 +6,7 @@ import { shouldLockCalcInputsForCredits, withCalcCredits } from '../services/cre
 import { fetchCreditsBalance, getCachedCreditsState, syncAccountBillingState } from '../services/creditsApi.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { mountCreditsBar } from './creditsUi.js';
+import { applyBetaOpenAccessDocumentFlags } from './betaAccessUi.js';
 import { initNoCreditsLockWatch, syncNoCreditsInputLock } from './noCreditsLockMode.js';
 import { hasInputValidationErrors } from './labCalcUx.js';
 
@@ -16,6 +17,7 @@ const machineViewBooted = new WeakSet();
 export async function bootPageCredits() {
   if (!isCreditsSystemEnabled()) return;
   if (!getCurrentUser()?.email) return;
+  applyBetaOpenAccessDocumentFlags();
   const pool = creditPoolFromPath();
   const slug = calcSlugFromPath();
   await syncAccountBillingState().catch(() => {});

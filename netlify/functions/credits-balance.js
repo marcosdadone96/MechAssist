@@ -13,6 +13,7 @@ const {
   activeCalcUnlocks,
   syncSubscriptionFromProRecord,
   revokeSubscription,
+  isBetaOpenAccess,
 } = require('./lib/creditsLogic.js');
 
 function corsHeaders(event) {
@@ -86,6 +87,26 @@ exports.handler = async (event) => {
 
   const calcSlug = String(event.queryStringParameters?.calcSlug || '').trim().slice(0, 80);
   const unlockedCalcs = activeCalcUnlocks(rec);
+
+  if (isBetaOpenAccess()) {
+    return {
+      statusCode: 200,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ok: true,
+        beta: true,
+        balance: publicBalance(rec),
+        unlimited: true,
+        starter: false,
+        subscriptionPlan: 'unlimited',
+        subscriptionEndsAt: null,
+        calcUnlocked: calcSlug ? true : undefined,
+        calcSlug: calcSlug || undefined,
+        unlockedCalcs,
+      }),
+    };
+  }
+
   const unlockedCalc = calcSlug ? calcUnlockActive(rec, calcSlug) : false;
 
   const subActive = subscriptionActive(rec);

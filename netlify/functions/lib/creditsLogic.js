@@ -1,6 +1,6 @@
 /**
- * Ledger de crùditos por usuario (Netlify Blobs, store mechassist-pro).
- * Saldo ùnico compartido (lab, mùquinas e hidrùulica).
+ * Ledger de cr?ditos por usuario (Netlify Blobs, store mechassist-pro).
+ * Saldo ?nico compartido (lab, m?quinas e hidr?ulica).
  */
 const crypto = require('crypto');
 const {
@@ -24,6 +24,14 @@ const COST_PDF = Number(process.env.CREDITS_COST_PDF) || 10;
 const STARTER_PDF_LIMIT = Number(process.env.CREDITS_STARTER_PDF_LIMIT) || 30;
 const UNLOCK_DAYS = Number(process.env.CREDITS_CALC_UNLOCK_DAYS) || 30;
 
+/** Sincronizar con FEATURES.betaOpenAccess en js/config/features.js */
+function isBetaOpenAccess() {
+  if (process.env.BETA_OPEN_ACCESS === 'false' || process.env.BETA_OPEN_ACCESS === '0') {
+    return false;
+  }
+  return true;
+}
+
 /** @deprecated alias */
 const WELCOME_PER_POOL = WELCOME_TOTAL;
 
@@ -37,7 +45,7 @@ function monthKey() {
 }
 
 /**
- * Migra registros antiguos (lab + machines + fluids) al saldo ùnico.
+ * Migra registros antiguos (lab + machines + fluids) al saldo ?nico.
  * @param {Record<string, unknown>} r
  */
 function resolveCreditsAmount(r) {
@@ -217,6 +225,7 @@ async function ensureWelcomeCredits(store, email, opts = {}) {
  * @param {string} [calcSlug]
  */
 function hasUnlimitedAccess(rec, _pool, calcSlug) {
+  if (isBetaOpenAccess()) return true;
   if (subscriptionActive(rec) && rec.subscription === 'unlimited') return true;
   if (calcSlug && calcUnlockActive(rec, calcSlug)) return true;
   return false;
@@ -326,7 +335,7 @@ async function revokeSubscription(store, email) {
 }
 
 /**
- * Sincroniza suscripciùn Lemon ? ledger de crùditos (tras pago o webhook tardùo).
+ * Sincroniza suscripci?n Lemon ? ledger de cr?ditos (tras pago o webhook tard?o).
  * @param {import('@netlify/blobs').Store} store
  * @param {string} email
  * @param {Record<string, unknown> | null} proRec
@@ -454,6 +463,7 @@ module.exports = {
   saveRecord,
   ensureWelcomeCredits,
   consumeCredits,
+  isBetaOpenAccess,
   hasUnlimitedAccess,
   subscriptionActive,
   calcUnlockActive,

@@ -11,6 +11,8 @@
  * - URL exito checkout Lemon: https://SU-DOMINIO/checkout.html?paid=1
  * - publicSiteBaseUrl: URL del sitio sin barra final; luego `node scripts/generate-sitemap.mjs`
  *   y descomente Sitemap en robots.txt con la misma base.
+ * - betaOpenAccess: true durante beta (registro = acceso ilimitado gratis). Al salir: false aqui y
+ *   BETA_OPEN_ACCESS=false en Netlify (creditsLogic.js).
  * - proClientPolicy: 'production' en Netlify antes de cobrar (bloquea ?pro=1, localStorage Pro demo, usos prueba).
  * - allowPremiumViaQueryPro: false en produccion (no activar Pro por ?pro=1).
  * - allowFreeProTrialUses: false si no ofrece prueba Pro en cliente.
@@ -46,6 +48,12 @@ export const FEATURES = Object.freeze({
    * El codigo de Lemon/Netlify y checkout.html permanece en el repo para reactivar.
    */
   publicFreeRelease: false,
+
+  /**
+   * Beta abierta: cuentas registradas (sesión servidor) tienen acceso Pro + créditos ilimitados sin cobro.
+   * Checkout y planes siguen visibles con aviso Beta. Desactivar al salir de beta (sincronizar creditsLogic.js).
+   */
+  betaOpenAccess: true,
 
   /** Si true, toda la app se comporta como Pro (solo desarrollo). */
   devSimulatePremium: false,
@@ -291,4 +299,9 @@ export function isPremiumViaQueryProUiAllowed() {
 /** Sitio en modo gratuito total (sin mostrar planes ni checkout). */
 export function isPublicFreeRelease() {
   return FEATURES.publicFreeRelease === true;
+}
+
+/** Beta: registro = acceso completo gratuito; planes visibles pero sin cobro efectivo. */
+export function isBetaOpenAccess() {
+  return FEATURES.betaOpenAccess === true;
 }

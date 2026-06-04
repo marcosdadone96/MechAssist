@@ -117,7 +117,7 @@
           </div>
         </section>
         <details class="flat-accordion">
-          <summary class="flat-accordion__summary"><span class="flat-accordion__icon" aria-hidden="true">◇</span><span class="flat-accordion__label" data-i18n="ext.accScrew">Geometría del husillo</span></summary>
+          <summary class="flat-accordion__summary"><span class="flat-accordion__icon" aria-hidden="true">&#9671;</span><span class="flat-accordion__label" data-i18n="ext.accScrew">Geometría del husillo</span></summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field"><label for="extD" data-i18n="ext.labelDHtml" data-i18n-html>Diámetro husillo D <span class="info-chip" data-i18n-attrs="title=ext.tipD" title="Diámetro exterior del husillo. Rango típico industrial: 25–150 mm." aria-label="Ayuda diámetro husillo.">?</span></label><div class="flat-field__num"><input inputmode="decimal" id="extD" type="number" step="0.1" min="10" max="500" value="45" /><span class="field-hint">mm</span></div><p class="field-context muted">Típ. 25–150 mm en industrial</p></div>
             <div class="field"><label for="extLD" data-i18n="ext.labelLDHtml" data-i18n-html>Relación L/D <span class="info-chip" data-i18n-attrs="title=ext.tipLD" title="Longitud del husillo / diámetro. Típico: 20–30." aria-label="Ayuda relación L/D.">?</span></label><input inputmode="decimal" id="extLD" type="number" step="0.5" min="10" max="40" value="25" /><p class="field-context muted">Típ. 20–30; &gt;30 para compuestos</p></div>
@@ -126,14 +126,14 @@
           </div>
         </details>
         <details class="flat-accordion">
-          <summary class="flat-accordion__summary"><span class="flat-accordion__icon" aria-hidden="true">◇</span><span class="flat-accordion__label" data-i18n="ext.accOperation">Condiciones de operación</span></summary>
+          <summary class="flat-accordion__summary"><span class="flat-accordion__icon" aria-hidden="true">&#9671;</span><span class="flat-accordion__label" data-i18n="ext.accOperation">Condiciones de operación</span></summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field"><label for="extN" data-i18n="ext.labelNHtml" data-i18n-html>Velocidad del husillo N <span class="info-chip" data-i18n-attrs="title=ext.tipN" title="RPM del husillo." aria-label="Ayuda velocidad husillo.">?</span></label><div class="flat-field__num"><input inputmode="numeric" id="extN" type="number" step="1" min="1" max="500" value="60" placeholder="ej. 20–120 RPM" /><span class="field-hint">RPM</span></div><p class="field-context muted">Típ. 20–120 RPM</p></div>
             <div class="field"><label for="extTb" data-i18n="ext.labelTbHtml" data-i18n-html>Temperatura del cilindro T<sub>b</sub> <span class="info-chip" data-i18n-attrs="title=ext.tipTb" title="Temperatura de banda del cilindro." aria-label="Ayuda temperatura cilindro.">?</span></label><div class="flat-field__num"><input inputmode="decimal" id="extTb" type="number" step="5" min="100" max="320" value="200" /><span class="field-hint">°C</span></div><p class="field-context muted">HDPE: 180–240 °C · PP: 200–260 °C</p></div>
           </div>
         </details>
         <details class="flat-accordion">
-          <summary class="flat-accordion__summary"><span class="flat-accordion__icon" aria-hidden="true">◇</span><span class="flat-accordion__label" data-i18n="ext.accMaterial">Material del polímero</span></summary>
+          <summary class="flat-accordion__summary"><span class="flat-accordion__icon" aria-hidden="true">&#9671;</span><span class="flat-accordion__label" data-i18n="ext.accMaterial">Material del polímero</span></summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field"><label for="extMaterial" data-i18n="ext.labelMaterialHtml" data-i18n-html>Material <span class="info-chip" data-i18n-attrs="title=ext.tipMaterial" title="Seleccionar rellena K, n y densidad." aria-label="Ayuda material.">?</span></label><select id="extMaterial" name="extMaterial"><option value="hdpe" selected data-i18n="ext.optHdpe">HDPE (polietileno alta densidad)</option><option value="ldpe" data-i18n="ext.optLdpe">LDPE (polietileno baja densidad)</option><option value="pp" data-i18n="ext.optPp">PP (polipropileno)</option><option value="abs" data-i18n="ext.optAbs">ABS</option><option value="pvc" data-i18n="ext.optPvc">PVC rígido</option><option value="custom" data-i18n="ext.optCustom">Personalizado</option></select><span class="field-hint" data-i18n="ext.hintMaterial">Rellena K, n y ρ con valores de referencia; ajuste si dispone de datos de reómetro.</span></div>
             <div class="field"><label for="extK" data-i18n="ext.labelKHtml" data-i18n-html>Consistencia K <span class="info-chip" data-i18n-attrs="title=ext.tipK" title="Parámetro K del modelo Power-Law." aria-label="Ayuda consistencia K.">?</span></label><div class="flat-field__num"><input inputmode="decimal" id="extK" type="number" step="100" min="10" max="100000" value="7000" /><span class="field-hint">Pa·s<sup>n</sup></span></div></div>
@@ -142,7 +142,7 @@
           </div>
         </details>
         <details class="flat-accordion">
-          <summary class="flat-accordion__summary"><span class="flat-accordion__icon" aria-hidden="true">◇</span><span class="flat-accordion__label" data-i18n="ext.accDie">Geometría de la boquilla (die)</span></summary>
+          <summary class="flat-accordion__summary"><span class="flat-accordion__icon" aria-hidden="true">&#9671;</span><span class="flat-accordion__label" data-i18n="ext.accDie">Geometría de la boquilla (die)</span></summary>
           <div class="flat-accordion__body field-grid field-grid--essential">
             <div class="field"><label for="extDieType" data-i18n="ext.labelDieTypeHtml" data-i18n-html>Tipo de boquilla <span class="info-chip" data-i18n-attrs="title=ext.tipDieType" title="Circular o anular." aria-label="Ayuda tipo boquilla.">?</span></label><select id="extDieType" name="extDieType"><option value="circular" selected data-i18n="ext.optDieCircular">Circular (tubo macizo / perfil)</option><option value="annular" data-i18n="ext.optDieAnnular">Anular (tubo hueco — con mandril)</option></select></div>
             <div class="field"><label for="extDieD" data-i18n="ext.labelDieDHtml" data-i18n-html>Diámetro canal boquilla d <span class="info-chip" data-i18n-attrs="title=ext.tipDieD" title="Diámetro interior del canal." aria-label="Ayuda diámetro boquilla.">?</span></label><div class="flat-field__num"><input inputmode="decimal" id="extDieD" type="number" step="0.1" min="1" max="200" value="20" /><span class="field-hint">mm</span></div></div>
@@ -151,7 +151,7 @@
           </div>
         </details>
         <details class="flat-accordion">
-          <summary class="flat-accordion__summary"><span class="flat-accordion__icon" aria-hidden="true">◇</span><span class="flat-accordion__label" data-i18n="ext.accDriveHtml" data-i18n-html><span class="premium-flag">Pro</span> Potencia y accionamiento</span></summary>
+          <summary class="flat-accordion__summary"><span class="flat-accordion__icon" aria-hidden="true">&#9671;</span><span class="flat-accordion__label" data-i18n="ext.accDriveHtml" data-i18n-html><span class="premium-flag">Pro</span> Potencia y accionamiento</span></summary>
           <div class="flat-accordion__body">
             <div id="extProDriveWrap" class="pro-install-wrap pro-install-wrap--locked">
               <p id="extProDriveTeaser" class="pro-install-teaser" data-i18n="ext.proTeaserHtml" data-i18n-html>Active el plan <strong>Pro</strong> para ver la potencia mecánica del motor, el calentamiento por cizalla estimado y el selector IEC de motor normalizado. <a class="pro-install-teaser__cta" href="checkout.html">Activar Pro</a></p>

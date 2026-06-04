@@ -16,12 +16,14 @@ import {
 } from './creditsApi.js';
 import { getCurrentUser } from './localAuth.js';
 import { maybeShowCreditsSessionNotice } from '../ui/creditsSessionNotice.js';
+import { hasBetaRegisteredFullAccess } from './betaAccess.js';
 
 const SS_PREFIX = 'mdr-credit-session:';
 
 /** Saldo del hub actual insuficiente para abrir otra sesion de calculo (bloquea edicion). */
 export function shouldLockCalcInputsForCredits() {
   if (!isCreditsSystemEnabled()) return false;
+  if (hasBetaRegisteredFullAccess()) return false;
 
   const user = getCurrentUser();
   if (!user?.email || !user?.serverAuth) return false;
@@ -47,6 +49,7 @@ export function shouldLockCalcInputsForCredits() {
  */
 export async function ensureCalcSessionCharged() {
   if (!isCreditsSystemEnabled()) return { allowed: true };
+  if (hasBetaRegisteredFullAccess()) return { allowed: true };
 
   const user = getCurrentUser();
   if (!user?.email || !user?.serverAuth) return { allowed: true };

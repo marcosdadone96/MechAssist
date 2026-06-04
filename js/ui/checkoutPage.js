@@ -6,6 +6,7 @@ import { FEATURES } from '../config/features.js';
 import { isCreditsSystemEnabled } from '../config/credits.js';
 import { getCreditsPricingExplainerHtml, getCreditsPricingHint } from './creditsPricingCopy.js';
 import { applySubscriptionRenewalNotes } from './subscriptionPreContractNote.js';
+import { applyBetaOpenAccessDocumentFlags, mountBetaAccessBanner } from './betaAccessUi.js';
 import { getCurrentUser } from '../services/localAuth.js';
 import { grantProLicensePersistent } from '../services/accessTier.js';
 import { claimAndVerifyProAfterCheckout } from '../services/proEntitlement.js';
@@ -544,6 +545,8 @@ export async function mountCheckoutPage() {
   }
 
   applyTx(t);
+  applyBetaOpenAccessDocumentFlags();
+  mountBetaAccessBanner(document.querySelector('.register-card'));
   highlightCheckoutFocus();
   window.addEventListener('hashchange', highlightCheckoutFocus);
   applyManageSubscriptionBlock(t);

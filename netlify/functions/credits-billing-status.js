@@ -15,6 +15,7 @@ const {
   loadRecord,
   publicBalance,
   subscriptionActive,
+  isBetaOpenAccess,
 } = require('./lib/creditsLogic.js');
 
 function corsHeaders(event) {
@@ -67,6 +68,28 @@ exports.handler = async (event) => {
   }
 
   const email = auth.email;
+
+  if (isBetaOpenAccess()) {
+    const { rec } = await loadRecord(store, email);
+    return {
+      statusCode: 200,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ok: true,
+        email,
+        hint: 'beta_open_access',
+        beta: true,
+        lemon: null,
+        credits: {
+          balance: publicBalance(rec),
+          subscription: 'unlimited',
+          subscriptionActive: true,
+          subscriptionEndsAt: null,
+        },
+      }),
+    };
+  }
+
   let proRec = null;
   try {
     proRec = await store.get(emailBlobKey(email), { type: 'json' });

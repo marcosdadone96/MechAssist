@@ -17,6 +17,7 @@ import { hasProductionProSessionCache } from './proEntitlement.js';
 import { getCachedCreditsState, isCalcSlugUnlocked } from './creditsApi.js';
 import { getCurrentUser } from './localAuth.js';
 import { shouldLockCalcInputsForCredits } from './creditSession.js';
+import { hasBetaRegisteredFullAccess } from './betaAccess.js';
 
 /** Atajos Pro solo-navegador desactivados (licencia local, URL, usos prueba). */
 function clientProShortcutsDisabled() {
@@ -127,6 +128,7 @@ export function hasMachineCalculatorAccountAccess() {
 export function canEditMachineCalculatorInputs() {
   if (FEATURES.publicFreeRelease === true) return true;
   if (FEATURES.devSimulatePremium) return true;
+  if (hasBetaRegisteredFullAccess()) return true;
   if (machineFormsUseCreditsAccess()) {
     if (!hasMachineCalculatorAccountAccess()) return false;
     return !shouldLockCalcInputsForCredits();
@@ -205,6 +207,7 @@ export function clearPremiumPersistent() {
 }
 
 function hasCreditsUnlimitedAccess() {
+  if (hasBetaRegisteredFullAccess()) return true;
   if (!isCreditsSystemEnabled()) return false;
   const c = getCachedCreditsState();
   return Boolean(c?.unlimited);
@@ -220,6 +223,7 @@ function hasCreditsCalcUnlockForCurrentPage() {
 export function isPremiumEffective() {
   if (FEATURES.publicFreeRelease === true) return true;
   if (FEATURES.devSimulatePremium) return true;
+  if (hasBetaRegisteredFullAccess()) return true;
   if (hasCreditsUnlimitedAccess()) return true;
   if (FEATURES.proClientPolicy === 'production' && hasProductionProSessionCache()) return true;
   return getEffectiveTier() === 'premium';
@@ -266,6 +270,7 @@ export function canUseGearmotorCloudSave() {
 export function isPremiumForMachineForm() {
   if (FEATURES.publicFreeRelease === true) return true;
   if (FEATURES.devSimulatePremium) return true;
+  if (hasBetaRegisteredFullAccess()) return true;
   if (machineFormsUseCreditsAccess() && hasMachineCalculatorAccountAccess()) {
     return true;
   }

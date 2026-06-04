@@ -6,6 +6,7 @@ import { creditsAmountFromBalance, isCreditsSystemEnabled } from '../config/cred
 import { getCachedCreditsState, fetchCreditsBalance, isCalcSlugUnlocked } from '../services/creditsApi.js';
 import { buildCalcUnlockCheckoutUrl } from '../services/calcUnlockCheckout.js';
 import { getCurrentUser } from '../services/localAuth.js';
+import { hasBetaRegisteredFullAccess } from '../services/betaAccess.js';
 
 const CREDITS_CHANGED = 'mdr-credits-changed';
 
@@ -43,6 +44,9 @@ function hubCreditsState() {
   const isGuest = !user?.email;
   if (isGuest) {
     return { active: true, isGuest: true, showUnlock: false, unlimited: false };
+  }
+  if (hasBetaRegisteredFullAccess()) {
+    return { active: true, isGuest: false, showUnlock: false, unlimited: true };
   }
   const c = getCachedCreditsState();
   if (c?.unlimited) {

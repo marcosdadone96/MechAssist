@@ -10,7 +10,8 @@ import {
 } from '../services/creditsApi.js';
 import { buildCalcUnlockCheckoutUrl } from '../services/calcUnlockCheckout.js';
 import { getCurrentUser } from '../services/localAuth.js';
-import { FEATURES } from '../config/features.js';
+import { FEATURES, isBetaOpenAccess } from '../config/features.js';
+import { hasBetaRegisteredFullAccess, buildBetaCreditsBalancePayload } from '../services/betaAccess.js';
 
 function langEn() {
   return document.documentElement.lang?.toLowerCase().startsWith('en');
@@ -73,14 +74,28 @@ function renderBarContent(bar, state) {
   const en = langEn();
   const b = state?.balance;
   if (!b) {
+    if (hasBetaRegisteredFullAccess()) {
+      bar.className = 'credits-bar credits-bar--unlimited';
+      bar.innerHTML = langEn()
+        ? '<span class="credits-bar__badge credits-bar__badge--beta">Beta</span> <span class="credits-bar__badge">Unlimited</span> Free full access'
+        : '<span class="credits-bar__badge credits-bar__badge--beta">Beta</span> <span class="credits-bar__badge">Ilimitado</span> Acceso completo gratuito';
+      bar.hidden = false;
+      return;
+    }
     bar.hidden = true;
     return;
   }
   if (state.unlimited) {
     bar.className = 'credits-bar credits-bar--unlimited';
-    bar.innerHTML = en
-      ? '<span class="credits-bar__badge">Unlimited</span> Full access active'
-      : '<span class="credits-bar__badge">Ilimitado</span> Acceso completo activo';
+    if (isBetaOpenAccess() || state.beta || hasBetaRegisteredFullAccess()) {
+      bar.innerHTML = en
+        ? '<span class="credits-bar__badge credits-bar__badge--beta">Beta</span> <span class="credits-bar__badge">Unlimited</span> Free full access'
+        : '<span class="credits-bar__badge credits-bar__badge--beta">Beta</span> <span class="credits-bar__badge">Ilimitado</span> Acceso completo gratuito';
+    } else {
+      bar.innerHTML = en
+        ? '<span class="credits-bar__badge">Unlimited</span> Full access active'
+        : '<span class="credits-bar__badge">Ilimitado</span> Acceso completo activo';
+    }
     bar.hidden = false;
     return;
   }
@@ -137,6 +152,8 @@ export async function mountCreditsBar(_pool = 'lab') {
   const cached = getCachedCreditsState();
   if (cached?.balance) {
     renderBarContent(bar, cached);
+  } else if (hasBetaRegisteredFullAccess()) {
+    renderBarContent(bar, buildBetaCreditsBalancePayload(slug && slug !== 'unknown' ? slug : ''));
   }
 
   const slug = calcSlugFromPath();

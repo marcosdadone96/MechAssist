@@ -4,6 +4,7 @@
 import { getCurrentUser } from './localAuth.js';
 import { isCreditsSystemEnabled } from '../config/credits.js';
 import { handleAuthHttpResponse } from './authSessionClient.js';
+import { hasBetaRegisteredFullAccess, buildBetaCreditsBalancePayload } from './betaAccess.js';
 
 const LS_BALANCE = 'mdr-credits-balance-v1';
 const LS_BALANCE_AT = 'mdr-credits-balance-at-v1';
@@ -39,6 +40,18 @@ export async function fetchCreditsBalance(calcSlug = '') {
   if (!isCreditsSystemEnabled()) return { ok: true, unlimited: true };
   const u = getCurrentUser();
   if (!u?.email || !u?.serverAuth) return { ok: false, error: 'auth' };
+
+  if (hasBetaRegisteredFullAccess()) {
+    const data = buildBetaCreditsBalancePayload(calcSlug);
+    try {
+      localStorage.setItem(LS_BALANCE, JSON.stringify(data));
+      localStorage.setItem(LS_BALANCE_AT, String(Date.now()));
+      notifyCreditsChanged();
+    } catch (_) {
+      /* ignore */
+    }
+    return data;
+  }
 
   const q = calcSlug ? `?calcSlug=${encodeURIComponent(calcSlug)}` : '';
   const headers = authHeaders();
@@ -87,6 +100,7 @@ export function getCachedCreditsState() {
  */
 export async function consumeCredits(req) {
   if (!isCreditsSystemEnabled()) return { ok: true, unlimited: true, charged: 0 };
+  if (hasBetaRegisteredFullAccess()) return { ok: true, unlimited: true, charged: 0, beta: true };
   const u = getCurrentUser();
   if (!u?.email || !u?.serverAuth) return { ok: false, error: 'auth' };
 
@@ -192,6 +206,10 @@ export function billingStatusMessage(hint, lang = 'es') {
       'Plan sincronizado correctamente.',
       'Plan synced successfully.',
     ],
+    beta_open_access: [
+      'Modo beta: acceso completo gratuito con cr\u00e9ditos ilimitados.',
+      'Beta mode: full free access with unlimited credits.',
+    ],
     lemon_webhook_never_received: [
       'Lemon no tiene datos para este correo. Inicie sesión con el mismo email del pago (p. ej. marcosdadone96@gmail.com si pagó con ese) y reenvíe el webhook.',
       'No Lemon data for this email. Sign in with the same email used at checkout, then resend the webhook.',
@@ -228,6 +246,14 @@ export async function syncAccountBillingState() {
   if (!isCreditsSystemEnabled()) return { ok: false, hint: 'credits_disabled' };
   const u = getCurrentUser();
   if (!u?.email || !u?.serverAuth) return { ok: false, hint: 'auth' };
+  if (hasBetaRegisteredFullAccess()) {
+    await fetchCreditsBalance().catch(() => {});
+    return {
+      ok: true,
+      hint: 'beta_open_access',
+      message: billingStatusMessage('beta_open_access'),
+    };
+  }
 
   const sub = await reconcileSubscriptionAfterPayment().catch(() => ({ ok: false }));
   const pending = readPendingCalcUnlockSlug();

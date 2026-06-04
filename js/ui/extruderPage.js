@@ -1,5 +1,5 @@
 /**
- * Pagina extrusora de husillo ù caudal, presion boquilla, potencia motor (Pro).
+ * Pagina extrusora de husillo ÔøΩ caudal, presion boquilla, potencia motor (Pro).
  */
 
 import { isPremiumViaQueryProUiAllowed } from '../config/features.js';

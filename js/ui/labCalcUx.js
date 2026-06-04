@@ -175,6 +175,12 @@ export function renderResultHero(items, opts = {}) {
  * Regla horizontal: posición del usuario frente a escalones IEC.
  * @param {number} powerKw
  */
+/** @param {number} kw */
+function formatIecKwTick(kw) {
+  if (kw < 1) return kw.toFixed(2);
+  return Number.isInteger(kw) ? String(kw) : kw.toFixed(1);
+}
+
 export function renderMotorPowerRuler(powerKw) {
   if (!(powerKw > 0) || !Number.isFinite(powerKw)) return '';
   const en = isEnglishUi();
@@ -186,7 +192,7 @@ export function renderMotorPowerRuler(powerKw) {
     .map((p) => {
       const left = (p / maxScale) * 100;
       const major = p >= 1 ? p % 1 === 0 || p === 0.75 || p === 0.55 || p === 0.37 : true;
-      return `<span class="lab-motor-ruler__tick ${major ? 'lab-motor-ruler__tick--major' : ''}" style="left:${left}%"><span class="lab-motor-ruler__tick-label">${p}</span></span>`;
+      return `<span class="lab-motor-ruler__tick ${major ? 'lab-motor-ruler__tick--major' : ''}" style="left:${left}%"><span class="lab-motor-ruler__tick-label">${formatIecKwTick(p)}</span></span>`;
     })
     .join('');
 
@@ -198,7 +204,7 @@ export function renderMotorPowerRuler(powerKw) {
         : ` Próximo nominal IEC hacia arriba: <strong>${nextUp} kW</strong>.`
       : '';
 
-  return `<figure class="lab-motor-ruler" aria-label="${en ? 'Power comparison against standard motors' : 'Comparativa de potencia con motores estándar'}">
+  return `<figure class="lab-motor-ruler" aria-label="${en ? 'Power comparison against standard motors' : 'Comparativa de potencia con motores estandar'}">
     <div class="lab-motor-ruler__head">
       <span class="lab-motor-ruler__title">${en ? 'Power · commercial reference' : 'Potencia · referencia comercial'}</span>
       <span class="lab-motor-ruler__brands">${en ? 'IEC · SEW · Siemens (indicative)' : 'IEC · SEW · Siemens (orientativo)'}</span>

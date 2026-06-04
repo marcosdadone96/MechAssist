@@ -4183,6 +4183,119 @@ html[data-conveyor-tool='flat'] .flat-sidebar .flat-field__num input.field-input
   font-size: 0.65rem;
 }
 
+/* Regla IEC (también en lab.css; duplicado aquí para páginas flat que solo cargan app.css) */
+.lab-motor-ruler {
+  margin: 0 0 0.85rem;
+  padding: 0.75rem 0.85rem 0.65rem;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+}
+
+.lab-motor-ruler__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.35rem 0.75rem;
+  margin-bottom: 0.55rem;
+}
+
+.lab-motor-ruler__title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #475569;
+}
+
+.lab-motor-ruler__brands {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.lab-motor-ruler__track {
+  position: relative;
+  height: 52px;
+  margin: 0.25rem 0 0.15rem;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid #e2e8f0;
+}
+
+.lab-motor-ruler__bar {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 14px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #cbd5e1 0%, #94a3b8 100%);
+}
+
+.lab-motor-ruler__tick {
+  position: absolute;
+  bottom: 20px;
+  width: 0;
+  height: 10px;
+  border-left: 1px solid #64748b;
+  transform: translateX(-50%);
+  opacity: 0.65;
+}
+
+.lab-motor-ruler__tick--major {
+  height: 14px;
+  border-left-width: 2px;
+  opacity: 1;
+}
+
+.lab-motor-ruler__tick-label {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, 4px);
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #475569;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.lab-motor-ruler__needle {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  height: 36px;
+  width: 0;
+  transform: translateX(-50%);
+  border-left: 3px solid #ea580c;
+  z-index: 2;
+}
+
+.lab-motor-ruler__needle-cap {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translate(-50%, -4px);
+  padding: 0.2rem 0.45rem;
+  border-radius: 6px;
+  background: #ea580c;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35);
+}
+
+.lab-motor-ruler__cap {
+  margin: 1.35rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #64748b;
+}
+
 .flat-accordion__body {
   padding: 0.85rem 0.9rem 1rem;
 }

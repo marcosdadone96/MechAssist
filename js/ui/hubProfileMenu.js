@@ -3,13 +3,14 @@
  */
 import { getCurrentUser, clearLocalUser } from '../services/accountAuth.js';
 import { clearProEntitlementClient } from '../services/proEntitlement.js';
-import { FEATURES } from '../config/features.js';
+import { FEATURES, isBetaOpenAccess } from '../config/features.js';
 import { creditsAmountFromBalance, isCreditsSystemEnabled } from '../config/credits.js';
 import {
   getCachedCreditsState,
   fetchCreditsBalance,
   syncAccountBillingState,
 } from '../services/creditsApi.js';
+import { hasBetaRegisteredFullAccess } from '../services/betaAccess.js';
 import { showToast } from './toast.js';
 import { getCalcUnlockCatalogEntry } from '../config/calcUnlockCatalog.js';
 
@@ -72,6 +73,11 @@ function renderCreditsInMenu(host, state) {
   });
 
   if (!b && !state?.unlimited && !state?.starter && !unlockEntries.length) {
+    if (hasBetaRegisteredFullAccess()) {
+      host.hidden = false;
+      host.innerHTML = renderBetaUnlimitedCreditsHtml(en);
+      return;
+    }
     host.hidden = true;
     host.textContent = '';
     return;
@@ -81,9 +87,7 @@ function renderCreditsInMenu(host, state) {
   const parts = [];
 
   if (state?.unlimited) {
-    parts.push(
-      `<p class="hub-user-menu__credits-line hub-user-menu__credits-line--unlimited"><span class="hub-user-menu__credits-badge">${en ? 'Unlimited' : 'Ilimitado'}</span> ${en ? 'Full site access' : 'Acceso completo al sitio'}</p>`,
-    );
+    parts.push(renderBetaUnlimitedCreditsHtml(en, state?.beta || isBetaOpenAccess()));
   } else if (state?.starter) {
     parts.push(
       `<p class="hub-user-menu__credits-line"><span class="hub-user-menu__credits-badge">${en ? 'Starter' : 'Starter'}</span> ${en ? 'Active subscription' : 'Suscripci\u00f3n activa'}</p>`,
@@ -128,6 +132,21 @@ function renderCreditsInMenu(host, state) {
   );
 
   host.innerHTML = parts.join('');
+}
+
+function renderBetaUnlimitedCreditsHtml(en, showBetaBadge = isBetaOpenAccess()) {
+  const badge = showBetaBadge
+    ? `<span class="hub-user-menu__credits-badge hub-user-menu__credits-badge--beta">Beta</span> `
+    : '';
+  const plan = en ? 'Unlimited' : 'Ilimitado';
+  const detail = showBetaBadge
+    ? en
+      ? 'Free full access during beta'
+      : 'Acceso completo gratuito durante la beta'
+    : en
+      ? 'Full site access'
+      : 'Acceso completo al sitio';
+  return `<p class="hub-user-menu__credits-line hub-user-menu__credits-line--unlimited">${badge}<span class="hub-user-menu__credits-badge">${plan}</span> ${detail}</p>`;
 }
 
 /**

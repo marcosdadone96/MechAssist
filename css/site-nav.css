@@ -350,6 +350,58 @@ a.site-nav__btn {
   font-weight: 700;
 }
 
+.hub-user-menu__credits-badge--beta {
+  background: rgba(245, 158, 11, 0.2);
+  color: #b45309;
+}
+
+.credits-bar__badge--beta {
+  background: rgba(245, 158, 11, 0.18);
+  color: #b45309;
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+}
+
+.beta-access-banner {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(255, 251, 235, 0.95), rgba(254, 243, 199, 0.85));
+  color: #78350f;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.beta-access-banner strong {
+  color: #92400e;
+}
+
+.beta-access-banner a {
+  color: #0f766e;
+  font-weight: 600;
+}
+
+.beta-access-banner--compact {
+  margin-bottom: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.82rem;
+}
+
+html[data-beta-open-access='1'] .site-nav__link--plans::after {
+  content: 'Beta';
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.2);
+  color: #b45309;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
 .hub-user-menu__sync {
   display: block;
   width: calc(100% - 1.7rem);
